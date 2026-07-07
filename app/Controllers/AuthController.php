@@ -22,9 +22,11 @@ class AuthController {
         require_once '../views/login.php';
     }
 
-    public function logout() {
-        session_start();
-        session_destroy();
-        header('Location: /login');
-    }
+    // أضيفي هذه الدالة داخل class AuthController
+public function logout() {
+    session_start();
+    session_destroy();
+    header('Location: /login');
+    exit;
+}
 }

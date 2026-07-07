@@ -6,12 +6,50 @@
     <title>لوحة التحكم | Beethoven CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; }
-        .sidebar { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); min-height: 100vh; border-left: 1px solid rgba(255,255,255,0.1); }
-        .card-custom { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
-        .nav-link { color: #94a3b8; transition: 0.3s; }
-        .nav-link:hover { color: #fff; background: rgba(99, 102, 241, 0.2); border-radius: 8px; }
-    </style>
+    /* دمج هويتك البصرية */
+    body { 
+        background: var(--bg-secondary); 
+        color: var(--dark); 
+        font-family: var(--main-font); 
+        min-height: 100vh;
+    }
+    
+    .sidebar { 
+        background: var(--white); 
+        border-left: 1px solid var(--border); 
+        min-height: 100vh;
+    }
+
+    .card-custom { 
+        background: var(--white); 
+        border: 1px solid var(--border); 
+        border-radius: 12px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .nav-link { 
+        color: var(--dark); 
+        font-weight: var(--fw-medium);
+        transition: 0.3s;
+        padding: 12px 20px;
+    }
+
+    .nav-link:hover { 
+        color: var(--main-color); 
+        background: var(--hoverLight); 
+    }
+
+    .btn-custom {
+        background-color: var(--main-color);
+        color: var(--white);
+        font-weight: var(--fw-bold);
+    }
+    
+    .btn-custom:hover { background-color: var(--hoverDark); }
+
+    h1, h2, h3, .sec-title { color: var(--black); font-weight: var(--fw-bold); }
+</style>
+
 </head>
 <body>
 

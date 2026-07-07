@@ -74,10 +74,11 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card-custom p-4">
-                        <h5>إجمالي الصفحات</h5>
-                        <h2 class="display-4">12</h2>
-                    </div>
+<div class="card-custom p-4">
+    <h5>إجمالي الصفحات</h5>
+    <h2 class="display-4"><?php echo $pageCount; ?></h2>
+</div>
+
                 </div>
             </div>
         </main>

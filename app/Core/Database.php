@@ -6,7 +6,7 @@ class Database {
     private $pdo;
 
     private function __construct() {
-        $host = 'localhost';
+        $host = '127.0.0.1';
         $db   = 'beethoven_db'; // اسم القاعدة التي أنشأناها
         $user = 'root';
         $pass = '';

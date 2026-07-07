@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/header.css">
+  <link rel="stylesheet" href="assets/css/footer.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+
+<body>
+  <!-- header start -->
+  <header>
+    <!-- nav top -->
+    <nav class="nav-top navbar py-2" aria-label="روابط التواصل الاجتماعي">
+      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+        <!-- Logo (Desktop) -->
+        <a class="navbar-brand d-none d-lg-flex" href="index.html">
+          <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" width="178" height="72" loading="lazy">
+        </a>
+        <!-- Spacer -->
+        <div class="flex-grow-1 d-none d-lg-flex more"></div>
+        <!-- Social Icons -->
+        <div class="social-icons d-none d-lg-flex gap-3">
+          <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener">
+            <img src="assets/img/socialicons/Facebook.png" alt="فيسبوك">
+          </a>
+          <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener">
+            <img src="assets/img/socialicons/Instagram.png" alt="إنستغرام">
+          </a>
+          <a href="https://wa.me/4917671230666" target="_blank" rel="noopener">
+            <img src="assets/img/socialicons/whatsapp.png" alt="واتساب">
+          </a>
+          <a href="#" target="_blank" rel="noopener">
+            <img src="assets/img/socialicons/Twitter.png" alt="تويتر">
+          </a>
+          <a href="https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY" target="_blank" rel="noopener">
+            <img src="assets/img/socialicons/youtube.png" alt="يوتيوب">
+          </a>
+        </div>
+      </div>
+    </nav>
+    <!-- main nav -->
+    <nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
+      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+        <!-- Logo (Mobile) -->
+        <a class="navbar-brand d-lg-none" href="index.html">
+          <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" loading="lazy">
+        </a>
+        <!-- Desktop Menu -->
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav gap-3">
+            <li class="nav-item">
+              <a class="nav-link active" href="index.html">الرئيسية</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="aboutus.html">عن الشركة</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="education.html">التعليم العالي</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="job.html">التدريب المهني</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="guide.html">دليل بيتهوفن</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">تواصل معنا</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Right Side Controls -->
+        <div class="d-flex align-items-center gap-3">
+          <!-- Mobile Menu Button -->
+          <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasNavbar" aria-label="فتح القائمة">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- Language Switcher -->
+          <div class="dropdown">
+            <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="assets/img/home/global.svg" alt="Language">
+                <span>العربية</span>
+              <img src="assets/img/home/arowwdown.svg" alt="فتح القائمة">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item d-flex align-items-center gap-2 active" href="index.html">
+                  <img src="assets/img/global.svg" width="20" height="20" alt="">
+                  العربية
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center gap-2" href="index-en.html">
+                  <img src="assets/img/global.svg" width="20" height="20" alt="">
+                  English
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
+          القائمة
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة">
+        </button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="index.html">الرئيسية</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="aboutus.html">عن الشركة</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="education.html">التعليم العالي</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="job.html">التدريب المهني</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="guide.html">دليل بيتهوفن</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">تواصل معنا</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+  <!-- header end -->
+  <section class="training py-5">
+    <div class="custom-container text-center">
+    <h2 class="mb-5 sec-title">هل تبحث عن متدربين لشركتك؟</h2>
+    <p class="main-p">نحن في بيتهوفن نعمل على ربط الشركات بالمتدربين الذين يمتلكون المهارات العملية والأساسية للاندماج في سوق العمل.  فور استلام طلبكم، سيقوم فريقنا بالتواصل معكم لجمع تفاصيل التدريب المطلوبة، ثم ترشيح أفضل المتدربين المتاحين.</p>
+    <a href="btn">تواصل معنا عبر واتساب</a>
+    </div>
+  </section>
+    <!-- footer start -->
+  <section class="consult-banner-section">
+    <div class="container-fluid custom-container">
+      <div class="consult-banner">
+        <div class="consult-banner-inner">
+          <div class="consult-banner-text">
+            <h4>احصل على استشارة مجانية</h4>
+            <p>هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة</p>
+          </div>
+          <form class="consult-banner-form" action="send_consult.php" method="POST">
+            <input type="email" name="email" placeholder="ادخل إيميلك..." aria-label="Email" required />
+            <button type="submit">
+              <img src="assets/img/home/send-2.svg" alt="إرسال">
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="footer-section pt-5">
+    <div class="container-fluid custom-container">
+      <div class="row gy-5">
+        <div class="col-12 col-lg-5">
+          <img src="assets/img/logo.png" alt="BCS Logo" class="mb-4">
+          <p class="footer-desc">
+            هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربي，
+            حيث يمكنك..
+          </p>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <h5>روابط سريعة</h5>
+          <div class="quick-link">
+            <a href="#">عن الشركة</a>
+            <a href="#">التعليم العالي</a>
+            <a href="#">التدريب المهني</a>
+            <a href="#">دليل الشركة</a>
+            <a href="#">تواصل معنا</a>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <h5>تواصل معنا</h5>
+          <div class="contact-link">
+            <a href="tel:+4917671230666"><img src="img/contact%20us/call-calling.svg" alt="">666-230-71 176
+              (0) 49+</a>
+            <a href="mailto:info@Beethoven-City-Services.com"><img src="img/contact%20us/sms.svg"
+                alt="">info@Beethoven-City-Services.com</a>
+            <div class="contact-link-item d-flex align-items-center gap-2">
+              <img src="img/contact%20us/Location.svg" alt="">
+              <span style="font-size: 12px; color: #4F4F4F;">Rheinweg 140 ,53129 Bonn,Germany</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="my-4">
+      <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
+        <p class="mb-0 text-center text-md-start">
+          <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
+        </p>
+        <a href="#">سياسة الخصوصية وشروط الإستخدام</a>
+      </div>
+    </div>
+  </footer>
+  <!-- footer end  -->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/all.min.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

@@ -2,6 +2,8 @@
 namespace App\Core;
 class Router {
     public function dispatch($url) {
-        require_once '../views/home.php';
+        if ($url === '/login' || $url === '/') {
+            (new \App\Controllers\AuthController())->login();
+        }
     }
 }

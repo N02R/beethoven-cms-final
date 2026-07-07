@@ -6,11 +6,13 @@ class Router {
         // تنظيف المسار (إزالة أي إضافات)
         $url = parse_url($url, PHP_URL_PATH);
 
-        if ($url === '/login') {
-            (new \App\Controllers\AuthController())->login();
-        } else {
-            // صفحة افتراضية أو الرئيسية
-            require_once '../views/home.php';
-        }
+        // داخل دالة dispatch في ملف Router.php
+if ($url === '/login') {
+    (new \App\Controllers\AuthController())->login();
+} elseif ($url === '/dashboard') {
+    (new \App\Controllers\DashboardController())->index();
+} else {
+    require_once '../views/home.php';
+}
     }
 }

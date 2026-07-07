@@ -1,0 +1,251 @@
+/* --- تنسيق الـ Breadcrumb --- */
+.breadcrumb {
+    flex-wrap: wrap; /* لضمان نزول الروابط تحت بعضها في الشاشات الصغيرة جداً */
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-item {
+    font-size: clamp(13px, 1.1vw, 16px); /* تصغير الخط تلقائياً في الموبايل */
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item a {
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s;
+    white-space: normal; /* السماح للنص الطويل بالالتفاف بدل الخروج عن الشاشة */
+}
+
+.breadcrumb-item a:hover {
+    color: #66aeee;
+}
+
+[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    content: "";
+    display: inline-block;
+    width: 14px; /* حجم متناسق */
+    height: 14px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    
+    /* المسار الصحيح بعد تعديل المجلدات */
+    background-image: url('/BCS/assets/img/Arrow Chevron Forward.svg'); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    /* السحر هنا: قلب السهم ليتجه لليسار */
+    transform: scaleX(-1); 
+    
+    /* لضمان التوسط الرأسي مع النص */
+    vertical-align: middle; 
+}
+
+/* --- تنسيق الـ Hero Image المتجاوب --- */
+.custom-services .custom-hero {
+    position: relative; /* ضروري لتموضع التدرج */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: clamp(250px, 40vw, 530px);
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden; /* لضمان عدم خروج التدرج عن حدود الزوايا المنحنية */
+}
+
+/* إضافة طبقة التدرج اللوني */
+.custom-services .custom-hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* تدرج من الأسفل (أسود شفاف) إلى الأعلى (شفاف تماماً) */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 1;
+}
+/* --- Media Queries للموبايل --- */
+@media (max-width: 768px) {
+    .container.pt-5 {
+        padding-top: 2rem !important; /* تقليل الفراغ العلوي في الموبايل */
+    }
+    
+    .breadcrumb-item {
+        margin-bottom: 0.5rem; /* مسافة بين السطور عند التفاف النص */
+    }
+
+    .custom-services .custom-hero {
+        border-radius: 12px; /* زوايا أقل حدة في الشاشات الصغيرة */
+    }
+}
+/* --- قسم معلومات الخدمات (Text Content) --- */
+.custom-services-info {
+    direction: rtl;
+    overflow: hidden;
+}
+
+/* العناوين الرئيسية */
+.custom-services-info .head-info .main-text {
+    font-weight: 500;
+    /* خط متجاوب يبدأ من 22px ويصل لـ 32px */
+    font-size: clamp(22px, 2.5vw, 32px);
+    color: #000;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+.custom-services-info .head-info .par-text {
+    font-weight: 400;
+    font-size: clamp(16px, 1.2vw, 20px);
+    line-height: 1.8; /* تقليل الـ line-height قليلاً للموبايل */
+    color: #595959;
+}
+
+/* قسم التوصيات (النقاط ✅) */
+.custom-services-info .advice-text {
+    font-weight: 500;
+    font-size: clamp(18px, 2vw, 24px);
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.custom-services-info .advice-check p {
+    font-weight: 400;
+    /* الحفاظ على مقاسك 21.65px كحد أقصى */
+    font-size: clamp(14px, 1.5vw, 21.65px);
+    color: #595959;
+    margin-bottom: 1rem;
+}
+
+/* الحفاظ على توزيع col-6 مع ضمان عدم التداخل */
+.custom-services-info .row .col-6 p {
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+/* قسم الملاحظات الهامة (النجمة) */
+.custom-services-info .note-text {
+    color: #66aeee;
+    font-size: clamp(24px, 2.5vw, 32px);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.star-list {
+    list-style: none;
+    padding: 0;
+}
+
+.star-list li {
+    position: relative;
+    padding-right: 2.5rem; /* مساحة للأيقونة */
+    margin-bottom: 1.2rem;
+}
+
+.star-list li::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0.2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: url('../../img/education/starList.svg') no-repeat center center;
+    background-size: contain;
+}
+
+.star-list p {
+    font-size: clamp(15px, 1.2vw, 21.65px);
+    color: #595959;
+    line-height: 1.8;
+}
+
+/* --- تعديلات الميديا كويري --- */
+@media (max-width: 768px) {
+    .custom-services-info .row .col-6 {
+        width: 100%; /* في الموبايل الصغير جداً يفضل أن تصبح النقاط تحت بعضها */
+    }
+}
+
+/* إذا أردت الحفاظ على col-6 حتى في أصغر موبايل (حسب طلبك): */
+@media (max-width: 576px) {
+    .custom-services-info .row .col-6 {
+        width: 50%; /* إجبارها على البقاء بجانب بعضها */
+    }
+    .custom-services-info .row .col-6 p {
+        font-size: 13px; /* تصغير الخط لضمان عدم التداخل */
+    }
+}
+
+/* --- قسم حماية المستند (Password Section) --- */
+.custom-services-info .pas-text {
+    font-weight: 400;
+    /* خط متجاوب */
+    font-size: clamp(16px, 1.3vw, 24px);
+    line-height: 1.6;
+    color: rgba(89, 89, 89, 1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.pas-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap; /* يسمح للزر بالنزول تحت النص في الشاشات الصغيرة جداً */
+    gap: 1.5rem;
+    font-weight: 500;
+    font-size: clamp(18px, 1.5vw, 24px);
+    color: rgba(0, 0, 0, 1);
+}
+
+.pas-info p {
+    margin: 0;
+    white-space: nowrap; /* يمنع انكسار كلمة السر عن النقاط */
+}
+
+.pas-info .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* استخدام min-width و max-width بدلاً من العرض الثابت */
+    width: 172px;
+    height: 64px;
+    border-radius: 12px;
+    background: rgba(102, 174, 238, 1);
+    font-weight: 500;
+    font-size: clamp(20px, 1.5vw, 25px);
+    color: rgba(248, 248, 248, 1);
+    border: none;
+    transition: all 0.3s ease;
+    margin-right: 0 !important; /* نعتمد على الـ gap للتنسيق */
+}
+
+.pas-info .btn:hover {
+    background: rgba(80, 150, 220, 1);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* --- تعديلات الميديا كويري --- */
+@media (max-width: 768px) {
+    .pas-info {
+        flex-direction: column; /* ترتيب رأسي في الموبايل */
+        text-align: center;
+    }
+    
+    .pas-info .btn {
+        width: 100%; /* الزر يأخذ العرض كامل في الموبايل لسهولة الضغط */
+        max-width: 250px;
+        height: 55px;
+    }
+}
+
+/* تنظيف الهوامش الزائدة في الحاويات */
+.custom-services-info h2 {
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 700;
+}

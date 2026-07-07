@@ -1,0 +1,458 @@
+li {
+    list-style: none;
+}
+
+/* --- تنسيق الـ Breadcrumb --- */
+.breadcrumb {
+    flex-wrap: wrap;
+    /* لضمان نزول الروابط تحت بعضها في الشاشات الصغيرة جداً */
+    background: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-item {
+    font-size: clamp(13px, 1.1vw, 16px);
+    /* تصغير الخط تلقائياً في الموبايل */
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item a {
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s;
+    white-space: normal;
+    /* السماح للنص الطويل بالالتفاف بدل الخروج عن الشاشة */
+}
+
+.breadcrumb-item a:hover {
+    color: #66aeee;
+}
+
+[dir="rtl"] .breadcrumb-item+.breadcrumb-item::before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    /* حجم متناسق */
+    height: 14px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    /* المسار الصحيح بعد تعديل المجلدات */
+    background-image: url('../../assets/img/Arrow Chevron Forward.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    /* السحر هنا: قلب السهم ليتجه لليسار */
+    transform: scaleX(-1);
+
+    /* لضمان التوسط الرأسي مع النص */
+    vertical-align: middle;
+}
+
+/* --- تنسيق الـ Hero Image المتجاوب --- */
+ .custom-hero {
+    position: relative;
+    /* ضروري لتموضع التدرج */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: clamp(250px, 40vw, 530px);
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    /* لضمان عدم خروج التدرج عن حدود الزوايا المنحنية */
+}
+
+/* إضافة طبقة التدرج اللوني */
+ .custom-hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* تدرج من الأسفل (أسود شفاف) إلى الأعلى (شفاف تماماً) */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 1;
+}
+
+/* العناوين الرئيسية */
+.custom-services-info .head-info .main-text {
+    font-weight: 500;
+    /* خط متجاوب يبدأ من 22px ويصل لـ 32px */
+    font-size: clamp(22px, 2.5vw, 32px);
+    color: #000;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+}
+
+.custom-services-info .head-info .par-text {
+    font-weight: 400;
+    font-size: clamp(16px, 1.2vw, 20px);
+    line-height: 1.8;
+    /* تقليل الـ line-height قليلاً للموبايل */
+    color: #595959;
+}
+
+.custom-services-info .advice-text {
+    font-weight: 500;
+    font-size: clamp(18px, 2vw, 24px);
+    color: #000;
+    margin-bottom: 1rem;
+}
+
+.custom-services-info .advice-check p,
+.custom-services-info .advice-stars p {
+    font-weight: 400;
+    /* الحفاظ على مقاسك 21.65px كحد أقصى */
+    font-size: clamp(14px, 1.5vw, 21.65px);
+    color: #595959;
+    margin-bottom: 1rem;
+}
+
+.custom-services-info .row .col-lg-6 p {
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+.custom-services-info .note-text {
+    color: #66aeee;
+    font-size: clamp(24px, 2.5vw, 32px);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.custom-services-info .pas-text {
+    font-weight: 400;
+    /* خط متجاوب */
+    font-size: clamp(16px, 1.3vw, 24px);
+    line-height: 1.6;
+    color: rgba(89, 89, 89, 1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.pas-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* يسمح للزر بالنزول تحت النص في الشاشات الصغيرة جداً */
+    gap: 1.5rem;
+    font-weight: 500;
+    font-size: clamp(18px, 1.5vw, 24px);
+    color: rgba(0, 0, 0, 1);
+}
+
+.pas-info p {
+    margin: 0;
+    white-space: nowrap;
+    /* يمنع انكسار كلمة السر عن النقاط */
+}
+
+.pas-info .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* استخدام min-width و max-width بدلاً من العرض الثابت */
+    width: 172px;
+    height: 64px;
+    border-radius: 12px;
+    background: rgba(102, 174, 238, 1);
+    font-weight: 500;
+    font-size: clamp(20px, 1.5vw, 25px);
+    color: rgba(248, 248, 248, 1);
+    border: none;
+    transition: all 0.3s ease;
+    margin-right: 0 !important;
+    /* نعتمد على الـ gap للتنسيق */
+}
+
+.pas-info .btn:hover {
+    background: rgba(80, 150, 220, 1);
+    color: #fff;
+}
+
+.links p {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 40px;
+    margin-top: 1rem;
+}
+
+.links a {
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 40px;
+    color: rgba(102, 174, 238, 1);
+}
+
+.links .span-list {
+    display: flex;
+    flex-direction: column;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 40px;
+}
+
+.links p span {
+    flex-direction: row;
+}
+
+.red-text {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    color: rgba(190, 30, 45, 1);
+    margin-top: 2rem;
+}
+
+.advice-list ul li {
+    list-style: disc;
+    font-weight: 400;
+    font-size: 20px;
+    color: rgba(89, 89, 89, 1);
+}
+
+.advice-list ul li span {
+    font-weight: 500;
+}
+.download-card {
+    min-height: 124px;
+    border-radius: 16px;
+    background: rgba(223, 223, 223, 0.24);
+    padding: 1.5rem 2rem;
+}
+
+.download-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.leader {
+    font-weight: var(--fw-regular);
+    font-size: 24px;
+    color: rgba(89, 89, 89, 1);
+    margin-bottom: 1.7rem;
+}
+
+.dl-title {
+    font-weight: 400;
+    font-size: 24px;
+    color: rgba(89, 89, 89, 1);
+
+}
+.download-link {
+    font-weight: 500;
+    font-size: 24px;
+    color: rgba(102, 174, 238, 1);
+    margin-bottom: 1.3rem;
+    text-decoration: none;
+}
+
+.dl-sub {
+    font-weight: 400;
+    font-size: 16px;
+    color: rgba(89, 89, 89, 1);
+}
+
+.note {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    color: rgba(89, 89, 89, 1);
+}
+ .link {
+    color: var(--main-color);
+    border-radius: 16px;
+    padding: 1rem .7rem;
+    font-weight: var(--fw-medium);
+    background: var(--bg-secondary);
+} 
+
+.active {
+    color: #fff;
+    background: var(--main-color);
+}
+
+.link p {
+    margin-top: 1.5rem;
+}
+
+
+
+
+
+
+
+.pas-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 24px;
+    color: rgba(0, 0, 0, 1);
+
+}
+
+.dl-card .card {
+    border-radius: 16px;
+    background: rgba(242, 242, 242, 0.2);
+    border: 0.25px solid rgba(197, 197, 197, 0.5);
+    overflow: hidden;
+}
+
+.text-bg {
+    background: rgba(242, 242, 242, 0.2);
+    padding: 1rem 0;
+    font-weight: 500;
+    border: 0.25px solid rgba(197, 197, 197, 0.5);
+    font-size: 20px;
+    color: rgba(0, 0, 0, 1);
+}
+
+.custom-services-info .card-body {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card-body a {
+    font-weight: 500;
+    font-size: 24px;
+    text-align: right;
+    text-decoration: underline;
+    color: rgba(102, 174, 238, 1);
+
+}
+
+.card-body p {
+    font-weight: 400;
+    font-size: 16px;
+    text-align: right;
+    color: rgba(89, 89, 89, 1);
+
+}
+
+.card-body-info {
+    margin-top: .5rem;
+}
+
+.text-bg-active {
+    background: rgba(240, 247, 253, 1);
+}
+
+.dl-card .card-active {
+    background: rgba(102, 174, 238, 1);
+
+}
+
+.card-body a.text-active,
+.card-body p.text-active {
+    color: #fff;
+}
+
+
+
+
+
+
+h6 {
+    font-weight: 500;
+    font-size: 18px;
+    color: rgba(99, 99, 99, 1);
+
+}
+
+  .mobile-timeline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    margin-top: 80px;
+    gap: 20px;
+    padding-top: 60px; /* مساحة للدوائر فوق */
+}
+
+.mobile-timeline::before {
+    content: "";
+    position: absolute;
+    top: 30px;
+
+    /* 👇 أهم تعديل */
+    right: calc(100% / 16); 
+    left: calc(100% / 8);
+    height: 2px;
+    border-top: 2px dotted #66AEEE;
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.m-step {
+    position: relative;
+    text-align: center;
+    flex: 1;
+    z-index: 2;
+}
+
+ .m-num {
+    position: absolute;
+    top: -60px;
+    right: 30%;
+    transform: translateX(50%);
+    width: 56px;
+    height: 56px;
+    background: #66AEEE;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 3;
+    border: 4px solid #F0F7FD
+}
+
+    /* الحاوية التي تجمع الأيقونة مع العنوان h3 */
+    .m-header {
+        margin-bottom: 10px;
+    }
+
+
+    .m-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+.m-content {
+    margin-top: 20px;
+    margin-left: 4rem;
+}
+    .m-content h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #000;
+        margin: 0; /* إزالة المارجن ليبقى بمحاذاة الأيقونة */
+    }
+
+    .m-content h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        margin: 8px 0;
+    }
+
+    .m-content p {
+        font-size: 14px;
+        color: #4F4F4F;
+        line-height: 1.6;
+        
+    }

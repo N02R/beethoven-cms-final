@@ -1,0 +1,1025 @@
+/* ================================================
+   RESPONSIVE BREAKPOINTS — BCS Project
+   Mobile First Approach
+   Custom Container: width 92%, max-width 1400px
+================================================ */
+
+
+/* ================================================
+   XS — موبايل صغير (320px - 480px)
+================================================ */
+@media (max-width: 480px) {
+
+    /* اللوغو أصغر على الموبايل الصغير */
+    .navbar-brand img {
+        max-height: 45px;
+    }
+
+    /* زر اللغة أصغر عشان ما يضغط على الهامبرغر */
+    .btn.lang-switch {
+        min-width: 100px;
+        height: 34px;
+        font-size: 11px;
+        padding: 0 8px;
+    }
+
+    /* الـ offcanvas يملأ الشاشة تقريباً على الموبايل الصغير */
+    .offcanvas {
+        width: 280px !important;
+    }
+
+    /* روابط الـ offcanvas أصغر شوي */
+    .offcanvas-body .nav-link {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+
+    .hero {
+        padding: 2rem 0;
+    }
+
+    .hero-container {
+        aspect-ratio: 4 / 5;
+        /* أطول عشان المحتوى يتنفس */
+        border-radius: 12px;
+    }
+
+    .hero-content {
+        top: 50%;
+        transform: translate(-50%, -50%);
+        /* توسيط تام */
+        width: 88%;
+    }
+
+    .hero-content h1 {
+        font-size: 18px;
+        margin-bottom: 1rem;
+    }
+
+    .hero-content p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .hero-btn {
+        font-size: 14px;
+        padding: 0.7rem 1.8rem;
+        margin-top: 1.5rem;
+    }
+
+    .services {
+        padding: 2.5rem 0;
+    }
+
+    .services .card {
+        min-height: 220px;
+        border-radius: 12px;
+    }
+
+    .services .card-info {
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        bottom: 1rem;
+    }
+
+    .services .card-info h3 {
+        font-size: 14px;
+    }
+
+    .services .card-info img {
+        width: 18px;
+    }
+
+    section.choose {
+        padding: 2.5rem 0 !important;
+    }
+
+    .sec-title {
+        font-size: 1.3rem;
+        margin-bottom: 2rem !important;
+    }
+
+    section.choose .choose-card {
+        min-height: 180px;
+        padding: 1rem 0.5rem;
+    }
+
+    section.choose .choose-card img {
+        width: 40px;
+        margin-bottom: 1rem;
+    }
+
+    section.choose .card-title {
+        font-size: 0.9rem;
+    }
+
+    section.choose .card-text {
+        font-size: 0.85rem;
+    }
+
+    .reviews-bg {
+        padding-bottom: 60px; /* تقليل المسافة الخلفية */
+    }
+
+    .reviews-carousel-wrapper {
+        margin-top: -40px; /* رفعة بسيطة عشان ما يغطي العنوان */
+    }
+
+    .carousel-item .video-container {
+        border-radius: 16px; /* حواف أنعم للموبايل */
+        aspect-ratio: 4 / 3; /* فيديو أطول شوي عشان الأزرار تظهر بوضوح */
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .dot.active {
+        width: 30px;
+        height: 8px;
+    }
+
+    section.guide {
+        padding-bottom: 2rem !important;
+    }
+
+    .sec-title {
+        font-size: 1.4rem;
+        padding-top: 2rem !important;
+    }
+
+    .main-p {
+        font-size: 14px;
+        margin-bottom: 1.5rem;
+    }
+
+    section.guide .card-body {
+        padding: 1rem; /* تقليل الحشو الداخلي */
+    }
+
+    section.guide .card h5 {
+        font-size: 15px;
+    }
+
+    section.guide .card p {
+        -webkit-line-clamp: 2; /* إظهار سطرين فقط في الموبايل الصغير جداً */
+    }
+
+    section.popular .accordion-header button {
+        font-size: 14px; /* تصغير الخط ليناسب عرض الموبايل */
+        height: auto; /* السماح للزر بالتمدد رأسياً إذا كان السؤال طويلاً */
+        padding: 1rem;
+        line-height: 1.4;
+    }
+
+    section.popular .accordion-body {
+        font-size: 13px;
+        line-height: 24px;
+        padding: 1rem;
+    }
+
+    section.popular .call {
+        padding: 1.5rem !important; /* تقليل الحشو الجانبي */
+    }
+
+    section.popular .call h5 {
+        font-size: 16px;
+    }
+
+    section.popular .call .form {
+        height: 50px; /* تقليل ارتفاع الفورم */
+    }
+
+    section.popular .call button {
+        width: 60px; /* تصغير زر الإرسال */
+    }
+
+    .consult-banner-inner {
+        flex-direction: column; /* تحويل العناصر تحت بعضها */
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .consult-banner-text {
+        max-width: 100%;
+    }
+
+    .consult-banner-text h4 {
+        font-size: 22px; /* تصغير العنوان الضخم */
+    }
+
+    .consult-banner-form {
+        min-width: 100% !important; /* إلغاء الـ 600px */
+        height: 50px;
+    }
+
+    .footer-section {
+        padding-top: 60px !important;
+        text-align: center;
+    }
+
+    .quick-link a {
+        width: 100%; /* رابط واحد في كل سطر للموبايل */
+        padding-right: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-link a::before {
+        display: none; /* إخفاء الأيقونة إذا كان النص في الوسط */
+    }
+
+    .contact-link a {
+        justify-content: center;
+    }
+}
+
+
+/* ================================================
+   SM — موبايل عادي (max 576px)
+================================================ */
+@media (max-width: 576px) {
+
+    /* اللوغو */
+    .navbar-brand img {
+        max-height: 48px;
+    }
+
+    /* زر اللغة */
+    .btn.lang-switch {
+        min-width: 110px;
+        height: 36px;
+        font-size: 11px;
+        padding: 0 10px;
+    }
+
+    /* الـ offcanvas */
+    .offcanvas {
+        width: 300px !important;
+    }
+
+    .hero {
+        padding: 2.5rem 0;
+    }
+
+    .hero-container {
+        aspect-ratio: 3 / 4;
+        border-radius: 14px;
+    }
+
+    .hero-content {
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 88%;
+    }
+
+    .hero-content h1 {
+        font-size: 20px;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-content p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .hero-btn {
+        font-size: 15px;
+        padding: 0.75rem 2rem;
+        margin-top: 1.5rem;
+    }
+
+    .services {
+        padding: 3rem 0;
+    }
+
+    .services .card {
+        min-height: 240px;
+        border-radius: 12px;
+    }
+
+    .services .card-info {
+        padding: 0.8rem 1.1rem;
+        bottom: 1rem;
+    }
+
+    .services .card-info h3 {
+        font-size: 15px;
+    }
+
+    .services .card-info img {
+        width: 20px;
+    }
+
+    section.choose {
+        padding: 3rem 0 !important;
+    }
+
+    .sec-title {
+        font-size: 1.5rem;
+    }
+
+    section.choose .choose-card {
+        min-height: 190px;
+    }
+
+    section.choose .choose-card img {
+        width: 45px;
+    }
+
+}
+
+
+/* ================================================
+   MD — تابلت (max 768px)
+================================================ */
+@media (max-width: 768px) {
+
+    /* اللوغو */
+    .navbar-brand img {
+        max-height: 52px;
+    }
+
+    /* زر اللغة */
+    .btn.lang-switch {
+        min-width: 120px;
+        height: 38px;
+        font-size: 12px;
+    }
+
+    /* الـ offcanvas */
+    .offcanvas {
+        width: 320px !important;
+    }
+
+    /* روابط الـ offcanvas */
+    .offcanvas-body .nav-link {
+        font-size: 15px;
+        padding: 11px 16px;
+    }
+
+    .hero {
+        padding: 3rem 0;
+    }
+
+    .hero-container {
+        aspect-ratio: 16 / 12;
+        border-radius: 14px;
+    }
+
+    .hero-content {
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 88%;
+    }
+
+    .hero-content h1 {
+        font-size: 22px;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-content p {
+        font-size: 15px;
+    }
+
+    .hero-btn {
+        font-size: 16px;
+        padding: 0.8rem 2.5rem;
+        margin-top: 2rem;
+    }
+
+    .services {
+        padding: 3.5rem 0;
+    }
+
+    .services .card {
+        min-height: 260px;
+        border-radius: 13px;
+    }
+
+    .services .card-info {
+        padding: 0.9rem 1.2rem;
+        bottom: 1.2rem;
+    }
+
+    .services .card-info h3 {
+        font-size: 15px;
+    }
+
+    .services .card-info img {
+        width: 22px;
+    }
+
+    section.choose {
+        padding: 3.5rem 0 !important;
+    }
+
+    section.choose .choose-card {
+        min-height: 200px;
+        margin-bottom: 0.5rem;
+    }
+    
+    section.choose .card-title {
+        font-size: 0.95rem;
+    }
+
+    .sec-title {
+        padding-top: 2rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .reviews-carousel-wrapper {
+        margin-top: -50px;
+    }
+
+    .carousel-item .video-container {
+        border-radius: 24px;
+    }
+
+    .play {
+        width: 50px; /* تثبيت حجم زر التشغيل للموبايل */
+    }
+
+    .main-p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    section.guide .guide-img {
+        aspect-ratio: 4 / 3; /* جعل الصورة أطول قليلاً لتبدو أوضح */
+    }
+
+    section.guide .card {
+        margin-bottom: 1rem; /* مسافة بسيطة عند الانهيار */
+    }
+
+    section.popular .accordion-header button {
+        font-size: 16px;
+    }
+
+    section.popular .call h5 {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    section.popular .call input {
+        font-size: 13px;
+    }
+
+    .consult-banner {
+        padding: 20px;
+    }
+
+    .consult-banner-form {
+        min-width: 100%; /* ضمان مرونة الفورم */
+    }
+
+    .footer-desc {
+        font-size: 15px;
+        max-width: 100%;
+    }
+
+    .foot-bottom {
+        flex-direction: column-reverse; /* سياسة الخصوصية فوق الحقوق في الموبايل */
+        gap: 1rem;
+    }
+
+}
+
+
+/* ================================================
+   LG — تابلت كبير / لابتوب صغير (max 991px)
+================================================ */
+@media (max-width: 991px) {
+
+    .hero {
+        padding: 3.5rem 0;
+    }
+
+    .hero-container {
+        aspect-ratio: 16 / 10;
+        border-radius: 15px;
+    }
+
+    .hero-content {
+        top: 50%;
+        transform: translate(-50%, -40%);
+        width: 88%;
+    }
+
+    .hero-content h1 {
+        font-size: 24px;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-content p {
+        font-size: 16px;
+    }
+
+    .hero-btn {
+        font-size: 17px;
+        padding: 0.9rem 3rem;
+        margin-top: 2rem;
+    }
+
+    .services {
+        padding: 4rem 0;
+    }
+
+    .services .card {
+        min-height: 280px;
+    }
+
+    .services .card-info h3 {
+        font-size: 16px;
+    }
+
+    /* 1. تحويل العناصر لترتيب رأسي */
+    .consult-banner-inner {
+        flex-direction: column;
+        text-align: center; /* توسيط النص */
+        gap: 2rem;
+        padding: 10px 0;
+    }
+
+    /* 2. جعل النص يأخذ العرض الكامل */
+    .consult-banner-text {
+        max-width: 100%;
+    }
+
+    .consult-banner-text h4 {
+        font-size: 26px;
+        margin-bottom: 10px;
+    }
+
+    /* 3. أهم خطوة: كسر الـ 600px وجعل الـ Input مرن */
+    .consult-banner-form {
+        min-width: 100% !important; 
+        width: 100%;
+        max-width: 500px; /* اختياري: لمنع الفورم من التمدد الزائد في التابلت */
+        margin: 0 auto;
+        height: 55px; /* تقليل الارتفاع قليلاً ليناسب الموبايل */
+    }
+}
+
+
+/* ================================================
+   XL — ديسكتوب (992px - 1199px)
+================================================ */
+@media (min-width: 992px) and (max-width: 1199px) {
+
+    /* اللوغو */
+    .navbar-brand img {
+        max-height: 60px;
+    }
+
+    /* روابط القائمة أصغر شوي عشان ما تتزاحم */
+    #main-header .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.6rem;
+    }
+
+    /* تصغير الـ gap بين الروابط */
+    #main-header .navbar-nav {
+        gap: 0.5rem;
+    }
+
+    /* الـ spacer يتصغر */
+    .navbar .more {
+        max-width: 200px;
+    }
+
+    /* زر اللغة */
+    .btn.lang-switch {
+        min-width: 120px;
+        height: 38px;
+        font-size: 12px;
+    }
+
+    .hero-container {
+        aspect-ratio: 16 / 9;
+    }
+
+    .hero-content h1 {
+        font-size: 26px;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+    }
+
+    .hero-btn {
+        font-size: 18px;
+        padding: 0.9rem 3rem;
+    }
+
+     .services .card {
+    min-height: 290px;
+  }
+ 
+  .services .card-info {
+    padding: 0.9rem 1.3rem;
+  }
+ 
+  .services .card-info h3 {
+    font-size: 17px;
+  }
+
+  section.choose .card-title {
+        font-size: 0.9rem; /* تصغير بسيط عشان الـ 4 كاردات جنب بعض */
+    }
+
+    section.choose .choose-card {
+        min-height: 210px;
+    }
+.reviews-carousel-wrapper {
+        margin-top: -70px;
+    }
+
+    .carousel-item .video-container {
+        border-radius: 28px;
+    }
+
+    section.guide .card h5 {
+        font-size: 15px;
+    }
+
+    section.guide .card p {
+        font-size: 13px;
+    }
+
+    section.popular .call .form {
+        max-width: 800px; /* منع الفورم من التمدد الزائد */
+        margin: 0 auto;
+    }
+
+    .consult-banner-form {
+        min-width: 450px; /* تقليل العرض قليلاً للابتوب الصغير */
+    }
+
+    .consult-banner-text h4 {
+        font-size: 28px;
+    }
+}
+
+/* ================================================
+   XXL — ديسكتوب كبير (1200px - 1399px)
+================================================ */
+@media (min-width: 1200px) and (max-width: 1399px) {
+
+    /* اللوغو بحجمه الطبيعي */
+    .navbar-brand img {
+        max-height: 65px;
+    }
+
+    /* روابط القائمة */
+    #main-header .nav-link {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.8rem;
+    }
+
+    /* الـ gap طبيعي */
+    #main-header .navbar-nav {
+        gap: 0.8rem;
+    }
+
+    /* الـ spacer */
+    .navbar .more {
+        max-width: 300px;
+    }
+
+    /* زر اللغة */
+    .btn.lang-switch {
+        min-width: 125px;
+        height: 40px;
+        font-size: 12px;
+    }
+
+    .hero-container {
+        aspect-ratio: 1140 / 609;
+        /* الأصلي */
+    }
+
+    .hero-content h1 {
+        font-size: 28px;
+    }
+
+    .hero-content p {
+        font-size: 20px;
+    }
+
+    .hero-btn {
+        font-size: 19px;
+        padding: 1rem 3.2rem;
+    }
+
+    
+  .services .card {
+    min-height: 300px;
+  }
+ 
+  .services .card-info h3 {
+    font-size: 18px;
+  }
+
+}
+
+
+/* ================================================
+   XXXL — شاشات كبيرة 24-27 inch (1400px+)
+================================================ */
+@media (min-width: 1400px) {
+
+    /* اللوغو بحجمه الكامل */
+    .navbar-brand img {
+        max-height: 72px;
+    }
+
+    /* روابط القائمة بحجمها الكامل */
+    #main-header .nav-link {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    /* الـ gap الكامل */
+    #main-header .navbar-nav {
+        gap: 1.2rem;
+    }
+
+    /* الـ spacer بحجمه الكامل */
+    .navbar .more {
+        max-width: 420px;
+    }
+
+    /* زر اللغة بحجمه الكامل */
+    .btn.lang-switch {
+        min-width: 130px;
+        height: 40px;
+        font-size: 12px;
+    }
+
+    /* السوشيال أيقونات أكبر شوي */
+    .social-icons img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .hero-container {
+        aspect-ratio: 1140 / 609;
+    }
+
+    .hero-content h1 {
+        font-size: 32px;
+    }
+
+    .hero-content p {
+        font-size: 22px;
+    }
+
+    .hero-btn {
+        font-size: 20px;
+        padding: 1rem 3.5rem;
+    }
+
+     .services .card {
+    min-height: 320px; /* الأصلي */
+  }
+ 
+  .services .card-info {
+    padding: 1rem 1.5rem;
+  }
+ 
+  .services .card-info h3 {
+    font-size: 20px;
+  }
+ 
+  .services .card-info img {
+    width: 25px;
+  }
+
+  section.choose {
+        padding: 5rem 0 !important;
+    }
+
+    section.choose .choose-card img {
+        width: 60px;
+    }
+
+    section.choose .card-title {
+        font-size: 1.2rem;
+    }
+
+    section.choose .card-text {
+        font-size: 1.1rem;
+    }
+
+    .reviews-bg {
+        padding-bottom: 120px;
+    }
+
+    .reviews-carousel-wrapper {
+        margin-top: -100px;
+    }
+
+    .carousel-item .video-container {
+        border-radius: 40px;
+    }
+
+    .dot {
+        width: 14px;
+        height: 14px;
+    }
+
+    .dot.active {
+        width: 60px;
+    }
+    section.guide .card {
+        border-radius: 15px;
+    }
+
+    section.guide .card-body {
+        padding: 2rem;
+    }
+
+    section.guide .card h5 {
+        font-size: 18px;
+        margin-top: 1.5rem !important;
+    }
+
+    section.guide .card p {
+        font-size: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    section.popular .accordion-header button {
+        font-size: 24px;
+        height: 80px;
+    }
+
+    section.popular .accordion-body {
+        font-size: 18px;
+        line-height: 36px;
+    }
+
+    section.popular .call h5 {
+        font-size: 26px;
+    }
+
+    section.popular .call .form {
+        height: 80px;
+    }
+
+    section.popular .call input {
+        font-size: 18px;
+    }
+
+    .consult-banner {
+        padding: 40px 60px;
+    }
+
+    .consult-banner-text h4 {
+        font-size: 45px;
+    }
+
+    .footer-section {
+        padding-top: 120px !important;
+    }
+
+    .footer-desc {
+        font-size: 20px;
+    }
+
+    .quick-link a, .contact-link a {
+        font-size: 18px;
+    }
+}
+
+
+
+/* ================================================
+   4K / Ultrawide (1920px+)
+================================================ */
+@media (min-width: 1920px) {
+
+    /* الـ custom container أوسع */
+    .custom-container {
+        max-width: 1700px;
+    }
+
+    /* اللوغو أكبر */
+    .navbar-brand img {
+        max-height: 82px;
+    }
+
+    /* روابط القائمة */
+    #main-header .nav-link {
+        font-size: 1.1rem;
+        padding: 0.5rem 1.2rem;
+    }
+
+    /* الـ gap أكبر */
+    #main-header .navbar-nav {
+        gap: 1.5rem;
+    }
+
+    /* الـ spacer */
+    .navbar .more {
+        max-width: 550px;
+    }
+
+    /* زر اللغة */
+    .btn.lang-switch {
+        min-width: 145px;
+        height: 44px;
+        font-size: 13px;
+    }
+
+    /* السوشيال أيقونات */
+    .social-icons img {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* عنوان القسم */
+    .sec-title {
+        font-size: 38px;
+    }
+
+    .hero {
+        padding: 6rem 0;
+    }
+
+    .hero-container {
+        aspect-ratio: 1140 / 550;
+        /* أعرض شوي على 4K */
+    }
+
+    .hero-content h1 {
+        font-size: 38px;
+    }
+
+    .hero-content p {
+        font-size: 26px;
+        max-width: 1100px;
+    }
+
+    .hero-btn {
+        font-size: 22px;
+        padding: 1.2rem 4rem;
+        border-radius: 14px;
+    }
+
+    .services {
+    padding: 6rem 0;
+  }
+ 
+  .services .card {
+    min-height: 420px;
+    border-radius: 20px;
+  }
+ 
+  .services .card-info {
+    padding: 1.2rem 2rem;
+    border-radius: 16px;
+    bottom: 2rem;
+  }
+ 
+  .services .card-info h3 {
+    font-size: 24px;
+  }
+ 
+  .services .card-info img {
+    width: 30px;
+  }
+
+  section.choose {
+        padding: 7rem 0 !important;
+    }
+
+    section.choose .choose-card {
+        min-height: 280px;
+    }
+
+    .reviews-bg {
+        padding-bottom: 180px;
+    }
+    
+    .reviews-carousel-wrapper {
+        margin-top: -140px;
+    }
+
+    .main-p {
+        font-size: 22px;
+        max-width: 900px;
+    }
+
+    section.guide .card h5 {
+        font-size: 22px;
+    }
+
+    .consult-banner-section {
+        margin-bottom: -60px; /* زيادة التداخل مع الفوتر */
+    }
+}
+

@@ -37,7 +37,7 @@
           <div class="dropdown">
             <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                 <img src="/assets/img/home/global.svg" alt="Language">
-                <span>العربية</span>
+                <span><?php echo \App\Core\CMS::get('global', 'header', 'lang_name'); ?></span>
                 <img src="/assets/img/home/arowwdown.svg" alt="فتح القائمة">
             </button>
             <ul class="dropdown-menu dropdown-menu-end">

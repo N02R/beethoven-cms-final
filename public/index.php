@@ -1,16 +1,21 @@
 <?php
-// استدعاء ملفات الـ Core
-require_once '../app/Core/Router.php';
-require_once '../app/Core/Database.php';
+// public/index.php
 
-// استدعاء ملفات الـ Models
-require_once '../app/Models/User.php';
-require_once '../app/Models/Page.php'; // <--- أضيفي هذا السطر
+// 1. تعريف المسارات الأساسية
+define('ROOT', dirname(__DIR__));
 
-// استدعاء ملفات الـ Controllers
-require_once '../app/Controllers/AuthController.php';
-require_once '../app/Controllers/DashboardController.php';
+// 2. استدعاء ملفات الـ Core (سنقوم بتطويرها لاحقاً للتحكم الديناميكي)
+require_once ROOT . '/app/Core/Database.php';
 
+// 3. تحليل المسار (Routing)
 $url = $_SERVER['REQUEST_URI'];
-$router = new \App\Core\Router();
-$router->dispatch($url);
+
+// 4. عرض الصفحة بناءً على المسار
+// مستقبلاً، سنستبدل هذا المنطق بـ Router متطور يقرأ من قاعدة البيانات
+if ($url === '/' || $url === '/index.php') {
+    include ROOT . '/templates/home.php';
+} else {
+    // يمكنك إضافة المزيد من الصفحات هنا
+    echo "404 - الصفحة غير موجودة";
+}
+?>

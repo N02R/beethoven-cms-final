@@ -1,14 +1,17 @@
-<!-- templates/components/hero.php -->
-<section class="hero py-5" aria-label="قسم البداية">
+<section class="hero py-5">
   <div class="custom-container">
-    <div class="hero-container">
-      <div class="hero-content">
-        <h1><?php echo \App\Core\CMS::get('home', 'hero', 'title'); ?></h1>
-        <p><?php echo \App\Core\CMS::get('home', 'hero', 'subtitle'); ?></p>
-        <a href="<?php echo \App\Core\CMS::get('home', 'hero', 'btn_link'); ?>" class="btn btn-lg hero-btn">
-          <?php echo \App\Core\CMS::get('home', 'hero', 'btn_text'); ?>
-        </a>
+    <form action="/admin/save-all" method="POST">
+      
+      <h1><?php echo \App\Core\CMS::editable('home', 'hero', 'title'); ?></h1>
+      <p><?php echo \App\Core\CMS::editable('home', 'hero', 'subtitle', 'textarea'); ?></p>
+      
+      <div class="mt-3">
+        <?php if (isset($_SESSION['is_admin'])): ?>
+          <button type="submit" class="btn btn-success">حفظ التغييرات</button>
+          <a href="/admin/login?logout=1" class="btn btn-danger">خروج</a>
+        <?php endif; ?>
       </div>
-    </div>
+
+    </form>
   </div>
 </section>

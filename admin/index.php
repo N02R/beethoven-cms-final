@@ -2,29 +2,16 @@
 // admin/index.php
 use App\Core\CMS;
 
-// بسيط: نموذج لتعديل عنوان الهيرو
+// معالجة الحفظ (سنطورها لاحقاً لتكون أكثر شمولاً)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    CMS::update('home', 'hero', 'title', $_POST['hero_title']);
-    echo "<div class='alert alert-success'>تم حفظ التعديلات بنجاح!</div>";
+    foreach ($_POST as $key => $value) {
+        // مفترض أن الأسماء في الفورم تكون بتنسيق section_key
+        $parts = explode('_', $key);
+        if(count($parts) >= 2) {
+            CMS::update('home', $parts[0], $parts[1], $value);
+        }
+    }
+    echo "<div class='alert alert-success'>تم التحديث!</div>";
 }
-
-$hero_title = CMS::get('home', 'hero', 'title');
 ?>
 
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>لوحة التحكم - بيتهوفن</title>
-</head>
-<body class="p-5">
-    <h2>تعديل الصفحة الرئيسية</h2>
-    <form method="POST">
-        <div class="mb-3">
-            <label>عنوان قسم البداية:</label>
-            <input type="text" name="hero_title" class="form-control" value="<?php echo htmlspecialchars($hero_title); ?>">
-        </div>
-        <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
-    </form>
-</body>
-</html>

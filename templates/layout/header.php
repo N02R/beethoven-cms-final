@@ -1,25 +1,35 @@
 <header>
-    <nav class="nav-top navbar py-2">
-      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+<nav class="nav-top navbar py-2">
+    <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <a class="navbar-brand d-none d-lg-flex editable-element" href="/" data-page="global" data-section="header" data-field="logo_path">
-          <?php echo \App\Core\CMS::get('global', 'header', 'logo_path', false, true); ?>
-          <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?><i class="edit-icon">✏️</i><?php endif; ?>
+        <a class="navbar-brand d-none d-lg-flex editable-element" href="/" 
+           data-page="global" data-section="header" data-field="logo_path">
+            <?php echo \App\Core\CMS::get('global', 'header', 'logo_path', true, false); ?>
+            <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+                <i class="edit-icon">✏️</i>
+            <?php endif; ?>
         </a>
 
         <div class="flex-grow-1 d-none d-lg-flex more">
             <?php echo \App\Core\CMS::get('global', 'header', 'header_ads', false, true); ?>
         </div>
 
-        <div class="social-icons d-none d-lg-flex gap-3">
-          <a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
-          <a href="<?php echo \App\Core\CMS::get('global', 'social', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>
-          <a href="<?php echo \App\Core\CMS::get('global', 'social', 'whatsapp_link'); ?>"><img src="assets/img/socialicons/whatsapp.png"></a>
-          <a href="<?php echo \App\Core\CMS::get('global', 'social', 'twitter_link'); ?>"><img src="assets/img/socialicons/Twitter.png"></a>
-          <a href="<?php echo \App\Core\CMS::get('global', 'social', 'youtube_link'); ?>"><img src="assets/img/socialicons/youtube.png"></a>
+        <div class="social-icons d-none d-lg-flex gap-3 editable-element" 
+             data-page="global" data-section="social" data-field="all_links">
+             
+            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
+            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>
+            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'whatsapp_link'); ?>"><img src="assets/img/socialicons/whatsapp.png"></a>
+            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'twitter_link'); ?>"><img src="assets/img/socialicons/Twitter.png"></a>
+            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'youtube_link'); ?>"><img src="assets/img/socialicons/youtube.png"></a>
+            
+            <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+                <i class="edit-icon" style="cursor:pointer; margin-right: 5px;">✏️</i>
+            <?php endif; ?>
         </div>
-      </div>
-    </nav>
+    </div>
+</nav>
+
 
     <nav id="main-header" class="navbar navbar-expand-lg py-3">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">

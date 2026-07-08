@@ -96,33 +96,6 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-.editable-element {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.edit-icon {
-position: absolute;
-top: -5px;
-    right: -25px;
-    background: #66aeee;
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: 0.3s;
-}
-
-
-.edit-icon:hover { transform: scale(1.2); background: #333; }
-
 #logoModal {
     display: none;
     position: fixed;
@@ -135,4 +108,22 @@ top: -5px;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* هذا يضمن أن الأب له إطار مرجعي للقلم */
+.navbar-brand.editable-element,
+.social-icons.editable-element {
+    position: relative;
+}
+
+/* القلم يظهر فوق العنصر ولا يأخذ أي مساحة في التصميم */
+.edit-icon {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 10;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 2px;
 }

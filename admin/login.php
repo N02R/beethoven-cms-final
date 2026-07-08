@@ -2,31 +2,38 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دخول المدير | Beethoven CMS</title>
+    <title>تسجيل الدخول | Beethoven CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f7f6; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-card { border-radius: 15px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; padding: 2rem; }
-        .btn-primary { background-color: #0d6efd; border-radius: 8px; transition: 0.3s; }
-        .btn-primary:hover { background-color: #0b5ed7; transform: translateY(-2px); }
+        .login-container { min-height: 100vh; display: flex; align-items: center; }
+        .branding-section { background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%); color: white; padding: 40px; }
+        .form-section { padding: 40px; }
+        .btn-primary { background-color: #3949ab; border: none; padding: 12px; font-weight: 600; }
+        .btn-primary:hover { background-color: #1a237e; }
     </style>
 </head>
 <body>
 
-<div class="login-card bg-white">
-    <div class="text-center mb-4">
-        <h4>Beethoven CMS</h4>
-        <p class="text-muted">مرحباً بك مجدداً، يرجى تسجيل الدخول</p>
-    </div>
-    
-    <form action="/admin-process" method="POST">
-        <div class="mb-3">
-            <label class="form-label">كلمة المرور</label>
-            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+<div class="container-fluid">
+    <div class="row login-container">
+        <div class="col-md-6 branding-section d-none d-md-flex flex-column justify-content-center">
+            <h1>Beethoven CMS</h1>
+            <p class="lead">نظام إدارة محتوى متطور، صُمم خصيصاً للتميز الألماني.</p>
         </div>
-        <button type="submit" class="btn btn-primary w-100">دخول إلى لوحة التحكم</button>
-    </form>
+
+        <div class="col-md-6 form-section">
+            <div class="mx-auto" style="max-width: 400px;">
+                <h3 class="mb-4">أهلاً بك مجدداً</h3>
+                <form action="/admin-process" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="password" name="password" class="form-control form-control-lg" placeholder="أدخل كلمة المرور" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">دخول إلى لوحة التحكم</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

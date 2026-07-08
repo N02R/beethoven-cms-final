@@ -2,7 +2,13 @@
   <div class="custom-container">
     <form action="/admin/save-all" method="POST">
       
-      <h1><?php echo \App\Core\CMS::editable('home', 'hero', 'title'); ?></h1>
+      <h1 class="editable" 
+    data-section="hero" 
+    data-key="title" 
+    style="padding: 10px; cursor: pointer;">
+    <?php echo $content['hero_title'] ?? 'العنوان الرئيسي هنا'; ?>
+</h1>
+
       <p><?php echo \App\Core\CMS::editable('home', 'hero', 'subtitle', 'textarea'); ?></p>
       
       <div class="mt-3">

@@ -48,4 +48,16 @@
         </div>
       </div>
     </nav>
+    
+    <div id="logoModal" class="modal" style="display:none; position:fixed; z-index:9999; top:20%; left:30%; background:#fff; padding:20px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+    <h4>تعديل الشعار</h4>
+    <p>الصورة الحالية:</p>
+    <img id="currentLogo" src="" width="100">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="logo" accept="image/*">
+        <button type="submit">حفظ</button>
+        <button type="button" onclick="document.getElementById('logoModal').style.display='none'">إغلاق</button>
+    </form>
+</div>
+
 </header>

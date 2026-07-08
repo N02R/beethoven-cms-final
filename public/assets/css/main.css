@@ -103,9 +103,8 @@ body {
 }
 
 .edit-icon {
-    z-index: 9999 !important;
-position: relative;
-    top: -5px;
+position: absolute;
+top: -5px;
     right: -25px;
     background: #66aeee;
     color: white;

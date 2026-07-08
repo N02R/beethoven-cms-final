@@ -6,7 +6,7 @@ use PDO;
 class CMS {
     private static function fetchFromDB($page, $section, $field) {
         // بيانات الاتصال بقاعدة البيانات الخاصة بكِ
-        $host = 'localhost';
+        $host = '127.0.0.1';
         $db   = 'beethoven_db'; // استبدلي هذا باسم قاعدة بياناتك
         $user = 'root';         // استبدلي هذا باسم المستخدم
         $pass = '';             // استبدلي هذا بكلمة المرور

@@ -1,24 +1,27 @@
+<?php
+// استدعاء قاعدة البيانات
+use App\Core\Database;
+$db = new Database();
+
+// جلب النصوص من قاعدة البيانات (الصفحة: 'home'، القسم: 'hero')
+$title = $db->getContent('home', 'hero', 'title') ?? 'العنوان الافتراضي';
+$subtitle = $db->getContent('home', 'hero', 'subtitle') ?? 'الوصف الافتراضي';
+?>
+
 <section class="hero py-5" aria-label="قسم البداية">
     <div class="custom-container">
       <div class="hero-container">
         <div class="hero-content">
           
           <h1 class="editable" data-section="hero" data-key="title">
-              <?php echo $content['hero_title'] ?? 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS'; ?>
+              <?php echo htmlspecialchars($title); ?>
           </h1>
           
           <p class="editable" data-section="hero" data-key="subtitle">
-              <?php echo $content['hero_subtitle'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...'; ?>
+              <?php echo htmlspecialchars($subtitle); ?>
           </p>
           
           <a href="#contact" class="btn btn-lg hero-btn">احجز استشارتك الآن</a>
-          
-          <?php if (isset($_SESSION['is_admin'])): ?>
-            <div class="mt-3">
-               <a href="/logout" class="btn btn-sm btn-outline-danger">تسجيل الخروج</a>
-            </div>
-          <?php endif; ?>
-
         </div>
       </div>
     </div>

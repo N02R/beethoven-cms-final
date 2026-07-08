@@ -5,13 +5,18 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
     
-<?php include __DIR__ . '/layout/head.php'; ?>
-<body>
-    <?php include __DIR__ . '/layout/header.php'; ?>
-    <main>
-        <h1 class="text-center my-5">مرحباً بك في موقع بيتهوفن سيتي</h1>
-    </main>
-    <?php include __DIR__ . '/layout/footer.php'; ?>
-    
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
-</body>
+    <?php include 'layout/head.php'; ?>
+    <body></body>
+<?php
+include __DIR__ . '/layout/header.php';
+
+// هنا سنستدعي الأقسام كـ Components
+include __DIR__ . '/components/hero.php';
+include __DIR__ . '/components/services.php';
+include __DIR__ . '/components/choose.php';
+include __DIR__ . '/components/reviews.php';
+include __DIR__ . '/components/guide.php';
+include __DIR__ . '/components/faq.php';
+
+include __DIR__ . '/layout/footer.php';
+?>

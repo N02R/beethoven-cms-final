@@ -1,26 +1,25 @@
-<section class="hero py-5">
-  <div class="custom-container">
-    
-    <h1 class="editable" 
-        data-section="hero" 
-        data-key="title" 
-        style="padding: 10px; cursor: pointer;">
-        <?php echo $content['hero_title'] ?? 'العنوان الرئيسي هنا'; ?>
-    </h1>
+<section class="hero py-5" aria-label="قسم البداية">
+    <div class="custom-container">
+      <div class="hero-container">
+        <div class="hero-content">
+          
+          <h1 class="editable" data-section="hero" data-key="title">
+              <?php echo $content['hero_title'] ?? 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS'; ?>
+          </h1>
+          
+          <p class="editable" data-section="hero" data-key="subtitle">
+              <?php echo $content['hero_subtitle'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...'; ?>
+          </p>
+          
+          <a href="#contact" class="btn btn-lg hero-btn">احجز استشارتك الآن</a>
+          
+          <?php if (isset($_SESSION['is_admin'])): ?>
+            <div class="mt-3">
+               <a href="/logout" class="btn btn-sm btn-outline-danger">تسجيل الخروج</a>
+            </div>
+          <?php endif; ?>
 
-    <p class="editable" 
-       data-section="hero" 
-       data-key="subtitle"
-       style="padding: 10px; cursor: pointer;">
-       <?php echo $content['hero_subtitle'] ?? 'الوصف هنا'; ?>
-    </p>
-      
-    <?php if (isset($_SESSION['is_admin'])): ?>
-      <div class="mt-3 p-3 bg-light rounded">
-         <span class="text-muted small">وضع التحرير مفعل</span>
-         <a href="/logout" class="btn btn-sm btn-danger">خروج من الإدارة</a>
+        </div>
       </div>
-    <?php endif; ?>
-
-  </div>
+    </div>
 </section>

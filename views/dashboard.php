@@ -2,35 +2,49 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة التحكم | Beethoven CMS</title>
+    <title>Dashboard | Beethoven CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        body { background: #f8f9fa; }
-        .sidebar { height: 100vh; background: #212529; color: white; padding-top: 20px; }
-        .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 10px 20px; }
-        .sidebar a:hover { color: white; background: #343a40; }
-        .main-content { padding: 20px; }
+        :root { --sidebar-width: 250px; --primary-color: #1a237e; }
+        .sidebar { width: var(--sidebar-width); height: 100vh; background: #212529; position: fixed; color: #fff; }
+        .main-content { margin-right: var(--sidebar-width); padding: 30px; }
+        .nav-link { color: #adb5bd; border-radius: 8px; margin-bottom: 5px; }
+        .nav-link:hover, .nav-link.active { background: var(--primary-color); color: #fff; }
+        .card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 sidebar">
-                <h4 class="text-center">Beethoven CMS</h4>
-                <hr>
-                <a href="/dashboard">الرئيسية</a>
-                <a href="/">معاينة الموقع</a>
-                <a href="/logout" class="text-danger">تسجيل الخروج</a>
+
+<div class="sidebar p-3">
+    <h4 class="text-center py-3">Beethoven CMS</h4>
+    <nav class="nav flex-column">
+        <a href="/dashboard" class="nav-link active"><i class="bi bi-speedometer2"></i> لوحة التحكم</a>
+        <a href="/" class="nav-link"><i class="bi bi-eye"></i> معاينة الموقع</a>
+        <a href="/logout" class="nav-link text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>نظرة عامة</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div class="text-muted">عدد الصفحات المدارة</div>
+                <h3 class="mt-2"><?php echo $pageCount ?? 0; ?></h3>
             </div>
-            
-            <div class="col-md-10 main-content">
-                <h2>أهلاً بكِ في لوحة التحكم</h2>
-                <div class="card p-4 mt-4">
-                    <h5>إحصائيات سريعة</h5>
-                    <p>هنا ستظهر إحصائيات الموقع وتنبيهات التعديلات الأخيرة.</p>
-                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div class="text-muted">حالة النظام</div>
+                <h3 class="mt-2 text-success">يعمل بفعالية</h3>
             </div>
         </div>
     </div>
+</div>
+
 </body>
 </html>

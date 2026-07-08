@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-    <?php 
-    echo "";
-    include __DIR__ . '/layout/head.php'; 
-    ?>
-    <body>
+    <?php include __DIR__ . '/layout/head.php'; ?>
+<body>
+    <?php include __DIR__ . '/layout/header.php'; ?>
+
+    <main>
         <?php 
-        echo "";
-        include __DIR__ . '/layout/header.php';
-        echo "";
-        include __DIR__ . '/components/hero.php';
-        echo "";
-        include __DIR__ . '/layout/footer.php';
+        // بما أنكِ صممتِ هذه المكونات مسبقاً، فقط استدعيها هنا
+        include __DIR__ . '/components/hero.php'; 
+        include __DIR__ . '/components/services.php';      // تأكدي من اسم ملفاتك
+        include __DIR__ . '/components/choose.php';
+        include __DIR__ . '/components/reviews.php';
+        include __DIR__ . '/components/guide.php';
+        include __DIR__ . '/components/faq.php';
         ?>
-    </body>
+    </main>
+
+    <?php include __DIR__ . '/layout/footer.php'; ?>
+</body>
 </html>

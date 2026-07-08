@@ -2,9 +2,9 @@
 // app/autoload.php
 
 spl_autoload_register(function ($class) {
-    // تحويل مسار الكلاس (مثلاً App\Core\Router) إلى مسار ملف فعلي
-    // تحويل \ إلى /
+    // يحول App\Core\Router إلى المسار الصحيح
     $path = str_replace('\\', '/', $class);
+    // نحدد المسار الأساسي للمشروع
     $file = dirname(__DIR__) . '/' . $path . '.php';
 
     if (file_exists($file)) {

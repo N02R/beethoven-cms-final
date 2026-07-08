@@ -4,7 +4,7 @@
     <title>Beethoven City Services</title>
     
    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-<link rel="stylesheet" href="/assets/css/all.min.css">
+
 <link rel="stylesheet" href="/assets/css/main.css">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="stylesheet" href="/assets/css/header.css">

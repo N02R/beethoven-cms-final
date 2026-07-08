@@ -1,23 +1,26 @@
 <section class="hero py-5">
   <div class="custom-container">
-    <form action="/admin/save-all" method="POST">
-      
-      <h1 class="editable" 
-    data-section="hero" 
-    data-key="title" 
-    style="padding: 10px; cursor: pointer;">
-    <?php echo $content['hero_title'] ?? 'العنوان الرئيسي هنا'; ?>
-</h1>
+    
+    <h1 class="editable" 
+        data-section="hero" 
+        data-key="title" 
+        style="padding: 10px; cursor: pointer;">
+        <?php echo $content['hero_title'] ?? 'العنوان الرئيسي هنا'; ?>
+    </h1>
 
-      <p><?php echo \App\Core\CMS::editable('home', 'hero', 'subtitle', 'textarea'); ?></p>
+    <p class="editable" 
+       data-section="hero" 
+       data-key="subtitle"
+       style="padding: 10px; cursor: pointer;">
+       <?php echo $content['hero_subtitle'] ?? 'الوصف هنا'; ?>
+    </p>
       
-      <div class="mt-3">
-        <?php if (isset($_SESSION['is_admin'])): ?>
-          <button type="submit" class="btn btn-success">حفظ التغييرات</button>
-          <a href="/admin/login?logout=1" class="btn btn-danger">خروج</a>
-        <?php endif; ?>
+    <?php if (isset($_SESSION['is_admin'])): ?>
+      <div class="mt-3 p-3 bg-light rounded">
+         <span class="text-muted small">وضع التحرير مفعل</span>
+         <a href="/logout" class="btn btn-sm btn-danger">خروج من الإدارة</a>
       </div>
+    <?php endif; ?>
 
-    </form>
   </div>
 </section>

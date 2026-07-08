@@ -1,12 +1,19 @@
+// public/js/editor.js
+
 document.addEventListener('DOMContentLoaded', () => {
-    // التحقق من السيرفر إذا كان المستخدم مديراً
-    fetch('/admin/check-auth')
-        .then(response => response.json())
-        .then(data => {
-            if (data.is_admin) {
-                enableEditing();
-            }
-        });
+    // نتحقق أولاً: هل نحن في صفحة الـ Dashboard؟
+    // أو يمكننا إضافة شرط آخر هنا إذا أردتِ التعديل في مكان آخر
+    if (window.location.pathname === '/dashboard') {
+        
+        // التحقق من صلاحية المدير من السيرفر
+        fetch('/admin/check-auth')
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_admin) {
+                    enableEditing();
+                }
+            });
+    }
 });
 
 function enableEditing() {
@@ -19,16 +26,13 @@ function enableEditing() {
             const section = this.dataset.section;
             const key = this.dataset.key;
             
-            // إرسال البيانات عبر Fetch API
             fetch('/admin/save-all', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
                         [section + '_' + key]: newValue })
                 })
-                .then(response => response.text())
-                .then(data => console.log('تم حفظ التعديل:', data))
-                .catch(error => console.error('خطأ في الحفظ:', error));
+                .then(() => console.log('تم حفظ التعديل'));
         });
     });
 }

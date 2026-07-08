@@ -2,9 +2,9 @@ document.addEventListener('click', function(e) {
     if (e.target.classList.contains('edit-icon')) {
         let wrapper = e.target.closest('.editable-wrapper');
         let contentEl = wrapper.querySelector('.editable-content');
-        let newText = prompt("تعديل النص:", contentEl.innerText);
+        let newValue = prompt("أدخل النص الجديد:", contentEl.innerText);
         
-        if (newText !== null && newText !== contentEl.innerText) {
+        if (newValue !== null) {
             fetch('/api/save.php', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -12,11 +12,9 @@ document.addEventListener('click', function(e) {
                     page: wrapper.dataset.page,
                     section: wrapper.dataset.section,
                     field: wrapper.dataset.field,
-                    content: newText
+                    content: newValue
                 })
-            }).then(res => {
-                if (res.ok) location.reload();
-            });
+            }).then(() => location.reload());
         }
     }
 });

@@ -20,7 +20,10 @@
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/all.min.js"></script>
   <script src="/assets/js/main.js"></script>
-<script src="/assets/js/editor.js"></script>
+<?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+    <script src="/assets/js/editor.js"></script>
+<?php endif; ?>
+
 </body>
 
 </html>

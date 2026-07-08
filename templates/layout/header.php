@@ -1,7 +1,3 @@
-
-
-<body>
-
 <header>
     <nav class="nav-top navbar py-2" aria-label="روابط التواصل الاجتماعي">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
@@ -12,11 +8,11 @@
         <div class="flex-grow-1 d-none d-lg-flex more"></div>
         
         <div class="social-icons d-none d-lg-flex gap-3">
-          <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
-          <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
-          <a href="https://wa.me/4917671230666" target="_blank" rel="noopener"><img src="/assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
-          <a href="#" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Twitter.png" alt="تويتر"></a>
-          <a href="https://youtube.com/@learning_german_language" target="_blank" rel="noopener"><img src="/assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
+          <a href="<?php echo \App\Core\CMS::get('global', 'header', 'facebook_link'); ?>" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
+          <a href="<?php echo \App\Core\CMS::get('global', 'header', 'instagram_link'); ?>" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
+          <a href="<?php echo \App\Core\CMS::get('global', 'header', 'whatsapp_link'); ?>" target="_blank" rel="noopener"><img src="/assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
+          <a href="<?php echo \App\Core\CMS::get('global', 'header', 'twitter_link'); ?>" target="_blank" rel="noopener"><img src="/assets/img/socialicons/Twitter.png" alt="تويتر"></a>
+          <a href="<?php echo \App\Core\CMS::get('global', 'header', 'youtube_link'); ?>" target="_blank" rel="noopener"><img src="/assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
         </div>
       </div>
     </nav>

@@ -95,3 +95,15 @@ body {
     font-size: 32px;
     color: rgba(0, 0, 0, 1);
 }
+
+/* هذا الكود يضمن أن التصميم يظهر طبيعياً دائماً */
+.editable {
+    padding: 5px;
+    /* مساحة صغيرة لتسهيل الضغط */
+}
+
+/* الإطار يظهر فقط عندما نفعّل وضع التحرير */
+.edit-active {
+    border: 1px dashed #0d6efd !important;
+    cursor: text !important;
+}

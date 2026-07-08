@@ -1,33 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // التحقق هل نحن في وضع التحرير؟
+    // التحقق من حالة التعديل من الـ LocalStorage
     const isEditMode = localStorage.getItem('editMode') === 'true';
     
     if (isEditMode) {
         document.querySelectorAll('.editable').forEach(el => {
             el.setAttribute('contenteditable', 'true');
-            el.style.border = "1px dashed #0d6efd"; // حدّ أزرق ليعرف المدير أنه قابل للتعديل
+            // إضافة كلاس خاص للتنسيق فقط في وضع التعديل
+            el.classList.add('edit-active');
             
-            // عند الخروج من العنصر بعد تعديله (Blur)
             el.addEventListener('blur', function() {
                 const newValue = this.innerText;
                 const section = this.dataset.section;
                 const key = this.dataset.key;
                 
-                // إرسال البيانات للسيرفر
-                saveData(section, key, newValue);
+                fetch('/admin/save-all', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        [section + '_' + key]: newValue })
+                }).then(() => console.log('تم الحفظ'));
             });
         });
     }
 });
-
-function saveData(section, key, value) {
-    const formData = new FormData();
-    formData.append(section + '_' + key, value);
-    
-    fetch('/admin/save-all', {
-        method: 'POST',
-        body: formData
-    }).then(response => {
-        console.log('تم حفظ التعديل بنجاح!');
-    });
-}

@@ -2,7 +2,11 @@
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         <a class="navbar-brand d-none d-lg-flex" href="/"><?php echo \App\Core\CMS::get('global', 'header', 'logo_path', false, true); ?></a>
-        <div class="flex-grow-1 d-none d-lg-flex more"></div>
+<div class="flex-grow-1 d-none d-lg-flex more">
+    <?php echo \App\Core\CMS::get('global', 'header', 'header_ads', false, true); ?>
+</div>
+
+
         <div class="social-icons d-none d-lg-flex gap-3">
           <a href="<?php echo \App\Core\CMS::get('global', 'header', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
           <a href="<?php echo \App\Core\CMS::get('global', 'header', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>

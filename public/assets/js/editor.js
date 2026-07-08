@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. التعامل مع جميع ضغطات القلم (Event Delegation)
+
+    // 1. التقاط الضغط على أي أيقونة تعديل في الصفحة
     document.body.addEventListener('click', (e) => {
         let icon = e.target.closest('.edit-icon');
         if (!icon) return;
+
+        // منع السلوك الافتراضي (مثل انتقال الرابط أو إعادة تحميل الصفحة)
+        e.preventDefault();
+        e.stopPropagation();
 
         let wrapper = icon.closest('.editable-element');
         if (!wrapper) return;
@@ -14,15 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- حالة الشعار (Image Modal) ---
         if (field === 'logo_path') {
-            document.getElementById('currentLogo').src = wrapper.querySelector('img').src;
+            let imgElement = wrapper.querySelector('img');
+            document.getElementById('currentLogo').src = imgElement ? imgElement.src : '';
             document.getElementById('logoModal').style.display = 'block';
         } 
         
-        // --- حالة الروابط الاجتماعية (Social Links) ---
-        else if (field === 'all_links') {
-            alert("لإدارة الروابط، يرجى التوجه للوحة تحكم الموقع، أو تحديث الروابط مباشرة في قاعدة البيانات.");
-        }
-
         // --- حالة النصوص العادية (Prompt) ---
         else {
             let contentEl = wrapper.querySelector('.editable-content') || wrapper.firstChild;
@@ -30,32 +30,36 @@ document.addEventListener('DOMContentLoaded', () => {
             let newValue = prompt("أدخل النص الجديد:", currentText.trim());
 
             if (newValue !== null && newValue !== currentText.trim()) {
-                saveData(page, section, field, newValue);
+                saveTextData(page, section, field, newValue);
             }
         }
     });
 
-    // 2. معالجة رفع الشعار (بدون إعادة تحميل الصفحة)
+    // 2. معالجة رفع الشعار (داخل المودال)
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.onsubmit = function(e) {
-            e.preventDefault();
+            e.preventDefault(); // منع الصفحة من إعادة التحميل
+            
             let formData = new FormData(this);
             
             fetch('/api/upload_logo.php', { method: 'POST', body: formData })
             .then(res => res.text())
             .then(data => {
-                alert(data);
+                alert(data); // رد السيرفر
                 document.getElementById('logoModal').style.display = 'none';
-                location.reload(); // تحديث الصفحة لرؤية الشعار الجديد
+                location.reload(); // تحديث الصفحة بعد نجاح العملية
             })
-            .catch(err => alert("حدث خطأ في الرفع"));
+            .catch(err => {
+                console.error(err);
+                alert("حدث خطأ أثناء الرفع");
+            });
         };
     }
 });
 
-// 3. دالة الحفظ العامة للنصوص
-function saveData(page, section, field, content) {
+// 3. دالة حفظ النصوص
+function saveTextData(page, section, field, content) {
     fetch('/api/save.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -65,5 +69,8 @@ function saveData(page, section, field, content) {
     .then(data => {
         location.reload(); 
     })
-    .catch(error => alert("خطأ في الاتصال: " + error));
+    .catch(error => {
+        console.error(error);
+        alert("خطأ في الاتصال بالسيرفر");
+    });
 }

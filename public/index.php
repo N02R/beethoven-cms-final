@@ -1,24 +1,29 @@
 <?php
 // public/index.php
+
+// 1. بدء الجلسة فوراً لضمان عمل الـ Session في كامل الموقع
 session_start();
 
-require_once dirname(__DIR__) . '/app/Core/Database.php';
-require_once dirname(__DIR__) . '/app/Core/CMS.php';
-
+// 2. تحديد المجلد الرئيسي للمشروع للوصول للملفات بمرونة
 $root = dirname(__DIR__);
-$url = $_SERVER['REQUEST_URI'];
 
-if ($url === '/' || $url === '/index.php') {
-    require_once $root . '/templates/home.php';
-} elseif (strpos($url, '/admin') === 0) {
-    // توجيه طلبات الإدارة (login, save-all)
-    $path = $root . str_replace('/admin', '', $url) . '.php';
-    if (file_exists($path)) {
-        require_once $path;
-    } else {
-        echo "404 - صفحة الإدارة غير موجودة";
-    }
-} else {
-    http_response_code(404);
-    echo "404 - الصفحة غير موجودة";
-}
+// 3. استدعاء ملفات الـ Core
+require_once $root . '/app/Core/Router.php';
+require_once $root . '/app/Core/Database.php';
+require_once $root . '/app/Core/CMS.php'; // أضفنا CMS هنا لأنه ضروري
+
+// 4. استدعاء ملفات الـ Models
+require_once $root . '/app/Models/User.php';
+require_once $root . '/app/Models/Page.php';
+
+// 5. استدعاء ملفات الـ Controllers
+require_once $root . '/app/Controllers/AuthController.php';
+require_once $root . '/app/Controllers/DashboardController.php';
+
+// 6. تشغيل الـ Router
+// التأكد من استخدام المسار المطلق وتمرير $root للراوتر إذا كان يحتاجه
+$url = $_SERVER['REQUEST_URI'];
+$router = new \App\Core\Router();
+
+// 7. توجيه الطلب
+$router->dispatch($url);

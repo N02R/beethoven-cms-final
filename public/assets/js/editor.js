@@ -14,7 +14,14 @@ document.addEventListener('click', function(e) {
                     field: wrapper.dataset.field,
                     content: newValue
                 })
-            }).then(() => location.reload());
+            }).then(response => response.text()) // تغيير لـ text لنرى رسالة الخطأ
+.then(data => {
+    console.log("استجابة السيرفر:", data);
+    location.reload(); 
+})
+.catch(error => console.error("خطأ في الاتصال:", error));
+
         }
     }
 });
+

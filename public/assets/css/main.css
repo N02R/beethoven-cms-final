@@ -96,14 +96,28 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* هذا الكود يضمن أن التصميم يظهر طبيعياً دائماً */
-.editable {
-    padding: 5px;
-    /* مساحة صغيرة لتسهيل الضغط */
+.editable-element {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
 }
 
-/* الإطار يظهر فقط عندما نفعّل وضع التحرير */
-.edit-active {
-    border: 1px dashed #0d6efd !important;
-    cursor: text !important;
+.edit-icon {
+    position: absolute;
+    top: -5px;
+    right: -25px;
+    background: #66aeee;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: 0.3s;
 }
+
+.edit-icon:hover { transform: scale(1.2); background: #333; }

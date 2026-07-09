@@ -127,3 +127,20 @@ body {
     border-radius: 50%;
     padding: 2px;
 }
+
+.more.editable-element {
+    position: relative; /* لجعل القلم يطفو فوق الإعلان */
+    display: flex !important;
+    align-items: center;
+}
+
+.more .edit-icon {
+    position: absolute;
+    top: -5px;
+    right: -10px; /* أو يسار حسب اتجاه موقعك */
+    background: #fff;
+    border-radius: 50%;
+    padding: 2px;
+    font-size: 12px;
+    z-index: 5;
+}

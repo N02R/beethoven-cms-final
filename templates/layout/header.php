@@ -10,9 +10,18 @@
             <?php endif; ?>
         </a>
 
-        <div class="flex-grow-1 d-none d-lg-flex more">
-            <?php echo \App\Core\CMS::get('global', 'header', 'header_ads', false, true); ?>
-        </div>
+<div class="flex-grow-1 d-none d-lg-flex more editable-element" 
+     data-page="global" data-section="header" data-field="header_ads">
+     
+    <div class="editable-content">
+        <?php echo \App\Core\CMS::get('global', 'header', 'header_ads', false, true); ?>
+    </div>
+
+    <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+        <i class="edit-icon" style="cursor:pointer; margin-left:10px;">✏️</i>
+    <?php endif; ?>
+</div>
+
 
         <div class="social-icons d-none d-lg-flex gap-3 editable-element" 
              data-page="global" data-section="social" data-field="all_links">

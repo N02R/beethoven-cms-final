@@ -58,3 +58,27 @@
       </div>
     </div>
 </footer>
+
+<!-- Universal Modal: المودال الموحد لكل شيء -->
+<div id="universalModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="modalTitle">تعديل المحتوى</h4>
+            <button type="button" class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <form id="universalForm">
+            <!-- هنا سيتم حقن الحقول ديناميكياً بواسطة JavaScript -->
+            <div id="dynamicFields"></div>
+            
+            <div class="modal-footer" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function closeModal() {
+        document.getElementById('universalModal').style.display = 'none';
+    }
+</script>

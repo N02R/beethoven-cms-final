@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. التقاط الضغط على أي أيقونة تعديل في الصفحة
+    // 1. التقاط الضغط على أي أيقونة تعديل
     document.body.addEventListener('click', (e) => {
         let icon = e.target.closest('.edit-icon');
         if (!icon) return;
@@ -11,81 +11,70 @@ document.addEventListener('DOMContentLoaded', () => {
         let wrapper = icon.closest('.editable-element');
         if (!wrapper) return;
 
-        let field = wrapper.dataset.field;
-        let page = wrapper.dataset.page;
-        let section = wrapper.dataset.section;
+        let { page, section, field } = wrapper.dataset;
 
-        // --- حالة الشعار (Logo) ---
-        if (field === 'logo_path') {
-            let imgElement = wrapper.querySelector('img');
-            document.getElementById('currentLogo').src = imgElement ? imgElement.src : '';
-            document.getElementById('logoModal').style.display = 'block';
-        } 
-        
-        // --- حالة الروابط الاجتماعية (Social Icons Individual) ---
-        else if (wrapper.classList.contains('editable-social')) {
-            let currentUrl = wrapper.href;
-            document.getElementById('newUrl').value = currentUrl;
-            document.getElementById('socialModal').style.display = 'block';
-            
-            // ربط الفورم بالبيانات الحالية للرابط
-            window.activeSocialField = field; 
-        }
-
-        // --- حالة النصوص والإعلانات (Prompt) ---
-        else {
-            let contentEl = wrapper.querySelector('.editable-content') || wrapper.firstChild;
-            let currentText = contentEl.textContent || "";
-            let newValue = prompt("أدخل المحتوى الجديد:", currentText.trim());
-
-            if (newValue !== null && newValue !== currentText.trim()) {
-                saveTextData(page, section, field, newValue);
-            }
-        }
+        // طلب جلب البيانات من السيرفر (سنقوم بإنشاء هذا الملف لاحقاً)
+        fetch(`/api/get_data.php?page=${page}&section=${section}&field=${field}`)
+            .then(res => res.json())
+            .then(data => {
+                buildUniversalForm(data, page, section, field);
+                document.getElementById('universalModal').style.display = 'block';
+            })
+            .catch(err => {
+                console.error(err);
+                alert("خطأ في جلب البيانات");
+            });
     });
 
-    // 2. معالجة رفع الشعار (Logo)
-    const uploadForm = document.getElementById('uploadForm');
-    if (uploadForm) {
-        uploadForm.onsubmit = function(e) {
-            e.preventDefault(); 
-            let formData = new FormData(this);
-            fetch('/api/upload_logo.php', { method: 'POST', body: formData })
-            .then(res => res.text())
-            .then(data => {
-                alert(data);
-                document.getElementById('logoModal').style.display = 'none';
-                location.reload(); 
-            });
-        };
-    }
-
-    // 3. معالجة تحديث الروابط الاجتماعية
-    const socialForm = document.getElementById('socialUpdateForm');
-    if (socialForm) {
-        socialForm.onsubmit = function(e) {
+    // 2. معالجة إرسال المودال الموحد (حفظ البيانات)
+    const universalForm = document.getElementById('universalForm');
+    if (universalForm) {
+        universalForm.onsubmit = function(e) {
             e.preventDefault();
             let formData = new FormData(this);
-            formData.append('field', window.activeSocialField);
             
-            fetch('/api/update_social.php', { method: 'POST', body: formData })
-            .then(res => res.text())
-            .then(data => {
-                alert(data);
-                location.reload();
-            });
+            fetch('/api/save_all.php', { method: 'POST', body: formData })
+                .then(res => res.text())
+                .then(data => {
+                    alert(data);
+                    document.getElementById('universalModal').style.display = 'none';
+                    location.reload();
+                });
         };
     }
 });
 
-// 4. دالة حفظ النصوص والإعلانات
-function saveTextData(page, section, field, content) {
-    fetch('/api/save.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ page, section, field, content })
-    })
-    .then(res => res.text())
-    .then(data => { location.reload(); })
-    .catch(error => { alert("خطأ في الاتصال بالسيرفر"); });
+// 3. المحرك الذكي لبناء الحقول داخل المودال
+function buildUniversalForm(data, page, section, field) {
+    let container = document.getElementById('dynamicFields');
+    container.innerHTML = ''; // تنظيف المودال
+    
+    // إضافة بيانات مخفية لتعريف الحقل عند الحفظ
+    container.innerHTML += `<input type="hidden" name="page" value="${page}">`;
+    container.innerHTML += `<input type="hidden" name="section" value="${section}">`;
+    container.innerHTML += `<input type="hidden" name="field" value="${field}">`;
+
+    // بناء الفورم حسب نوع الحقل
+    if (field === 'logo_path') {
+        container.innerHTML += `
+            <img src="${data.value}" width="100" style="margin-bottom:10px;"><br>
+            <label>اختر صورة جديدة:</label>
+            <input type="file" name="new_file" class="form-control">`;
+    } 
+    else if (field === 'social_links') {
+        // حلقة تكرار لبناء روابط السوشيال
+        Object.entries(data).forEach(([key, url]) => {
+            container.innerHTML += `
+                <div style="margin-bottom:10px;">
+                    <label>${key.toUpperCase()}:</label>
+                    <input type="text" name="social[${key}]" value="${url}" class="form-control">
+                </div>`;
+        });
+    } 
+    else {
+        // الافتراضي (نص أو HTML)
+        container.innerHTML += `
+            <label>المحتوى الحالي:</label>
+            <textarea name="content" class="form-control" rows="4">${data.value}</textarea>`;
+    }
 }

@@ -1,13 +1,27 @@
 <?php
-session_start();
-// ... (كود التحقق من تسجيل الدخول) ...
+// تأكدي من أن هذا الملف موجود في المسار: /public/api/upload_logo.php
 
-if (move_uploaded_file($_FILES['logo']['tmp_name'], $uploadPath)) {
-    // التعديل هنا: تحديث قاعدة البيانات لتسجيل المسار الجديد
-    // نستخدم REPLACE ليقوم بتحديث السجل إذا كان موجوداً
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=beethoven_db;charset=utf8", "root", "");
-    $stmt = $pdo->prepare("REPLACE INTO site_content (page_key, section_key, field_key, content) VALUES ('global', 'header', 'logo_path', 'assets/img/logo.png')");
-    $stmt->execute();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['logo'])) {
     
-    echo "تم تحديث الشعار بنجاح!";
+    // 1. تحديد مسار المجلد الذي ستُحفظ فيه الصور (خارج مجلد الـ api)
+    $uploadDir = __DIR__ . '/../assets/img/';
+    
+    // 2. التأكد من أن المجلد موجود، وإذا لم يكن، قم بإنشائه
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    // 3. تحديد اسم ثابت للملف (مثلاً logo.png) أو اسم الملف الأصلي
+    $fileName = 'logo.png'; 
+    $uploadPath = $uploadDir . $fileName;
+
+    // 4. تنفيذ عملية النقل والتحقق من وجود المتغير
+    if (move_uploaded_file($_FILES['logo']['tmp_name'], $uploadPath)) {
+        echo "تم تحديث الشعار بنجاح!";
+    } else {
+        echo "خطأ: فشل رفع الملف. تأكدي من صلاحيات الكتابة في المجلد.";
+    }
+} else {
+    echo "خطأ: لم يتم اختيار ملف أو الطلب ليس POST.";
 }
+?>

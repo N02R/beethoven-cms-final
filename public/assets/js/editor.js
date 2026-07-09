@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let icon = e.target.closest('.edit-icon');
         if (!icon) return;
 
-        // منع السلوك الافتراضي
         e.preventDefault();
         e.stopPropagation();
 
@@ -16,18 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
         let page = wrapper.dataset.page;
         let section = wrapper.dataset.section;
 
-        // --- حالة الشعار (Image Modal) ---
+        // --- حالة الشعار (Logo) ---
         if (field === 'logo_path') {
             let imgElement = wrapper.querySelector('img');
             document.getElementById('currentLogo').src = imgElement ? imgElement.src : '';
             document.getElementById('logoModal').style.display = 'block';
         } 
         
-        // --- حالة الروابط الاجتماعية (توجيه للإعدادات) ---
-        else if (field === 'all_links') {
-            if (confirm("هل تود التوجه لصفحة إعدادات الروابط الاجتماعية لتحديثها؟")) {
-                window.location.href = '/admin/settings/social'; 
-            }
+        // --- حالة الروابط الاجتماعية (Social Icons Individual) ---
+        else if (wrapper.classList.contains('editable-social')) {
+            let currentUrl = wrapper.href;
+            document.getElementById('newUrl').value = currentUrl;
+            document.getElementById('socialModal').style.display = 'block';
+            
+            // ربط الفورم بالبيانات الحالية للرابط
+            window.activeSocialField = field; 
         }
 
         // --- حالة النصوص والإعلانات (Prompt) ---
@@ -42,30 +44,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. معالجة رفع الشعار (داخل المودال)
+    // 2. معالجة رفع الشعار (Logo)
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.onsubmit = function(e) {
             e.preventDefault(); 
-            
             let formData = new FormData(this);
-            
             fetch('/api/upload_logo.php', { method: 'POST', body: formData })
             .then(res => res.text())
             .then(data => {
                 alert(data);
                 document.getElementById('logoModal').style.display = 'none';
                 location.reload(); 
-            })
-            .catch(err => {
-                console.error(err);
-                alert("حدث خطأ أثناء الرفع");
+            });
+        };
+    }
+
+    // 3. معالجة تحديث الروابط الاجتماعية
+    const socialForm = document.getElementById('socialUpdateForm');
+    if (socialForm) {
+        socialForm.onsubmit = function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            formData.append('field', window.activeSocialField);
+            
+            fetch('/api/update_social.php', { method: 'POST', body: formData })
+            .then(res => res.text())
+            .then(data => {
+                alert(data);
+                location.reload();
             });
         };
     }
 });
 
-// 3. دالة حفظ النصوص والإعلانات
+// 4. دالة حفظ النصوص والإعلانات
 function saveTextData(page, section, field, content) {
     fetch('/api/save.php', {
         method: 'POST',
@@ -73,11 +86,6 @@ function saveTextData(page, section, field, content) {
         body: JSON.stringify({ page, section, field, content })
     })
     .then(res => res.text())
-    .then(data => {
-        location.reload(); 
-    })
-    .catch(error => {
-        console.error(error);
-        alert("خطأ في الاتصال بالسيرفر");
-    });
+    .then(data => { location.reload(); })
+    .catch(error => { alert("خطأ في الاتصال بالسيرفر"); });
 }

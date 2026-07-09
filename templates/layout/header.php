@@ -26,7 +26,15 @@
 <div class="social-icons d-none d-lg-flex gap-3 editable-element" 
      data-page="global" data-section="social" data-field="all_links">
      
-    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
+<a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link', false, false); ?>" 
+   class="editable-social" 
+   data-page="global" 
+   data-section="social" 
+   data-field="facebook">
+   <img src="assets/img/socialicons/Facebook.png">
+   <?php if(isset($_SESSION['is_admin'])): ?><i class="edit-icon">✏️</i><?php endif; ?>
+</a>
+
     <a href="<?php echo \App\Core\CMS::get('global', 'social', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>
     <a href="<?php echo \App\Core\CMS::get('global', 'social', 'whatsapp_link'); ?>"><img src="assets/img/socialicons/whatsapp.png"></a>
     <a href="<?php echo \App\Core\CMS::get('global', 'social', 'twitter_link'); ?>"><img src="assets/img/socialicons/Twitter.png"></a>
@@ -74,4 +82,16 @@
             <button type="button" onclick="document.getElementById('logoModal').style.display='none'">إغلاق</button>
         </form>
     </div>
+    <div id="socialModal" style="display:none; position:fixed; z-index:9999; top:20%; left:30%; background:#fff; padding:20px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+    <h4>تعديل الأيقونة</h4>
+    <form id="socialUpdateForm">
+        <label>الرابط الجديد:</label><br>
+        <input type="text" id="newUrl" name="url" style="width:100%; margin-bottom:10px;"><br>
+        <label>تغيير الأيقونة:</label><br>
+        <input type="file" name="icon" accept="image/*"><br>
+        <button type="submit" style="margin-top:10px;">حفظ التعديلات</button>
+        <button type="button" onclick="document.getElementById('socialModal').style.display='none'">إغلاق</button>
+    </form>
+</div>
+
 </header>

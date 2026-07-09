@@ -3,10 +3,17 @@ namespace App\Core;
 use PDO;
 
 class CMS {
-    private static function fetchFromDB($page, $section, $field) {
+    // الاتصال بقاعدة البيانات (لإعادة استخدامه)
+    private static function getDB() {
         $host = '127.0.0.1'; $db = 'beethoven_db'; $user = 'root'; $pass = '';
+        return new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+    }
+
+    private static function fetchFromDB($page, $section, $field) {
         try {
-            $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
+            $pdo = self::getDB();
             $stmt = $pdo->prepare("SELECT content FROM site_content WHERE page_key = ? AND section_key = ? AND field_key = ? LIMIT 1");
             $stmt->execute([$page, $section, $field]);
             $res = $stmt->fetchColumn();
@@ -14,23 +21,36 @@ class CMS {
         } catch (\PDOException $e) { return ""; }
     }
 
+    // --- الدالة الجديدة للتحديث ---
+    public static function update($page, $section, $field, $value) {
+        try {
+            $pdo = self::getDB();
+            // تحويل المصفوفات (مثل الروابط) إلى JSON للحفظ في القاعدة
+            $finalValue = is_array($value) ? json_encode($value) : $value;
+            
+            $stmt = $pdo->prepare("UPDATE site_content SET content = ? WHERE page_key = ? AND section_key = ? AND field_key = ?");
+            $stmt->execute([$finalValue, $page, $section, $field]);
+            return true;
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
     public static function get($page, $section, $field, $is_img = false, $is_html = false) {
         $content = self::fetchFromDB($page, $section, $field);
-        $isAdmin = (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true);
+        
+        // إذا كان محتوى السوشيال ميديا عبارة عن JSON، نقوم بفك التشفير
+        if ($field === 'social_links') {
+            return json_decode($content, true) ?? [];
+        }
 
-        // تحديد نوع العنصر
+        // تحديد نوع العنصر للعرض
         if ($is_img) {
-            $element = "<img src='$content' alt='Logo'>";
+            return "<img src='$content' alt='Content'>";
         } elseif ($is_html) {
-            $element = $content; // نتركه كما هو (HTML) بدون تنظيف
+            return $content;
         } else {
-            $element = htmlspecialchars($content); // للنصوص العادية
+            return htmlspecialchars($content);
         }
-
-        // إضافة القلم إذا كان المدير مسجلاً
-        if ($isAdmin) {
-            return "<span class='editable-element' data-page='$page' data-section='$section' data-field='$field'>$element<i class='edit-icon'>✏️</i></span>";
-        }
-        return $element;
     }
 }

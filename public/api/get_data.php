@@ -1,29 +1,43 @@
 <?php
-// استدعاء ملف الاتصال بقاعدة البيانات والـ CMS
-require_once '../includes/config.php'; // أو المسار الصحيح لديك
-require_once '../includes/CMS.php';
+/**
+ * ملف جلب البيانات (API)
+ * المسار: public/api/get_data.php
+ */
 
+// استدعاء ملف الـ autoload للوصول للكلاسات تلقائياً
+// نصعد مستويين للوصول للمجلد الرئيسي ثم الدخول لمجلد app
+require_once '../../app/autoload.php';
+
+use App\Core\Database;
+use App\Core\CMS;
+
+// إعداد نوع الاستجابة كـ JSON
 header('Content-Type: application/json');
 
-// استقبال المتغيرات من الـ JS
-$page = $_GET['page'] ?? '';
-$section = $_GET['section'] ?? '';
-$field = $_GET['field'] ?? '';
+try {
+    // جلب المتغيرات من الطلب
+    $page    = $_GET['page']    ?? '';
+    $section = $_GET['section'] ?? '';
+    $field   = $_GET['field']   ?? '';
 
-if (empty($page) || empty($section) || empty($field)) {
-    echo json_encode(['error' => 'Missing parameters']);
-    exit;
-}
+    // التحقق من وجود المتغيرات الأساسية
+    if (empty($page) || empty($section) || empty($field)) {
+        throw new Exception("بيانات غير مكتملة");
+    }
 
-// حالة خاصة لروابط السوشيال ميديا لأنها مصفوفة (Array)
-if ($field === 'social_links') {
-    // نفترض أن دالة الـ CMS تعيد مصفوفة بالروابط
-    $data = \App\Core\CMS::get($page, $section, $field, false, false);
-    echo json_encode($data);
-} 
-// حالة عامة (نص أو مسار صورة)
-else {
-    $value = \App\Core\CMS::get($page, $section, $field, false, false);
-    echo json_encode(['value' => $value]);
+    // جلب البيانات من قاعدة البيانات باستخدام دالة CMS
+    $data = CMS::get($page, $section, $field, false, false);
+
+    // إذا كانت النتيجة مصفوفة (Array) نرسلها كما هي، 
+    // أما إذا كانت قيمة نصية نضعها داخل مفتاح 'value'
+    if (is_array($data)) {
+        echo json_encode($data);
+    } else {
+        echo json_encode(['value' => $data]);
+    }
+
+} catch (Exception $e) {
+    // في حال حدوث خطأ، نرسل رسالة خطأ واضحة
+    http_response_code(400);
+    echo json_encode(['error' => $e->getMessage()]);
 }
-?>

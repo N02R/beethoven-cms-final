@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let icon = e.target.closest('.edit-icon');
         if (!icon) return;
 
-        // منع السلوك الافتراضي (مثل انتقال الرابط أو إعادة تحميل الصفحة)
+        // منع السلوك الافتراضي
         e.preventDefault();
         e.stopPropagation();
 
@@ -23,11 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('logoModal').style.display = 'block';
         } 
         
-        // --- حالة النصوص العادية (Prompt) ---
+        // --- حالة الروابط الاجتماعية (توجيه للإعدادات) ---
+        else if (field === 'all_links') {
+            if (confirm("هل تود التوجه لصفحة إعدادات الروابط الاجتماعية لتحديثها؟")) {
+                window.location.href = '/admin/settings/social'; 
+            }
+        }
+
+        // --- حالة النصوص والإعلانات (Prompt) ---
         else {
             let contentEl = wrapper.querySelector('.editable-content') || wrapper.firstChild;
             let currentText = contentEl.textContent || "";
-            let newValue = prompt("أدخل النص الجديد:", currentText.trim());
+            let newValue = prompt("أدخل المحتوى الجديد:", currentText.trim());
 
             if (newValue !== null && newValue !== currentText.trim()) {
                 saveTextData(page, section, field, newValue);
@@ -39,16 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.onsubmit = function(e) {
-            e.preventDefault(); // منع الصفحة من إعادة التحميل
+            e.preventDefault(); 
             
             let formData = new FormData(this);
             
             fetch('/api/upload_logo.php', { method: 'POST', body: formData })
             .then(res => res.text())
             .then(data => {
-                alert(data); // رد السيرفر
+                alert(data);
                 document.getElementById('logoModal').style.display = 'none';
-                location.reload(); // تحديث الصفحة بعد نجاح العملية
+                location.reload(); 
             })
             .catch(err => {
                 console.error(err);
@@ -58,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 3. دالة حفظ النصوص
+// 3. دالة حفظ النصوص والإعلانات
 function saveTextData(page, section, field, content) {
     fetch('/api/save.php', {
         method: 'POST',

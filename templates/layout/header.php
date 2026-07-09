@@ -23,19 +23,20 @@
 </div>
 
 
-        <div class="social-icons d-none d-lg-flex gap-3 editable-element" 
-             data-page="global" data-section="social" data-field="all_links">
-             
-            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
-            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>
-            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'whatsapp_link'); ?>"><img src="assets/img/socialicons/whatsapp.png"></a>
-            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'twitter_link'); ?>"><img src="assets/img/socialicons/Twitter.png"></a>
-            <a href="<?php echo \App\Core\CMS::get('global', 'social', 'youtube_link'); ?>"><img src="assets/img/socialicons/youtube.png"></a>
-            
-            <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
-                <i class="edit-icon" style="cursor:pointer; margin-right: 5px;">✏️</i>
-            <?php endif; ?>
-        </div>
+<div class="social-icons d-none d-lg-flex gap-3 editable-element" 
+     data-page="global" data-section="social" data-field="all_links">
+     
+    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'facebook_link'); ?>"><img src="assets/img/socialicons/Facebook.png"></a>
+    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'instagram_link'); ?>"><img src="assets/img/socialicons/Instagram.png"></a>
+    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'whatsapp_link'); ?>"><img src="assets/img/socialicons/whatsapp.png"></a>
+    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'twitter_link'); ?>"><img src="assets/img/socialicons/Twitter.png"></a>
+    <a href="<?php echo \App\Core\CMS::get('global', 'social', 'youtube_link'); ?>"><img src="assets/img/socialicons/youtube.png"></a>
+    
+    <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true): ?>
+        <i class="edit-icon" style="cursor:pointer; position: absolute; top: -10px; right: -15px;">✏️</i>
+    <?php endif; ?>
+</div>
+
     </div>
 </nav>
 

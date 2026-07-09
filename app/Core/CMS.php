@@ -1,28 +1,16 @@
 <?php
 namespace App\Core;
-
 use PDO;
 
 class CMS {
-
-    /**
-     * الاتصال بقاعدة البيانات
-     */
+    // الاتصال بقاعدة البيانات (لإعادة استخدامه)
     private static function getDB() {
-        $host = '127.0.0.1';
-        $db   = 'beethoven_db';
-        $user = 'root';
-        $pass = '';
-        
-        return new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        $host = '127.0.0.1'; $db = 'beethoven_db'; $user = 'root'; $pass = '';
+        return new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         ]);
     }
 
-    /**
-     * جلب المحتوى الخام من القاعدة
-     */
     private static function fetchFromDB($page, $section, $field) {
         try {
             $pdo = self::getDB();
@@ -30,18 +18,14 @@ class CMS {
             $stmt->execute([$page, $section, $field]);
             $res = $stmt->fetchColumn();
             return $res !== false ? $res : ""; 
-        } catch (\PDOException $e) {
-            return ""; 
-        }
+        } catch (\PDOException $e) { return ""; }
     }
 
-    /**
-     * تحديث البيانات في القاعدة
-     */
+    // --- الدالة الجديدة للتحديث ---
     public static function update($page, $section, $field, $value) {
         try {
             $pdo = self::getDB();
-            // تحويل المصفوفات إلى JSON للحفظ في القاعدة
+            // تحويل المصفوفات (مثل الروابط) إلى JSON للحفظ في القاعدة
             $finalValue = is_array($value) ? json_encode($value) : $value;
             
             $stmt = $pdo->prepare("UPDATE site_content SET content = ? WHERE page_key = ? AND section_key = ? AND field_key = ?");
@@ -52,21 +36,17 @@ class CMS {
         }
     }
 
-    /**
-     * استرجاع البيانات للواجهة
-     */
     public static function get($page, $section, $field, $is_img = false, $is_html = false) {
         $content = self::fetchFromDB($page, $section, $field);
         
-        // 1. التعامل الخاص مع روابط السوشيال ميديا (مصفوفة)
+        // إذا كان محتوى السوشيال ميديا عبارة عن JSON، نقوم بفك التشفير
         if ($field === 'social_links') {
-            $data = json_decode($content, true);
-            return is_array($data) ? $data : [];
+            return json_decode($content, true) ?? [];
         }
 
-        // 2. التعامل مع النصوص والصور
+        // تحديد نوع العنصر للعرض
         if ($is_img) {
-            return $content; // نرجع المسار فقط
+            return "<img src='$content' alt='Content'>";
         } elseif ($is_html) {
             return $content;
         } else {

@@ -13,17 +13,23 @@
             <?php if(isset($_SESSION['is_admin'])): ?><i class="edit-icon">✏️</i><?php endif; ?>
         </div>
 
-        <div class="social-icons d-none d-lg-flex gap-3 editable-element" data-page="global" data-section="social" data-field="social_links">
-          <?php 
-            $links = \App\Core\CMS::get('global', 'social', 'social_links', false, false); 
-          ?>
-          <a href="<?php echo $links['facebook'] ?? '#'; ?>"><img src="assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
-          <a href="<?php echo $links['instagram'] ?? '#'; ?>"><img src="assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
-          <a href="<?php echo $links['whatsapp'] ?? '#'; ?>"><img src="assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
-          <a href="<?php echo $links['twitter'] ?? '#'; ?>"><img src="assets/img/socialicons/Twitter.png" alt="تويتر"></a>
-          <a href="<?php echo $links['youtube'] ?? '#'; ?>"><img src="assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
-          <?php if(isset($_SESSION['is_admin'])): ?><i class="edit-icon">✏️</i><?php endif; ?>
-        </div>
+<div class="social-icons d-none d-lg-flex gap-3">
+    <?php 
+      // نجلب المصفوفة فقط
+      $links = \App\Core\CMS::get('global', 'social', 'social_links'); 
+    ?>
+    
+    <span class="editable-element" data-page="global" data-section="social" data-field="social_links">
+        <a href="<?php echo $links['facebook'] ?? '#'; ?>"><img src="assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
+        <a href="<?php echo $links['instagram'] ?? '#'; ?>"><img src="assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
+        <a href="<?php echo $links['whatsapp'] ?? '#'; ?>"><img src="assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
+        <a href="<?php echo $links['twitter'] ?? '#'; ?>"><img src="assets/img/socialicons/Twitter.png" alt="تويتر"></a>
+        <a href="<?php echo $links['youtube'] ?? '#'; ?>"><img src="assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
+        
+        <?php if(isset($_SESSION['is_admin'])): ?><i class="edit-icon">✏️</i><?php endif; ?>
+    </span>
+</div>
+
       </div>
     </nav>
 

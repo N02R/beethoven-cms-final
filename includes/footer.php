@@ -1,87 +1,88 @@
-<?php
-// تأكيد تهيئة المتغير إذا لم يكن معرفاً في الصفحات الرئيسية
-if (!isset($path_prefix)) {
-    $path_prefix = '';
-}
+<?php 
+// 1. تعريف البادئة للعودة للمجلد الرئيسي خطوة للخلف
+$path_prefix = '../'; 
+
+// 2. تعريف ملفات الـ CSS الإضافية لهذه الصفحة مع ربط البادئة ديناميكياً
+$page_css = [
+    $path_prefix . 'css/edu-services.css'
+];
+
+// 3. استدعاء الهيدر المشترك باستخدام البادئة
+include $path_prefix . 'includes/header.php'; 
 ?>
-<!-- footer start -->
-  <section class="consult-banner-section">
-    <div class="container-fluid custom-container">
-      <div class="consult-banner">
-        <div class="consult-banner-inner">
-          <div class="consult-banner-text">
-            <h4>احصل على استشارة مجانية</h4>
-            <p>هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة</p>
+
+  <!-- ===== BREADCRUMB START ===== -->
+  <div class="custom-container pt-5">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item active" aria-current="page">الإستقبال في المطار، المواصلات، الإقامة والسكن</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- ===== BREADCRUMB END ===== -->
+
+  <!-- ===== CUSTOM SERVICES START ===== -->
+  <section class="custom-services py-5">
+    <div class="custom-container">
+      <!-- جلب صورة الـ Hero من مجلد الأصول الرئيسي بشكل ديناميكي -->
+      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/servicesimg9.png');"></div>
+    </div>
+  </section>
+  <!-- ===== CUSTOM SERVICES END ===== -->
+
+  <!-- ===== CUSTOM SERVICES INFO START ===== -->
+  <section class="custom-services-info py-5">
+    <div class="custom-container">
+      <div class="head-info">
+        <h2 class="main-text">إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!</h2>
+        <p class="par-text">
+          كثيرٌ من الطلبة يَصِلون إلى ألمانيا دون ترتيب وحجز مكان السكن و الإقامة أو حجز وسيلة نقل مناسبة تسهل عليهم الوصول إلى مكان السكن الجديد. سيواجه هؤلاء الطلاب الكثير من الضغط النفسي والمشقه وسينفقون الكثير من المال للمبيت في الفنادق و التنقل بينها!
+        </p>
+      </div>
+
+      <div class="advice-check py-5">
+        <h5 class="advice-text">ما الذي يجب فعله قبل السفر؟</h5>
+        <p>قبل السفر إلى ألمانيا، تأكد من التخطيط الجيد لتفادي التوتر والمصاريف غير المتوقعة. إليك أهم التوصيات:</p>
+        <div class="row">
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+            <p>✅ احجز الاستقبال ووسيلة النقل من المطار مسبقًا</p>
           </div>
-          <!-- إضافة البادئة لرابط معالجة الفورم -->
-          <form class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
-            <input type="email" name="email" placeholder="ادخل إيميلك..." aria-label="Email" required />
-            <button type="submit">
-              <img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال">
-            </button>
-          </form>
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+            <p>✅ رتب السكن قبل الوصول بشهر لتفادي التكاليف المرتفعة</p>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+            <p>✅ تأكد من موقع السكن لتسهيل الإجراءات الرسمية</p>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+            <p>✅ لا تستخدم المواصلات بدون تذكرة لتجنب الغرامات القانونية</p>
+          </div>
         </div>
+      </div>
+
+      <div class="advice-stars my-5">
+        <h5 class="mb-4 note-text">ملاحظات هامة !!</h5>
+        <ul class="star-list list-unstyled">
+          <li class="mb-3">
+            <p>
+              <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="star" class="ms-2">
+              العثور على سكن خلال فترة قصيرة أمر صعب جدًا، لذا ننصح بحجز السكن مسبقًا.
+            </p>
+          </li>
+          <li>
+            <p>
+              <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="star" class="ms-2">
+              وإذا كنت ترغب بحجز هذه الخدمات من خلال شركتنا، يرجى التواصل عبر <span style="color: #66aeee; font-weight: 500;">البريد الإلكتروني</span> الخاص بالشركة قبل أسبوعين على الأقل من موعد وصولك.
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
-  
-  <footer class="footer-section pt-5">
-    <div class="container-fluid custom-container">
-      <div class="row gy-5">
-        <div class="col-12 col-lg-5">
-          <img src="<?php echo $path_prefix; ?>assets/img/logo.png" alt="BCS Logo" class="mb-4">
-          <p class="footer-desc">
-            هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربي，
-            حيث يمكنك..
-          </p>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <h5>روابط سريعة</h5>
-          <div class="quick-link">
-            <a href="<?php echo $path_prefix; ?>about.php">عن الشركة</a>
-            <a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a>
-            <a href="<?php echo $path_prefix; ?>job.php">التدريب المهني</a>
-            <a href="<?php echo $path_prefix; ?>guide.php">دليل الشركة</a>
-            <a href="<?php echo $path_prefix; ?>contact.php">تواصل معنا</a>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4">
-          <h5>تواصل معنا</h5>
-          <div class="contact-link">
-            <a href="tel:+4917671230666"><img src="<?php echo $path_prefix; ?>img/contact%20us/call-calling.svg" alt="">666-230-71 176 (0) 49+</a>
-            <a href="mailto:info@Beethoven-City-Services.com"><img src="<?php echo $path_prefix; ?>img/contact%20us/sms.svg" alt="">info@Beethoven-City-Services.com</a>
-            <div class="contact-link-item d-flex align-items-center gap-2">
-              <img src="<?php echo $path_prefix; ?>img/contact%20us/Location.svg" alt="">
-              <span style="font-size: 12px; color: #4F4F4F;">Rheinweg 140 ,53129 Bonn,Germany</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="my-4">
-      <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
-        <p class="mb-0 text-center text-md-start">
-          <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
-        </p>
-        <a href="#">سياسة الخصوصية وشروط الإستخدام</a>
-      </div>
-    </div>
-  </footer>
-  <!-- footer end  -->
-  
-  <script src="<?php echo $path_prefix; ?>assets/js/bootstrap.bundle.min.js"></script>
+  <!-- ===== CUSTOM SERVICES INFO END ===== -->
 
-  <!-- حقن ملفات الـ JS الإضافية ديناميكياً قبل باقي الملفات -->
-  <?php if (isset($page_js) && is_array($page_js)): ?>
-    <?php foreach ($page_js as $js_file): ?>
-      <script src="<?php echo $js_file; ?>"></script>
-    <?php endforeach; ?>
-  <?php endif; ?>
-
-  <script src="<?php echo $path_prefix; ?>assets/js/all.min.js"></script>
-  <script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>
-
-  <!-- حقن أي سكربت مخصص (Inline Script) تم تعريفه في الصفحة -->
-  <?php if (isset($custom_script)) { echo $custom_script; } ?>
-</body>
-
-</html>
+<?php 
+// 4. استدعاء الفوتر المشترك باستخدام البادئة
+include $path_prefix . 'includes/footer.php'; 
+?>

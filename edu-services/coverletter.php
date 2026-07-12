@@ -1,11 +1,16 @@
 <?php 
-// إعداد عنوان الصفحة بشكل ديناميكي ليتم قراءته في الـ Header
-$pageTitle = "رسالة التعريف وخطاب الطلب - بيتهوفن سيتي"; 
+// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
+$path_prefix = '../'; 
 
-// استدعاء الهيدر المشترك
-include('header.php'); 
+// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
+$page_css = [
+    'css/edu-services.css'
+];
 
-// مصفوفة نقاط النصائح لتوليدها ديناميكياً بدلاً من تكرار كود الـ HTML
+// 3. استدعاء الهيدر المشترك
+include $path_prefix . 'includes/header.php'; 
+
+// 4. مصفوفة نقاط النصائح لتوليدها ديناميكياً لتجنب تكرار كود الـ HTML
 $advicePoints = [
     "المعلومات الشخصية الأساسية.",
     "معلومات عن التعليم الخاص بك.",
@@ -20,8 +25,8 @@ $advicePoints = [
   <div class="custom-container pt-5">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="../index.html">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="../education.html">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">خطاب الطلب</li>
       </ol>
     </nav>
@@ -32,7 +37,7 @@ $advicePoints = [
   <section class="custom-services py-5">
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('../assets/img/education/servicesimg1.jpg'); background-position: center -30px;">
+        style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/servicesimg1.jpg'); background-position: center -30px;">
       </div>
     </div>
   </section>
@@ -58,7 +63,7 @@ $advicePoints = [
           <?php foreach ($advicePoints as $point): ?>
             <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
               <div class="d-flex align-items-center">
-                <img src="../assets/img/education/starList.svg" class="ms-2" alt="نجمة">
+                <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" class="ms-2" alt="نجمة">
                 <p class="mb-0"><?php echo $point; ?></p>
               </div>
             </div>
@@ -82,7 +87,7 @@ $advicePoints = [
         <div class="col-lg-12 col-md-12 col-sm-12">
           <div class="download-card mb-3">
             <div class="download-row">
-              <img src="../assets/img/education/Grouppdf.png" alt="PDF Icon" />
+              <img src="<?php echo $path_prefix; ?>assets/img/education/Grouppdf.png" alt="PDF Icon" />
               <div class="dl-info">
                 <div class="dl-title">رسالة التعريف/ خطاب الطلب</div>
                 <div class="dl-sub">Example</div>
@@ -95,7 +100,7 @@ $advicePoints = [
         <div class="col-lg-12 col-md-12 col-sm-12">
           <div class="download-card">
             <div class="download-row">
-              <img src="../assets/img/education/Groupword.png" alt="Word Icon" />
+              <img src="<?php echo $path_prefix; ?>assets/img/education/Groupword.png" alt="Word Icon" />
               <div class="dl-info">
                 <div class="dl-title">رسالة التعريف/ خطاب الطلب</div>
                 <div class="dl-sub">Example</div>
@@ -111,6 +116,6 @@ $advicePoints = [
   <!-- custom-services-info end -->
 
 <?php 
-// استدعاء الفوتر المشترك
-include('footer.php'); 
+// 5. استدعاء الفوتر المشترك
+include $path_prefix . 'includes/footer.php'; 
 ?>

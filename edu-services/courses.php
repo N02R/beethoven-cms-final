@@ -17,7 +17,7 @@ include $path_prefix . 'includes/header.php';
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item active" aria-current="page">الدورة التحضيرية لشهادات اللغة الألمانية</li>
+        <li class="breadcrumb-item" aria-current="page">الدورة التحضيرية لشهادات اللغة الألمانية</li>
       </ol>
     </nav>
   </div>

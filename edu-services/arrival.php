@@ -1,19 +1,22 @@
 <?php 
-// تعريف ملفات الـ CSS الخاصة بهذه الصفحة (المسار محلي بالنسبة للمجلد الفرعي)
+// 1. تحديد بادئة المسار للعودة للمجلد الرئيسي
+$path_prefix = '../'; 
+
+// 2. مسار ملف الـ CSS الخاص بهذه الصفحة (مع إضافة البادئة)
 $page_css = [
-    'css/edu-services.css'
+    $path_prefix . 'css/edu-services.css'
 ];
 
-// استدعاء الهيدر المشترك بالخروج خطوة للمجلد الرئيسي
-include '../includes/header.php'; 
+// 3. استدعاء الهيدر المشترك
+include $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- ===== BREADCRUMB START ===== -->
   <div class="custom-container pt-5">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="../index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="../education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
         <li class="breadcrumb-item active" aria-current="page">الإستقبال في المطار، المواصلات، الإقامة والسكن</li>
       </ol>
     </nav>
@@ -23,7 +26,7 @@ include '../includes/header.php';
   <!-- ===== CUSTOM SERVICES START ===== -->
   <section class="custom-services py-5">
     <div class="custom-container">
-      <div class="arrival-hero custom-hero" style="background-image: url('../assets/img/education/servicesimg9.png');"></div>
+      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/servicesimg9.png');"></div>
     </div>
   </section>
   <!-- ===== CUSTOM SERVICES END ===== -->
@@ -39,7 +42,7 @@ include '../includes/header.php';
       </div>
 
       <div class="advice-check py-5">
-        <h5 class="advice-text">ما الذي يجب فعله قبل السفر?</h5>
+        <h5 class="advice-text">ما الذي يجب فعله قبل السفر؟</h5>
         <p>قبل السفر إلى ألمانيا، تأكد من التخطيط الجيد لتفادي التوتر والمصاريف غير المتوقعة. إليك أهم التوصيات:</p>
         <div class="row">
           <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
@@ -61,11 +64,11 @@ include '../includes/header.php';
         <h5 class="mb-4 note-text">ملاحظات هامة !!</h5>
         <ul class="star-list list-unstyled">
           <li class="mb-3">
-            <p><img src="../assets/img/education/starList.svg" alt="" class="ms-2">العثور على سكن خلال فترة قصيرة أمر صعب جدًا، لذا ننصح بحجز السكن مسبقًا.</p>
+            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2">العثور على سكن خلال فترة قصيرة أمر صعب جدًا، لذا ننصح بحجز السكن مسبقًا.</p>
           </li>
           <li>
             <p>
-              <img src="../assets/img/education/starList.svg" alt="" class="ms-2">وإذا كنت ترغب بحجز هذه الخدمات من خلال شركتنا، يرجى التواصل عبر <span style="color: #66aeee; font-weight: 500;">البريد الإلكتروني</span> الخاص بالشركة قبل أسبوعين على الأقل من موعد وصولك.
+              <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2">وإذا كنت ترغب بحجز هذه الخدمات من خلال شركتنا، يرجى التواصل عبر <span style="color: #66aeee; font-weight: 500;">البريد الإلكتروني</span> الخاص بالشركة قبل أسبوعين على الأقل من موعد وصولك.
             </p>
           </li>
         </ul>
@@ -75,6 +78,6 @@ include '../includes/header.php';
   <!-- ===== CUSTOM SERVICES INFO END ===== -->
 
 <?php 
-// استدعاء الفوتر المشترك بالخروج خطوة للمجلد الرئيسي
-include '../includes/footer.php'; 
+// استدعاء الفوتر المشترك
+include $path_prefix . 'includes/footer.php'; 
 ?>

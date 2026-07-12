@@ -11,21 +11,19 @@ if (!isset($path_prefix)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/bootstrap.min.css"> 
-  
-  <!-- حقن ملفات الـ CSS الإضافية الخاصة بكل صفحة ديناميكياً مع مراعاة مسار المجلد الحالي -->
-  <?php if (isset($page_css) && is_array($page_css)): ?>
-    <?php foreach ($page_css as $css_file): ?>
-      <link rel="stylesheet" href="<?php echo $path_prefix . $css_file; ?>">
-    <?php endforeach; ?>
-  <?php endif; ?>
 
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/all.min.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/main.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/style.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/header.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/footer.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/responsive-index.css">
+  <?php 
+  // تجهيز المتغيرات لملفات الـ CSS الإضافية
+  $extra_css_string = "";
+  if (isset($page_css) && is_array($page_css)) {
+      // تنظيف أسماء الملفات وجلب الاسم المباشر فقط لكي يتعرف عليها سكربت الضغط
+      $cleaned_files = array_map('basename', $page_css);
+      $extra_css_string = "?files=" . implode(',', $cleaned_files);
+  }
+  ?>
+
+  <!-- سطر واحد مدمج ومضغوط يجمع كل ملفات الموقع الأساسية والإضافية ديناميكياً -->
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo $extra_css_string; ?>">
 </head>
 
 <body>

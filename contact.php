@@ -1,4 +1,5 @@
 <?php 
+$path_prefix = ''; 
 // تعريف ملفات الـ CSS الخاصة بصفحة اتصل بنا فقط
 $page_css = [
     'assets/css/contact.css'

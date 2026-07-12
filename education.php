@@ -1,4 +1,5 @@
 <?php 
+$path_prefix = ''; 
 // تعريف ملفات الـ CSS الخاصة بصفحة التعليم العالي فقط
 $page_css = [
     'assets/css/education.css',

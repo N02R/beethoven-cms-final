@@ -1,55 +1,57 @@
 <?php
-// إعلام المتصفح أن هذا الملف هو ملف CSS وليس صفحة HTML
+// 1. إعلام المتصفح بأن الناتج هو كود CSS
 header("Content-type: text/css; charset: UTF-8");
 
-// تفعيل نظام الكاش (Caching) لكي لا يقوم السيرفر بضغط الملفات في كل زيارة (توفيراً للطاقة)
-$offset = 60 * 60 * 24 * 7; // الكاش لمدة أسبوع
+// 2. تفعيل الكاش لتوفير طاقة السيرفر وسرعة التصفح
+$offset = 60 * 60 * 24 * 7; // أسبوع كامل
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
 header("Cache-Control: public, max-age=" . $offset);
 
-// مصفوفة بالملفات الأساسية المشتركة التي نريد دمجها دائماً بترتيب صحيح
+// 3. الملفات الأساسية المشتركة في كل صفحات الموقع (بترتيبها الصحيح)
 $base_files = [
     'bootstrap.min.css',
+    'all.min.css',
     'main.css',
     'style.css',
     'header.css',
     'footer.css',
-    'responsive-index.css'
+    'responsive-index.css' // تم ضبط الاسم الصحيح لملف الريسبونسيف الخاص بكِ
 ];
 
-// استقبال أي ملفات إضافية خاصة بالصفحة عبر الرابط (GET)
+// 4. استقبال الملفات الإضافية المحقونة من الصفحات
 $extra_files = isset($_GET['files']) ? explode(',', $_GET['files']) : [];
 
-// دمج القائمتين معاً
+// 5. دمج المصفوفات معاً
 $all_files = array_merge($base_files, $extra_files);
 
 $combined_content = "";
 
-// قراءة محتوى كل ملف ودمجه
+// 6. قراءة ودمج المحتويات بذكاء وحماية
 foreach ($all_files as $file) {
-    // تنظيف اسم الملف لحماية السيرفر من الثغرات الأمنية (Directory Traversal)
+    // تنظيف الاسم لمنع ثغرات مسارات الملفات
     $file = basename(trim($file));
     
-    // التحقق من امتداد الملف وأنه موجود
-    if (!empty($file) && (str_ends_with($file, '.css'))) {
+    if (!empty($file) && str_ends_with($file, '.css')) {
+        // الاحتمال الأول: الملف موجود في نفس المجلد الحالي (assets/css/)
         if (file_exists($file)) {
             $combined_content .= file_get_contents($file) . "\n";
-        } elseif (file_exists("../../edu-services/css/" . $file)) { 
-            // إذا كان الملف داخل مجلد خدمات التعليم الفرعي
+        } 
+        // الاحتمال الثاني: الملف موجود في مجلد خدمات التعليم الفرعي (edu-services/css/)
+        elseif (file_exists("../../edu-services/css/" . $file)) {
             $combined_content .= file_get_contents("../../edu-services/css/" . $file) . "\n";
         }
     }
 }
 
-// دالة ذكية لضغط كود الـ CSS (إزالة التعليقات والمسافات والأسطر)
+// 7. دالة تنظيف وضغط الكود (Minification)
 function minify_css($css) {
-    // إزالة التعليقات /* ... */
+    // حذف التعليقات
     $css = preg_replace('!/\*[^*]*\*+([^/*][^*]*\*+)*/!', '', $css);
-    // إزالة المسافات المحيطة بالرموز الشائعة
+    // حذف الأسطر والمسافات الزائدة والتطابقات المحيطة بالرموز
     $css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
     $css = preg_replace('/ ?([,:;{}]) ?/', '$1', $css);
     return $css;
 }
 
-// طباعة الكود النهائي المضغوط والمدمج
+// 8. طباعة الناتج النهائي المضغوط
 echo minify_css($combined_content);

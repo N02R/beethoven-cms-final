@@ -1,4 +1,5 @@
 <?php 
+$path_prefix = ''; 
 // تعريف ملفات الـ CSS الخاصة بهذه الصفحة فقط
 $page_css = [
     'assets/css/swiper-bundle.min.css',

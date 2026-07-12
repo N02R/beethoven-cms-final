@@ -46,10 +46,14 @@ if (!isset($path_prefix)) {
         <div class="col-12 col-md-6 col-lg-4">
           <h5>تواصل معنا</h5>
           <div class="contact-link">
-            <a href="tel:+4917671230666"><img src="<?php echo $path_prefix; ?>img/contact%20us/call-calling.svg" alt="">666-230-71 176 (0) 49+</a>
-            <a href="mailto:info@Beethoven-City-Services.com"><img src="<?php echo $path_prefix; ?>img/contact%20us/sms.svg" alt="">info@Beethoven-City-Services.com</a>
+            <a href="tel:+4917671230666">
+              <img src="<?php echo $path_prefix; ?>assets/img/contact us/call-calling.svg" alt="">666-230-71 176 (0) 49+
+            </a>
+            <a href="mailto:info@Beethoven-City-Services.com">
+              <img src="<?php echo $path_prefix; ?>assets/img/contact us/sms.svg" alt="">info@Beethoven-City-Services.com
+            </a>
             <div class="contact-link-item d-flex align-items-center gap-2">
-              <img src="<?php echo $path_prefix; ?>img/contact%20us/Location.svg" alt="">
+              <img src="<?php echo $path_prefix; ?>assets/img/contact us/Location.svg" alt="">
               <span style="font-size: 12px; color: #4F4F4F;">Rheinweg 140 ,53129 Bonn,Germany</span>
             </div>
           </div>
@@ -66,18 +70,20 @@ if (!isset($path_prefix)) {
   </footer>
   <!-- footer end  -->
   
-  <script src="<?php echo $path_prefix; ?>assets/js/bootstrap.bundle.min.js"></script>
+  <?php 
+  // 1. تجميع ملفات الـ JS الإضافية المحقونة من الصفحات ديناميكياً
+  $extra_js_string = "";
+  if (isset($page_js) && is_array($page_js)) {
+      // جلب اسم الملف المباشر فقط (بدون المسار الزائد) ليتعرف عليه سكربت الضغط
+      $cleaned_js_files = array_map('basename', $page_js);
+      $extra_js_string = "?files=" . implode(',', $cleaned_js_files);
+  }
+  ?>
 
-  <!-- حقن ملفات الـ JS الإضافية ديناميكياً -->
-  <?php if (isset($page_js) && is_array($page_js)): ?>
-    <?php foreach ($page_js as $js_file): ?>
-      <script src="<?php echo $js_file; ?>"></script>
-    <?php endforeach; ?>
-  <?php endif; ?>
+  <!-- سطر واحد مدمج ومضغوط يجمع الملفات الأساسية (Bootstrap, main) والإضافية تلقائياً -->
+  <script src="<?php echo $path_prefix; ?>assets/js/minify-js.php<?php echo $extra_js_string; ?>"></script>
 
-  <script src="<?php echo $path_prefix; ?>assets/js/all.min.js"></script>
-  <script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>
-
+  <!-- أي سكربت مخصص مكتوب كـ Text داخل الصفحة يتم طباعته هنا بأمان بعد دمج الملفات -->
   <?php if (isset($custom_script)) { echo $custom_script; } ?>
 </body>
 </html>

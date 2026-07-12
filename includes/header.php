@@ -13,10 +13,10 @@ if (!isset($path_prefix)) {
   <title>Document</title>
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/bootstrap.min.css"> 
   
-  <!-- حقن ملفات الـ CSS الإضافية الخاصة بكل صفحة ديناميكياً -->
+  <!-- حقن ملفات الـ CSS الإضافية الخاصة بكل صفحة ديناميكياً مع مراعاة مسار المجلد الحالي -->
   <?php if (isset($page_css) && is_array($page_css)): ?>
     <?php foreach ($page_css as $css_file): ?>
-      <link rel="stylesheet" href="<?php echo $css_file; ?>">
+      <link rel="stylesheet" href="<?php echo $path_prefix . $css_file; ?>">
     <?php endforeach; ?>
   <?php endif; ?>
 

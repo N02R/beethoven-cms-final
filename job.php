@@ -1,158 +1,14 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<?php 
+// تعريف ملفات الـ CSS الخاصة بصفحة التدريب المهني فقط
+$page_css = [
+    'assets/css/education.css', // الصفحة تشترك مع التعليم العالي في بعض التنسيقات مثل التايم لاين والخدمات
+    'assets/css/responsive-education.css'
+];
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/header.css">
-  <link rel="stylesheet" href="assets/css/footer.css">
-  <link rel="stylesheet" href="assets/css/education.css">
-  <link rel="stylesheet" href="assets/css/responsive-index.css">
-  <link rel="stylesheet" href="assets/css/responsive-education.css">
-</head>
+// استدعاء الهيدر المشترك (يحتوي تلقائياً على شريط التنقل والروابط المحدثة)
+include 'includes/header.php'; 
+?>
 
-<body>
-  <!-- header start -->
-  <header>
-    <!-- nav top -->
-    <nav class="nav-top navbar py-2" aria-label="روابط التواصل الاجتماعي">
-      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
-        <!-- Logo (Desktop) -->
-        <a class="navbar-brand d-none d-lg-flex" href="index.html">
-          <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" width="178" height="72" loading="lazy">
-        </a>
-        <!-- Spacer -->
-        <div class="flex-grow-1 d-none d-lg-flex more"></div>
-        <!-- Social Icons -->
-        <div class="social-icons d-none d-lg-flex gap-3">
-          <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener">
-            <img src="assets/img/socialicons/Facebook.png" alt="فيسبوك">
-          </a>
-          <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener">
-            <img src="assets/img/socialicons/Instagram.png" alt="إنستغرام">
-          </a>
-          <a href="https://wa.me/4917671230666" target="_blank" rel="noopener">
-            <img src="assets/img/socialicons/whatsapp.png" alt="واتساب">
-          </a>
-          <a href="#" target="_blank" rel="noopener">
-            <img src="assets/img/socialicons/Twitter.png" alt="تويتر">
-          </a>
-          <a href="https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY" target="_blank" rel="noopener">
-            <img src="assets/img/socialicons/youtube.png" alt="يوتيوب">
-          </a>
-        </div>
-      </div>
-    </nav>
-    <!-- main nav -->
-    <nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
-      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
-        <!-- Logo (Mobile) -->
-        <a class="navbar-brand d-lg-none" href="index.html">
-          <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" loading="lazy">
-        </a>
-<a class="navbar-brand logo-scroll d-none" href="index.html">
-  <img src="assets/img/logo.png" alt="logo">
-</a>
-        <!-- Desktop Menu -->
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav gap-3">
-            <li class="nav-item">
-              <a class="nav-link active" href="index.html">الرئيسية</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="aboutus.html">عن الشركة</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="education.html">التعليم العالي</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="job.html">التدريب المهني</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="guide.html">دليل بيتهوفن</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="contact.html">تواصل معنا</a>
-            </li>
-          </ul>
-        </div>
-        <!-- Right Side Controls -->
-        <div class="d-flex align-items-center gap-3">
-          <!-- Mobile Menu Button -->
-          <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasNavbar" aria-label="فتح القائمة">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <!-- Language Switcher -->
-          <div class="dropdown">
-            <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="assets/img/home/global.svg" alt="Language">
-                <span>العربية</span>
-              <img src="assets/img/home/arowwdown.svg" alt="فتح القائمة">
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <a class="dropdown-item d-flex align-items-center gap-2 active" href="index.html">
-                  <img src="assets/img/ar.svg" width="20" height="20" alt="">
-                  العربية
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item d-flex align-items-center gap-2" href="index-en.html">
-                  <img src="assets/img/en.svg" width="20" height="20" alt="">
-                  English
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </nav>
-    <!-- offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-  <div class="offcanvas-header d-flex align-items-center justify-content-between">
-    
-    <!-- اللوغو — على اليمين أول -->
-    <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
-      <a href="index.html">
-        <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" height="50">
-      </a>
-    </h5>
-
-    <!-- زر الإغلاق — على اليسار ثاني -->
-<button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة"></button>
-  </div>
-  <div class="offcanvas-body">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link active" href="index.html">الرئيسية</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="aboutus.html">عن الشركة</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="education.html">التعليم العالي</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="job.html">التدريب المهني</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="guide.html">دليل بيتهوفن</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="contact.html">تواصل معنا</a>
-      </li>
-    </ul>
-  </div>
-</div>
-  </header>
-  <!-- header end -->
   <!-- job start -->
   <section class="job py-5">
     <div class="custom-container">
@@ -165,12 +21,13 @@
           </div>
         </div>
          <div class="col-lg-6">
-   <div class="img-hero"></div>
- </div>
+           <div class="img-hero"></div>
+         </div>
       </div>
     </div>
   </section>
   <!-- job end -->
+
   <!-- why study start -->
   <section class="study py-5">
     <div class="custom-container">
@@ -291,6 +148,7 @@
     </div>
   </section>
   <!-- why study end -->
+
   <!-- program start -->
   <section class="program py-5">
     <div class="container">
@@ -342,6 +200,7 @@
     </div>
   </section>
   <!-- program end -->
+
   <!-- time line start -->
   <section class="timeline-section py-5">
     <div class="custom-container">
@@ -416,326 +275,256 @@
         </div>
       </div>
       <div class="mobile-timeline d-lg-none">
-    
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">01</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Grouptime1.png" alt=""></div>
-                <h3>استشارة مهنية مخصصة</h3>
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">01</span>
             </div>
-            <h4>فهم أهدافك واختيار التخصص المناسب</h4>
-            <p>مكالمة أولية لفهم خلفيتك واختيار المجال المناسب لك في سوق العمل الألماني.</p>
-        </div>
-    </div>
-
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">02</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Group (6).png" alt=""></div>
-                <h3>اختيار البرنامج الأنسب</h3>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Grouptime1.png" alt=""></div>
+                    <h3>استشارة مهنية مخصصة</h3>
+                </div>
+                <h4>فهم أهدافك واختيار التخصص المناسب</h4>
+                <p>مكالمة أولية لفهم خلفيتك واختيار المجال المناسب لك في سوق العمل الألماني.</p>
             </div>
-            <h4>مطابقة بين مؤهلاتك والفرص المتاحة</h4>
-            <p>مطابقة مؤهلاتك مع فرص تدريب متوفرة في شركات ألمانية موثوقة وشريكة.</p>
         </div>
-    </div>
 
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">03</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Group (3).png" alt=""></div>
-                <h3>تجهيز ملفك المهني</h3>
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">02</span>
             </div>
-            <h4>عرض احترافي لسيرتك وخبراتك</h4>
-            <p>إعداد سيرة ذاتية (Lebenslauf) وخطاب تحفيزي احترافي وترجمة وتعديل الشهادات.</p>
-        </div>
-    </div>
-
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">04</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Group (7).png" alt=""></div>
-                <h3>التقديم والتنسيق</h3>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Group (6).png" alt=""></div>
+                    <h3>اختيار البرنامج الأنسب</h3>
+                </div>
+                <h4>مطابقة بين مؤهلاتك والفرص المتاحة</h4>
+                <p>مطابقة مؤهلاتك مع فرص تدريب متوفرة في شركات ألمانية موثوقة وشريكة.</p>
             </div>
-            <h4>تقديم الطلبات وترتيب المقابلات</h4>
-            <p>نقدّم الطلبات نيابة عنك وننسق مقابلاتك المباشرة مع الشركات الألمانية المانحة للتدريب.</p>
         </div>
-    </div>
 
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">05</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Group.png" alt=""></div>
-                <h3>القبول والاستعداد</h3>
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">03</span>
             </div>
-            <h4>دعم كامل للسفر والسكن والتأشيرة</h4>
-            <p>تأمين عقد التدريب، المساعدة في إجراءات التأشيرة، السكن، والتحضير للبدء في ألمانيا.</p>
-        </div>
-    </div>
-
-    <div class="m-step">
-        <div class="m-number-box">
-            <span class="m-num">06</span>
-        </div>
-        <div class="m-content">
-            <div class="m-header">
-                <div class="m-icon"><img src="assets/img/vector/Grouptime6.png" alt=""></div>
-                <h3>المرافقة خلال التدريب</h3>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Group (3).png" alt=""></div>
+                    <h3>تجهيز ملفك المهني</h3>
+                </div>
+                <h4>عرض احترافي لسيرتك وخبراتك</h4>
+                <p>إعداد سيرة ذاتية (Lebenslauf) وخطاب تحفيزي احترافي وترجمة وتعديل الشهادات.</p>
             </div>
-            <h4>متابعة مستمرة حتى إنهاء التدريب بنجاح</h4>
-            <p>متابعة دورية خلال فترة العمل لضمان استقرارك، وحتى إصدار شهادة خبرة رسمية معتمدة.</p>
         </div>
-    </div>
 
-</div>
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">04</span>
+            </div>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Group (7).png" alt=""></div>
+                    <h3>التقديم والتنسيق</h3>
+                </div>
+                <h4>تقديم الطلبات وترتيب المقابلات</h4>
+                <p>نقدّم الطلبات نيابة عنك وننسق مقابلاتك المباشرة مع الشركات الألمانية المانحة للتدريب.</p>
+            </div>
+        </div>
+
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">05</span>
+            </div>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Group.png" alt=""></div>
+                    <h3>القبول والاستعداد</h3>
+                </div>
+                <h4>دعم كامل للسفر والسكن والتأشيرة</h4>
+                <p>تأمين عقد التدريب، المساعدة في إجراءات التأشيرة، السكن، والتحضير للبدء في ألمانيا.</p>
+            </div>
+        </div>
+
+        <div class="m-step">
+            <div class="m-number-box">
+                <span class="m-num">06</span>
+            </div>
+            <div class="m-content">
+                <div class="m-header">
+                    <div class="m-icon"><img src="assets/img/vector/Grouptime6.png" alt=""></div>
+                    <h3>المرافقة خلال التدريب</h3>
+                </div>
+                <h4>متابعة مستمرة حتى إنهاء التدريب بنجاح</h4>
+                <p>متابعة دورية خلال فترة العمل لضمان استقرارك، وحتى إصدار شهادة خبرة رسمية معتمدة.</p>
+            </div>
+        </div>
+      </div>
     </div>
   </section>
   <!-- time line end -->
+
   <!-- education services start -->
   <section class="edu-services py-5">
     <div class="container">
-      <h2 class="sec-title mb-3">ماذا نقدم في بيتهوفن سيتي؟</h2>
-      <p class="mb-5 main-p">توفر شركة بيهوفن سيتي خدمات متكاملة للطلبة الراغبين بالإلتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا</p>
+      <h2 class="sec-title mb-3">ماذا تقدم في بيتهوفن سيتي؟</h2>
+      <p class="mb-5 main-p">توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالإلتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا</p>
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <div class="col">
-          <a href="edu-services/coverletter.html">
+          <a href="edu-services/coverletter.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg1.jpg');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/coverletter.html">خطاب الطلب</a></h6>
+                <h6 class="card-title"><a href="edu-services/coverletter.php">خطاب الطلب</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/cv.html">
+          <a href="edu-services/cv.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg2.jpg');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/cv.html">السيرة الذاتية (CV)</a></h6>
+                <h6 class="card-title"><a href="edu-services/cv.php">السيرة الذاتية (CV)</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/motivitionletter.html">
+          <a href="edu-services/motivitionletter.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg3.png');background-position: right center;">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/motivitionletter.html">رسالة الدافع
-                    والتحفيز</a></h6>
+                <h6 class="card-title"><a href="edu-services/motivitionletter.php">رسالة الدافع والتحفيز</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/germanlang.html">
+          <a href="edu-services/germanlang.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg4.png'); background-position: -31px center;">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/germanlang.html">دورات اللغة الألمانية</a>
-                </h6>
+                <h6 class="card-title"><a href="edu-services/germanlang.php">دورات اللغة الألمانية</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/englishlang.html">
+          <a href="edu-services/englishlang.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/job/servicesimg1.png'); background-position:  center bottom;">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/englishlang.html">التخصصات الطبية</a></h6>
+                <h6 class="card-title"><a href="edu-services/englishlang.php">التخصصات الطبية</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/health.html">
+          <a href="edu-services/health.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg6.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/health.html">التأمين الصحي</a></h6>
+                <h6 class="card-title"><a href="edu-services/health.php">التأمين الصحي</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/financial.html">
+          <a href="edu-services/financial.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg7.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/financial.html">الضمانات المالية</a></h6>
+                <h6 class="card-title"><a href="edu-services/financial.php">الضمانات المالية</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/living.html">
+          <a href="edu-services/living.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg8.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/living.html">تكلفة المعيشة في آلمانيا</a>
-                </h6>
+                <h6 class="card-title"><a href="edu-services/living.php">تكلفة المعيشة في آلمانيا</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/arrival.html">
+          <a href="edu-services/arrival.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg9.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/arrival.html">الوصول والإقامة</a></h6>
+                <h6 class="card-title"><a href="edu-services/arrival.php">الوصول والإقامة</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/pakeges.html">
+          <a href="edu-services/pakeges.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/job/servicesimg2.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/pakeges.html">باقة التدريب المهني</a></h6>
+                <h6 class="card-title"><a href="edu-services/pakeges.php">باقة التدريب المهني</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/foundation.html">
+          <a href="edu-services/foundation.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/job/serviceimg3.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/foundation.html">باقة الإقامة الطبية</a></h6>
+                <h6 class="card-title"><a href="edu-services/foundation.php">باقة الإقامة الطبية</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/courses.html">
+          <a href="edu-services/courses.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/job/servicesimg4.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/courses.html">اتفاقية البحث عن عمل</a></h6>
+                <h6 class="card-title"><a href="edu-services/courses.php">اتفاقية البحث عن عمل</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/check.html">
+          <a href="edu-services/check.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg13.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/check.html">تحقق من شهادتك</a> </h6>
+                <h6 class="card-title"><a href="edu-services/check.php">تحقق من شهادتك</a> </h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/general.html">
+          <a href="edu-services/general.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg14.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/general.html">متطلبات التأشيرة</a></h6>
+                <h6 class="card-title"><a href="edu-services/general.php">متطلبات التأشيرة</a></h6>
               </div>
             </div>
           </a>
         </div>
         <div class="col">
-          <a href="edu-services/services-cost.html">
+          <a href="edu-services/services-cost.php">
             <div class="card service-card text-white border-0 rounded-5"
               style="background-image: url('assets/img/education/servicesimg15.png');">
               <div class="card-body d-flex align-items-end justify-content-center">
-                <h6 class="card-title"><a href="edu-services/services-cost.html">قائمة أسعار الخدمات</a>
-                </h6>
+                <h6 class="card-title"><a href="edu-services/services-cost.php">قائمة أسعار الخدمات</a></h6>
               </div>
             </div>
           </a>
         </div>
-        <!-- كرّر البطاقات حسب الحاجة -->
       </div>
     </div>
   </section>
   <!-- education services end -->
-  <!-- footer start -->
-  <section class="consult-banner-section">
-    <div class="container-fluid custom-container">
-      <div class="consult-banner">
-        <div class="consult-banner-inner">
-          <div class="consult-banner-text">
-            <h4>احصل على استشارة مجانية</h4>
-            <p>هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة</p>
-          </div>
-          <form class="consult-banner-form" action="send_consult.php" method="POST">
-            <input type="email" name="email" placeholder="ادخل إيميلك..." aria-label="Email" required />
-            <button type="submit">
-              <img src="assets/img/home/send-2.svg" alt="إرسال">
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-  <footer class="footer-section pt-5">
-    <div class="container-fluid custom-container">
-      <div class="row gy-5">
-        <div class="col-12 col-lg-5">
-          <img src="assets/img/logo.png" alt="BCS Logo" class="mb-4">
-          <p class="footer-desc">
-            هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربي，
-            حيث يمكنك..
-          </p>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <h5>روابط سريعة</h5>
-          <div class="quick-link">
-            <a href="#">عن الشركة</a>
-            <a href="#">التعليم العالي</a>
-            <a href="#">التدريب المهني</a>
-            <a href="#">دليل الشركة</a>
-            <a href="#">تواصل معنا</a>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-4">
-          <h5>تواصل معنا</h5>
-          <div class="contact-link">
-            <a href="tel:+4917671230666"><img src="img/contact%20us/call-calling.svg" alt="">666-230-71 176
-              (0) 49+</a>
-            <a href="mailto:info@Beethoven-City-Services.com"><img src="img/contact%20us/sms.svg"
-                alt="">info@Beethoven-City-Services.com</a>
-            <div class="contact-link-item d-flex align-items-center gap-2">
-              <img src="img/contact%20us/Location.svg" alt="">
-              <span style="font-size: 12px; color: #4F4F4F;">Rheinweg 140 ,53129 Bonn,Germany</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="my-4">
-      <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
-        <p class="mb-0 text-center text-md-start">
-          <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
-        </p>
-        <a href="#">سياسة الخصوصية وشروط الإستخدام</a>
-      </div>
-    </div>
-  </footer>
-  <!-- footer end  -->
-  <script src="assets/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/js/all.min.js"></script>
-  <script src="assets/js/main.js"></script>
-</body>
 
-</html>
+<?php 
+// استدعاء الفوتر المشترك
+include 'includes/footer.php'; 
+?>

@@ -6,7 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="assets/css/bootstrap.min.css"> 
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">-->
+  
+  <!-- حقن ملفات الـ CSS الإضافية الخاصة بكل صفحة ديناميكياً -->
+  <?php if (isset($page_css) && is_array($page_css)): ?>
+    <?php foreach ($page_css as $css_file): ?>
+      <link rel="stylesheet" href="<?php echo $css_file; ?>">
+    <?php endforeach; ?>
+  <?php endif; ?>
+
   <link rel="stylesheet" href="assets/css/all.min.css">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/style.css">
@@ -61,10 +68,10 @@
         <div class="collapse navbar-collapse">
           <ul class="navbar-nav gap-3">
             <li class="nav-item">
-              <a class="nav-link active" href="index.php">الرئيسية</a>
+              <a class="nav-link" href="index.php">الرئيسية</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="aboutus.php">عن الشركة</a>
+              <a class="nav-link active" href="about.php">عن الشركة</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="education.php">التعليم العالي</a>
@@ -97,13 +104,13 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
-                <a class="dropdown-item d-flex align-items-center gap-2 active" href="index.php">
+                <a class="dropdown-item d-flex align-items-center gap-2 active" href="about.php">
                   <img src="assets/img/ar.svg" width="20" height="20" alt="">
                   العربية
                 </a>
               </li>
               <li>
-                <a class="dropdown-item d-flex align-items-center gap-2" href="index-en.php">
+                <a class="dropdown-item d-flex align-items-center gap-2" href="about-en.php">
                   <img src="assets/img/en.svg" width="20" height="20" alt="">
                   English
                 </a>
@@ -116,22 +123,20 @@
     <!-- offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-header d-flex align-items-center justify-content-between">
-        <!-- اللوغو — على اليمين أول -->
         <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
           <a href="index.php">
             <img src="assets/img/logo.png" alt="شعار بيتهوفن سيتي" height="50">
           </a>
         </h5>
-        <!-- زر الإغلاق — على اليسار ثاني -->
-        <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إإغلاق القائمة"></button>
+        <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة"></button>
       </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href="index.php">الرئيسية</a>
+            <a class="nav-link" href="index.php">الرئيسية</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="aboutus.php">عن الشركة</a>
+            <a class="nav-link active" href="about.php">عن الشركة</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="education.php">التعليم العالي</a>

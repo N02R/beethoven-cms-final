@@ -31,7 +31,7 @@
         <div class="col-12 col-md-6 col-lg-3">
           <h5>روابط سريعة</h5>
           <div class="quick-link">
-            <a href="aboutus.php">عن الشركة</a>
+            <a href="about.php">عن الشركة</a>
             <a href="education.php">التعليم العالي</a>
             <a href="job.php">التدريب المهني</a>
             <a href="guide.php">دليل الشركة</a>
@@ -62,9 +62,19 @@
   <!-- footer end  -->
   
   <script src="assets/js/bootstrap.bundle.min.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>-->
+
+  <!-- حقن ملفات الـ JS الإضافية ديناميكياً قبل باقي الملفات -->
+  <?php if (isset($page_js) && is_array($page_js)): ?>
+    <?php foreach ($page_js as $js_file): ?>
+      <script src="<?php echo $js_file; ?>"></script>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
   <script src="assets/js/all.min.js"></script>
   <script src="assets/js/main.js"></script>
+
+  <!-- حقن أي سكربت مخصص (Inline Script) تم تعريفه في الصفحة -->
+  <?php if (isset($custom_script)) { echo $custom_script; } ?>
 </body>
 
 </html>

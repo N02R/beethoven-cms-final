@@ -1,24 +1,31 @@
 <?php
-// تفعيل الجلسة إذا لم تكن نشطة للتحقق من الصلاحيات لاحقاً
+// 1. تفعيل الجلسة بأمان في أعلى الملف
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// تعريف المسار الأساسي للملفات
-if (!isset($path_prefix)) { $path_prefix = ''; }
+// 2. تعريف المسار الأساسي للملفات (إذا كانت الصفحة في الجذر نتركها فارغة، وإذا كانت في مجلد فرعي نعدلها)
+if (!isset($path_prefix)) { 
+    $path_prefix = ''; 
+}
 
-// إعداد مسار اللوجو الافتراضي للموقع لحماية التصميم
+// 3. دالة التحقق من صلاحيات المسؤول
+if (!function_exists('isUserAdmin')) {
+    function isUserAdmin() {
+        return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    }
+}
+
+// التحقق الفعلي
+$is_admin = isUserAdmin(); 
+
+// 4. إعداد مسار اللوجو الافتراضي للموقع 
 $site_logo_path = 'assets/img/logo.png'; 
-// استدعاء ملف التحقق من الصلاحيات
-require_once __DIR__ . '/check_auth.php'; 
-
-// استبدال القيمة الثابتة بالتحقق الحقيقي
-$is_admin = isAdmin(); 
-
 
 // =======================================================
-// منطق الإعلان التفاعلي وقراءة الشعار (يقرأ من ملف الإعدادات)
+// منطق الإعلان التفاعلي وقراءة الشعار من ملف الـ JSON
 // =======================================================
+// لأن الـ header داخل مجلد includes، نخرج خطوة للخلف باستخدام /../ للوصول للملف
 $config_file_path = __DIR__ . '/../announcement_config.json';
 $announcement = null;
 $show_announcement = false;
@@ -27,12 +34,12 @@ if (file_exists($config_file_path)) {
     $announcement = json_decode(file_get_contents($config_file_path), true);
     
     if (is_array($announcement)) {
-        // 1. استخراج مسار اللوجو المخصص إن وجد في ملف الـ JSON
+        // استخراج مسار اللوجو المخصص إن وجد في ملف الـ JSON
         if (isset($announcement['site_logo_path']) && !empty($announcement['site_logo_path'])) {
             $site_logo_path = $announcement['site_logo_path'];
         }
 
-        // 2. فحص الحالة والجدولة الزمنية للإعلان التفاعلي
+        // فحص الحالة والجدولة الزمنية للإعلان التفاعلي
         if (isset($announcement['status']) && $announcement['status'] === 'Published') {
             $show_announcement = true;
             $current_datetime = date('Y-m-d\TH:i');
@@ -70,19 +77,19 @@ if (file_exists($config_file_path)) {
 <body>
 
   <!-- شريط الإعلان الديناميكي (أعلى الهيدر) -->
-  <?php if ($show_announcement): 
+  <?php if ($show_announcement && is_array($announcement)): 
       $ad_link = $announcement['link'] ?? '';
       $has_link = !empty($ad_link);
       $link_target = (isset($announcement['open_new_tab']) && $announcement['open_new_tab'] == 1) ? 'target="_blank"' : 'target="_self"';
   ?>
     <div class="header-announcement-bar text-center p-2 position-relative" 
-         style="<?php echo ($announcement['type'] === 'text') ? "background-color:".htmlspecialchars($announcement['bg_color'])."; color:".htmlspecialchars($announcement['text_color'])."; font-size:".(int)$announcement['font_size']."px;" : "background-color:#ffffff;"; ?> z-index: 1040; width: 100%; transition: all 0.3s ease-in-out;">
+         style="<?php echo (isset($announcement['type']) && $announcement['type'] === 'text') ? "background-color:".htmlspecialchars($announcement['bg_color'] ?? '#000')."; color:".htmlspecialchars($announcement['text_color'] ?? '#fff')."; font-size:".(int)($announcement['font_size'] ?? 16)."px;" : "background-color:#ffffff;"; ?> z-index: 1040; width: 100%; transition: all 0.3s ease-in-out;">
          
         <?php if ($has_link): ?><a href="<?php echo htmlspecialchars($ad_link); ?>" <?php echo $link_target; ?> class="text-decoration-none text-reset d-block"><?php endif; ?>
-            <?php if ($announcement['type'] === 'text'): ?>
-                <span class="fw-bold"><?php echo htmlspecialchars($announcement['announcement_text']); ?></span>
-            <?php elseif ($announcement['type'] === 'image' && !empty($announcement['image_path'])): ?>
-                <img src="<?php echo htmlspecialchars($announcement['image_path']); ?>" alt="<?php echo htmlspecialchars($announcement['alt_text'] ?? 'إعلان'); ?>" class="img-fluid" style="max-height: 60px; object-fit: contain;">
+            <?php if (isset($announcement['type']) && $announcement['type'] === 'text'): ?>
+                <span class="fw-bold"><?php echo htmlspecialchars($announcement['announcement_text'] ?? ''); ?></span>
+            <?php elseif (isset($announcement['type']) && $announcement['type'] === 'image' && !empty($announcement['image_path'])): ?>
+                <img src="<?php echo $path_prefix . htmlspecialchars($announcement['image_path']); ?>" alt="<?php echo htmlspecialchars($announcement['alt_text'] ?? 'إعلان'); ?>" class="img-fluid" style="max-height: 60px; object-fit: contain;">
             <?php endif; ?>
         <?php if ($has_link): ?></a><?php endif; ?>
     </div>
@@ -157,6 +164,7 @@ if (file_exists($config_file_path)) {
       saveBtn.disabled = true;
       if(spinner) spinner.classList.remove('d-none');
 
+      // تم تعديل المسار ليتوجه إلى مجلد admin الرئيسي الموضح بالشجرة
       fetch('<?php echo $path_prefix; ?>admin/upload_logo.php', { 
           method: 'POST', 
           body: new FormData(this) 

@@ -47,6 +47,17 @@ $bg_color = '#ffffff';
 $text_color = '#000000';
 $font_size = 14;
 
+// مسار ملف التخزين المؤقت (JSON) في المجلد الرئيسي للمشروع
+$config_file = dirname(__DIR__) . '/announcement_config.json';
+
+// إذا كان هناك صورة قديمة مرفوعة مسبقاً، نقوم بقراءتها كاحتياط حتى لا نفقدها إذا قام المدير بتغيير نص فقط
+if (file_exists($config_file)) {
+    $old_config = json_decode(file_get_contents($config_file), true);
+    if (isset($old_config['image_path'])) {
+        $image_path = $old_config['image_path'];
+    }
+}
+
 // المعالجة بناءً على نوع الإعلان المعين (SOLID Principle)
 if ($type === 'text') {
     $announcement_text = sanitizeInput($_POST['announcement_text'] ?? '');
@@ -116,6 +127,30 @@ else if ($type === 'image') {
         echo json_encode(['success' => false, 'error' => 'فشل نقل الصورة المرفوعة للمجلد المستهدف.']);
         exit;
     }
+}
+
+// -----------------------------------------------------------------
+// التحديث الجديد والمهم: تجميع البيانات وحفظها الفعلي في ملف التكوين
+// -----------------------------------------------------------------
+$config_data = [
+    'type'              => $type,
+    'status'            => $status,
+    'link'              => $link,
+    'open_new_tab'      => $open_new_tab,
+    'start_date'        => $start_date,
+    'end_date'          => $end_date,
+    'announcement_text' => $announcement_text,
+    'bg_color'          => $bg_color,
+    'text_color'        => $text_color,
+    'font_size'         => $font_size,
+    'image_path'        => $image_path,
+    'alt_text'          => $alt_text,
+    'updated_at'        => date('Y-m-d H:i:s')
+];
+
+if (!file_put_contents($config_file, json_encode($config_data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))) {
+    echo json_encode(['success' => false, 'error' => 'حدث خطأ أثناء كتابة وحفظ ملف الإعدادات الديناميكي على السيرفر.']);
+    exit;
 }
 
 // هنا يتم تنفيذ الإدخال الآمن في قاعدة البيانات عبر الـ Model لاحقاً

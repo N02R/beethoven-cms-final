@@ -24,27 +24,25 @@ include 'includes/header.php';
     <div class="custom-container">
       <h2 class="mb-5 sec-title">خدماتنا المميزة</h2>
       <div class="row g-4">
+        <!-- الخدمة الأولى -->
         <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="education.php" class="card-link text-decoration-none">
+          <a href="education.php" class="card-link text-decoration-none d-block">
             <div class="card" style="background: url('assets/img/home/education.jpg') no-repeat center/cover;">
-              <a href="education.php">
               <div class="card-info">
                 <h3>التعليم العالي والجامعي</h3>
                 <img src="assets/img/home/Arrow.svg" alt="Arrow">
               </div>
-              </a>
             </div>
           </a>
         </div>
+        <!-- الخدمة الثانية -->
         <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="job.php" class="card-link text-decoration-none">
+          <a href="job.php" class="card-link text-decoration-none d-block">
             <div class="card" style="background: url('assets/img/home/traning.jpg') no-repeat center/cover;">
-              <a href="job.php">
-                              <div class="card-info">
+              <div class="card-info">
                 <h3>التأهيل المهني والعملي</h3>
                 <img src="assets/img/home/Arrow.svg" alt="Arrow">
               </div>
-              </a>
             </div>
           </a>
         </div>
@@ -57,7 +55,7 @@ include 'includes/header.php';
   <section class="choose py-5">
     <div class="container-fluid custom-container choose-container">
       <h2 class="mb-5 sec-title">ما الذي يميز بيتهوفن سيتي</h2>
-      <div class="row  g-3">
+      <div class="row g-3">
         <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
           <div class="card choose-card">
             <div class="card-body">

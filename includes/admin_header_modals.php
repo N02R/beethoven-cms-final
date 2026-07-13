@@ -239,8 +239,8 @@ if (!isset($is_admin) || $is_admin !== true) {
           <div id="socialRowsContainer" style="direction: rtl;">
             
             <?php 
-            // فرضية قراءة المصفوفة الحالية (يمكن ربطها بالـ JSON لاحقاً)
-            $social_links = $social_links ?? [
+            // التحديث الذكي: قراءة المصفوفة الحية المجهزة في الهيدر، وإذا لم توجد نستخدم الافتراضية
+            $current_modal_links = $active_social_links ?? $social_links ?? [
                 ['id' => 1, 'name' => 'Facebook', 'img' => 'assets/img/socialicons/Facebook.png', 'url' => 'https://www.facebook.com/BeethovenCityService'],
                 ['id' => 2, 'name' => 'Instagram', 'img' => 'assets/img/socialicons/Instagram.png', 'url' => 'https://www.instagram.com/beethoven_city_service'],
                 ['id' => 3, 'name' => 'WhatsApp', 'img' => 'assets/img/socialicons/whatsapp.png', 'url' => 'https://wa.me/4917671230666'],
@@ -248,7 +248,7 @@ if (!isset($is_admin) || $is_admin !== true) {
                 ['id' => 5, 'name' => 'YouTube', 'img' => 'assets/img/socialicons/youtube.png', 'url' => 'https://youtube.com/@learning_german_language']
             ];
 
-            foreach ($social_links as $index => $link): 
+            foreach ($current_modal_links as $index => $link): 
             ?>
               <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" data-id="<?php echo $link['id']; ?>" style="border-right: 4px solid #3b82f6 !important;">
                 <div class="row align-items-center g-3 text-end">
@@ -256,22 +256,24 @@ if (!isset($is_admin) || $is_admin !== true) {
                   <!-- معاينة الأيقونة الصغيرة -->
                   <div class="col-auto">
                     <div class="bg-light p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; border: 1px solid #e2e8f0;">
-                      <img id="preview_img_<?php echo $index; ?>" src="<?php echo $path_prefix . $link['img']; ?>" style="max-width: 35px; max-height: 35px; object-fit: contain;">
+                      <img id="preview_img_<?php echo $index; ?>" src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="max-width: 35px; max-height: 35px; object-fit: contain;">
                     </div>
                   </div>
 
                   <!-- تعديل اسم المنصة والصورة -->
                   <div class="col-md-3">
                     <label class="form-label small fw-bold text-secondary mb-1">اسم المنصة / الصورة</label>
-                    <input type="text" class="form-control form-control-sm mb-1 fw-semibold text-end" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name']); ?>" placeholder="مثال: فيسبوك">
+                    <input type="text" class="form-control form-control-sm mb-1 fw-semibold text-end" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name']); ?>" placeholder="مثال: فيسبوك" required>
                     <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>" accept="image/*" onchange="previewSocialIcon(this, 'preview_img_<?php echo $index; ?>')">
+                    
+                    <!-- حقل مخفي يحتوي على مسار الصورة القديمة لمنع ضياعها إذا لم يتم رفع صورة جديدة -->
                     <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img']); ?>">
                   </div>
 
                   <!-- تعديل الرابط الخاص بالمنصة -->
                   <div class="col-md-5">
                     <label class="form-label small fw-bold text-secondary mb-1">رابط التوجيه (URL)</label>
-                    <input type="url" class="form-control form-control-sm text-start" style="direction: ltr;" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>" placeholder="https://...">
+                    <input type="url" class="form-control form-control-sm text-start" style="direction: ltr;" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>" placeholder="https://..." required>
                   </div>
 
                   <!-- زر الحذف المنسق -->

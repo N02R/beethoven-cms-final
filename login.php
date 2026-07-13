@@ -14,43 +14,15 @@ $error_message = "";
 
 // 2. معالجة طلب تسجيل الدخول عند إرسال الفورم
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // تضمين ملف الاتصال بقاعدة البيانات (تأكدي من مطابقة اسم الملف ومساره لديكِ)
+    // تضمين ملف الاتصال بقاعدة البيانات
     // require_once 'includes/db_connect.php'; 
     
-    // تنظيف البيانات المدخلة لمنع ثغرات XSS
     $username = trim(htmlspecialchars(strip_tags($_POST['username'])));
     $password = trim($_POST['password']);
 
     if (!empty($username) && !empty($password)) {
         
-        /* 
-        ===========================================================
-        السيناريو الاحترافي الفعلي باستخدام قاعدة البيانات (جاهز للتفعيل):
-        ===========================================================
-        $stmt = $pdo->prepare("SELECT id, username, password, role FROM users WHERE username = :username LIMIT 1");
-        $stmt->execute(['username' => $username]);
-        $user = $stmt->fetch();
-
-        if ($user && password_verify($password, $user['password'])) {
-            if ($user['role'] === 'admin') {
-                $_SESSION['is_logged_in'] = true;
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-                
-                // تجديد معرف الجلسة لمنع ثغرة Session Fixation
-                session_regenerate_id(true); 
-                
-                header("Location: admin/admin_dashboard.php");
-                exit();
-            } else {
-                $error_message = "عذراً، هذا الحساب لا يملك صلاحيات الإدارة.";
-            }
-        } else {
-            $error_message = "اسم المستخدم أو كلمة المرور غير صحيحة.";
-        }
-        */
-
-        // 3. بيئة اختبار مؤقتة (Demo) لكي تتمكني من التجربة فوراً قبل ربط الداتابيز:
+        // بيئة اختبار مؤقتة (Demo) لكي تتمكني من التجربة فوراً:
         if ($username === "admin" && $password === "admin123") {
             $_SESSION['is_logged_in'] = true;
             $_SESSION['username'] = "نور المسؤول";
@@ -68,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "يرجى ملء جميع الحقول المطلوبة.";
     }
 }
+?> <!-- هنا كان الخطأ؛ قمنا بإغلاق وسم PHP بأمان ليتمكن الخادم من قراءة الـ HTML التالي -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>

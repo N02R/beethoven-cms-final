@@ -1,7 +1,11 @@
 <?php 
-// استدعاء ملف الهيدر المشترك
+// تأكدي أن هذا هو السطر الأول تماماً في الملف بدون أي مسافات أو أسطر فارغة فوقه
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include 'includes/header.php'; 
 ?>
+
 
   <!-- hero start -->
   <section class="hero py-5" aria-label="قسم البداية">

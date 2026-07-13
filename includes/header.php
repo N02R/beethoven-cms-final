@@ -111,18 +111,7 @@ if (file_exists($config_file_path)) {
 </head>
 <body>
 
-  <!-- شريط الإعلان الديناميكي (أعلى الهيدر) -->
-  <?php if ($show_announcement && is_array($announcement)): 
-      $ad_link = $announcement['link'] ?? '';
-      $has_link = !empty($ad_link);
-      $link_target = (isset($announcement['open_new_tab']) && $announcement['open_new_tab'] == 1) ? 'target="_blank"' : 'target="_self"';
-  ?>
-    <div class="header-announcement-bar text-center p-2 position-relative <?php echo $is_admin ? 'editable-admin-border' : ''; ?>" 
-         style="<?php echo (isset($announcement['type']) && $announcement['type'] === 'text') ? "background-color:".htmlspecialchars($announcement['bg_color'] ?? '#000')."; color:".htmlspecialchars($announcement['text_color'] ?? '#fff')."; font-size:".(int)($announcement['font_size'] ?? 16)."px;" : "background-color:#ffffff;"; ?> z-index: 1040; width: 100%; transition: all 0.3s ease-in-out;">
-         
-        <?php if ($is_admin): ?>
-            <button class="btn btn-sm btn-dark position-absolute top-50 translate-middle-y start-0 ms-2" style="font-size: 11px; z-index:1050;" data-bs-toggle="modal" data-bs-target="#announcementEditModal">📝 تعديل الإعلان</button>
-        <?php endif; ?>
+
 
         <?php if ($has_link): ?><a href="<?php echo htmlspecialchars($ad_link); ?>" <?php echo $link_target; ?> class="text-decoration-none text-reset d-block"><?php endif; ?>
             <?php if (isset($announcement['type']) && $announcement['type'] === 'text'): ?>

@@ -85,5 +85,4 @@ if (!isset($path_prefix)) {
 
   <!-- أي سكربت مخصص مكتوب كـ Text داخل الصفحة يتم طباعته هنا بأمان بعد دمج الملفات -->
   <?php if (isset($custom_script)) { echo $custom_script; } ?>
-</body>
-</html>
+

@@ -182,13 +182,24 @@ if (file_exists($config_file_path)) {
 
 
         <!-- Social Icons -->
-        <div class="social-icons d-none d-lg-flex gap-3">
-          <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
-          <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
-          <a href="https://wa.me/4917671230666" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
-          <a href="#" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Twitter.png" alt="تويتر"></a>
-          <a href="https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
+        <div class="social-icons d-none d-lg-flex gap-3 position-relative <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
+          <?php if ($is_admin): ?>
+            <button class="edit-social-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal">📝</button>
+          <?php endif; ?>
+          
+          <?php 
+          $socials = $announcement['social_links'] ?? [
+              ["url" => "https://www.facebook.com/BeethovenCityService", "img" => "assets/img/socialicons/Facebook.png"],
+              ["url" => "https://www.instagram.com/beethoven_city_service", "img" => "assets/img/socialicons/Instagram.png"],
+              ["url" => "https://wa.me/4917671230666", "img" => "assets/img/socialicons/whatsapp.png"],
+              ["url" => "#", "img" => "assets/img/socialicons/Twitter.png"],
+              ["url" => "https://youtube.com/@learning_german_language", "img" => "assets/img/socialicons/youtube.png"]
+          ];
+          foreach ($socials as $s): ?>
+            <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img']; ?>" width="28"></a>
+          <?php endforeach; ?>
         </div>
+
 
       </div>
     </nav>

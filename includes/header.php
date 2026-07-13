@@ -131,32 +131,29 @@ if (file_exists($config_file_path)) {
         </div>
 
         <!-- 📢 مركز الإعلانات الديناميكي الجديد المطور بديل الـ Spacer -->
-        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4 more">
+        <!-- 📢 مركز الإعلانات الديناميكي المعزول (بدون تداخل خلفيات) -->
+        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4 more" style="background: transparent !important; border: none !important; box-shadow: none !important;">
           <?php 
-          // التحقق من حالة الإعلان وتاريخ الجدولة الزمنية قبل العرض
           $current_time = date('Y-m-d H:i:s');
           $start_date = $announcement['start_date'] ?? '';
           $end_date = $announcement['end_date'] ?? '';
           $is_visible = ($announcement['status'] ?? 'Draft') === 'Published';
           
-          // تطبيق فلتر الجدولة الزمنية إذا كانت التواريخ مدخلة
           if ($is_visible && !empty($start_date) && $current_time < $start_date) { $is_visible = false; }
           if ($is_visible && !empty($end_date) && $current_time > $end_date) { $is_visible = false; }
 
-          // إذا كان الإعلان نشطاً أو إذا كان تصفح المستخدم هو الأدمن (لكي يراه ويعدله دائماً)
           if ($is_visible || $is_admin): 
           ?>
-            <div class="w-100 text-center <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>" style="max-width: 500px;">
+            <!-- الحاوية الداخلية أصبحت تأخذ تصميمها بالكامل ديناميكياً أو تختفي في حال البانر -->
+            <div class="w-100 text-center <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>" style="max-width: 500px; background: transparent !important;">
               
-              <!-- زر التعديل للأدمن فقط معلق بذكاء فوق الإعلان -->
               <?php if ($is_admin): ?>
                 <button class="edit-announcement-btn" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان" style="position: absolute; top: -10px; left: -10px; z-index: 10; background: #0d6efd; border: none; border-radius: 50%; width: 24px; height: 24px; color: white; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">📝</button>
                 <?php if (!$is_visible): ?>
-                  <span class="badge bg-secondary position-absolute" style="top: -10px; right: 10px; font-size: 9px;">مخفي عن الطلاب حالياً</span>
+                  <span class="badge bg-secondary position-absolute" style="top: -10px; right: 10px; font-size: 9px;">مخفي</span>
                 <?php endif; ?>
               <?php endif; ?>
 
-              <!-- تجهيز رابط التوجيه عند النقر إذا وُجد -->
               <?php 
               $ad_link = $announcement['link'] ?? '';
               $target = ($announcement['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : '';
@@ -164,15 +161,15 @@ if (file_exists($config_file_path)) {
               ?>
 
               <?php if (($announcement['type'] ?? 'text') === 'text'): ?>
-                <!-- الخيار الأول: الإعلان النصي المتحرك -->
+                <!-- الخيار الأول: طبقة الخلفية الوحيدة تأتي هنا من اختيار المدير -->
                 <div class="p-2 rounded shadow-sm text-truncate" style="background-color: <?php echo htmlspecialchars($announcement['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($announcement['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars($announcement['font_size'] ?? '16'); ?>px; font-weight: 600;">
                   <marquee behavior="scroll" direction="right" scrollamount="4" onmouseover="this.stop();" onmouseout="this.start();">
                     <?php echo htmlspecialchars($announcement['announcement_text'] ?? 'مرحباً بكم في بيتهوفن سيتي للخدمات الطلابية!'); ?>
                   </marquee>
                 </div>
               <?php else: ?>
-                <!-- الخيار الثاني: إعلان الصورة البانر -->
-                <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
+                <!-- الخيار الثاني: صورة البانر (تغطي مساحتها بالكامل دون إظهار أي خلفيات خلفها) -->
+                <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px; background: transparent !important;">
                   <img src="<?php echo $path_prefix . htmlspecialchars($announcement['announcement_image_path'] ?? 'assets/img/default-ad.png'); ?>" alt="<?php echo htmlspecialchars($announcement['alt_text'] ?? 'إعلان بيتهوفن'); ?>" class="img-fluid w-100 h-100" style="object-fit: cover; max-height: 65px;">
                 </div>
               <?php endif; ?>
@@ -182,6 +179,7 @@ if (file_exists($config_file_path)) {
             </div>
           <?php endif; ?>
         </div>
+
 
         <!-- Social Icons -->
         <div class="social-icons d-none d-lg-flex gap-3">

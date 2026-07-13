@@ -6,7 +6,7 @@ if (!isset($is_admin) || $is_admin !== true) {
 }
 ?>
 
-<!-- تنسيقات المودل الجمالية -->
+<!-- التنسيقات -->
 <style>
   .custom-modal .modal-content { border: none !important; border-radius: 16px !important; box-shadow: 0 15px 50px rgba(0,0,0,0.2) !important; }
   .custom-modal .modal-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; color: #fff !important; padding: 20px 24px !important; }
@@ -31,18 +31,19 @@ if (!isset($is_admin) || $is_admin !== true) {
           <div id="socialRowsContainer" style="direction: rtl;">
             <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
               <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #3b82f6;">
-                <div class="row align-items-center g-3 text-end">
+                <div class="row align-items-center g-2 text-end">
                   <div class="col-auto">
-                    <div class="bg-light p-2 rounded-3" style="width: 50px; height: 50px; border: 1px solid #e2e8f0;">
-                      <img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 100%; height: 100%; object-fit: contain;">
-                    </div>
+                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 40px; height: 40px; object-fit: contain;">
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <input type="text" class="form-control form-control-sm" name="name" value="<?php echo htmlspecialchars($link['name']); ?>" required>
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($link['img']); ?>">
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-md-4">
                     <input type="url" class="form-control form-control-sm" name="url" value="<?php echo htmlspecialchars($link['url']); ?>" dir="ltr" required>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="file" class="form-control form-control-sm" name="new_img" accept="image/*">
                   </div>
                   <div class="col-md-2">
                     <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="this.closest('.social-item-row').remove()">🗑️ حذف</button>
@@ -55,24 +56,29 @@ if (!isset($is_admin) || $is_admin !== true) {
       </div>
       
       <div class="modal-footer p-3 bg-light rounded-bottom flex-row-reverse">
-        <button type="submit" form="socialLinksForm" class="btn btn-primary px-4 fw-bold" id="saveSocialBtn">حفظ التغييرات بالكامل</button>
+        <button type="submit" form="socialLinksForm" class="btn btn-primary px-4 fw-bold">حفظ التغييرات بالكامل</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- السكربت الذكي -->
+<!-- السكربت -->
 <script>
 document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData();
     const rows = document.querySelectorAll('.social-item-row');
     
-    // نرسل فقط الصفوف الموجودة فعلياً في الصفحة (الحذف الفعلي)
     rows.forEach((row, index) => {
         formData.append(`social[${index}][name]`, row.querySelector('input[name="name"]').value);
         formData.append(`social[${index}][url]`, row.querySelector('input[name="url"]').value);
         formData.append(`social[${index}][old_img]`, row.querySelector('input[name="old_img"]').value);
+        
+        // التقاط الصورة الجديدة إن وجدت
+        const fileInput = row.querySelector('input[name="new_img"]');
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append(`social_img_${index}`, fileInput.files[0]);
+        }
     });
 
     fetch('<?php echo $path_prefix; ?>admin/api/update_social_links.php', { method: 'POST', body: formData })
@@ -87,10 +93,11 @@ function addNewSocialRow() {
     const container = document.getElementById('socialRowsContainer');
     container.insertAdjacentHTML('beforeend', `
       <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #10b981;">
-        <div class="row align-items-center g-3 text-end">
-          <div class="col-auto"><div style="width: 50px; height: 50px; background:#eee;"></div></div>
-          <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="name" placeholder="اسم المنصة" required></div>
-          <div class="col-md-5"><input type="url" class="form-control form-control-sm" name="url" placeholder="الرابط" dir="ltr" required></div>
+        <div class="row align-items-center g-2 text-end">
+          <div class="col-auto"><div style="width: 40px; height: 40px; background:#eee;"></div></div>
+          <div class="col-md-2"><input type="text" class="form-control form-control-sm" name="name" placeholder="الاسم" required></div>
+          <div class="col-md-4"><input type="url" class="form-control form-control-sm" name="url" placeholder="الرابط" dir="ltr" required></div>
+          <div class="col-md-3"><input type="file" class="form-control form-control-sm" name="new_img" accept="image/*" required></div>
           <input type="hidden" name="old_img" value="assets/img/socialicons/default.png">
           <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="this.closest('.social-item-row').remove()">🗑️ حذف</button></div>
         </div>

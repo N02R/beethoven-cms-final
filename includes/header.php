@@ -181,13 +181,32 @@ if (file_exists($config_file_path)) {
         </div>
 
 
-        <!-- Social Icons -->
-        <div class="social-icons d-none d-lg-flex gap-3">
-          <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
-          <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
-          <a href="https://wa.me/4917671230666" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
-          <a href="#" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Twitter.png" alt="تويتر"></a>
-          <a href="https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/youtube.png" alt="يوتيوب"></a>
+        <!-- Social Icons الديناميكية المحدثة -->
+        <div class="social-icons d-none d-lg-flex gap-3 <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>">
+          
+          <!-- زر فتح مودل التحكم الموحد بالأيقونات (يظهر للأدمن فقط) -->
+          <?php if ($is_admin): ?>
+            <button class="edit-social-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="إدارة أيقونات التواصل" style="position: absolute; top: -10px; right: -10px; z-index: 10; background: #0d6efd; border: none; border-radius: 50%; width: 24px; height: 24px; color: white; font-size: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">📝</button>
+          <?php endif; ?>
+
+          <?php 
+          // فرضاً أننا نقرأ مصفوفة الأيقونات من ملف الإعدادات JSON
+          // $social_links = $site_settings['social_links'] ?? [];
+          // بيئة تجريبية مبدئية بنفس بياناتكِ الحالية حتى نربط الـ JSON:
+          $social_links = $social_links ?? [
+              ['id' => 1, 'name' => 'Facebook', 'img' => 'assets/img/socialicons/Facebook.png', 'url' => 'https://www.facebook.com/BeethovenCityService'],
+              ['id' => 2, 'name' => 'Instagram', 'img' => 'assets/img/socialicons/Instagram.png', 'url' => 'https://www.instagram.com/beethoven_city_service'],
+              ['id' => 3, 'name' => 'WhatsApp', 'img' => 'assets/img/socialicons/whatsapp.png', 'url' => 'https://wa.me/4917671230666'],
+              ['id' => 4, 'name' => 'Twitter', 'img' => 'assets/img/socialicons/Twitter.png', 'url' => '#'],
+              ['id' => 5, 'name' => 'YouTube', 'img' => 'assets/img/socialicons/youtube.png', 'url' => 'https://youtube.com/@learning_german_language']
+          ];
+
+          foreach ($social_links as $link): 
+          ?>
+            <a href="<?php echo htmlspecialchars($link['url']); ?>" target="_blank" rel="noopener" title="<?php echo htmlspecialchars($link['name']); ?>">
+              <img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" alt="<?php echo htmlspecialchars($link['name']); ?>" style="width: 28px; height: 28px; object-fit: contain;">
+            </a>
+          <?php endforeach; ?>
         </div>
 
       </div>

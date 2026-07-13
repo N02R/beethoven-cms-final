@@ -89,6 +89,23 @@ if (file_exists($config_file_path)) {
         box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: all 0.2s; z-index: 10;
     }
     .edit-logo-btn:hover { background: #fff; transform: scale(1.1); }
+    .edit-social-btn {
+    position: absolute; 
+    top: -10px; 
+    left: -10px; 
+    z-index: 20; 
+    background: #0d6efd; 
+    border: none; 
+    border-radius: 50%; 
+    width: 24px; 
+    height: 24px; 
+    color: white; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer;
+}
+
     <?php endif; ?>
   </style>
 </head>

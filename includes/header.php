@@ -181,7 +181,7 @@ if (file_exists($config_file_path)) {
         </div>
 
 
-        <!-- Social Icons الديناميكية المحدثة -->
+        <!-- Social Icons الديناميكية المحدثة بالكامل من ملف الـ JSON -->
         <div class="social-icons d-none d-lg-flex gap-3 <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>">
           
           <!-- زر فتح مودل التحكم الموحد بالأيقونات (يظهر للأدمن فقط) -->
@@ -190,24 +190,29 @@ if (file_exists($config_file_path)) {
           <?php endif; ?>
 
           <?php 
-          // فرضاً أننا نقرأ مصفوفة الأيقونات من ملف الإعدادات JSON
-          // $social_links = $site_settings['social_links'] ?? [];
-          // بيئة تجريبية مبدئية بنفس بياناتكِ الحالية حتى نربط الـ JSON:
-          $social_links = $social_links ?? [
-              ['id' => 1, 'name' => 'Facebook', 'img' => 'assets/img/socialicons/Facebook.png', 'url' => 'https://www.facebook.com/BeethovenCityService'],
-              ['id' => 2, 'name' => 'Instagram', 'img' => 'assets/img/socialicons/Instagram.png', 'url' => 'https://www.instagram.com/beethoven_city_service'],
-              ['id' => 3, 'name' => 'WhatsApp', 'img' => 'assets/img/socialicons/whatsapp.png', 'url' => 'https://wa.me/4917671230666'],
-              ['id' => 4, 'name' => 'Twitter', 'img' => 'assets/img/socialicons/Twitter.png', 'url' => '#'],
-              ['id' => 5, 'name' => 'YouTube', 'img' => 'assets/img/socialicons/youtube.png', 'url' => 'https://youtube.com/@learning_german_language']
-          ];
+          // 1. فحص ما إذا كانت الأيقونات مخزنة ديناميكياً داخل ملف الـ JSON المشرّح مسبقاً في الأعلى
+          if (isset($announcement['social_links']) && is_array($announcement['social_links'])) {
+              $active_social_links = $announcement['social_links'];
+          } else {
+              // 2. مصفوفة افتراضية لحماية الموقع في حال كان ملف الـ JSON فارغاً لأول مرة
+              $active_social_links = [
+                  ['id' => 1, 'name' => 'Facebook', 'img' => 'assets/img/socialicons/Facebook.png', 'url' => 'https://www.facebook.com/BeethovenCityService'],
+                  ['id' => 2, 'name' => 'Instagram', 'img' => 'assets/img/socialicons/Instagram.png', 'url' => 'https://www.instagram.com/beethoven_city_service'],
+                  ['id' => 3, 'name' => 'WhatsApp', 'img' => 'assets/img/socialicons/whatsapp.png', 'url' => 'https://wa.me/4917671230666'],
+                  ['id' => 4, 'name' => 'Twitter', 'img' => 'assets/img/socialicons/Twitter.png', 'url' => '#'],
+                  ['id' => 5, 'name' => 'YouTube', 'img' => 'assets/img/socialicons/youtube.png', 'url' => 'https://youtube.com/@learning_german_language']
+              ];
+          }
 
-          foreach ($social_links as $link): 
+          // 3. طباعة الأيقونات بشكل ديناميكي مرن
+          foreach ($active_social_links as $link): 
           ?>
             <a href="<?php echo htmlspecialchars($link['url']); ?>" target="_blank" rel="noopener" title="<?php echo htmlspecialchars($link['name']); ?>">
               <img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" alt="<?php echo htmlspecialchars($link['name']); ?>" style="width: 28px; height: 28px; object-fit: contain;">
             </a>
           <?php endforeach; ?>
         </div>
+
 
       </div>
     </nav>

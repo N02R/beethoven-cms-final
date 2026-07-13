@@ -1,3 +1,5 @@
+<h1>TEST_HEADING_HERE</h1>
+
 <?php
 // 1. تفعيل الجلسة بأمان في أعلى الملف
 if (session_status() === PHP_SESSION_NONE) {

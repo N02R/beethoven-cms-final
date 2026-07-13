@@ -216,22 +216,29 @@ $is_admin = true;
           method: 'POST',
           body: formData
       })
-      .then(response => response.json())
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('استجاب السيرفر برمز خطأ غير متوقع: ' + response.status);
+          }
+          return response.json();
+      })
       .then(data => {
           saveBtn.disabled = false;
           spinner.classList.add('d-none');
 
           if(data.success) {
-              alert('تم تحديث الشعار بنجاح وأرشفة العملية في السجلات السيرفر!');
+              alert('تم تحديث الشعار بنجاح وأرشفة العملية في سجلات السيرفر!');
               location.reload(); // تحديث الصفحة لرؤية اللوجو الجديد
           } else {
-              alert('فشل التعديل: ' + data.error);
+              // إبراز الخطأ الصريح القادم من قواعد التحقق بالـ PHP للمدير
+              alert('تنبيه: ' + data.error);
           }
       })
       .catch(error => {
           saveBtn.disabled = false;
           spinner.classList.add('d-none');
-          alert('حدث خطأ في الاتصال بالسيرفر.');
+          // تنبيه منسق لأي انقطاع في الشبكة أو خطأ في صيغة البيانات
+          alert('حدث خطأ أثناء الرفع: ' + error.message);
       });
   });
   </script>

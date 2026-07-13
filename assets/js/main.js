@@ -183,24 +183,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   
 });
 
-//admin 
 
-fetch('admin/upload_logo.php', {
-    method: 'POST',
-    body: formData
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        // إذا نجح الرفع، نقوم بتحديث الصورة في الهيدر فوراً
-        document.getElementById('logo-preview').src = data.path;
-        alert('تم تحديث الشعار بنجاح!');
-    } else {
-        // هنا السر! بدلاً من كتابة "حدث خطأ في السيرفر"، نَعرِض السبب الحقيقي القادم من الـ PHP
-        alert('تنبيه: ' + data.error); 
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    alert('حدث خطأ في الاتصال بالسيرفر.');
-});

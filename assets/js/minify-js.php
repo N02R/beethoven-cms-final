@@ -50,5 +50,5 @@ function minify_js($js) {
     return trim($js);
 }
 
-// 8. طباعة الناتج النهائي المضغوط
+/*8. طباعة الناتج النهائي المضغوط*/
 echo minify_js($combined_content);

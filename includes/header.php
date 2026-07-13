@@ -4,11 +4,12 @@ if (!isset($path_prefix)) {
     $path_prefix = '';
 }
 
-// محاكاة الاتصال وقراءة اللوجو من قاعدة البيانات (سنربطه بملف اتصال لاحقاً)
-// مؤقتاً سنفترض القيمة الافتراضية إذا لم يتم جلبها من القاعدة
-$site_logo_path = 'assets/img/logo.png'; 
+// استدعاء خدمة الإعلانات الجديدة
+require_once $path_prefix . 'services/AnnouncementService.php';
+$announcementService = new AnnouncementService();
 
-// اختبار الصلاحيات: اجعليها true لرؤية التعديل، وستكون مربوطة بالـ Session لاحقاً
+// محاكاة الاتصال وقراءة اللوجو من قاعدة البيانات
+$site_logo_path = 'assets/img/logo.png'; 
 $is_admin = true; 
 ?>
 <!DOCTYPE html>
@@ -20,7 +21,6 @@ $is_admin = true;
   <title>Document</title>
 
   <?php 
-  // تجهيز المتغيرات لملفات الـ CSS الإضافية
   $extra_css_string = "";
   if (isset($page_css) && is_array($page_css)) {
       $cleaned_files = array_map('basename', $page_css);
@@ -30,7 +30,6 @@ $is_admin = true;
 
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo $extra_css_string; ?>">
   
-  <!-- تنسيق بسيط لأيقونة القلم الخاصة باللوجو لتظهر بشكل متناسق فوقه -->
   <?php if ($is_admin): ?>
   <style>
     .logo-container { position: relative; display: inline-block; }
@@ -52,7 +51,7 @@ $is_admin = true;
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
         <!-- Logo (Desktop) -->
-        <div class="logo-container d-none d-lg-flex">
+        <div class="logo-container d-none d-lg-flex" style="flex-shrink: 0;">
           <?php if ($is_admin): ?>
             <button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">📝</button>
           <?php endif; ?>
@@ -61,9 +60,13 @@ $is_admin = true;
           </a>
         </div>
 
-        <div class="flex-grow-1 d-none d-lg-flex more"></div>
+        <!-- المنطقة المخصصة للإعلانات (ADS) - تم دمج نظام الإعلانات الآمن هنا -->
+        <div class="flex-grow-1 d-none d-lg-flex more align-items-center justify-content-center px-4">
+            <?php echo $announcementService->renderHeaderAnnouncement(); ?>
+        </div>
+
         <!-- Social Icons -->
-        <div class="social-icons d-none d-lg-flex gap-3">
+        <div class="social-icons d-none d-lg-flex gap-3" style="flex-shrink: 0;">
           <a href="https://www.facebook.com/BeethovenCityService" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Facebook.png" alt="فيسبوك"></a>
           <a href="https://www.instagram.com/beethoven_city_service" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/Instagram.png" alt="إنستغرام"></a>
           <a href="https://wa.me/4917671230666" target="_blank" rel="noopener"><img src="<?php echo $path_prefix; ?>assets/img/socialicons/whatsapp.png" alt="واتساب"></a>
@@ -114,7 +117,6 @@ $is_admin = true;
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="فتح القائمة">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <!-- Language Switcher -->
           <div class="dropdown">
             <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg" alt="Language">
@@ -153,7 +155,7 @@ $is_admin = true;
     </div>
   </header>
 
-  <!-- ==================== المودل الخاص بتعديل اللوجو للمدير فقط ==================== -->
+  <!-- ==================== المودل الخاص بتعديل اللوجو ==================== -->
   <?php if ($is_admin): ?>
   <div class="modal fade" id="logoEditModal" tabindex="-1" aria-labelledby="logoEditModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -164,27 +166,20 @@ $is_admin = true;
         </div>
         <form id="logoUploadForm" enctype="multipart/form-data">
           <div class="modal-body text-center" dir="rtl">
-            
-            <!-- عرض الصورة الحالية -->
             <div class="mb-4">
-              <label class="form-label d-block text-startfw-bold mb-2">الشعار الحالي للموقع:</label>
+              <label class="form-label d-block text-start fw-bold mb-2">الشعار الحالي للموقع:</label>
               <div class="p-3 border rounded bg-light d-inline-block">
                 <img id="currentLogoPreview" src="<?php echo $path_prefix . $site_logo_path; ?>" alt="الشعار الحالي" style="max-height: 100px; object-fit: contain;">
               </div>
             </div>
-
-            <!-- حقل اختيار الصورة الجديدة -->
             <div class="mb-3 text-start">
               <label for="logoFileInput" class="form-label fw-bold">اختر الشعار الجديد (PNG, JPG, JPEG):</label>
               <input class="form-control" type="file" id="logoFileInput" name="new_logo" accept="image/png, image/jpeg, image/jpg" required>
               <div class="form-text text-muted">الحجم الأقصى المسموح به: 2 ميجابايت.</div>
             </div>
-
-            <!-- مؤشر تحميل خفيف -->
             <div id="uploadStatusSpinner" class="spinner-border text-primary d-none my-2" role="status">
               <span class="visually-hidden">جاري الرفع...</span>
             </div>
-
           </div>
           <div class="modal-footer d-flex gap-2 justify-content-center">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
@@ -198,49 +193,40 @@ $is_admin = true;
   <script>
   document.getElementById('logoUploadForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const fileInput = document.getElementById('logoFileInput');
       if (fileInput.files.length === 0) return;
 
       const saveBtn = document.getElementById('saveLogoBtn');
       const spinner = document.getElementById('uploadStatusSpinner');
       
-      // إظهار مؤشر التحميل وتعطيل الزر
       saveBtn.disabled = true;
       spinner.classList.remove('d-none');
 
       const formData = new FormData(this);
 
-      // إرسال طلب AJAX إلى السكربت الخلفي الآمن
       fetch('<?php echo $path_prefix; ?>admin/upload_logo.php', {
           method: 'POST',
           body: formData
       })
       .then(response => {
-          if (!response.ok) {
-              throw new Error('استجاب السيرفر برمز خطأ غير متوقع: ' + response.status);
-          }
+          if (!response.ok) throw new Error('استجاب السيرفر برمز خطأ غير متوقع: ' + response.status);
           return response.json();
       })
       .then(data => {
           saveBtn.disabled = false;
           spinner.classList.add('d-none');
-
           if(data.success) {
               alert('تم تحديث الشعار بنجاح وأرشفة العملية في سجلات السيرفر!');
-              location.reload(); // تحديث الصفحة لرؤية اللوجو الجديد
+              location.reload();
           } else {
-              // إبراز الخطأ الصريح القادم من قواعد التحقق بالـ PHP للمدير
               alert('تنبيه: ' + data.error);
           }
       })
       .catch(error => {
           saveBtn.disabled = false;
           spinner.classList.add('d-none');
-          // تنبيه منسق لأي انقطاع في الشبكة أو خطأ في صيغة البيانات
           alert('حدث خطأ أثناء الرفع: ' + error.message);
       });
   });
   </script>
   <?php endif; ?>
-  <!-- ==================== نهاية المودل ==================== -->

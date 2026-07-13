@@ -112,17 +112,6 @@ if (file_exists($config_file_path)) {
 <body>
 
 
-
-        <?php if ($has_link): ?><a href="<?php echo htmlspecialchars($ad_link); ?>" <?php echo $link_target; ?> class="text-decoration-none text-reset d-block"><?php endif; ?>
-            <?php if (isset($announcement['type']) && $announcement['type'] === 'text'): ?>
-                <span class="fw-bold"><?php echo htmlspecialchars($announcement['announcement_text'] ?? ''); ?></span>
-            <?php elseif (isset($announcement['type']) && $announcement['type'] === 'image' && !empty($announcement['image_path'])): ?>
-                <img src="<?php echo $path_prefix . htmlspecialchars($announcement['image_path']); ?>" alt="<?php echo htmlspecialchars($announcement['alt_text'] ?? 'إعلان'); ?>" class="img-fluid" style="max-height: 60px; object-fit: contain;">
-            <?php endif; ?>
-        <?php if ($has_link): ?></a><?php endif; ?>
-    </div>
-  <?php endif; ?>
-
   <header>
     <!-- nav top -->
     <nav class="nav-top navbar py-2" aria-label="روابط التواصل الاجتماعي">

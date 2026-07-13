@@ -1,14 +1,24 @@
 <?php
+// تفعيل الجلسة إذا لم تكن نشطة للتحقق من الصلاحيات لاحقاً
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // تعريف المسار الأساسي للملفات
 if (!isset($path_prefix)) { $path_prefix = ''; }
 
-// قراءة بيانات الشعار (يمكن ربطها مستقبلاً بقاعدة بيانات)
+// إعداد مسار اللوجو الافتراضي للموقع لحماية التصميم
 $site_logo_path = 'assets/img/logo.png'; 
-$is_admin = true; // يتم ربطها لاحقاً بالـ Session
+// استدعاء ملف التحقق من الصلاحيات
+require_once __DIR__ . '/check_auth.php'; 
 
-// ==========================================
-// منطق الإعلان التفاعلي (يقرأ من ملف الإعدادات)
-// ==========================================
+// استبدال القيمة الثابتة بالتحقق الحقيقي
+$is_admin = isAdmin(); 
+
+
+// =======================================================
+// منطق الإعلان التفاعلي وقراءة الشعار (يقرأ من ملف الإعدادات)
+// =======================================================
 $config_file_path = __DIR__ . '/../announcement_config.json';
 $announcement = null;
 $show_announcement = false;
@@ -16,13 +26,20 @@ $show_announcement = false;
 if (file_exists($config_file_path)) {
     $announcement = json_decode(file_get_contents($config_file_path), true);
     
-    // فحص الحالة والجدولة الزمنية
-    if ($announcement && isset($announcement['status']) && $announcement['status'] === 'Published') {
-        $show_announcement = true;
-        $current_datetime = date('Y-m-d\TH:i');
-        
-        if (!empty($announcement['start_date']) && $current_datetime < $announcement['start_date']) { $show_announcement = false; }
-        if (!empty($announcement['end_date']) && $current_datetime > $announcement['end_date']) { $show_announcement = false; }
+    if (is_array($announcement)) {
+        // 1. استخراج مسار اللوجو المخصص إن وجد في ملف الـ JSON
+        if (isset($announcement['site_logo_path']) && !empty($announcement['site_logo_path'])) {
+            $site_logo_path = $announcement['site_logo_path'];
+        }
+
+        // 2. فحص الحالة والجدولة الزمنية للإعلان التفاعلي
+        if (isset($announcement['status']) && $announcement['status'] === 'Published') {
+            $show_announcement = true;
+            $current_datetime = date('Y-m-d\TH:i');
+            
+            if (!empty($announcement['start_date']) && $current_datetime < $announcement['start_date']) { $show_announcement = false; }
+            if (!empty($announcement['end_date']) && $current_datetime > $announcement['end_date']) { $show_announcement = false; }
+        }
     }
 }
 ?>
@@ -123,7 +140,7 @@ if (file_exists($config_file_path)) {
         <form id="logoUploadForm" enctype="multipart/form-data">
           <div class="modal-body text-center">
             <img id="currentLogoPreview" src="<?php echo $path_prefix . $site_logo_path; ?>" style="max-height: 100px;" class="mb-3">
-            <input class="form-control" type="file" id="logoFileInput" name="new_logo" accept="image/*" required>
+            <input class="form-control" type="file" id="logoFileInput" name="logo" accept="image/*" required>
             <div id="uploadStatusSpinner" class="spinner-border text-primary d-none my-2" role="status"></div>
           </div>
           <div class="modal-footer"><button type="submit" class="btn btn-primary" id="saveLogoBtn">حفظ التعديلات</button></div>
@@ -135,10 +152,30 @@ if (file_exists($config_file_path)) {
   document.getElementById('logoUploadForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const saveBtn = document.getElementById('saveLogoBtn');
+      const spinner = document.getElementById('uploadStatusSpinner');
+      
       saveBtn.disabled = true;
-      fetch('<?php echo $path_prefix; ?>admin/upload_logo.php', { method: 'POST', body: new FormData(this) })
-      .then(r => r.json()).then(data => {
-          if(data.success) { location.reload(); } else { alert(data.error); saveBtn.disabled = false; }
+      if(spinner) spinner.classList.remove('d-none');
+
+      fetch('<?php echo $path_prefix; ?>admin/upload_logo.php', { 
+          method: 'POST', 
+          body: new FormData(this) 
+      })
+      .then(r => r.json())
+      .then(data => {
+          if(data.success) { 
+              location.reload(); 
+          } else { 
+              alert(data.error); 
+              saveBtn.disabled = false;
+              if(spinner) spinner.classList.add('d-none');
+          }
+      })
+      .catch(err => {
+          console.error(err);
+          alert('حدث خطأ أثناء الرفع.');
+          saveBtn.disabled = false;
+          if(spinner) spinner.classList.add('d-none');
       });
   });
   </script>

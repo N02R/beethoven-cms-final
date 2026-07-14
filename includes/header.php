@@ -263,49 +263,30 @@ if (file_exists($config_file_path)) {
       </div>
     </nav>
     
-<!-- Offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-
-    <div class="offcanvas-header">
-
-        <!-- اللوغو — أقصى اليمين -->
+    <!-- offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header d-flex align-items-center justify-content-between">
+        <!-- اللوغو — على اليمين أول -->
         <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
-            <a href="<?php echo $path_prefix; ?>index.php">
-                <img src="<?php echo $path_prefix . $site_logo_path; ?>" 
-                     alt="شعار بيتهوفن سيتي" 
-                     height="50">
-            </a>
+          <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة"></button>
+          <a href="<?php echo $path_prefix; ?>index.php">
+            <img src="<?php echo $path_prefix . $site_logo_path; ?>" alt="شعار بيتهوفن سيتي" height="50">
+          </a>
         </h5>
-
-        <!-- زر الإغلاق — أقصى اليسار -->
-        <button type="button" 
-                class="btn-close" 
-                data-bs-dismiss="offcanvas" 
-                aria-label="إغلاق القائمة">
-        </button>
-
-    </div>
-
-    <div class="offcanvas-body">
-
+        <!-- زر الإغلاق — على اليسار ثاني -->
+      </div>
+      <div class="offcanvas-body">
         <ul class="navbar-nav">
-
-            <?php foreach ($menu_links as $link): ?>
-
-                <li class="nav-item">
-                    <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" 
-                       href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
-                        <?php echo htmlspecialchars($link['title']); ?>
-                    </a>
-                </li>
-
-            <?php endforeach; ?>
-
+          <?php foreach ($menu_links as $link): ?>
+              <li class="nav-item">
+                <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
+                    <?php echo htmlspecialchars($link['title']); ?>
+                </a>
+              </li>
+          <?php endforeach; ?>
         </ul>
-
+      </div>
     </div>
-
-</div>
   </header>
 
 <?php 

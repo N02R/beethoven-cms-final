@@ -13,9 +13,6 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
     align-items:center;
 }
 
-.custom-modal .modal-title{
-    margin-inline-end:auto; /* يدفع الزر إلى اليسار في RTL */
-}
 
 .custom-modal .btn-close{
     margin-inline-start:auto; /* مسافة جميلة بين العنوان والزر */

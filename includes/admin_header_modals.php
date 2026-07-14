@@ -10,6 +10,7 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   align-items: center;
   justify-content: space-between;
   padding: 18px 24px;
+  background: #f8fafc;
 }
 
 .custom-modal .modal-title {

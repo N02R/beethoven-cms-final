@@ -9,40 +9,21 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
-  padding: 1.25rem 1.5rem;
-  background: #f8fafc;
-  border-bottom: 1px solid #e5e7eb;
-  
-  min-height: 72px;
+  padding: 18px 24px;
 }
 
 .custom-modal .modal-title {
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: .75rem;
-  
-  margin: 0;
-  font-size: 1.15rem;
+  gap: .5rem;
   font-weight: 700;
   color: #1e293b;
-  line-height: 1.4;
-}
-
-.custom-modal .modal-title i {
-  color: #2563eb;
-  font-size: 1.15rem;
 }
 
 .custom-modal .btn-close {
+  margin: 0;
   flex-shrink: 0;
-  opacity: .7;
-  transition: .2s ease;
-}
-
-.custom-modal .btn-close:hover {
-  opacity: 1;
-  transform: scale(1.05);
 }
   .social-item-row { transition: 0.3s; border: 1px solid #e2e8f0; }
   .social-item-row:hover { border-color: #3b82f6; }
@@ -54,13 +35,13 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
 <div class="modal-header">
+    <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="إغلاق"></button>
+
     <h5 class="modal-title">
-        <i class="bi bi-share"></i>
+        <i class="bi bi-share ms-2"></i>
         إدارة منصات التواصل
     </h5>
-
-    <button type="button" class="btn-close" data-bs-dismiss="modal"
-        aria-label="إغلاق"></button>
 </div>
       <div class="modal-body p-4">
         <form id="socialLinksForm">

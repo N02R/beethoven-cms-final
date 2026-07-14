@@ -5,8 +5,21 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
 <style>
   :root { --bs-border-radius-lg: 12px; }
   .custom-modal .modal-content { border: none; border-radius: var(--bs-border-radius-lg); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-  .custom-modal .modal-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+  .custom-modal .modal-header{
+    background:#f8fafc;
+    border-bottom:1px solid #e2e8f0;
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+}
+
+.custom-modal .modal-title{
+    margin-inline-end:auto; /* يدفع الزر إلى اليسار في RTL */
+}
+
+.custom-modal .btn-close{
+    margin-inline-start:24px; /* مسافة جميلة بين العنوان والزر */
+}
   .social-item-row { transition: 0.3s; border: 1px solid #e2e8f0; }
   .social-item-row:hover { border-color: #3b82f6; }
   .btn-enterprise { padding: 8px 20px; font-weight: 600; }
@@ -16,10 +29,14 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
-        <button type="button" class="btn-close ms-5" data-bs-dismiss="modal"></button>
-      </div>
+<div class="modal-header">
+    <h5 class="modal-title mb-0">
+        <i class="bi bi-share"></i>
+        إدارة منصات التواصل
+    </h5>
+
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
       <div class="modal-body p-4">
         <form id="socialLinksForm">
           <div id="socialRowsContainer">

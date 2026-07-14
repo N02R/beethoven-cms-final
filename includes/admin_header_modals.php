@@ -17,8 +17,8 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
         <form id="socialLinksForm">
@@ -47,8 +47,8 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         <h5 class="modal-title"><i class="bi bi-image"></i> تحديث شعار الموقع</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body text-center p-4">
         <p class="text-muted small">الشعار الحالي:</p>
@@ -65,8 +65,8 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         <h5 class="modal-title"><i class="bi bi-megaphone"></i> إعدادات الإعلان</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
         <form>

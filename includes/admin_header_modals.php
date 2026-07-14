@@ -1,143 +1,122 @@
 <?php
-// جدار حماية لمنع الدخول المباشر
-if (!isset($is_admin) || $is_admin !== true) {
-    header("HTTP/1.1 403 Forbidden");
-    exit("Access Denied");
-}
+if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 ?>
 
-<!-- التنسيقات العامة للنماذج (Enterprise Design System) -->
 <style>
   :root { --bs-border-radius-lg: 12px; }
-  .custom-modal .modal-content { border: none !important; border-radius: var(--bs-border-radius-lg) !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1) !important; }
-  .custom-modal .modal-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; color: #fff !important; padding: 20px 24px !important; }
-  .social-item-row { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  .btn-enterprise { padding: 10px 24px; font-weight: 600; border-radius: 8px; }
-  .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+  .custom-modal .modal-content { border: none; border-radius: var(--bs-border-radius-lg); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+  .custom-modal .modal-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+  .social-item-row { transition: 0.3s; border: 1px solid #e2e8f0; }
+  .social-item-row:hover { border-color: #3b82f6; }
+  .btn-enterprise { padding: 8px 20px; font-weight: 600; }
 </style>
 
-<!-- 1. مودل إدارة قنوات التواصل الاجتماعي -->
-<div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- 1. مودل التواصل الاجتماعي -->
+<div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header flex-row-reverse">
-        <h5 class="modal-title fw-bold">🌐 إدارة قنوات التواصل الاجتماعي</h5>
-        <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal"></button>
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
       </div>
-      <div class="modal-body p-4" style="background-color: #f8fafc;">
-        <div class="text-end mb-4">
-          <button type="button" class="btn btn-success btn-sm fw-bold px-3 py-2 rounded-3" onclick="addNewSocialRow()">➕ إضافة منصة جديدة</button>
-        </div>
+      <div class="modal-body p-4">
         <form id="socialLinksForm">
-          <div id="socialRowsContainer" style="direction: rtl;">
+          <div id="socialRowsContainer">
             <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
-              <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #3b82f6;">
-                <div class="row align-items-center g-2 text-end">
-                  <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 40px; height: 40px; object-fit: contain;"></div>
-                  <div class="col-md-2"><input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($link['name']); ?>" required><input type="hidden" name="old_img" value="<?php echo htmlspecialchars($link['img']); ?>"></div>
-                  <div class="col-md-4"><input type="url" class="form-control" name="url" value="<?php echo htmlspecialchars($link['url']); ?>" dir="ltr" required></div>
-                  <div class="col-md-3"><input type="file" class="form-control" name="new_img" accept="image/*"></div>
-                  <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100" onclick="this.closest('.social-item-row').remove()">حذف</button></div>
+              <div class="card p-3 mb-3 social-item-row">
+                <div class="row g-2 align-items-center">
+                  <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 32px;"></div>
+                  <div class="col"><input type="text" class="form-control form-control-sm" name="name" value="<?php echo htmlspecialchars($link['name']); ?>"></div>
+                  <div class="col"><input type="url" class="form-control form-control-sm" name="url" value="<?php echo htmlspecialchars($link['url']); ?>"></div>
+                  <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
                 </div>
               </div>
             <?php endforeach; ?>
           </div>
+          <button type="button" class="btn btn-sm btn-success mt-2" onclick="addNewSocialRow()"><i class="bi bi-plus-lg"></i> إضافة منصة</button>
         </form>
       </div>
-      <div class="modal-footer p-3 bg-light rounded-bottom flex-row-reverse">
-        <button type="submit" form="socialLinksForm" class="btn btn-primary btn-enterprise">حفظ التغييرات</button>
-      </div>
+      <div class="modal-footer"><button type="submit" form="socialLinksForm" class="btn btn-primary btn-enterprise">حفظ التغييرات</button></div>
     </div>
   </div>
 </div>
 
 <!-- 2. مودل تعديل الشعار -->
-<div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header flex-row-reverse"><h5 class="modal-title">تعديل الشعار</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body p-4">
-        <form id="logoUpdateForm">
-          <label class="form-label">اختر شعاراً جديداً</label>
-          <input type="file" class="form-control mb-3" accept="image/png, image/webp">
-          <button type="submit" class="btn btn-primary btn-enterprise w-100">تحديث الشعار</button>
-        </form>
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-image"></i> تحديث شعار الموقع</h5>
       </div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted small">الشعار الحالي:</p>
+        <img src="<?php echo $logo_path ?? '#'; ?>" class="mb-4" style="max-height: 60px;">
+        <input type="file" class="form-control" name="new_logo">
+      </div>
+      <div class="modal-footer"><button class="btn btn-primary btn-enterprise">رفع الشعار الجديد</button></div>
     </div>
   </div>
 </div>
 
-<!-- 3. مودل تعديل الإعلان -->
-<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- 3. مودل الإعلان -->
+<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header flex-row-reverse"><h5 class="modal-title">إدارة الإعلان العلوي</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-megaphone"></i> إعدادات الإعلان</h5>
+      </div>
       <div class="modal-body p-4">
-        <form id="announcementUpdateForm">
-          <div class="row g-3">
-            <div class="col-12"><label class="form-label">نص الإعلان</label><textarea class="form-control" rows="3"></textarea></div>
-            <div class="col-md-6"><label class="form-label">لون الخلفية</label><input type="color" class="form-control form-control-color w-100" value="#f1f5f9"></div>
-            <div class="col-md-6"><label class="form-label">رابط التوجيه</label><input type="url" class="form-control" placeholder="https://..."></div>
-          </div>
-          <div class="text-end mt-4"><button type="submit" class="btn btn-primary btn-enterprise">حفظ الإعلان</button></div>
+        <form>
+          <label class="form-label">نوع الإعلان</label>
+          <select class="form-select mb-3" onchange="toggleAdContent(this.value)">
+            <option value="text">نص إعلاني</option>
+            <option value="image">صورة إعلانية</option>
+          </select>
+          <div id="textEditor"><textarea class="form-control" rows="3" placeholder="اكتب نص الإعلان..."></textarea></div>
+          <div id="imageEditor" class="d-none"><input type="file" class="form-control"></div>
         </form>
       </div>
+      <div class="modal-footer"><button class="btn btn-primary btn-enterprise">حفظ التغييرات</button></div>
     </div>
   </div>
 </div>
 
-<!-- 4. مودل إدارة القائمة -->
-<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- 4. مودل القائمة -->
+<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header flex-row-reverse"><h5 class="modal-title">إدارة روابط القائمة</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-list"></i> إدارة القائمة</h5>
+      </div>
       <div class="modal-body p-4">
-        <div class="table-responsive">
-          <table class="table align-middle">
-            <thead class="text-secondary small"><tr><th>اسم الرابط</th><th>المسار</th><th>الترتيب</th><th>إجراء</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><input type="text" class="form-control" value="الرئيسية"></td>
-                <td><input type="text" class="form-control" value="index.php"></td>
-                <td style="width: 80px;"><input type="number" class="form-control" value="1"></td>
-                <td><button class="btn btn-outline-danger">حذف</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <button class="btn btn-outline-primary w-100 mt-2">+ إضافة رابط جديد</button>
+        <table class="table align-middle">
+          <thead><tr><th>الاسم</th><th>الرابط</th><th>الترتيب</th><th>حذف</th></tr></thead>
+          <tbody><tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td style="width:80px"><input type="number" class="form-control form-control-sm"></td><td><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></td></tr></tbody>
+        </table>
+        <button class="btn btn-sm btn-outline-primary w-100">+ إضافة رابط</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Logic for Social Links
-document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData();
-    const rows = document.querySelectorAll('.social-item-row');
-    rows.forEach((row, index) => {
-        formData.append(`social[${index}][name]`, row.querySelector('input[name="name"]').value);
-        formData.append(`social[${index}][url]`, row.querySelector('input[name="url"]').value);
-        formData.append(`social[${index}][old_img]`, row.querySelector('input[name="old_img"]').value);
-        const fileInput = row.querySelector('input[name="new_img"]');
-        if (fileInput && fileInput.files.length > 0) formData.append(`social_img_${index}`, fileInput.files[0]);
-    });
-    fetch('<?php echo $path_prefix; ?>admin/api/update_social_links.php', { method: 'POST', body: formData })
-    .then(r => r.json()).then(data => { if(data.success) location.reload(); else alert('Error: ' + data.error); });
-});
-
+function toggleAdContent(val) {
+    document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
+    document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
+}
 function addNewSocialRow() {
     const container = document.getElementById('socialRowsContainer');
     container.insertAdjacentHTML('beforeend', `
-      <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #10b981;">
-        <div class="row align-items-center g-2 text-end">
-          <div class="col-auto"><div style="width:40px;height:40px;background:#eee;"></div></div>
-          <div class="col-md-2"><input type="text" class="form-control" name="name" placeholder="الاسم" required></div>
-          <div class="col-md-4"><input type="url" class="form-control" name="url" placeholder="الرابط" dir="ltr" required></div>
-          <div class="col-md-3"><input type="file" class="form-control" name="new_img" required></div>
-          <div class="col-md-2"><button type="button" class="btn btn-outline-danger w-100" onclick="this.closest('.social-item-row').remove()">حذف</button></div>
+      <div class="card p-3 mb-3 social-item-row">
+        <div class="row g-2 align-items-center">
+          <div class="col-auto"><div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div></div>
+          <div class="col"><input type="text" class="form-control form-control-sm" placeholder="الاسم"></div>
+          <div class="col"><input type="url" class="form-control form-control-sm" placeholder="الرابط"></div>
+          <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
         </div>
       </div>`);
 }

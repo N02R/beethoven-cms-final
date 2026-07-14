@@ -15,7 +15,7 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
 
 
 .custom-modal .btn-close{
-    margin-inline-start:auto; /* مسافة جميلة بين العنوان والزر */
+    margin-inline-end:auto !important; /* مسافة جميلة بين العنوان والزر */
 }
   .social-item-row { transition: 0.3s; border: 1px solid #e2e8f0; }
   .social-item-row:hover { border-color: #3b82f6; }

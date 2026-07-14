@@ -18,7 +18,7 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
-        <button type="button" class="btn-close me-5" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close ms-5" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
         <form id="socialLinksForm">

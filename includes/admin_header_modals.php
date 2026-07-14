@@ -13,7 +13,7 @@ if (!isset($is_admin) || $is_admin !== true) {
   .social-item-row { transition: all 0.3s ease; }
 </style>
 
-<!-- المودل -->
+<!-- 1. مودل إدارة قنوات التواصل الاجتماعي -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -21,12 +21,10 @@ if (!isset($is_admin) || $is_admin !== true) {
         <h5 class="modal-title fw-bold">🌐 إدارة قنوات التواصل الاجتماعي</h5>
         <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
       </div>
-      
       <div class="modal-body p-4" style="background-color: #f8fafc;">
         <div class="text-start mb-4">
           <button type="button" class="btn btn-success btn-sm fw-bold px-3 py-2 rounded-3 shadow-sm" onclick="addNewSocialRow()">➕ إضافة منصة جديدة</button>
         </div>
-
         <form id="socialLinksForm">
           <div id="socialRowsContainer" style="direction: rtl;">
             <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
@@ -54,39 +52,62 @@ if (!isset($is_admin) || $is_admin !== true) {
           </div>
         </form>
       </div>
-      
       <div class="modal-footer p-3 bg-light rounded-bottom flex-row-reverse">
-        <button type="submit" form="socialLinksForm" class="btn btn-primary px-4 fw-bold">حفظ التغييرات بالكامل</button>
+        <button type="submit" form="socialLinksForm" class="btn btn-primary px-4 fw-bold">حفظ التغييرات</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- السكربت -->
+<!-- 2. مودل تعديل الشعار -->
+<div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header flex-row-reverse"><h5 class="modal-title">تعديل الشعار</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>هنا سيتم وضع نموذج رفع الشعار الجديد.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. مودل تعديل الإعلان -->
+<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header flex-row-reverse"><h5 class="modal-title">إدارة الإعلان العلوي</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>هنا سيتم وضع نموذج تعديل نصوص وألوان الإعلان.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. مودل إدارة القائمة -->
+<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header flex-row-reverse"><h5 class="modal-title">إدارة روابط القائمة</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>هنا سيتم وضع نموذج ترتيب وتعديل القائمة.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- السكربتات -->
 <script>
+// سكربت السوشيال ميديا الخاص بك
 document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData();
     const rows = document.querySelectorAll('.social-item-row');
-    
     rows.forEach((row, index) => {
         formData.append(`social[${index}][name]`, row.querySelector('input[name="name"]').value);
         formData.append(`social[${index}][url]`, row.querySelector('input[name="url"]').value);
         formData.append(`social[${index}][old_img]`, row.querySelector('input[name="old_img"]').value);
-        
-        // التقاط الصورة الجديدة إن وجدت
         const fileInput = row.querySelector('input[name="new_img"]');
         if (fileInput && fileInput.files.length > 0) {
             formData.append(`social_img_${index}`, fileInput.files[0]);
         }
     });
-
     fetch('<?php echo $path_prefix; ?>admin/api/update_social_links.php', { method: 'POST', body: formData })
     .then(r => r.json())
-    .then(data => {
-        if(data.success) { location.reload(); } 
-        else { alert('خطأ: ' + data.error); }
-    });
+    .then(data => { if(data.success) { location.reload(); } else { alert('خطأ: ' + data.error); } });
 });
 
 function addNewSocialRow() {

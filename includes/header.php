@@ -263,12 +263,19 @@ if (file_exists($config_file_path)) {
       </div>
     </nav>
     
-    <!-- offcanvas -->
+<!-- Offcanvas -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
 
     <div class="offcanvas-header">
 
-        <!-- اللوغو — على اليمين -->
+        <!-- زر الإغلاق — أقصى اليسار -->
+        <button type="button" 
+                class="btn-close" 
+                data-bs-dismiss="offcanvas" 
+                aria-label="إغلاق القائمة">
+        </button>
+
+        <!-- اللوغو — أقصى اليمين -->
         <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
             <a href="<?php echo $path_prefix; ?>index.php">
                 <img src="<?php echo $path_prefix . $site_logo_path; ?>" 
@@ -276,13 +283,6 @@ if (file_exists($config_file_path)) {
                      height="50">
             </a>
         </h5>
-
-        <!-- زر الإغلاق — على اليسار -->
-        <button type="button" 
-                class="btn-close" 
-                data-bs-dismiss="offcanvas" 
-                aria-label="إغلاق القائمة">
-        </button>
 
     </div>
 

@@ -10,22 +10,23 @@ header {
 
 .offcanvas-header {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    direction: ltr;
     
     padding: 1rem 1.25rem;
     border-bottom: 1px solid #CCCCCC3D;
 }
 
 .offcanvas-title {
+    direction: rtl;
     margin: 0;
 }
 
 .offcanvas-header .btn-close {
+    margin: 0;
     flex-shrink: 0;
 }
-
 
 .offcanvas-body .nav-link {
     margin-bottom: 10px;

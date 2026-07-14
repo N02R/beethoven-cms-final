@@ -8,23 +8,38 @@ header {
     box-shadow: 0 6px 20px rgba(0, 0, 0, .06);
 }
 
+.offcanvas-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #CCCCCC3D;
+}
+
+.offcanvas-title {
+    margin: 0;
+}
+
+.offcanvas-header .btn-close {
+    flex-shrink: 0;
+}
+
+
 .offcanvas-body .nav-link {
     margin-bottom: 10px;
     padding: 12px 16px;
     background: #f8f9fa;
     border-radius: 8px;
     font-size: 15px;
+    transition: all 0.2s ease;
 }
 
 .offcanvas-body .nav-link:hover {
     background: #e3effa;
     color: #66aeee;
 }
-.offcanvas-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #CCCCCC3D;
-}
-
 .nav-top {
     border-bottom: 1px solid #CCCCCC3D;
     background: #fff;

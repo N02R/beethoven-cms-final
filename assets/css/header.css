@@ -12,14 +12,14 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    direction: ltr;
     
     padding: 1rem 1.25rem;
     border-bottom: 1px solid #CCCCCC3D;
+    
+    direction: rtl;
 }
 
 .offcanvas-title {
-    direction: rtl;
     margin: 0;
 }
 

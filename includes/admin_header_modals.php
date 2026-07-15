@@ -181,23 +181,79 @@ function toggleAdContent(val) {
 
 
 <!-- 4. مودل القائمة -->
-<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1">
+<!-- مودل إدارة قنوات التواصل الاجتماعي -->
+<div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        <h5 class="modal-title"><i class="bi bi-list"></i> إدارة القائمة</h5>
+        <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
       </div>
-      <div class="modal-body p-4">
-        <table class="table align-middle">
-          <thead><tr><th>الاسم</th><th>الرابط</th><th>الترتيب</th><th>حذف</th></tr></thead>
-          <tbody><tr><td><input type="text" class="form-control form-control-sm"></td><td><input type="text" class="form-control form-control-sm"></td><td style="width:80px"><input type="number" class="form-control form-control-sm"></td><td><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></td></tr></tbody>
-        </table>
-        <button class="btn btn-sm btn-outline-primary w-100">+ إضافة رابط</button>
+      
+      <div class="modal-body p-4" style="background-color: #f8fafc;">
+        <form id="socialLinksForm">
+          <div id="socialRowsContainer">
+            <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
+              <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #3b82f6;">
+                <div class="row g-2 align-items-center">
+                  <!-- معاينة الصورة الحالية -->
+                  <div class="col-auto">
+                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                  </div>
+                  
+                  <!-- الحقول -->
+                  <div class="col-md-3">
+                    <input type="text" class="form-control" name="name" value="<?php echo htmlspecialchars($link['name']); ?>" placeholder="اسم المنصة" required>
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($link['img']); ?>">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="url" class="form-control" name="url" value="<?php echo htmlspecialchars($link['url']); ?>" placeholder="الرابط" dir="ltr" required>
+                  </div>
+                  
+                  <!-- رفع صورة جديدة وحذف -->
+                  <div class="col-md-3">
+                    <input type="file" class="form-control form-control-sm" name="new_img" accept="image/*" title="رفع أيقونة جديدة">
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-danger w-100" onclick="this.closest('.social-item-row').remove()" title="حذف المنصة">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </form>
+        
+        <!-- زر الإضافة -->
+        <button type="button" class="btn btn-success mt-2 w-100 fw-bold" onclick="addNewSocialRow()">
+          <i class="bi bi-plus-lg"></i> إضافة منصة تواصل جديدة
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" form="socialLinksForm" class="btn btn-primary btn-enterprise px-4">حفظ كافة التغييرات</button>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+function addNewSocialRow() {
+    const container = document.getElementById('socialRowsContainer');
+    container.insertAdjacentHTML('beforeend', `
+      <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 social-item-row" style="border-right: 4px solid #10b981;">
+        <div class="row g-2 align-items-center">
+          <div class="col-auto"><div class="bg-light rounded" style="width:40px;height:40px;"></div></div>
+          <div class="col-md-3"><input type="text" class="form-control" name="name" placeholder="اسم المنصة" required></div>
+          <div class="col-md-4"><input type="url" class="form-control" name="url" placeholder="الرابط" dir="ltr" required></div>
+          <div class="col-md-3"><input type="file" class="form-control form-control-sm" name="new_img" required></div>
+          <div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
+        </div>
+      </div>`);
+}
+</script>
+
 
 <script>
 function toggleAdContent(val) {

@@ -85,28 +85,100 @@ if (!isset($is_admin) || $is_admin !== true) { header("HTTP/1.1 403 Forbidden");
 </div>
 
 <!-- 3. مودل الإعلان -->
-<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
-  <div class="modal-dialog">
+<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-megaphone"></i> إعدادات الإعلان</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-megaphone"></i> إدارة الإعلان العلوي</h5>
       </div>
+      
       <div class="modal-body p-4">
-        <form>
-          <label class="form-label">نوع الإعلان</label>
-          <select class="form-select mb-3" onchange="toggleAdContent(this.value)">
-            <option value="text">نص إعلاني</option>
-            <option value="image">صورة إعلانية</option>
-          </select>
-          <div id="textEditor"><textarea class="form-control" rows="3" placeholder="اكتب نص الإعلان..."></textarea></div>
-          <div id="imageEditor" class="d-none"><input type="file" class="form-control"></div>
+        <form id="announcementForm">
+          <!-- الحالة والنوع -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">حالة الإعلان</label>
+              <select class="form-select" name="status">
+                <option value="Published">منشور (Published)</option>
+                <option value="Draft">مسودة (Draft)</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">نوع المحتوى</label>
+              <select class="form-select" name="type" onchange="toggleAdContent(this.value)">
+                <option value="text">نصي</option>
+                <option value="image">صورة</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- منطقة المحتوى (متغيرة) -->
+          <div id="contentSection" class="mb-3">
+            <div id="textEditor">
+              <label class="form-label">نص الإعلان</label>
+              <textarea class="form-control" name="announcement_text" rows="2"></textarea>
+            </div>
+            <div id="imageEditor" class="d-none">
+              <label class="form-label">صورة البانر</label>
+              <input type="file" class="form-control" name="announcement_image">
+            </div>
+          </div>
+
+          <!-- تنسيقات النص (تظهر فقط في حالة النص) -->
+          <div class="row g-3 mb-3" id="textStyleSettings">
+            <div class="col-md-4">
+              <label class="form-label">لون الخلفية</label>
+              <input type="color" class="form-control form-control-color w-100" name="bg_color" value="#0056b3">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">لون النص</label>
+              <input type="color" class="form-control form-control-color w-100" name="text_color" value="#ffffff">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">حجم الخط (px)</label>
+              <input type="number" class="form-control" name="font_size" value="16">
+            </div>
+          </div>
+
+          <!-- روابط وجدولة -->
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label">رابط التوجيه (URL)</label>
+              <input type="url" class="form-control" name="link" placeholder="https://...">
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="open_new_tab" value="1" id="newTabCheck">
+                <label class="form-check-label" for="newTabCheck">فتح في علامة تبويب جديدة</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">تاريخ البدء</label>
+              <input type="datetime-local" class="form-control" name="start_date">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">تاريخ الانتهاء</label>
+              <input type="datetime-local" class="form-control" name="end_date">
+            </div>
+          </div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-primary btn-enterprise">حفظ التغييرات</button></div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">إغلاق</button>
+        <button type="submit" form="announcementForm" class="btn btn-primary btn-enterprise">حفظ الإعلان</button>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+function toggleAdContent(val) {
+    document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
+    document.getElementById('textStyleSettings').classList.toggle('d-none', val !== 'text');
+    document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
+}
+</script>
+
 
 <!-- 4. مودل القائمة -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1">

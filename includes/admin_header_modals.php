@@ -1,4 +1,6 @@
 <?php
+session_start(); // تأكدي أن هذا موجود في أعلى الملف
+$is_admin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true;
 // جدار حماية لمنع الدخول المباشر
 if (!isset($is_admin) || $is_admin !== true) {
     header("HTTP/1.1 403 Forbidden");

@@ -17,7 +17,7 @@ if (!isset($is_admin) || $is_admin !== true) {
     .btn-enterprise { padding: 8px 20px; font-weight: 600; }
 </style>
 
-<!-- 1. مودل التواصل الاجتماعي -->
+<!-- 1. مودل التواصل الاجتماعي المحدث -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
@@ -30,9 +30,20 @@ if (!isset($is_admin) || $is_admin !== true) {
                     <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
                     <div class="card p-3 mb-3 social-item-row">
                         <div class="row g-2 align-items-center">
+                            <!-- الصورة الحالية -->
                             <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 32px;"></div>
-                            <div class="col"><input type="text" class="form-control form-control-sm" name="name" value="<?php echo htmlspecialchars($link['name']); ?>"></div>
-                            <div class="col"><input type="url" class="form-control form-control-sm" name="url" value="<?php echo htmlspecialchars($link['url']); ?>"></div>
+                            
+                            <!-- البيانات -->
+                            <div class="col"><input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name']); ?>"></div>
+                            <div class="col"><input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>"></div>
+                            
+                            <!-- حقل رفع صورة جديدة -->
+                            <div class="col-auto" style="width: 120px;">
+                                <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>" title="تغيير الأيقونة">
+                                <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img']); ?>">
+                            </div>
+                            
+                            <!-- زر الحذف -->
                             <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
                         </div>
                     </div>

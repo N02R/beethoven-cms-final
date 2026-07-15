@@ -47,7 +47,7 @@ if (file_exists($config_file_path)) {
             // الروابط الافتراضية مطابقة لأسماء ملفات تصميمكِ الأصلي (مثل aboutus.html المحدثة لـ php)
             $menu_links = [
                 ["title" => "الرئيسية", "url" => "index.php", "active" => true],
-                ["title" => "عن الشركة", "url" => "aboutus.php", "active" => false],
+                ["title" => "عن الشركة", "url" => "about.php", "active" => false],
                 ["title" => "التعليم العالي", "url" => "education.php", "active" => false],
                 ["title" => "التدريب المهني", "url" => "job.php", "active" => false],
                 ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],
@@ -75,6 +75,9 @@ if (file_exists($config_file_path)) {
   <?php 
   $extra_css_string = (isset($page_css) && is_array($page_css)) ? "?files=" . implode(',', array_map('basename', $page_css)) : "";
   ?>
+  <!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo $extra_css_string; ?>">
   
   <style>

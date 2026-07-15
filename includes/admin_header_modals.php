@@ -21,8 +21,8 @@ if (!isset($is_admin) || $is_admin !== true) {
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             <h5 class="modal-title"><i class="bi bi-share"></i> إدارة منصات التواصل</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4">
             <form id="socialLinksForm">
@@ -60,8 +60,8 @@ if (!isset($is_admin) || $is_admin !== true) {
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             <h5 class="modal-title"><i class="bi bi-image"></i> تحديث شعار الموقع</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center p-4">
             <p class="text-muted small">الشعار الحالي:</p>
@@ -76,8 +76,8 @@ if (!isset($is_admin) || $is_admin !== true) {
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             <h5 class="modal-title"><i class="bi bi-megaphone"></i> إدارة الإعلان العلوي</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4">
             <form id="announcementForm">

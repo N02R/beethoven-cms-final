@@ -17,7 +17,7 @@ if (!isset($is_admin) || $is_admin !== true) {
     .btn-enterprise { padding: 8px 20px; font-weight: 600; }
 </style>
 
-<!-- 1. مودل التواصل الاجتماعي المحدث -->
+<!-- 1. مودل التواصل الاجتماعي -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
@@ -30,20 +30,13 @@ if (!isset($is_admin) || $is_admin !== true) {
                     <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
                     <div class="card p-3 mb-3 social-item-row">
                         <div class="row g-2 align-items-center">
-                            <!-- الصورة الحالية -->
                             <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 32px;"></div>
-                            
-                            <!-- البيانات -->
                             <div class="col"><input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name']); ?>"></div>
                             <div class="col"><input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>"></div>
-                            
-                            <!-- حقل رفع صورة جديدة -->
                             <div class="col-auto" style="width: 120px;">
-                                <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>" title="تغيير الأيقونة">
+                                <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
                                 <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img']); ?>">
                             </div>
-                            
-                            <!-- زر الحذف -->
                             <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
                         </div>
                     </div>
@@ -64,7 +57,6 @@ if (!isset($is_admin) || $is_admin !== true) {
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body text-center p-4">
-            <p class="text-muted small">الشعار الحالي:</p>
             <img src="<?php echo $logo_path ?? '#'; ?>" class="mb-4" style="max-height: 60px;">
             <input type="file" class="form-control" name="new_logo">
         </div>
@@ -109,8 +101,8 @@ if (!isset($is_admin) || $is_admin !== true) {
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             <h5 class="modal-title"><i class="bi bi-list"></i> إدارة القائمة</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4">
             <table class="table align-middle">
@@ -123,21 +115,37 @@ if (!isset($is_admin) || $is_admin !== true) {
 </div>
 
 <script>
+    // تبديل محتوى الإعلان (نص / صورة)
     function toggleAdContent(val) {
         document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
         document.getElementById('textStyleSettings').classList.toggle('d-none', val !== 'text');
         document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
     }
+
+    // إضافة صف جديد للسوشيال ميديا
     function addNewSocialRow() {
         const container = document.getElementById('socialRowsContainer');
+        const index = Date.now();
         container.insertAdjacentHTML('beforeend', `
             <div class="card p-3 mb-3 social-item-row">
                 <div class="row g-2 align-items-center">
                     <div class="col-auto"><div style="width:32px;height:32px;background:#eee;border-radius:4px;"></div></div>
-                    <div class="col"><input type="text" class="form-control form-control-sm" placeholder="الاسم"></div>
-                    <div class="col"><input type="url" class="form-control form-control-sm" placeholder="الرابط"></div>
+                    <div class="col"><input type="text" class="form-control form-control-sm" name="social[${index}][name]" placeholder="الاسم"></div>
+                    <div class="col"><input type="url" class="form-control form-control-sm" name="social[${index}][url]" placeholder="الرابط"></div>
+                    <div class="col-auto" style="width: 120px;"><input type="file" class="form-control form-control-sm" name="social_img_${index}"></div>
                     <div class="col-auto"><button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.social-item-row').remove()"><i class="bi bi-trash"></i></button></div>
                 </div>
             </div>`);
     }
+
+    // إرسال بيانات السوشيال ميديا
+    document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch('admin/api/update_social_links.php', { method: 'POST', body: formData })
+        .then(r => r.json()).then(data => {
+            if(data.success) { alert('تم الحفظ!'); location.reload(); }
+            else alert('خطأ: ' + data.error);
+        });
+    });
 </script>

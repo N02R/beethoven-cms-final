@@ -1,46 +1,31 @@
 <?php
-// 1. بدء الجلسة بأمان
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 
-// إذا كان المستخدم مسجل دخول بالفعل كأدمن، يتم توجيهه مباشرة للوحة التحكم
-if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+// التحقق إذا كان الأدمن مسجل دخوله بالفعل
+if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin') {
     header("Location: admin/admin_dashboard.php");
     exit();
 }
 
 $error_message = "";
 
-// 2. معالجة طلب تسجيل الدخول عند إرسال الفورم
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // تضمين ملف الاتصال بقاعدة البيانات
-    // require_once 'includes/db_connect.php'; 
-    
     $username = trim(htmlspecialchars(strip_tags($_POST['username'])));
     $password = trim($_POST['password']);
 
-    if (!empty($username) && !empty($password)) {
+    if ($username === "admin" && $password === "admin123") {
+        $_SESSION['is_logged_in'] = true;
+        $_SESSION['username'] = "نور المسؤول";
+        $_SESSION['role'] = "admin";
         
-        // بيئة اختبار مؤقتة (Demo) لكي تتمكني من التجربة فوراً:
-        if ($username === "admin" && $password === "admin123") {
-            $_SESSION['is_logged_in'] = true;
-            $_SESSION['username'] = "نور المسؤول";
-            $_SESSION['role'] = "admin";
-            
-            session_regenerate_id(true);
-            
-            header("Location: admin/admin_dashboard.php");
-            exit();
-        } else {
-            $error_message = "بيانات الدخول غير صحيحة (للتجربة استخدم: admin / admin123).";
-        }
-
+        session_regenerate_id(true);
+        header("Location: admin/admin_dashboard.php");
+        exit();
     } else {
-        $error_message = "يرجى ملء جميع الحقول المطلوبة.";
+        $error_message = "بيانات الدخول غير صحيحة.";
     }
 }
-?> <!-- هنا كان الخطأ؛ قمنا بإغلاق وسم PHP بأمان ليتمكن الخادم من قراءة الـ HTML التالي -->
+?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -110,7 +95,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="index.php" class="text-decoration-none small text-muted">← العودة للموقع الرئيسي</a>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

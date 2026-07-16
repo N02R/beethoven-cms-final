@@ -99,7 +99,7 @@ document.getElementById('socialLinksForm').addEventListener('submit', function(e
 
     // 2. إرسال البيانات الآن بعد الترتيب
     const formData = new FormData(this);
-    fetch('api/update_social_links.php', { method: 'POST', body: formData })
+    fetch('admin/api/update_social_links.php', { method: 'POST', body: formData })
     .then(r => r.json())
     .then(data => {
         if(data.success) { 

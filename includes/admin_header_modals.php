@@ -26,9 +26,9 @@ if (!$is_admin) {
                     <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
                     <div class="card p-3 social-item-row">
                         <div class="row g-2 align-items-center">
-                            <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img']); ?>" style="width: 32px;"></div>
-                            <div class="col"><input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name']); ?>"></div>
-                            <div class="col"><input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>"></div>
+                            <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? ''); ?>" style="width: 32px;"></div>
+                            <div class="col"><input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>"></div>
+                            <div class="col"><input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>"></div>
                             <div class="col-auto" style="width: 120px;"><input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>"></div>
                         </div>
                     </div>
@@ -54,7 +54,8 @@ if (!$is_admin) {
         <div class="modal-footer"><button type="submit" form="logoEditForm" class="btn btn-primary">حفظ الشعار</button></div>
     </div></div>
 </div>
-<!-- مودل تعديل الإعلان -->
+
+<!-- 3. مودل تعديل الإعلان -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">
         <div class="modal-header">
@@ -63,36 +64,33 @@ if (!$is_admin) {
         </div>
         <div class="modal-body p-4">
             <form id="announcementEditForm" enctype="multipart/form-data">
-                <!-- اختيار النوع -->
                 <div class="mb-3">
                     <label class="form-label">نوع الإعلان</label>
                     <select class="form-select" name="type" onchange="toggleAdContent(this.value)">
-                        <option value="text" <?php echo ($announcement['type']=='text' ? 'selected':''); ?>>نص متحرك</option>
-                        <option value="image" <?php echo ($announcement['type']=='image' ? 'selected':''); ?>>صورة (بانر)</option>
+                        <option value="text" <?php echo (($announcement['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك</option>
+                        <option value="image" <?php echo (($announcement['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر)</option>
                     </select>
                 </div>
 
-                <!-- إعدادات النص -->
-                <div id="textEditor" class="<?php echo ($announcement['type']=='text' ? '':'d-none'); ?>">
-                    <textarea class="form-control mb-2" name="announcement_text" placeholder="نص الإعلان"><?php echo htmlspecialchars($announcement['announcement_text']); ?></textarea>
+                <div id="textEditor" class="<?php echo (($announcement['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
+                    <textarea class="form-control mb-2" name="announcement_text" placeholder="نص الإعلان"><?php echo htmlspecialchars($announcement['announcement_text'] ?? ''); ?></textarea>
                     <div class="row g-2">
                         <div class="col"><label class="form-label">لون الخلفية</label><input type="color" class="form-control" name="bg_color" value="<?php echo $announcement['bg_color'] ?? '#0056b3'; ?>"></div>
                         <div class="col"><label class="form-label">لون الخط</label><input type="color" class="form-control" name="text_color" value="<?php echo $announcement['text_color'] ?? '#ffffff'; ?>"></div>
                     </div>
                 </div>
 
-                <!-- إعدادات الصورة -->
-                <div id="imageEditor" class="<?php echo ($announcement['type']=='image' ? '':'d-none'); ?>">
+                <div id="imageEditor" class="<?php echo (($announcement['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
                     <input type="file" class="form-control mb-2" name="ad_image">
                     <input type="text" class="form-control" name="alt_text" placeholder="النص البديل للصورة" value="<?php echo htmlspecialchars($announcement['alt_text'] ?? ''); ?>">
                 </div>
 
                 <div class="mt-3">
                     <label class="form-label">رابط الإعلان</label>
-                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['link']); ?>">
+                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['link'] ?? ''); ?>">
                 </div>
                 <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="open_new_tab" value="1" <?php echo ($announcement['open_new_tab'] == 1 ? 'checked':''); ?>>
+                    <input class="form-check-input" type="checkbox" name="open_new_tab" value="1" <?php echo (($announcement['open_new_tab'] ?? 0) == 1 ? 'checked' : ''); ?>>
                     <label class="form-check-label">فتح الرابط في تبويب جديد</label>
                 </div>
             </form>
@@ -101,9 +99,8 @@ if (!$is_admin) {
     </div></div>
 </div>
 
-
 <script>
-    // --- منطق السوشيال ميديا ---
+    // منطق السوشيال ميديا
     function addNewSocialRow() {
         const index = Date.now();
         document.getElementById('socialRowsContainer').insertAdjacentHTML('beforeend', `<div class="card p-3 social-item-row"><input type="text" class="form-control mb-1" name="social[${index}][name]" placeholder="الاسم"><input type="url" class="form-control mb-1" name="social[${index}][url]" placeholder="الرابط"><input type="file" class="form-control" name="social_img_${index}"></div>`);
@@ -115,55 +112,38 @@ if (!$is_admin) {
         .then(r => r.json()).then(data => { if(data.success) location.reload(); else alert('خطأ'); });
     });
 
-    // --- منطق اللوجو ---
-// --- منطق اللوجو داخل الـ script في ملف includes/admin_header_modals.php ---
-document.getElementById('logoEditForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    
-    fetch('admin/api/update_logo.php', { 
-        method: 'POST', 
-        body: formData,
-        credentials: 'include' 
-    })
-    .then(r => r.json())
-    .then(data => {
-        if(data.success) { 
-            // 1. تحديث الصورة فوراً في الواجهة
-            const imgElement = document.querySelector('.site-logo'); 
-            if(imgElement) {
-                imgElement.src = URL.createObjectURL(formData.get('logo_img'));
-            }
-            // 2. إغلاق المودل (اختياري)
-            const modal = bootstrap.Modal.getInstance(document.getElementById('logoEditModal'));
-            modal.hide();
-            
-            alert('تم تحديث الشعار بنجاح!');
-        } else { 
-            alert('خطأ: ' + data.error); 
-        }
-    })
-    .catch(err => alert('حدث خطأ في الاتصال'));
-});
-// تبديل العرض بين النص والصورة
-function toggleAdContent(val) {
-    document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
-    document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
-}
-
-// منطق إرسال الإعلان
-document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetch('admin/api/update_announcement.php', { 
-        method: 'POST', 
-        body: new FormData(this),
-        credentials: 'include' 
-    })
-    .then(r => r.json())
-    .then(data => {
-        if(data.success) { location.reload(); } else { alert(data.error); }
+    // منطق اللوجو
+    document.getElementById('logoEditForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch('admin/api/update_logo.php', { method: 'POST', body: formData, credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) { 
+                const imgElement = document.querySelector('.site-logo'); 
+                if(imgElement) imgElement.src = URL.createObjectURL(formData.get('logo_img'));
+                bootstrap.Modal.getInstance(document.getElementById('logoEditModal')).hide();
+                alert('تم تحديث الشعار!');
+            } else { alert(data.error); }
+        });
     });
-});
 
+    // منطق الإعلانات
+    function toggleAdContent(val) {
+        document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
+        document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
+    }
+
+    document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('admin/api/update_announcement.php', { 
+            method: 'POST', 
+            body: new FormData(this),
+            credentials: 'include' 
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) { location.reload(); } else { alert(data.error || 'خطأ في التحديث'); }
+        });
+    });
 </script>
-

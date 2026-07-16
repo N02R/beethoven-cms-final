@@ -41,6 +41,27 @@ if ($is_visible) {
     if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_visible = false; }
 }
 ?>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- استدعاء الـ CSS الموحد -->
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo (isset($page_css) ? "?files=" . implode(',', array_map('basename', $page_css)) : ""); ?>">
+  <style>
+    .logo-container { position: relative; display: inline-block; }
+    <?php if ($is_admin): ?>
+    .editable-admin-border { border: 1px dashed #0d6efd; position: relative; }
+    .edit-logo-btn { position: absolute; top: 5px; left: 5px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
+    .edit-social-btn { position: absolute; top: -10px; left: -10px; z-index: 20; background: #0d6efd; border: none; border-radius: 50%; width: 24px; height: 24px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    <?php endif; ?>
+  </style>
+</head>
+<body>
+
+
 
 <header>
     <!-- nav top -->

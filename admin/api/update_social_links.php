@@ -48,6 +48,11 @@ foreach ($_POST['social'] as $index => $item) {
 }
 
 $data['social_links'] = $new_social_links;
+// أضيفي هذا السطر قبل سطر الـ file_put_contents
+if (!is_writable('../../announcement_config.json')) {
+    exit(json_encode(['error' => 'File is not writable - Check Permissions!']));
+}
+
 file_put_contents($config_file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 echo json_encode(['success' => true]);

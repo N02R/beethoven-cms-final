@@ -54,6 +54,31 @@ if (!$is_admin) {
         <div class="modal-footer"><button type="submit" form="socialLinksForm" class="btn btn-primary btn-enterprise">حفظ التغييرات</button></div>
     </div></div>
 </div>
+<!-- مودل تعديل اللوجو -->
+<div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-image"></i> تغيير شعار الموقع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="logoEditForm" enctype="multipart/form-data">
+                    <div class="mb-3 text-center">
+                        <img id="currentLogoPreview" src="<?php echo $path_prefix . ($announcement['logo'] ?? 'assets/img/logo.png'); ?>" style="max-width: 150px;" class="mb-3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">اختر شعاراً جديداً</label>
+                        <input type="file" class="form-control" name="logo_img" accept="image/*" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="logoEditForm" class="btn btn-primary btn-enterprise">حفظ الشعار</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     // إضافة صف جديد
@@ -107,4 +132,25 @@ if (!$is_admin) {
         })
         .catch(err => alert('حدث خطأ في الاتصال بالسيرفر'));
     });
+    document.getElementById('logoEditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('admin/api/update_logo.php', { 
+        method: 'POST', 
+        body: formData,
+        credentials: 'include' 
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) { 
+            alert('تم تحديث الشعار!'); 
+            location.reload(); 
+        } else { 
+            alert('خطأ: ' + (data.error || 'فشل التحديث')); 
+        }
+    })
+    .catch(err => alert('حدث خطأ في الاتصال'));
+});
+
 </script>

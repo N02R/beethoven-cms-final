@@ -54,6 +54,53 @@ if (!$is_admin) {
         <div class="modal-footer"><button type="submit" form="logoEditForm" class="btn btn-primary">حفظ الشعار</button></div>
     </div></div>
 </div>
+<!-- مودل تعديل الإعلان -->
+<div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-megaphone"></i> إدارة الإعلان</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+            <form id="announcementEditForm" enctype="multipart/form-data">
+                <!-- اختيار النوع -->
+                <div class="mb-3">
+                    <label class="form-label">نوع الإعلان</label>
+                    <select class="form-select" name="type" onchange="toggleAdContent(this.value)">
+                        <option value="text" <?php echo ($announcement['type']=='text' ? 'selected':''); ?>>نص متحرك</option>
+                        <option value="image" <?php echo ($announcement['type']=='image' ? 'selected':''); ?>>صورة (بانر)</option>
+                    </select>
+                </div>
+
+                <!-- إعدادات النص -->
+                <div id="textEditor" class="<?php echo ($announcement['type']=='text' ? '':'d-none'); ?>">
+                    <textarea class="form-control mb-2" name="announcement_text" placeholder="نص الإعلان"><?php echo htmlspecialchars($announcement['announcement_text']); ?></textarea>
+                    <div class="row g-2">
+                        <div class="col"><label class="form-label">لون الخلفية</label><input type="color" class="form-control" name="bg_color" value="<?php echo $announcement['bg_color'] ?? '#0056b3'; ?>"></div>
+                        <div class="col"><label class="form-label">لون الخط</label><input type="color" class="form-control" name="text_color" value="<?php echo $announcement['text_color'] ?? '#ffffff'; ?>"></div>
+                    </div>
+                </div>
+
+                <!-- إعدادات الصورة -->
+                <div id="imageEditor" class="<?php echo ($announcement['type']=='image' ? '':'d-none'); ?>">
+                    <input type="file" class="form-control mb-2" name="ad_image">
+                    <input type="text" class="form-control" name="alt_text" placeholder="النص البديل للصورة" value="<?php echo htmlspecialchars($announcement['alt_text'] ?? ''); ?>">
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label">رابط الإعلان</label>
+                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['link']); ?>">
+                </div>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="open_new_tab" value="1" <?php echo ($announcement['open_new_tab'] == 1 ? 'checked':''); ?>>
+                    <label class="form-check-label">فتح الرابط في تبويب جديد</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ التغييرات</button></div>
+    </div></div>
+</div>
+
 
 <script>
     // --- منطق السوشيال ميديا ---
@@ -97,6 +144,25 @@ document.getElementById('logoEditForm').addEventListener('submit', function(e) {
         }
     })
     .catch(err => alert('حدث خطأ في الاتصال'));
+});
+// تبديل العرض بين النص والصورة
+function toggleAdContent(val) {
+    document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
+    document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
+}
+
+// منطق إرسال الإعلان
+document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch('admin/api/update_announcement.php', { 
+        method: 'POST', 
+        body: new FormData(this),
+        credentials: 'include' 
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) { location.reload(); } else { alert(data.error); }
+    });
 });
 
 </script>

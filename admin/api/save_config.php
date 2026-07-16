@@ -7,46 +7,36 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 }
 
 $file = __DIR__ . '/../../announcement_config.json';
-// قراءة البيانات الحالية للحفاظ عليها
-$data = file_exists($file) ? json_decode(file_get_contents($file), true) : [];
+// 1. قراءة البيانات الموجودة حالياً (للحفاظ عليها)
+$data = file_exists($file) ? json_decode(file_get_contents($file), true) : ['announcement' => [], 'menu_links' => [], 'social_links' => [], 'site_logo_path' => 'assets/img/logo.png'];
 
 $action = $_POST['action'] ?? '';
 
-// --- معالجة الإعلان (دمج منطقك الآمن هنا) ---
+// 2. تحديث الجزء المعني فقط بناءً على الـ Action
 if ($action === 'update_announcement') {
-    $type = htmlspecialchars($_POST['type'] ?? 'text');
-    
-    $new_ad = [
-        'type' => $type,
-        'status' => htmlspecialchars($_POST['status'] ?? 'Draft'),
-        'link' => filter_var($_POST['link'] ?? '', FILTER_SANITIZE_URL),
-        'open_new_tab' => isset($_POST['open_new_tab']) ? 1 : 0,
-        'announcement_text' => htmlspecialchars($_POST['announcement_text'] ?? ''),
-        'bg_color' => htmlspecialchars($_POST['bg_color'] ?? '#ffffff'),
-        'text_color' => htmlspecialchars($_POST['text_color'] ?? '#000000'),
-        'font_size' => (int)($_POST['font_size'] ?? 14),
-        'image_path' => $data['announcement']['image_path'] ?? null // الاحتفاظ بالصورة القديمة
+    $data['announcement'] = [
+        'status' => $_POST['announcement']['status'] ?? 'Draft',
+        'announcement_text' => $_POST['announcement']['announcement_text'] ?? '',
+        'link' => $_POST['announcement']['link'] ?? '',
+        'start_date' => $_POST['announcement']['start_date'] ?? '',
+        'end_date' => $_POST['announcement']['end_date'] ?? '',
+        'type' => $_POST['type'] ?? 'text',
+        'bg_color' => $_POST['bg_color'] ?? '#f1f5f9',
+        'text_color' => $_POST['text_color'] ?? '#1e293b',
+        'font_size' => $_POST['font_size'] ?? '16',
+        'image_path' => $data['announcement']['image_path'] ?? '' // الحفاظ على الصورة القديمة
     ];
-
-    // معالجة رفع الصورة إذا كان النوع صورة
-    if ($type === 'image' && isset($_FILES['announcement_image']) && $_FILES['announcement_image']['error'] == 0) {
-        $upload_dir = __DIR__ . '/../../uploads/announcements/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-        
-        $filename = 'ad_' . time() . '.jpg';
-        if (move_uploaded_file($_FILES['announcement_image']['tmp_name'], $upload_dir . $filename)) {
-            $new_ad['image_path'] = 'uploads/announcements/' . $filename;
-        }
-    }
-    
-    $data['announcement'] = $new_ad;
+} 
+elseif ($action === 'update_logo') {
+    $data['site_logo_path'] = $_POST['site_logo_path'] ?? $data['site_logo_path'];
+}
+elseif ($action === 'update_social') {
+    $data['social_links'] = $_POST['social'] ?? $data['social_links'];
 }
 
-// ... (نفس منطق السوشيال واللوجو السابق)
-
-// الحفظ النهائي
+// 3. حفظ كامل المصفوفة المحدثة
 if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-    echo json_encode(['success' => true]);
+    echo json_encode(['success' => true, 'message' => 'تم حفظ البيانات بنجاح']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'فشل الحفظ']);
+    echo json_encode(['success' => false, 'message' => 'فشل الكتابة في الملف']);
 }

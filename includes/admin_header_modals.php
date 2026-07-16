@@ -1,6 +1,9 @@
 <?php
-// تأكدي من توافق اسم مفتاح الجلسة مع ما تم تعريفه في login.php
-session_start();
+// تصحيح: التحقق من الجلسة دون تكرار البدء لتجنب الخطأ
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 if (!$is_admin) {
@@ -20,7 +23,7 @@ if (!$is_admin) {
     .btn-enterprise { padding: 8px 20px; font-weight: 600; }
 </style>
 
-<!-- 1. مودل التواصل الاجتماعي -->
+<!-- مودل التواصل الاجتماعي -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header">
@@ -53,7 +56,7 @@ if (!$is_admin) {
 </div>
 
 <script>
-    // إضافة صف جديد للسوشيال ميديا
+    // إضافة صف جديد
     function addNewSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         const index = Date.now();
@@ -69,11 +72,11 @@ if (!$is_admin) {
             </div>`);
     }
 
-    // إرسال بيانات السوشيال ميديا
+    // إرسال البيانات
     document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // إعادة ترتيب الـ names في الـ inputs قبل الإرسال
+        // إعادة الترقيم قبل الإرسال
         const rows = document.querySelectorAll('.social-item-row');
         rows.forEach((row, index) => {
             row.querySelectorAll('input').forEach(input => {
@@ -87,7 +90,7 @@ if (!$is_admin) {
 
         const formData = new FormData(this);
         
-        // التعديل الجوهري: إضافة credentials: 'include'
+        // استخدام credentials: 'include' لإرسال الجلسة مع الطلب
         fetch('admin/api/update_social_links.php', { 
             method: 'POST', 
             body: formData,

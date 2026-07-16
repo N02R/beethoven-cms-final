@@ -1,6 +1,5 @@
 <?php
 // تأكدي من توافق اسم مفتاح الجلسة مع ما تم تعريفه في login.php
-// إذا كنتِ تستخدمين $_SESSION['role'] === 'admin'، فاستخدميه كما فعلنا في check_auth.php
 session_start();
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
@@ -29,7 +28,6 @@ if (!$is_admin) {
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-4">
-            <!-- تم إضافة enctype لضمان عمل رفع الصور -->
             <form id="socialLinksForm" enctype="multipart/form-data">
                 <div id="socialRowsContainer">
                     <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
@@ -54,16 +52,7 @@ if (!$is_admin) {
     </div></div>
 </div>
 
-<!-- باقي الموديلات (Logo, Announcement, Menu) تبقى كما هي بدون تغيير -->
-
 <script>
-    // تبديل محتوى الإعلان (نص / صورة)
-    function toggleAdContent(val) {
-        document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
-        document.getElementById('textStyleSettings').classList.toggle('d-none', val !== 'text');
-        document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
-    }
-
     // إضافة صف جديد للسوشيال ميديا
     function addNewSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -81,35 +70,38 @@ if (!$is_admin) {
     }
 
     // إرسال بيانات السوشيال ميديا
-document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // 1. إعادة ترتيب الـ names في الـ inputs قبل الإرسال
-    const rows = document.querySelectorAll('.social-item-row');
-    rows.forEach((row, index) => {
-        row.querySelectorAll('input').forEach(input => {
-            let name = input.getAttribute('name');
-            if (name) {
-                // نغير الـ index القديم إلى الـ index الجديد (0, 1, 2...)
-                name = name.replace(/social\[\d+\]/, `social[${index}]`);
-                input.setAttribute('name', name);
-            }
+    document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // إعادة ترتيب الـ names في الـ inputs قبل الإرسال
+        const rows = document.querySelectorAll('.social-item-row');
+        rows.forEach((row, index) => {
+            row.querySelectorAll('input').forEach(input => {
+                let name = input.getAttribute('name');
+                if (name && name.includes('social[')) {
+                    name = name.replace(/social\[[^\]]+\]/, `social[${index}]`);
+                    input.setAttribute('name', name);
+                }
+            });
         });
+
+        const formData = new FormData(this);
+        
+        // التعديل الجوهري: إضافة credentials: 'include'
+        fetch('admin/api/update_social_links.php', { 
+            method: 'POST', 
+            body: formData,
+            credentials: 'include' 
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.success) { 
+                alert('تم الحفظ بنجاح!'); 
+                location.reload(); 
+            } else { 
+                alert('خطأ: ' + (data.error || 'غير مصرح')); 
+            }
+        })
+        .catch(err => alert('حدث خطأ في الاتصال بالسيرفر'));
     });
-
-    // 2. إرسال البيانات الآن بعد الترتيب
-    const formData = new FormData(this);
-    fetch('admin/api/update_social_links.php', { method: 'POST', body: formData })
-    .then(r => r.json())
-    .then(data => {
-        if(data.success) { 
-            alert('تم الحفظ بنجاح!'); 
-            location.reload(); 
-        } else { 
-            alert('خطأ: ' + (data.error || 'غير مصرح')); 
-        }
-    })
-    .catch(err => alert('حدث خطأ في الاتصال'));
-});
-
 </script>

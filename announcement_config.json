@@ -13,5 +13,6 @@
   },
   "social_links": [
     { "name": "Facebook", "url": "https://fb.com", "img": "assets/img/fb.png" }
-  ]
+  ],
+  "site_logo_path": "assets/img/logo.png"
 }

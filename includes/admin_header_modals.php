@@ -30,7 +30,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <button type="button" class="btn btn-sm btn-success mt-2" onclick="addNewSocialRow()"><i class="bi bi-plus-lg"></i> إضافة منصة</button>
             </form>
         </div>
         <div class="modal-footer"><button type="submit" form="socialLinksForm" class="btn btn-primary">حفظ التغييرات</button></div>
@@ -52,39 +51,43 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div></div>
 </div>
 
-<!-- 3. مودل الإعلان -->
+<!-- 3. مودل الإعلان (تم دمجه بالكامل) -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title">إدارة الإعلان</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body p-4">
             <form id="announcementEditForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update_announcement">
-                <input type="hidden" name="status" value="<?php echo $announcement['status'] ?? 'Published'; ?>">
-                <input type="hidden" name="font_size" value="<?php echo $announcement['font_size'] ?? '16'; ?>">
-                <input type="hidden" name="start_date" value="<?php echo $announcement['start_date'] ?? ''; ?>">
-                <input type="hidden" name="end_date" value="<?php echo $announcement['end_date'] ?? ''; ?>">
+                <!-- الحقول المخفية للحفاظ على البيانات -->
+                <input type="hidden" name="status" value="<?php echo $announcement['announcement']['status'] ?? 'Published'; ?>">
+                <input type="hidden" name="start_date" value="<?php echo $announcement['announcement']['start_date'] ?? ''; ?>">
+                <input type="hidden" name="end_date" value="<?php echo $announcement['announcement']['end_date'] ?? ''; ?>">
 
                 <div class="mb-3">
                     <label class="form-label">نوع الإعلان</label>
                     <select class="form-select" name="type" onchange="toggleAdContent(this.value)">
-                        <option value="text" <?php echo (($announcement['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك</option>
-                        <option value="image" <?php echo (($announcement['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر)</option>
+                        <option value="text" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك</option>
+                        <option value="image" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر)</option>
                     </select>
                 </div>
-                <div id="textEditor" class="<?php echo (($announcement['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
-                    <textarea class="form-control mb-2" name="announcement_text" placeholder="نص الإعلان"><?php echo htmlspecialchars($announcement['announcement_text'] ?? ''); ?></textarea>
+                
+                <div id="textEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
+                    <textarea class="form-control mb-2" name="announcement_text" placeholder="نص الإعلان"><?php echo htmlspecialchars($announcement['announcement']['announcement_text'] ?? ''); ?></textarea>
                     <div class="row g-2">
-                        <div class="col"><label class="form-label">الخلفية</label><input type="color" class="form-control" name="bg_color" value="<?php echo $announcement['bg_color'] ?? '#0056b3'; ?>"></div>
-                        <div class="col"><label class="form-label">الخط</label><input type="color" class="form-control" name="text_color" value="<?php echo $announcement['text_color'] ?? '#ffffff'; ?>"></div>
+                        <div class="col"><label class="form-label">الخلفية</label><input type="color" class="form-control" name="bg_color" value="<?php echo $announcement['announcement']['bg_color'] ?? '#0056b3'; ?>"></div>
+                        <div class="col"><label class="form-label">الخط</label><input type="color" class="form-control" name="text_color" value="<?php echo $announcement['announcement']['text_color'] ?? '#ffffff'; ?>"></div>
                     </div>
+                    <input type="number" class="form-control mt-2" name="font_size" value="<?php echo $announcement['announcement']['font_size'] ?? '16'; ?>" placeholder="حجم الخط">
                 </div>
-                <div id="imageEditor" class="<?php echo (($announcement['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
+                
+                <div id="imageEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
                     <input type="file" class="form-control mb-2" name="ad_image">
                 </div>
-                <input type="url" class="form-control mt-2" name="link" placeholder="الرابط" value="<?php echo htmlspecialchars($announcement['link'] ?? ''); ?>">
+                
+                <input type="url" class="form-control mt-2" name="link" placeholder="الرابط" value="<?php echo htmlspecialchars($announcement['announcement']['link'] ?? ''); ?>">
             </form>
         </div>
-        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ التغييرات</button></div>
+        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ الإعلان</button></div>
     </div></div>
 </div>
 
@@ -94,7 +97,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
     }
 
-    // منطق موحد لجميع الفورمات (يرسل البيانات للملف المركزي عبر خاصية Action)
+    // منطق موحد لجميع الفورمات (يرسل البيانات للملف المركزي save_config.php)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();

@@ -81,22 +81,35 @@ if (!$is_admin) {
     }
 
     // إرسال بيانات السوشيال ميديا
-    document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        // تم تصحيح المسار ليكون api/ بدلاً من admin/api/ لأننا بالفعل داخل مجلد admin
-        fetch('api/update_social_links.php', { method: 'POST', body: formData })
-        .then(r => r.json()).then(data => {
-            if(data.success) { 
-                alert('تم الحفظ بنجاح!'); 
-                location.reload(); 
+document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // 1. إعادة ترتيب الـ names في الـ inputs قبل الإرسال
+    const rows = document.querySelectorAll('.social-item-row');
+    rows.forEach((row, index) => {
+        row.querySelectorAll('input').forEach(input => {
+            let name = input.getAttribute('name');
+            if (name) {
+                // نغير الـ index القديم إلى الـ index الجديد (0, 1, 2...)
+                name = name.replace(/social\[\d+\]/, `social[${index}]`);
+                input.setAttribute('name', name);
             }
-            else {
-                console.error(data);
-                alert('خطأ: ' + (data.error || 'حدث خطأ غير معروف')); 
-            }
-        }).catch(err => {
-            alert('حدث خطأ في الاتصال بالخادم');
         });
     });
+
+    // 2. إرسال البيانات الآن بعد الترتيب
+    const formData = new FormData(this);
+    fetch('api/update_social_links.php', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) { 
+            alert('تم الحفظ بنجاح!'); 
+            location.reload(); 
+        } else { 
+            alert('خطأ: ' + (data.error || 'غير مصرح')); 
+        }
+    })
+    .catch(err => alert('حدث خطأ في الاتصال'));
+});
+
 </script>

@@ -84,7 +84,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <input type="url" class="form-control mt-2" name="link" placeholder="الرابط" value="<?php echo htmlspecialchars($announcement['link'] ?? ''); ?>">
             </form>
         </div>
-        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ</button></div>
+        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ التغييرات</button></div>
     </div></div>
 </div>
 
@@ -94,7 +94,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
     }
 
-    // منطق موحد لجميع الفورمات يرسل البيانات إلى ملف المعالجة المركزي
+    // منطق موحد لجميع الفورمات (يرسل البيانات للملف المركزي عبر خاصية Action)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -106,7 +106,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     alert('تم الحفظ بنجاح!');
                     location.reload();
                 } else {
-                    alert('حدث خطأ أثناء الحفظ');
+                    alert('خطأ: ' + (data.message || 'حدثت مشكلة'));
                 }
             });
         });

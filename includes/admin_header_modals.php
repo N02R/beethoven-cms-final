@@ -93,23 +93,23 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         });
     });
 
-    // 2. تحديث الإعلان (تحديث نصي أو تغيير في الستايل فوراً)
-    document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch('admin/api/update_announcement.php', { method: 'POST', body: formData })
-        .then(r => r.json()).then(data => {
-            if(data.success) {
-                // تحديث الواجهة بدون ريلود
-                alert('تم التحديث بنجاح!');
-                bootstrap.Modal.getInstance(document.getElementById('announcementEditModal')).hide();
-                // اختياري: تحديث النص داخل الـ nav إذا كان لديك class مخصص له
-            }
-        });
+document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('admin/api/update_announcement.php', { 
+        method: 'POST', 
+        body: formData 
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) {
+            alert('تم الحفظ بنجاح!');
+            location.reload(); // هذا أضمن حل لنتأكد أن ملف الـ JSON الجديد قُرئ من جديد
+        } else {
+            alert('حدث خطأ');
+        }
     });
+});
 
-    function toggleAdContent(val) {
-        document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
-        document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
-    }
 </script>

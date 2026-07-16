@@ -2,53 +2,52 @@
 // 1. إعلام المتصفح بأن الناتج هو كود JavaScript
 header("Content-type: application/javascript; charset: UTF-8");
 
-// 2. تفعيل الكاش لزيادة سرعة التحميل وتوفير طاقة السيرفر
+// 2. تفعيل الكاش
 $offset = 60 * 60 * 24 * 7; // أسبوع كامل
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
 header("Cache-Control: public, max-age=" . $offset);
 
-// 3. الملفات الأساسية المشتركة التي تحتاجها كل صفحات الموقع (بترتيبها الصحيح)
+// 3. الملفات الأساسية
 $base_files = [
-    'bootstrap.bundle.min.js', // ملف بوتستراب مع Popper.js المدمج
-    'main.js'                  // ملف الجافاسكربت الأساسي للموقع
+    'bootstrap.bundle.min.js',
+    'main.js'
 ];
 
-// 4. استقبال الملفات الإضافية المحقونة من الصفحات (مثل السلايدر وغيرها)
+// 4. استقبال الملفات الإضافية المحقونة
 $extra_files = isset($_GET['files']) ? explode(',', $_GET['files']) : [];
 
-// 5. دمج المصفوفات معاً
+// 5. دمج المصفوفات
 $all_files = array_merge($base_files, $extra_files);
 
 $combined_content = "";
 
-// 6. قراءة ودمج المحتويات بذكاء وحماية
+// 6. قراءة ودمج المحتويات باستخدام المسارات المطلقة
 foreach ($all_files as $file) {
-    // تنظيف الاسم لمنع ثغرات مسارات الملفات
     $file = basename(trim($file));
     
     if (!empty($file) && str_ends_with($file, '.js')) {
-        // الاحتمال الأول: الملف موجود في مجلد الـ JS الحالي (assets/js/)
-        if (file_exists($file)) {
-            $combined_content .= file_get_contents($file) . "\n;"; // إضافة الفاصلة المنقوطة تحمي الأكواد من التداخل عند الدمج
+        // المسار المطلق للمجلد الحالي الذي يحتوي على ملفات JS
+        $js_dir = __DIR__ . '/';
+        
+        if (file_exists($js_dir . $file)) {
+            $combined_content .= file_get_contents($js_dir . $file) . "\n;";
         } 
-        // الاحتمال الثاني: الملف موجود في مجلد خدمات التعليم الفرعي إذا لزم الأمر
-        elseif (file_exists("../../edu-services/js/" . $file)) {
-            $combined_content .= file_get_contents("../../edu-services/js/" . $file) . "\n;";
+        // البحث في مسار مجلد التعليم
+        elseif (file_exists(__DIR__ . "/../edu-services/js/" . $file)) {
+            $combined_content .= file_get_contents(__DIR__ . "/../edu-services/js/" . $file) . "\n;";
         }
     }
 }
 
-// 7. دالة تنظيف وضغط كود الـ JS (آمنة وبسيطة للأنظمة الحقيقية)
+// 7. دالة تنظيف وضغط كود الـ JS
 function minify_js($js) {
-    // إزالة تعليقات السطر الواحد // ولكن مع الحذر من روابط الـ http://
-    $js = preg_replace('%(?<!:)/\*.*?\*/%s', '', $js); // تعليقات الـ Block /* ... */
-    
-    // إزالة الأسطر الزائدة والفراغات الكبيرة المحيطة بالرموز الأساسية
+    // إزالة تعليقات الـ Block /* ... */
+    $js = preg_replace('%/\*.*?\*/%s', '', $js);
+    // إزالة السطور والمسافات الزائدة
     $js = preg_replace(array("/\r\n/", "/\r/", "/\n/", "/\t/"), ' ', $js);
     $js = preg_replace("/\s+/", " ", $js);
-    
     return trim($js);
 }
 
-/*8. طباعة الناتج النهائي المضغوط*/
+// 8. طباعة الناتج النهائي
 echo minify_js($combined_content);

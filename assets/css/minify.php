@@ -7,7 +7,7 @@ $offset = 60 * 60 * 24 * 7; // أسبوع كامل
 header("Expires: " . gmdate("D, d M Y H:i:s", time() + $offset) . " GMT");
 header("Cache-Control: public, max-age=" . $offset);
 
-// 3. الملفات الأساسية المشتركة في كل صفحات الموقع (بترتيبها الصحيح)
+// 3. الملفات الأساسية (تأكدي أنها موجودة بالفعل في مجلد assets/css/)
 $base_files = [
     'bootstrap.min.css',
     'all.min.css',
@@ -15,30 +15,32 @@ $base_files = [
     'style.css',
     'header.css',
     'footer.css',
-    'responsive-index.css' // تم ضبط الاسم الصحيح لملف الريسبونسيف الخاص بكِ
+    'responsive-index.css'
 ];
 
 // 4. استقبال الملفات الإضافية المحقونة من الصفحات
 $extra_files = isset($_GET['files']) ? explode(',', $_GET['files']) : [];
 
-// 5. دمج المصفوفات معاً
+// 5. دمج المصفوفات
 $all_files = array_merge($base_files, $extra_files);
 
 $combined_content = "";
 
-// 6. قراءة ودمج المحتويات بذكاء وحماية
+// 6. قراءة ودمج المحتويات باستخدام المسارات المطلقة (الأكثر أماناً)
 foreach ($all_files as $file) {
-    // تنظيف الاسم لمنع ثغرات مسارات الملفات
+    // تنظيف الاسم لمنع ثغرات traversal
     $file = basename(trim($file));
     
     if (!empty($file) && str_ends_with($file, '.css')) {
-        // الاحتمال الأول: الملف موجود في نفس المجلد الحالي (assets/css/)
-        if (file_exists($file)) {
-            $combined_content .= file_get_contents($file) . "\n";
+        // المسار الأساسي للمجلد الحالي الذي يحتوي على ملفات CSS
+        $css_dir = __DIR__ . '/';
+        
+        if (file_exists($css_dir . $file)) {
+            $combined_content .= file_get_contents($css_dir . $file) . "\n";
         } 
-        // الاحتمال الثاني: الملف موجود في مجلد خدمات التعليم الفرعي (edu-services/css/)
-        elseif (file_exists("../../edu-services/css/" . $file)) {
-            $combined_content .= file_get_contents("../../edu-services/css/" . $file) . "\n";
+        // البحث في مسار آخر إذا لم يوجد في المجلد الحالي (مثل مجلد التعليم)
+        elseif (file_exists(__DIR__ . "/../edu-services/css/" . $file)) {
+            $combined_content .= file_get_contents(__DIR__ . "/../edu-services/css/" . $file) . "\n";
         }
     }
 }
@@ -47,8 +49,9 @@ foreach ($all_files as $file) {
 function minify_css($css) {
     // حذف التعليقات
     $css = preg_replace('!/\*[^*]*\*+([^/*][^*]*\*+)*/!', '', $css);
-    // حذف الأسطر والمسافات الزائدة والتطابقات المحيطة بالرموز
+    // إزالة المسافات والأسطر غير الضرورية
     $css = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
+    // إزالة المسافات حول الرموز (اختياري وآمن)
     $css = preg_replace('/ ?([,:;{}]) ?/', '$1', $css);
     return $css;
 }

@@ -69,9 +69,34 @@ if (!$is_admin) {
     });
 
     // --- منطق اللوجو ---
-    document.getElementById('logoEditForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('admin/api/update_logo.php', { method: 'POST', body: new FormData(this), credentials: 'include' })
-        .then(r => r.json()).then(data => { if(data.success) location.reload(); else alert(data.error); });
-    });
+// --- منطق اللوجو داخل الـ script في ملف includes/admin_header_modals.php ---
+document.getElementById('logoEditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('admin/api/update_logo.php', { 
+        method: 'POST', 
+        body: formData,
+        credentials: 'include' 
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.success) { 
+            // 1. تحديث الصورة فوراً في الواجهة
+            const imgElement = document.querySelector('.site-logo'); 
+            if(imgElement) {
+                imgElement.src = URL.createObjectURL(formData.get('logo_img'));
+            }
+            // 2. إغلاق المودل (اختياري)
+            const modal = bootstrap.Modal.getInstance(document.getElementById('logoEditModal'));
+            modal.hide();
+            
+            alert('تم تحديث الشعار بنجاح!');
+        } else { 
+            alert('خطأ: ' + data.error); 
+        }
+    })
+    .catch(err => alert('حدث خطأ في الاتصال'));
+});
+
 </script>

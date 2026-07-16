@@ -16,6 +16,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         <div class="modal-header"><h5 class="modal-title">إدارة منصات التواصل</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body p-4">
             <form id="socialLinksForm" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="update_social">
                 <div id="socialRowsContainer">
                     <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
                     <div class="card p-3 social-item-row">
@@ -42,6 +43,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         <div class="modal-header"><h5 class="modal-title">تغيير شعار الموقع</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body p-4">
             <form id="logoEditForm" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="update_logo">
                 <div class="mb-3 text-center"><img src="<?php echo $path_prefix . ($announcement['site_logo_path'] ?? 'assets/img/logo.png'); ?>" style="max-width: 150px;"></div>
                 <input type="file" class="form-control" name="logo_img" required>
             </form>
@@ -50,13 +52,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div></div>
 </div>
 
-<!-- 3. مودل الإعلان (المحدث ليتناسب مع API الجديد) -->
+<!-- 3. مودل الإعلان -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title">إدارة الإعلان</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body p-4">
             <form id="announcementEditForm" enctype="multipart/form-data">
-                <!-- حقول مخفية للحفاظ على إعدادات النظام -->
+                <input type="hidden" name="action" value="update_announcement">
                 <input type="hidden" name="status" value="<?php echo $announcement['status'] ?? 'Published'; ?>">
                 <input type="hidden" name="font_size" value="<?php echo $announcement['font_size'] ?? '16'; ?>">
                 <input type="hidden" name="start_date" value="<?php echo $announcement['start_date'] ?? ''; ?>">
@@ -79,54 +81,34 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <div id="imageEditor" class="<?php echo (($announcement['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
                     <input type="file" class="form-control mb-2" name="ad_image">
                 </div>
-                <div class="mt-2">
-                    <label class="form-label">رابط الإعلان</label>
-                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['link'] ?? ''); ?>">
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="open_new_tab" value="1" <?php echo (($announcement['open_new_tab'] ?? 0) == 1 ? 'checked' : ''); ?>>
-                        <label class="form-check-label">فتح في تبويب جديد</label>
-                    </div>
-                </div>
+                <input type="url" class="form-control mt-2" name="link" placeholder="الرابط" value="<?php echo htmlspecialchars($announcement['link'] ?? ''); ?>">
             </form>
         </div>
-        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ التغييرات</button></div>
+        <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn btn-primary">حفظ</button></div>
     </div></div>
 </div>
 
 <script>
-    // تبديل العرض بين النص والصورة
     function toggleAdContent(val) {
         document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
         document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
     }
 
-    // منطق إرسال إعدادات الإعلان
-    document.getElementById('announcementEditForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('admin/api/update_config.php', { method: 'POST', body: new FormData(this) })
-        .then(r => r.json()).then(data => {
-            if(data.success) {
-                alert('تم الحفظ بنجاح!');
-                location.reload(); 
-            } else { alert('حدث خطأ'); }
-        });
-    });
-
-    // منطق السوشيال ميديا
-    document.getElementById('socialLinksForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('admin/api/update_config.php', { method: 'POST', body: new FormData(this) })
-        .then(r => r.json()).then(data => {
-            if(data.success) { location.reload(); } else { alert('خطأ في السوشيال'); }
-        });
-    });
-
-    // منطق اللوجو
-    document.getElementById('logoEditForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('admin/api/update_logo.php', { method: 'POST', body: new FormData(this) })
-        .then(r => r.json()).then(data => {
-            if(data.success) { location.reload(); } else { alert('خطأ في اللوجو'); }
+    // منطق موحد لجميع الفورمات يرسل البيانات إلى ملف المعالجة المركزي
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('admin/api/save_config.php', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if(data.success) {
+                    alert('تم الحفظ بنجاح!');
+                    location.reload();
+                } else {
+                    alert('حدث خطأ أثناء الحفظ');
+                }
+            });
         });
     });
 </script>

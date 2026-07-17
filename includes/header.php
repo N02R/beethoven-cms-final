@@ -97,10 +97,11 @@ $is_visible = ($is_published && $is_in_time);
 <body>
 
 <header>
+    <!-- NavTop -->
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- اللوجو (نسخة سطح المكتب) -->
+        <!-- اللوجو الرئيسي (التحكم في اللوجو من هنا فقط) -->
         <div class="editable-wrapper">
           <?php if ($is_admin): ?>
             <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button>
@@ -117,16 +118,13 @@ $is_visible = ($is_published && $is_in_time);
               <?php if ($is_admin): ?>
                 <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#announcementEditModal"><i class="bi bi-pencil"></i></button>
               <?php endif; ?>
-
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo $ad['bg_color'] ?? '#f1f5f9'; ?>; color: <?php echo $ad['text_color'] ?? '#1e293b'; ?>; font-size: <?php echo $ad['font_size'] ?? '16'; ?>px;">
                     <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً بكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
-                    <img src="<?php echo $path_prefix . ($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;">
-                  </div>
+                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="<?php echo $path_prefix . ($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;"></div>
                 <?php endif; ?>
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
@@ -135,91 +133,64 @@ $is_visible = ($is_published && $is_in_time);
 
         <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
-          <?php if ($is_admin): ?>
-            <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal"><i class="bi bi-pencil"></i></button>
-          <?php endif; ?>
+          <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
           <div class="social-icons d-flex gap-3">
-            <?php foreach (($data['social_links'] ?? []) as $s): ?>
-                <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
-            <?php endforeach; ?>
+            <?php foreach (($data['social_links'] ?? []) as $s): ?><a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a><?php endforeach; ?>
           </div>
         </div>
       </div>
     </nav>
     
-<!-- القائمة الرئيسية -->
-<nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
-  <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+    <!-- Main Header -->
+    <nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
+      <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+        
+        <!-- اللوجو (Mobile Only) -->
+        <div class="d-lg-none">
+          <a class="navbar-brand" href="<?php echo $path_prefix; ?>index.php">
+            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="Logo" height="50">
+          </a>
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="collapse navbar-collapse editable-wrapper">
+          <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#menuEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
+          <ul class="navbar-nav gap-3">
+            <?php foreach ($menu_links as $link): ?>
+                <li class="nav-item">
+                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
+                    <?php echo htmlspecialchars($link['title']); ?>
+                  </a>
+                </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+
+        <!-- Controls -->
+        <div class="d-flex align-items-center gap-3">
+          <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
+          <div class="dropdown">
+            <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown"><img src="<?php echo $path_prefix; ?>assets/img/home/global.svg"> <span>العربية</span> <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg"></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#">العربية</a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
     
-    <!-- Logo (Mobile) - قمت بتغليفه بـ editable-wrapper فقط -->
-    <div class="editable-wrapper">
-      <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
-      <a class="navbar-brand d-lg-none" href="<?php echo $path_prefix; ?>index.php">
-        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="شعار بيتهوفن سيتي" loading="lazy">
-      </a>
-      <a class="navbar-brand logo-scroll d-none" href="<?php echo $path_prefix; ?>index.php">
-        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="logo">
-      </a>
-    </div>
-
-    <!-- Desktop Menu - تغليف القائمة بـ editable-wrapper -->
-    <div class="collapse navbar-collapse editable-wrapper">
-      <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#menuEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
-      <ul class="navbar-nav gap-3">
-        <?php foreach ($menu_links as $link): ?>
-            <li class="nav-item">
-              <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
-                <?php echo htmlspecialchars($link['title']); ?>
-              </a>
-            </li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
-
-    <!-- Right Side Controls -->
-    <div class="d-flex align-items-center gap-3">
-      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="فتح القائمة">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <!-- Language Switcher -->
-      <div class="dropdown">
-        <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg" alt="Language">
-            <span>العربية</span>
-            <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg" alt="فتح القائمة">
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item d-flex align-items-center gap-2 active" href="#"><img src="<?php echo $path_prefix; ?>assets/img/ar.svg" width="20" height="20" alt=""> العربية</a></li>
-          <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><img src="<?php echo $path_prefix; ?>assets/img/en.svg" width="20" height="20" alt=""> English</a></li>
+    <!-- Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
+      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav">
+            <?php foreach ($menu_links as $link): ?>
+                <li class="nav-item"><a class="nav-link" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+            <?php endforeach; ?>
         </ul>
       </div>
     </div>
-  </div>
-</nav>
-
-<!-- offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-  <div class="offcanvas-header d-flex align-items-center justify-content-between">
-    <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
-      <a href="<?php echo $path_prefix; ?>index.php">
-        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="شعار بيتهوفن سيتي" height="50">
-      </a>
-    </h5>
-    <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة"></button>
-  </div>
-  <div class="offcanvas-body">
-    <ul class="navbar-nav">
-        <?php foreach ($menu_links as $link): ?>
-            <li class="nav-item">
-                <a class="nav-link" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-  </div>
-</div>
-
-
 </header>
 
 

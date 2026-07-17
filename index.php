@@ -15,7 +15,9 @@ $hero_btn_url = $hero_data['btn_url'] ?? '#contact';
 $hero_img = $hero_data['img'] ?? 'assets/img/home/home1.png';
 ?>
 
-<section class="hero py-5 editable-wrapper" aria-label="قسم البداية">
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" 
+         style="background-image: url('<?php echo $path_prefix . $hero_img; ?>') center/cover no-repeat !important ;">
+    
     <?php if ($is_admin): ?>
         <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
     <?php endif; ?>
@@ -33,7 +35,6 @@ $hero_img = $hero_data['img'] ?? 'assets/img/home/home1.png';
     </div>
 </section>
 
-  
   <!-- services start -->
   <section class="services py-5">
     <div class="custom-container">

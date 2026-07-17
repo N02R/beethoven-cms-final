@@ -13,6 +13,10 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'announcement' => [], 
     'menu_links' => [], 
     'social_links' => [], 
+    'languages' => [
+        ['name' => 'العربية', 'url' => 'index.php'],
+        ['name' => 'English', 'url' => 'index-en.php']
+    ],
     'site_logo_path' => 'assets/img/logo.png'
 ];
 
@@ -66,7 +70,6 @@ elseif ($action === 'update_social') {
     $data['social_links'] = $socials;
 }
 elseif ($action === 'update_menu') {
-    // معالجة تحديث القائمة الرئيسية
     $new_menu = [];
     if (isset($_POST['menu']) && is_array($_POST['menu'])) {
         foreach ($_POST['menu'] as $item) {
@@ -74,13 +77,27 @@ elseif ($action === 'update_menu') {
                 'title' => $item['title'] ?? 'رابط جديد',
                 'url'   => $item['url'] ?? '#',
                 'order' => (int)($item['order'] ?? 0),
-                'active' => false // يمكن ضبط المنطق لاحقاً
+                'active' => false
             ];
         }
     }
-    // ترتيب القائمة حسب الحقل order
     usort($new_menu, function($a, $b) { return $a['order'] <=> $b['order']; });
     $data['menu_links'] = $new_menu;
+}
+elseif ($action === 'update_languages') {
+    // تحديث قائمة اللغات
+    $new_langs = [];
+    if (isset($_POST['lang']) && is_array($_POST['lang'])) {
+        foreach ($_POST['lang'] as $l) {
+            if (!empty($l['name'])) {
+                $new_langs[] = [
+                    'name' => $l['name'],
+                    'url'  => $l['url'] ?? '#'
+                ];
+            }
+        }
+    }
+    $data['languages'] = $new_langs;
 }
 
 // 4. حفظ البيانات في ملف JSON

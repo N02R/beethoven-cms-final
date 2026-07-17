@@ -206,7 +206,28 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-
+<div class="modal fade custom-modal" id="langEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title"><i class="bi bi-translate text-primary"></i> إدارة اللغات</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body p-4">
+                <form id="langEditForm">
+                    <input type="hidden" name="action" value="update_languages">
+                    <div id="langRowsContainer" class="d-flex flex-column gap-2">
+                        <?php foreach (($data['languages'] ?? []) as $index => $lang): ?>
+                            <div class="row g-2" id="lang_row_<?php echo $index; ?>">
+                                <div class="col-5"><input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo $lang['name']; ?>" placeholder="اسم اللغة"></div>
+                                <div class="col-6"><input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo $lang['url']; ?>" placeholder="الرابط"></div>
+                                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeLangRow('lang_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button type="submit" form="langEditForm" class="btn-premium">حفظ</button></div>
+        </div>
+    </div>
+</div>
 
 <script>
     // 1. منطق تبديل محتوى الإعلان
@@ -220,7 +241,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'row_' + socialCount;
         div.innerHTML = `<div class="d-flex align-items-start gap-3"><div class="rounded-2 border bg-white" style="width:50px; height:50px;"></div><div class="flex-grow-1"><div class="row g-2 mb-2"><div class="col-4"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="الاسم"></div><div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div></div><div class="row g-2 align-items-center"><div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div><div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeSocialRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div></div></div></div>`;
@@ -229,12 +250,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
     function removeSocialRow(id) { document.getElementById(id).remove(); }
 
-    // 3. منطق القائمة الرئيسية (الذي كان ناقصاً)
+    // 3. منطق القائمة الرئيسية
     let menuCount = <?php echo count($menu_links); ?>;
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'menu_row_' + menuCount;
         div.innerHTML = `
@@ -249,21 +270,35 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
     function removeMenuRow(id) { document.getElementById(id).remove(); }
 
-    // 4. معالج النماذج الموحد (يرسل أي فورم يتم ضغطه)
+    // 4. منطق إدارة اللغات (جديد)
+    let langCount = <?php echo count($data['languages'] ?? []); ?>;
+    function addLangRow() {
+        const container = document.getElementById('langRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'row g-2 mb-2';
+        div.id = 'lang_row_' + langCount;
+        div.innerHTML = `
+            <div class="col-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
+            <div class="col-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
+            <div class="col-1"><button type="button" class="btn-icon-trash" style="width:40px; height:40px;" onclick="removeLangRow('lang_row_${langCount}')"><i class="bi bi-trash"></i></button></div>`;
+        container.appendChild(div);
+        langCount++;
+    }
+    function removeLangRow(id) { document.getElementById(id).remove(); }
+
+    // 5. معالج النماذج الموحد
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             fetch('admin/api/save_config.php', { method: 'POST', body: new FormData(this) })
             .then(r => r.json())
             .then(d => { 
-                if(d.success) {
-                    location.reload(); 
-                } else {
-                    alert(d.message); 
-                }
+                if(d.success) { location.reload(); } 
+                else { alert(d.message); }
             })
             .catch(err => console.error('Error:', err));
         });
     });
 </script>
+
 

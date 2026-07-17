@@ -169,13 +169,26 @@ $is_visible = ($is_published && $is_in_time);
         <!-- Controls -->
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
-          <div class="dropdown">
-            <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown"><img src="<?php echo $path_prefix; ?>assets/img/home/global.svg"> <span>العربية</span> <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg"></button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item active" href="#">العربية</a></li>
-              <li><a class="dropdown-item" href="#">English</a></li>
-            </ul>
-          </div>
+<!-- في مكان الـ Language Switcher داخل الـ Header -->
+<div class="dropdown editable-wrapper">
+    <?php if ($is_admin): ?>
+        <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#langEditModal" style="top:-30px; right:0;">
+            <i class="bi bi-pencil"></i>
+        </button>
+    <?php endif; ?>
+    
+    <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
+        <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
+        <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
+        <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg">
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php'], ['name' => 'English', 'url' => 'index-en.php']]) as $lang): ?>
+            <li><a class="dropdown-item" href="<?php echo $path_prefix . $lang['url']; ?>"><?php echo $lang['name']; ?></a></li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+
         </div>
       </div>
     </nav>

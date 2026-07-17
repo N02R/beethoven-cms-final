@@ -65,6 +65,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
 
 
+
 <!-- 2. مودل اللوجو -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog"><div class="modal-content">

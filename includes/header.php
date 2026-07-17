@@ -69,7 +69,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="logo-container d-none d-lg-flex <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
           <?php if ($is_admin): ?><button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal">📝</button><?php endif; ?>
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
-            <img src="<?php echo $path_prefix . $site_logo_path; ?>" width="178" height="72" loading="lazy">
+            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
         </div>
 
@@ -87,7 +87,7 @@ $is_visible = ($is_published && $is_in_time);
                   </div>
                 <?php else: ?>
                   <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
-                    <img src="<?php echo $path_prefix . ($ad['image_path'] ?? 'assets/img/default-ad.png'); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;">
+                    <img src="<?php echo $path_prefix . ($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;">
                   </div>
                 <?php endif; ?>
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
@@ -98,7 +98,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="social-icons d-none d-lg-flex gap-3 position-relative <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
           <?php if ($is_admin): ?><button class="edit-social-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal">📝</button><?php endif; ?>
           <?php foreach (($data['social_links'] ?? []) as $s): ?>
-            <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img']; ?>" width="28"></a>
+            <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
           <?php endforeach; ?>
         </div>
       </div>
@@ -109,7 +109,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="logo-container d-lg-none <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
           <?php if ($is_admin): ?><button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal">📝</button><?php endif; ?>
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
-            <img src="<?php echo $path_prefix . $site_logo_path; ?>" height="50">
+            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50">
           </a>
         </div>
         
@@ -127,7 +127,7 @@ $is_visible = ($is_published && $is_in_time);
     
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path; ?>" height="50"></h5>
+            <h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">

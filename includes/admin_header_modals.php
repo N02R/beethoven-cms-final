@@ -11,30 +11,51 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 </style>
 
 <!-- 1. مودل السوشيال ميديا -->
+<!-- مودل السوشيال ميديا -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
-    <div class="modal-dialog modal-lg"><div class="modal-content">
-        <div class="modal-header"><h5 class="modal-title">إدارة منصات التواصل</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body p-4">
-            <form id="socialLinksForm" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="update_social">
-                <div id="socialRowsContainer">
-                    <?php foreach (($announcement['social_links'] ?? []) as $index => $link): ?>
-                    <div class="card p-3 social-item-row">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-auto"><img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? ''); ?>" style="width: 32px;"></div>
-                            <div class="col"><input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>"></div>
-                            <div class="col"><input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>"></div>
-                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
-                            <div class="col-auto" style="width: 120px;"><input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>"></div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إدارة منصات التواصل</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="socialLinksForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_social">
+                    <div id="socialRowsContainer">
+                        <?php 
+                        // نستخدم $data['social_links'] لأننا في ملف المودلات نستخدم المتغير القادم من الـ header
+                        $social_links = $data['social_links'] ?? [];
+                        foreach ($social_links as $index => $link): ?>
+                        <div class="card p-3 mb-2 social-item-row">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-auto">
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? ''); ?>" style="width: 32px; height: 32px;">
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
+                                </div>
+                                <div class="col">
+                                    <input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
+                                </div>
+                                <!-- حقل مخفي لإرسال المسار القديم في حال لم يتم رفع صورة جديدة -->
+                                <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
+                                <div class="col-auto" style="width: 140px;">
+                                    <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
+                                </div>
+                            </div>
                         </div>
+                        <?php endforeach; ?>
                     </div>
-                    <?php endforeach; ?>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="socialLinksForm" class="btn btn-primary">حفظ روابط التواصل</button>
+            </div>
         </div>
-        <div class="modal-footer"><button type="submit" form="socialLinksForm" class="btn btn-primary">حفظ التغييرات</button></div>
-    </div></div>
+    </div>
 </div>
+
 
 <!-- 2. مودل اللوجو -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">

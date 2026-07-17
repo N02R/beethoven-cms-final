@@ -147,68 +147,78 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </nav>
     
-    <!-- القائمة الرئيسية -->
 <!-- القائمة الرئيسية -->
-<nav id="main-header" class="navbar navbar-expand-lg py-3">
-    <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
-        
-        <!-- اللوجو (للنسخة الجوال فقط) -->
-        <div class="editable-wrapper d-lg-none">
-            <?php if ($is_admin): ?>
-                <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button>
-            <?php endif; ?>
-            <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
-                <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="45" loading="lazy">
-            </a>
-        </div>
-        
-        <!-- القائمة (Desktop) -->
-        <div class="collapse navbar-collapse justify-content-center">
-            <div class="editable-wrapper position-relative">
-                <?php if ($is_admin): ?>
-                    <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#menuEditModal" style="top:-30px; right: 50%;">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                <?php endif; ?>
-                
-                <ul class="navbar-nav gap-4 align-items-center">
-                    <?php foreach ($menu_links as $link): ?>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" 
-                               href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"
-                               style="color: #475569; transition: var(--transition);">
-                                <?php echo htmlspecialchars($link['title']); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
-        
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-            <i class="bi bi-list fs-2"></i>
-        </button>
+<nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
+  <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
+    
+    <!-- Logo (Mobile) - قمت بتغليفه بـ editable-wrapper فقط -->
+    <div class="editable-wrapper">
+      <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
+      <a class="navbar-brand d-lg-none" href="<?php echo $path_prefix; ?>index.php">
+        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="شعار بيتهوفن سيتي" loading="lazy">
+      </a>
+      <a class="navbar-brand logo-scroll d-none" href="<?php echo $path_prefix; ?>index.php">
+        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="logo">
+      </a>
     </div>
+
+    <!-- Desktop Menu - تغليف القائمة بـ editable-wrapper -->
+    <div class="collapse navbar-collapse editable-wrapper">
+      <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#menuEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
+      <ul class="navbar-nav gap-3">
+        <?php foreach ($menu_links as $link): ?>
+            <li class="nav-item">
+              <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
+                <?php echo htmlspecialchars($link['title']); ?>
+              </a>
+            </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+
+    <!-- Right Side Controls -->
+    <div class="d-flex align-items-center gap-3">
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="فتح القائمة">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Language Switcher -->
+      <div class="dropdown">
+        <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg" alt="Language">
+            <span>العربية</span>
+            <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg" alt="فتح القائمة">
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item d-flex align-items-center gap-2 active" href="#"><img src="<?php echo $path_prefix; ?>assets/img/ar.svg" width="20" height="20" alt=""> العربية</a></li>
+          <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><img src="<?php echo $path_prefix; ?>assets/img/en.svg" width="20" height="20" alt=""> English</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </nav>
 
-<!-- القائمة الجانبية (Premium Mobile Style) -->
-<div class="offcanvas offcanvas-end border-0 shadow-lg" tabindex="-1" id="offcanvasNavbar" style="width: 300px; border-radius: 20px 0 0 20px;">
-    <div class="offcanvas-header p-4">
-        <h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="40"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <div class="offcanvas-body p-4">
-        <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link): ?>
-                <li class="nav-item">
-                    <a class="nav-link fs-5 fw-medium" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
-                        <?php echo htmlspecialchars($link['title']); ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
+<!-- offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+  <div class="offcanvas-header d-flex align-items-center justify-content-between">
+    <h5 class="offcanvas-title mb-0" id="offcanvasNavbarLabel">
+      <a href="<?php echo $path_prefix; ?>index.php">
+        <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="شعار بيتهوفن سيتي" height="50">
+      </a>
+    </h5>
+    <button type="button" class="btn-close me-auto" data-bs-dismiss="offcanvas" aria-label="إغلاق القائمة"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+        <?php foreach ($menu_links as $link): ?>
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+  </div>
 </div>
+
 
 </header>
 

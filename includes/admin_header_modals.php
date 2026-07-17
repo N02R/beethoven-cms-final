@@ -93,33 +93,65 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<!-- 3. Announcement Modal -->
+<!-- 3. المودل المحدث للإعلان (UX محسّن) -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title"><i class="bi bi-megaphone-fill text-primary"></i> إدارة الإعلان</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-megaphone-fill text-primary"></i> إعدادات لوحة الإعلانات</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body p-4">
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4"><label class="form-label small fw-bold">الحالة</label><select class="form-select" name="status"><option value="Draft" <?php echo (($announcement['announcement']['status'] ?? '') == 'Draft' ? 'selected' : ''); ?>>مسودة</option><option value="Published" <?php echo (($announcement['announcement']['status'] ?? '') == 'Published' ? 'selected' : ''); ?>>نشر</option></select></div>
-                        <div class="col-md-4"><label class="form-label small fw-bold">البدء</label><input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $announcement['announcement']['start_date'] ?? ''); ?>"></div>
-                        <div class="col-md-4"><label class="form-label small fw-bold">الانتهاء</label><input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $announcement['announcement']['end_date'] ?? ''); ?>"></div>
-                    </div>
-                    <div class="mb-4"><label class="form-label small fw-bold">النوع</label><select class="form-select" name="type" onchange="toggleAdContent(this.value)"><option value="text" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك</option><option value="image" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة</option></select></div>
-                    <div id="textEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
-                        <textarea class="form-control mb-3" name="announcement_text" rows="3"><?php echo htmlspecialchars($announcement['announcement']['announcement_text'] ?? ''); ?></textarea>
-                        <div class="row g-2 mb-3">
-                            <div class="col-4"><label class="form-label small">الخلفية</label><input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo $announcement['announcement']['bg_color'] ?? '#f1f5f9'; ?>"></div>
-                            <div class="col-4"><label class="form-label small">النص</label><input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo $announcement['announcement']['text_color'] ?? '#1e293b'; ?>"></div>
-                            <div class="col-4"><label class="form-label small">الحجم</label><input type="number" class="form-control" name="font_size" value="<?php echo $announcement['announcement']['font_size'] ?? '16'; ?>"></div>
+                    
+                    <!-- المجموعة 1: حالة الإعلان -->
+                    <div class="card p-3 mb-4 border-0" style="background: #f1f5f9;">
+                        <div class="section-label"><i class="bi bi-gear"></i> حالة الإعلان والتوقيت</div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="small fw-bold">حالة العرض</label>
+                                <select class="form-select" name="status">
+                                    <option value="Draft" <?php echo (($announcement['announcement']['status'] ?? '') == 'Draft' ? 'selected' : ''); ?>>مخفي (مسودة)</option>
+                                    <option value="Published" <?php echo (($announcement['announcement']['status'] ?? '') == 'Published' ? 'selected' : ''); ?>>نشط (يظهر للزوار)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4"><label class="small fw-bold">تاريخ البدء</label><input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $announcement['announcement']['start_date'] ?? ''); ?>"></div>
+                            <div class="col-md-4"><label class="small fw-bold">تاريخ الانتهاء</label><input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $announcement['announcement']['end_date'] ?? ''); ?>"></div>
                         </div>
                     </div>
-                    <div id="imageEditor" class="mb-4 <?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>"><input type="file" class="form-control w-100" name="ad_image"></div>
-                    <div class="pt-3 border-top"><label class="form-label small fw-bold">الرابط</label><input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['announcement']['link'] ?? ''); ?>"></div>
+
+                    <!-- المجموعة 2: محتوى الإعلان -->
+                    <div class="card p-3 mb-4 border" style="border-color: var(--border-color);">
+                        <div class="section-label"><i class="bi bi-pencil-square"></i> محتوى الإعلان</div>
+                        <label class="small mb-2">نوع الإعلان:</label>
+                        <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
+                            <option value="text" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك (اختر هذا لنص سريع)</option>
+                            <option value="image" <?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي كامل)</option>
+                        </select>
+
+                        <div id="textEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
+                            <label class="small mb-1">نص الإعلان (الرسالة التي ستظهر للزوار):</label>
+                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars($announcement['announcement']['announcement_text'] ?? ''); ?></textarea>
+                            <div class="row g-2">
+                                <div class="col-4"><label class="small">لون الخلفية</label><input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo $announcement['announcement']['bg_color'] ?? '#f1f5f9'; ?>"></div>
+                                <div class="col-4"><label class="small">لون الخط</label><input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo $announcement['announcement']['text_color'] ?? '#1e293b'; ?>"></div>
+                                <div class="col-4"><label class="small">حجم الخط</label><input type="number" class="form-control" name="font_size" value="<?php echo $announcement['announcement']['font_size'] ?? '16'; ?>"></div>
+                            </div>
+                        </div>
+
+                        <div id="imageEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
+                            <label class="small mb-1">ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):</label>
+                            <input type="file" class="form-control" name="ad_image">
+                        </div>
+                    </div>
+
+                    <!-- المجموعة 3: التوجيه -->
+                    <div class="section-label"><i class="bi bi-link-45deg"></i> رابط التوجيه (اختياري)</div>
+                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['announcement']['link'] ?? ''); ?>" placeholder="https://">
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn-premium">حفظ الإعدادات</button></div>
+            <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn-premium">حفظ التغييرات وتحديث الموقع</button></div>
         </div>
     </div>
 </div>

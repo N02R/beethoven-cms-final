@@ -7,34 +7,52 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 }
 
 $file = __DIR__ . '/../../announcement_config.json';
-// 1. قراءة البيانات الموجودة حالياً (للحفاظ عليها)
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : ['announcement' => [], 'menu_links' => [], 'social_links' => [], 'site_logo_path' => 'assets/img/logo.png'];
 
 $action = $_POST['action'] ?? '';
+$upload_path = __DIR__ . '/../../assets/img/';
 
-// 2. تحديث الجزء المعني فقط بناءً على الـ Action
+// دالة مساعدة لنقل الصور
+function handle_upload($file_key, $upload_dir) {
+    if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION);
+        $new_name = $file_key . '_' . time() . '.' . $ext;
+        if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $upload_dir . $new_name)) {
+            return 'assets/img/' . $new_name;
+        }
+    }
+    return null;
+}
+
 if ($action === 'update_announcement') {
+    $img_path = handle_upload('ad_image', $upload_path);
     $data['announcement'] = [
-        'status' => $_POST['announcement']['status'] ?? 'Draft',
-        'announcement_text' => $_POST['announcement']['announcement_text'] ?? '',
-        'link' => $_POST['announcement']['link'] ?? '',
-        'start_date' => $_POST['announcement']['start_date'] ?? '',
-        'end_date' => $_POST['announcement']['end_date'] ?? '',
+        'status' => $_POST['status'] ?? 'Draft',
+        'announcement_text' => $_POST['announcement_text'] ?? '',
+        'link' => $_POST['link'] ?? '',
+        'start_date' => $_POST['start_date'] ?? '',
+        'end_date' => $_POST['end_date'] ?? '',
         'type' => $_POST['type'] ?? 'text',
         'bg_color' => $_POST['bg_color'] ?? '#f1f5f9',
         'text_color' => $_POST['text_color'] ?? '#1e293b',
         'font_size' => $_POST['font_size'] ?? '16',
-        'image_path' => $data['announcement']['image_path'] ?? '' // الحفاظ على الصورة القديمة
+        'image_path' => $img_path ?? ($data['announcement']['image_path'] ?? '')
     ];
 } 
 elseif ($action === 'update_logo') {
-    $data['site_logo_path'] = $_POST['site_logo_path'] ?? $data['site_logo_path'];
+    $img_path = handle_upload('logo_img', $upload_path);
+    if ($img_path) $data['site_logo_path'] = $img_path;
 }
 elseif ($action === 'update_social') {
-    $data['social_links'] = $_POST['social'] ?? $data['social_links'];
+    $socials = $_POST['social'] ?? [];
+    foreach ($socials as $index => $s) {
+        $img_path = handle_upload('social_img_' . $index, $upload_path);
+        $socials[$index]['img'] = $img_path ?? ($s['old_img'] ?? '');
+        unset($socials[$index]['old_img']);
+    }
+    $data['social_links'] = $socials;
 }
 
-// 3. حفظ كامل المصفوفة المحدثة
 if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
     echo json_encode(['success' => true, 'message' => 'تم حفظ البيانات بنجاح']);
 } else {

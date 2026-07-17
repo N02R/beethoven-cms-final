@@ -12,11 +12,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
 
 <!-- مودل السوشيال ميديا (محدث بأيقونة سلة وحل الكاش) -->
+<!-- مودل السوشيال ميديا بتصميم عصري -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">إدارة منصات التواصل</h5>
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title"><i class="bi bi-share-fill text-primary"></i> إدارة منصات التواصل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -26,25 +27,33 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         <?php 
                         $social_links = $data['social_links'] ?? [];
                         foreach ($social_links as $index => $link): ?>
-                        <div class="card p-3 mb-2 social-item-row" id="row_<?php echo $index; ?>">
-                            <div class="row g-2 align-items-center">
-                                <div class="col-auto">
-                                    <!-- تم إضافة time() لتجاوز الكاش -->
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" style="width: 32px; height: 32px; object-fit: contain;">
+                        <div class="card p-3 mb-3 shadow-sm border-0 bg-light" id="row_<?php echo $index; ?>">
+                            <div class="row align-items-center g-3">
+                                <!-- الصورة الحالية -->
+                                <div class="col-auto text-center">
+                                    <div class="rounded p-1 bg-white border" style="width: 50px; height: 50px;">
+                                        <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;">
+                                    </div>
                                 </div>
+                                <!-- المدخلات -->
                                 <div class="col">
-                                    <input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="url" class="form-control" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="رابط المنصة">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="small text-muted">تغيير الأيقونة:</label>
+                                            <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    <input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
-                                </div>
+                                <!-- زر الحذف -->
                                 <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
-                                <div class="col-auto" style="width: 140px;">
-                                    <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
-                                </div>
                                 <div class="col-auto">
-                                    <!-- تم استبدال الـ × بأيقونة سلة مهملات -->
-                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSocialRow('row_<?php echo $index; ?>')">
+                                    <button type="button" class="btn btn-outline-danger btn-icon" onclick="removeSocialRow('row_<?php echo $index; ?>')" title="حذف المنصة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -52,15 +61,23 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSocialRow()">+ إضافة منصة جديدة</button>
+                    <button type="button" class="btn btn-primary w-100 mt-2" onclick="addSocialRow()">
+                        <i class="bi bi-plus-circle"></i> إضافة منصة تواصل جديدة
+                    </button>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="submit" form="socialLinksForm" class="btn btn-primary">حفظ روابط التواصل</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="socialLinksForm" class="btn btn-success px-4">حفظ التغييرات</button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .btn-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+</style>
+
 
 
 

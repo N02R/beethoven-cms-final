@@ -50,6 +50,19 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); color: white; }
     .btn-icon-trash { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; }
     .btn-icon-trash:hover { background: #fecaca; }
+    /* تنسيق احترافي لزر رفع الملفات */
+.custom-modal .form-control[type="file"] {
+    padding: 8px 12px !important;
+    /* تقليل الحشو ليتناسب مع زر الرفع */
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+/* لجعل زر الرفع يملأ العرض بالكامل بشكل جذاب */
+.file-upload-wrapper {
+    position: relative;
+    width: 100%;
+}
 </style>
 
 <!-- 1. مودل السوشيال ميديا -->
@@ -93,22 +106,37 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<!-- 2. مودل اللوجو -->
+<!-- 2. مودل اللوجو (المُعدل) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">تغيير شعار الموقع</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body p-4 text-center">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
                 <form id="logoEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_logo">
-                    <div class="mb-4"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" class="img-fluid border p-2 rounded" style="max-height: 120px;"></div>
-                    <input type="file" class="form-control" name="logo_img" required>
+                    <!-- إضافة إطار جذاب للشعار الحالي -->
+                    <div class="mb-4 text-center">
+                        <div class="p-3 bg-light rounded border d-inline-block">
+                            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" class="img-fluid" style="max-height: 100px; object-fit: contain;">
+                        </div>
+                    </div>
+                    <!-- حقل الرفع مع كلاس يضمن ملء العرض -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">اختيار شعار جديد:</label>
+                        <input type="file" class="form-control w-100" name="logo_img" required>
+                    </div>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="logoEditForm" class="btn-premium w-100">حفظ الشعار</button></div>
+            <div class="modal-footer">
+                <button type="submit" form="logoEditForm" class="btn-premium w-100">حفظ الشعار</button>
+            </div>
         </div>
     </div>
 </div>
+
 
 <!-- 3. مودل الإعلان -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">

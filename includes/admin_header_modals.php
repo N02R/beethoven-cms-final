@@ -148,39 +148,38 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
 <script>
     function toggleAdContent(val) {
-        document.getElementById('textEditor').classList.toggle('d-none', val !== 'text');
-        document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image');
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if (textEditor && imageEditor) {
+            textEditor.classList.toggle('d-none', val !== 'text');
+            imageEditor.classList.toggle('d-none', val !== 'image');
+        }
     }
 
+    // منطق موحد لجميع الفورمات (يعتمد على الكود الخاص بكِ)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // إضافة لمسة احترافية: تعطيل الزر لمنع الضغط المكرر
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'جاري الحفظ...';
-
+            // استخدام الـ FormData الخاص بالفورم الذي تم الضغط عليه
             const formData = new FormData(this);
-            fetch('admin/api/save_config.php', { method: 'POST', body: formData })
-            .then(r => r.json())
+            
+            fetch('admin/api/save_config.php', { 
+                method: 'POST', 
+                body: formData 
+            })
+            .then(response => response.json())
             .then(data => {
                 if(data.success) {
                     alert('تم الحفظ بنجاح!');
-                    location.reload(); // إعادة تحميل الصفحة لرؤية التغييرات
+                    location.reload();
                 } else {
                     alert('خطأ: ' + (data.message || 'حدثت مشكلة'));
-                    // إعادة الزر في حال حدوث خطأ
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
                 }
             })
-            .catch(err => {
-                console.error(err);
-                alert('حدث خطأ تقني في الاتصال بالسيرفر');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالسيرفر، يرجى المحاولة لاحقاً');
             });
         });
     });

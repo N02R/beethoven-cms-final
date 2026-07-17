@@ -17,7 +17,26 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
     /* تحسين المودل */
     .custom-modal .modal-content { border-radius: var(--radius); border: none; box-shadow: var(--shadow-md); overflow: hidden; }
-    .custom-modal .modal-header { padding: 20px 28px; background: #fff; border-bottom: 1px solid var(--border-soft); }
+    .custom-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+}
+
+.custom-modal .modal-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.custom-modal .btn-close {
+    margin: 0;
+    flex-shrink: 0;
+}
     .custom-modal .modal-footer { padding: 20px 28px; border-top: 1px solid var(--border-soft); background: #f8fafc; }
     
     /* حقول الإدخال الاحترافية */

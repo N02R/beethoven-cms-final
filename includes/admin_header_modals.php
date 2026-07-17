@@ -124,7 +124,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         </div>
                     </div>
                     <!-- حقل الرفع مع كلاس يضمن ملء العرض -->
-                    <div class="mb-3">
+                    <div class="mb-3 overflow-hidden">
                         <label class="form-label text-muted small">اختيار شعار جديد:</label>
                         <input type="file" class="form-control w-100 h-100"name="logo_img" required>
                     </div>

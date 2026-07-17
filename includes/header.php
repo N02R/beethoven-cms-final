@@ -53,11 +53,27 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo (isset($page_css) ? "?files=" . implode(',', array_map('basename', $page_css)) : ""); ?>">
   <style>
     .logo-container { position: relative; display: inline-block; }
-    <?php if ($is_admin): ?>
-    .editable-admin-border { border: 1px dashed #0d6efd; position: relative; }
-    .edit-logo-btn { position: absolute; top: 5px; left: 5px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
-    .edit-social-btn { position: absolute; top: -10px; left: -10px; z-index: 20; background: #0d6efd; border: none; border-radius: 50%; width: 24px; height: 24px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    <?php endif; ?>
+/* ابحثي عن هذا الجزء في header.php وعدليه كالتالي */
+<?php if ($is_admin): ?>
+    .editable-admin-border { border: 1px dashed #0d6efd; position: relative; padding-top: 30px !important; } /* إضافة padding لتوفير مساحة للأيقونة */
+    .edit-logo-btn { 
+        position: absolute; 
+        top: 0; 
+        right: 0; /* تغييرها لـ right لتكون في الزاوية العلوية اليمنى (بما أن الموقع RTL) */
+        background: rgba(255,255,255,0.9); 
+        border: 1px solid #ccc; 
+        border-radius: 50%; 
+        width: 28px; 
+        height: 28px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        cursor: pointer; 
+        font-size: 12px;
+        z-index: 10; 
+    }
+<?php endif; ?>
+
   </style>
 </head>
 <body>

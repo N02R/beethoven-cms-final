@@ -67,7 +67,9 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         <div class="modal-body p-4">
             <form id="logoEditForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="update_logo">
-                <div class="mb-3 text-center"><img src="<?php echo $path_prefix . ($announcement['site_logo_path'] ?? 'assets/img/logo.png'); ?>" style="max-width: 150px;"></div>
+                <div class="mb-3 text-center"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" style="max-width: 100%; height: auto;">
+
+</div>
                 <input type="file" class="form-control" name="logo_img" required>
             </form>
         </div>

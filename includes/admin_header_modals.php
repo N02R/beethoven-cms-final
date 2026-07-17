@@ -156,6 +156,78 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+<!-- 4. مودل إدارة القائمة الرئيسية (Menu Edit Modal) -->
+<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header px-4 py-3 border-bottom border-light">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-list-nested text-primary"></i> إدارة القائمة الرئيسية
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <form id="menuLinksForm">
+                    <input type="hidden" name="action" value="update_menu">
+                    <div id="menuRowsContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ($menu_links as $index => $link): ?>
+                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="menu_row_<?php echo $index; ?>">
+                            <div class="row align-items-center g-2">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title']); ?>" placeholder="عنوان الرابط">
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>" placeholder="الرابط (URL)">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo ($link['order'] ?? $index); ?>" placeholder="الترتيب">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn-icon-trash" style="width:32px; height:32px;" onclick="removeMenuRow('menu_row_<?php echo $index; ?>')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addMenuRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
+                    </button>
+                </form>
+            </div>
+            
+            <div class="modal-footer px-4 py-3 border-top border-light bg-light" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="menuLinksForm" class="btn-premium px-5">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let menuCount = <?php echo count($menu_links); ?>;
+function addMenuRow() {
+    const container = document.getElementById('menuRowsContainer');
+    const div = document.createElement('div');
+    div.className = 'card p-3 border-0';
+    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+    div.id = 'menu_row_' + menuCount;
+    div.innerHTML = `
+        <div class="row align-items-center g-2">
+            <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
+            <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][url]" placeholder="الرابط (URL)"></div>
+            <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="menu[${menuCount}][order]" value="${menuCount}"></div>
+            <div class="col-auto"><button type="button" class="btn-icon-trash" style="width:32px; height:32px;" onclick="removeMenuRow('menu_row_${menuCount}')"><i class="bi bi-trash"></i></button></div>
+        </div>`;
+    container.appendChild(div);
+    menuCount++;
+}
+function removeMenuRow(id) { document.getElementById(id).remove(); }
+</script>
+
+
 <script>
     function toggleAdContent(val) { document.getElementById('textEditor').classList.toggle('d-none', val !== 'text'); document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image'); }
     

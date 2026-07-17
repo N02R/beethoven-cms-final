@@ -40,6 +40,34 @@ elseif ($action === 'update_logo') {
     $img_path = handle_upload('logo_img', $upload_path);
     if ($img_path) $data['site_logo_path'] = $img_path;
 }
+elseif ($action === 'update_social') {
+    $socials = [];
+    if (isset($_POST['social']) && is_array($_POST['social'])) {
+        foreach ($_POST['social'] as $index => $s) {
+            $img_path = handle_upload('social_img_' . $index, $upload_path);
+            $socials[] = [
+                'name' => $s['name'] ?? '',
+                'url' => $s['url'] ?? '',
+                'img' => $img_path ?? ($s['old_img'] ?? '')
+            ];
+        }
+    }
+    $data['social_links'] = $socials;
+}
+elseif ($action === 'update_menu') {
+    $new_menu = [];
+    if (isset($_POST['menu']) && is_array($_POST['menu'])) {
+        foreach ($_POST['menu'] as $item) {
+            $new_menu[] = [
+                'title' => $item['title'] ?? 'رابط جديد',
+                'url'   => $item['url'] ?? '#',
+                'order' => (int)($item['order'] ?? 0)
+            ];
+        }
+    }
+    usort($new_menu, function($a, $b) { return $a['order'] <=> $b['order']; });
+    $data['menu_links'] = $new_menu;
+}
 elseif ($action === 'update_languages') {
     $new_langs = [];
     if (isset($_POST['lang']) && is_array($_POST['lang'])) {

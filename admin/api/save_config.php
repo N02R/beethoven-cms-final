@@ -8,7 +8,12 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 
 $file = __DIR__ . '/../../announcement_config.json';
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
-    'announcement' => [], 'menu_links' => [], 'social_links' => [], 'languages' => [], 'site_logo_path' => 'assets/img/logo.png'
+    'announcement' => [], 
+    'menu_links' => [], 
+    'social_links' => [], 
+    'languages' => [], 
+    'site_logo_path' => 'assets/img/logo.png',
+    'hero' => [] // تم إضافة مفتاح hero لضمان استقرار المصفوفة
 ];
 
 $action = $_POST['action'] ?? '';
@@ -77,7 +82,18 @@ elseif ($action === 'update_languages') {
     }
     $data['languages'] = $new_langs;
 }
+elseif ($action === 'update_hero') {
+    $img_path = handle_upload('hero_img', $upload_path);
+    $data['hero'] = [
+        'title' => $_POST['hero_title'] ?? '',
+        'desc' => $_POST['hero_desc'] ?? '',
+        'btn_text' => $_POST['hero_btn_text'] ?? '',
+        'btn_url' => $_POST['hero_btn_url'] ?? '',
+        'img' => $img_path ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg')
+    ];
+}
 
+// حفظ الملف
 if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
     echo json_encode(['success' => true, 'message' => 'تم الحفظ بنجاح']);
 } else {

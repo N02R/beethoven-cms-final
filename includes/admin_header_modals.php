@@ -256,6 +256,31 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-gear text-primary"></i> تعديل قسم البداية (Hero)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="heroEditForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_hero">
+                    <div class="row g-3">
+                        <div class="col-12"><label>العنوان</label><input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($hero['title']); ?>"></div>
+                        <div class="col-12"><label>النص الوصفي</label><textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($hero['desc']); ?></textarea></div>
+                        <div class="col-md-6"><label>نص الزر</label><input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($hero['btn_text']); ?>"></div>
+                        <div class="col-md-6"><label>رابط الزر</label><input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($hero['btn_url']); ?>"></div>
+                        <div class="col-12"><label>صورة الخلفية</label><input type="file" class="form-control" name="hero_img"></div>
+                        <input type="hidden" name="old_hero_img" value="<?php echo $hero['img']; ?>">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button></div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 1. منطق تبديل محتوى الإعلان
     function toggleAdContent(val) { 
@@ -278,7 +303,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     function removeSocialRow(id) { document.getElementById(id).remove(); }
 
     // 3. منطق القائمة الرئيسية
-    let menuCount = <?php echo count($menu_links); ?>;
+    let menuCount = <?php echo count($data['menu_links'] ?? []); ?>;
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         const div = document.createElement('div');
@@ -297,7 +322,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
     function removeMenuRow(id) { document.getElementById(id).remove(); }
 
-    // 4. منطق إدارة اللغات (جديد)
+    // 4. منطق إدارة اللغات
     let langCount = <?php echo count($data['languages'] ?? []); ?>;
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
@@ -313,15 +338,20 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
     function removeLangRow(id) { document.getElementById(id).remove(); }
 
-    // 5. معالج النماذج الموحد
+    // 5. معالج النماذج الموحد (يعمل مع أي فورم يحتوي على action)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            fetch('admin/api/save_config.php', { method: 'POST', body: new FormData(this) })
+            const formData = new FormData(this);
+            fetch('admin/api/save_config.php', { method: 'POST', body: formData })
             .then(r => r.json())
             .then(d => { 
-                if(d.success) { location.reload(); } 
-                else { alert(d.message); }
+                if(d.success) { 
+                    alert(d.message);
+                    location.reload(); 
+                } else { 
+                    alert(d.message); 
+                }
             })
             .catch(err => console.error('Error:', err));
         });

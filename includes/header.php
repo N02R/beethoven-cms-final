@@ -52,30 +52,47 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo (isset($page_css) ? "?files=" . implode(',', array_map('basename', $page_css)) : ""); ?>">
-  <style>
-    .logo-container { position: relative; display: inline-block; }
-/* ابحثي عن هذا الجزء في header.php وعدليه كالتالي */
-<?php if ($is_admin): ?>
-    .editable-admin-border { border: 1px dashed #0d6efd; position: relative; padding-top: 30px !important; } /* إضافة padding لتوفير مساحة للأيقونة */
-    .edit-logo-btn { 
-        position: absolute; 
-        top: 0; 
-        right: 0; /* تغييرها لـ right لتكون في الزاوية العلوية اليمنى (بما أن الموقع RTL) */
-        background: rgba(255,255,255,0.9); 
-        border: 1px solid #ccc; 
-        border-radius: 50%; 
-        width: 28px; 
-        height: 28px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        cursor: pointer; 
-        font-size: 12px;
-        z-index: 10; 
+<style>
+    :root {
+        --primary-blue: #3b82f6;
+        --hover-blue: #eff6ff;
+        --border-soft: #dbeafe;
+        --shadow-premium: 0 8px 20px rgba(15, 23, 42, 0.12);
+        --transition: all 220ms ease;
     }
-<?php endif; ?>
 
-  </style>
+    .logo-container, .editable-wrapper { position: relative; display: inline-block; }
+
+    /* الزر الجديد العائم (Floating Edit Button) */
+    .admin-edit-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 38px;
+        height: 38px;
+        background: white;
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition);
+        z-index: 100;
+        color: var(--primary-blue);
+        padding: 0;
+    }
+
+    .admin-edit-btn:hover {
+        background: var(--hover-blue);
+        border-color: #60a5fa;
+        transform: scale(1.05);
+    }
+
+    .admin-edit-btn:active { transform: scale(0.95); }
+</style>
+
 </head>
 <body>
 
@@ -83,18 +100,22 @@ $is_visible = ($is_published && $is_in_time);
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <div class="logo-container d-none d-lg-flex <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
-          <?php if ($is_admin): ?><button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal">📝</button><?php endif; ?>
+        <!-- اللوجو (نسخة سطح المكتب) -->
+        <div class="editable-wrapper">
+          <?php if ($is_admin): ?>
+            <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button>
+          <?php endif; ?>
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
         </div>
 
+        <!-- منطقة الإعلان -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
-            <div class="w-100 text-center <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>" style="max-width: 500px;">
+            <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
               <?php if ($is_admin): ?>
-                <button class="edit-announcement-btn" data-bs-toggle="modal" data-bs-target="#announcementEditModal" style="position: absolute; top: -10px; left: -10px; z-index: 10; background: #0d6efd; border: none; border-radius: 50%; width: 24px; height: 24px; color: white; display: flex; align-items: center; justify-content: center;">📝</button>
+                <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#announcementEditModal"><i class="bi bi-pencil"></i></button>
               <?php endif; ?>
 
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
@@ -112,19 +133,25 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
         </div>
 
-        <div class="social-icons d-none d-lg-flex gap-3 position-relative <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
-          <?php if ($is_admin): ?><button class="edit-social-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal">📝</button><?php endif; ?>
-          <?php foreach (($data['social_links'] ?? []) as $s): ?>
-            <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
-          <?php endforeach; ?>
+        <!-- السوشيال ميديا -->
+        <div class="editable-wrapper d-none d-lg-flex">
+          <?php if ($is_admin): ?>
+            <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal"><i class="bi bi-pencil"></i></button>
+          <?php endif; ?>
+          <div class="social-icons d-flex gap-3">
+            <?php foreach (($data['social_links'] ?? []) as $s): ?>
+                <a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
+            <?php endforeach; ?>
+          </div>
         </div>
       </div>
     </nav>
     
+    <!-- القائمة الرئيسية -->
     <nav id="main-header" class="navbar navbar-expand-lg py-3">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
-        <div class="logo-container d-lg-none <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
-          <?php if ($is_admin): ?><button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal">📝</button><?php endif; ?>
+        <div class="editable-wrapper d-lg-none">
+          <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50">
           </a>
@@ -142,6 +169,7 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </nav>
     
+    <!-- القائمة الجانبية (Mobile) -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5>
@@ -156,5 +184,6 @@ $is_visible = ($is_published && $is_in_time);
         </div>
     </div>
 </header>
+
 
 <?php if ($is_admin) { include __DIR__ . '/admin_header_modals.php'; } ?>

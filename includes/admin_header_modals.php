@@ -206,28 +206,56 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<div class="modal fade custom-modal" id="langEditModal" tabindex="-1">
+<!-- مودل إدارة اللغات (Lang Edit Modal) -->
+<div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title"><i class="bi bi-translate text-primary"></i> إدارة اللغات</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header px-4 py-3 border-bottom">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-translate text-primary"></i> إدارة اللغات
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
             <div class="modal-body p-4">
                 <form id="langEditForm">
                     <input type="hidden" name="action" value="update_languages">
+                    
                     <div id="langRowsContainer" class="d-flex flex-column gap-2">
-                        <?php foreach (($data['languages'] ?? []) as $index => $lang): ?>
-                            <div class="row g-2" id="lang_row_<?php echo $index; ?>">
-                                <div class="col-5"><input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo $lang['name']; ?>" placeholder="اسم اللغة"></div>
-                                <div class="col-6"><input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo $lang['url']; ?>" placeholder="الرابط"></div>
-                                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeLangRow('lang_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
-                            </div>
-                        <?php endforeach; ?>
+                        <!-- جلب اللغات الموجودة حالياً -->
+                        <?php if (!empty($data['languages'])): ?>
+                            <?php foreach ($data['languages'] as $index => $lang): ?>
+                                <div class="row g-2" id="lang_row_<?php echo $index; ?>">
+                                    <div class="col-5">
+                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name']); ?>" placeholder="اسم اللغة (مثلاً العربية)">
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url']); ?>" placeholder="الرابط (مثلاً index.php)">
+                                    </div>
+                                    <div class="col-1">
+                                        <button type="button" class="btn-icon-trash" style="width:38px; height:38px;" onclick="removeLangRow('lang_row_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
+
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addLangRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة لغة جديدة
+                    </button>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="langEditForm" class="btn-premium">حفظ</button></div>
+            
+            <div class="modal-footer px-4 py-3 bg-light" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="langEditForm" class="btn-premium px-5">حفظ التغييرات</button>
+            </div>
         </div>
     </div>
 </div>
+
 
 <script>
     // 1. منطق تبديل محتوى الإعلان

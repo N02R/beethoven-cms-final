@@ -10,7 +10,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     .social-item-row { transition: 0.3s; border: 1px solid #e2e8f0; margin-bottom: 10px; }
 </style>
 
-<!-- 1. مودل السوشيال ميديا -->
+
 <!-- مودل السوشيال ميديا -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -24,10 +24,9 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <input type="hidden" name="action" value="update_social">
                     <div id="socialRowsContainer">
                         <?php 
-                        // نستخدم $data['social_links'] لأننا في ملف المودلات نستخدم المتغير القادم من الـ header
                         $social_links = $data['social_links'] ?? [];
                         foreach ($social_links as $index => $link): ?>
-                        <div class="card p-3 mb-2 social-item-row">
+                        <div class="card p-3 mb-2 social-item-row" id="row_<?php echo $index; ?>">
                             <div class="row g-2 align-items-center">
                                 <div class="col-auto">
                                     <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? ''); ?>" style="width: 32px; height: 32px;">
@@ -38,15 +37,18 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                 <div class="col">
                                     <input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
                                 </div>
-                                <!-- حقل مخفي لإرسال المسار القديم في حال لم يتم رفع صورة جديدة -->
                                 <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
                                 <div class="col-auto" style="width: 140px;">
                                     <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeSocialRow('row_<?php echo $index; ?>')">×</button>
                                 </div>
                             </div>
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSocialRow()">+ إضافة منصة جديدة</button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -55,6 +57,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 
 <!-- 2. مودل اللوجو -->
@@ -147,6 +150,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
 
 <script>
+    // 1. تبديل محتوى الإعلان
     function toggleAdContent(val) {
         const textEditor = document.getElementById('textEditor');
         const imageEditor = document.getElementById('imageEditor');
@@ -156,12 +160,38 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         }
     }
 
-    // منطق موحد لجميع الفورمات (يعتمد على الكود الخاص بكِ)
+    // 2. منطق إضافة وحذف صفوف السوشيال ميديا
+    let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
+
+    function addSocialRow() {
+        const container = document.getElementById('socialRowsContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'card p-3 mb-2 social-item-row';
+        newRow.id = 'row_' + socialCount;
+        
+        newRow.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-auto"><div style="width: 32px;"></div></div>
+                <div class="col"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="اسم المنصة"></div>
+                <div class="col"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div>
+                <div class="col-auto" style="width: 140px;"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div>
+                <div class="col-auto"><button type="button" class="btn btn-danger btn-sm" onclick="removeSocialRow('row_${socialCount}')">×</button></div>
+            </div>
+        `;
+        container.appendChild(newRow);
+        socialCount++;
+    }
+
+    function removeSocialRow(rowId) {
+        const row = document.getElementById(rowId);
+        if(row) row.remove();
+    }
+
+    // 3. منطق موحد لإرسال جميع الفورمات
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // استخدام الـ FormData الخاص بالفورم الذي تم الضغط عليه
             const formData = new FormData(this);
             
             fetch('admin/api/save_config.php', { 
@@ -184,4 +214,5 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         });
     });
 </script>
+
 

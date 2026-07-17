@@ -81,7 +81,10 @@ if (!isset($path_prefix)) {
   ?>
 
   <!-- سطر واحد مدمج ومضغوط يجمع الملفات الأساسية (Bootstrap, main) والإضافية تلقائياً -->
-  <script src="<?php echo $path_prefix; ?>assets/js/minify-js.php<?php echo $extra_js_string; ?>"></script>
+<!-- استبدلي سطر المينيفاي مؤقتاً بالآتي للتحقق -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?php echo $path_prefix; ?>assets/js/main.js?v=<?php echo time(); ?>"></script>
+
 
   <!-- أي سكربت مخصص مكتوب كـ Text داخل الصفحة يتم طباعته هنا بأمان بعد دمج الملفات -->
   <?php if (isset($custom_script)) { echo $custom_script; } ?>

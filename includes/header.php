@@ -14,13 +14,24 @@ if (!function_exists('isUserAdmin')) {
 }
 $is_admin = isUserAdmin(); 
 
-// 4. تحميل البيانات
+// 4. تحميل البيانات (تم تعريف $data هنا لتكون متاحة لكل الصفحات)
 $site_logo_path = 'assets/img/logo.png'; 
 $config_file_path = __DIR__ . '/../announcement_config.json';
-$data = ['announcement' => [], 'menu_links' => [], 'social_links' => [], 'site_logo_path' => $site_logo_path];
+// تهيئة افتراضية للمصفوفة لتجنب أي خطأ في الصفحات الأخرى
+$data = [
+    'announcement' => [], 
+    'menu_links' => [], 
+    'social_links' => [], 
+    'languages' => [], 
+    'site_logo_path' => $site_logo_path,
+    'hero' => []
+];
 
 if (file_exists($config_file_path)) {
-    $data = json_decode(file_get_contents($config_file_path), true) ?? $data;
+    $decoded_data = json_decode(file_get_contents($config_file_path), true);
+    if (is_array($decoded_data)) {
+        $data = array_merge($data, $decoded_data);
+    }
 }
 
 $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
@@ -101,7 +112,7 @@ $is_visible = ($is_published && $is_in_time);
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- اللوجو الرئيسي (التحكم في اللوجو من هنا فقط) -->
+        <!-- اللوجو الرئيسي -->
         <div class="editable-wrapper">
           <?php if ($is_admin): ?>
             <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button>
@@ -169,26 +180,25 @@ $is_visible = ($is_published && $is_in_time);
         <!-- Controls -->
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
-<!-- في مكان الـ Language Switcher داخل الـ Header -->
-<div class="dropdown editable-wrapper">
-    <?php if ($is_admin): ?>
-        <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#langEditModal" style="top:-30px; right:0;">
-            <i class="bi bi-pencil"></i>
-        </button>
-    <?php endif; ?>
-    
-    <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-        <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
-        <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
-        <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg">
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end">
-        <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php'], ['name' => 'English', 'url' => 'index-en.php']]) as $lang): ?>
-            <li><a class="dropdown-item" href="<?php echo $path_prefix . $lang['url']; ?>"><?php echo $lang['name']; ?></a></li>
-        <?php endforeach; ?>
-    </ul>
-</div>
-
+          
+          <div class="dropdown editable-wrapper">
+              <?php if ($is_admin): ?>
+                  <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#langEditModal" style="top:-30px; right:0;">
+                      <i class="bi bi-pencil"></i>
+                  </button>
+              <?php endif; ?>
+              
+              <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
+                  <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
+                  <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
+                  <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg">
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php']]) as $lang): ?>
+                      <li><a class="dropdown-item" href="<?php echo $path_prefix . $lang['url']; ?>"><?php echo $lang['name']; ?></a></li>
+                  <?php endforeach; ?>
+              </ul>
+          </div>
         </div>
       </div>
     </nav>
@@ -205,6 +215,5 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </div>
 </header>
-
 
 <?php if ($is_admin) { include __DIR__ . '/admin_header_modals.php'; } ?>

@@ -1,25 +1,21 @@
 <?php 
-// تأكدي أن هذا هو السطر الأول تماماً في الملف بدون أي مسافات أو أسطر فارغة فوقه
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 include 'includes/header.php'; 
 ?>
 
-
 <?php
-// تأكدي من جلب بيانات الـ hero من الـ $data الموجودة في الملف الأساسي
-$hero = $data['hero'] ?? [
-    'title' => 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS',
-    'desc' => 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...',
-    'btn_text' => 'احجز استشارتك الآن',
-    'btn_url' => '#contact',
-    'img' => 'assets/img/hero-bg.jpg'
-];
+// جلب بيانات الـ hero من المصفوفة $data الموجودة في header.php
+$hero_data = $data['hero'] ?? [];
+$hero_title = $hero_data['title'] ?? 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS';
+$hero_desc = $hero_data['desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...';
+$hero_btn_text = $hero_data['btn_text'] ?? 'احجز استشارتك الآن';
+$hero_btn_url = $hero_data['btn_url'] ?? '#contact';
+$hero_img = $hero_data['img'] ?? 'assets/img/hero-bg.jpg';
 ?>
 
-
-<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position:relative;">
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position:relative; background: url('<?php echo $hero_img; ?>') no-repeat center/cover;">
     <?php if ($is_admin): ?>
         <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
     <?php endif; ?>
@@ -27,10 +23,10 @@ $hero = $data['hero'] ?? [
     <div class="custom-container">
       <div class="hero-container">
         <div class="hero-content">
-          <h1><?php echo htmlspecialchars($hero['title']); ?></h1>
-          <p><?php echo htmlspecialchars($hero['desc']); ?></p>
-          <a href="<?php echo htmlspecialchars($hero['btn_url']); ?>" class="btn btn-lg hero-btn">
-            <?php echo htmlspecialchars($hero['btn_text']); ?>
+          <h1><?php echo htmlspecialchars($hero_title); ?></h1>
+          <p><?php echo htmlspecialchars($hero_desc); ?></p>
+          <a href="<?php echo htmlspecialchars($hero_btn_url); ?>" class="btn btn-lg hero-btn">
+            <?php echo htmlspecialchars($hero_btn_text); ?>
           </a>
         </div>
       </div>
@@ -359,6 +355,5 @@ $hero = $data['hero'] ?? [
   <!-- popular end -->
 
 <?php 
-// استدعاء ملف الفوتر المشترك
 include 'includes/footer.php'; 
 ?>

@@ -11,7 +11,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 </style>
 
 
-<!-- مودل السوشيال ميديا -->
+<!-- مودل السوشيال ميديا (محدث بأيقونة سلة وحل الكاش) -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -29,7 +29,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         <div class="card p-3 mb-2 social-item-row" id="row_<?php echo $index; ?>">
                             <div class="row g-2 align-items-center">
                                 <div class="col-auto">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? ''); ?>" style="width: 32px; height: 32px;">
+                                    <!-- تم إضافة time() لتجاوز الكاش -->
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" style="width: 32px; height: 32px; object-fit: contain;">
                                 </div>
                                 <div class="col">
                                     <input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
@@ -42,7 +43,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
                                 </div>
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeSocialRow('row_<?php echo $index; ?>')">×</button>
+                                    <!-- تم استبدال الـ × بأيقونة سلة مهملات -->
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeSocialRow('row_<?php echo $index; ?>')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -57,6 +61,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 
 

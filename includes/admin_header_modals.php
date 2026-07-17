@@ -65,59 +65,56 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 }
 </style>
 
-<!-- مودل السوشيال ميديا - التصميم المتراص الاحترافي -->
+<!-- مودل السوشيال ميديا - التصميم المتراص الاحترافي (مُحدث) -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg"> <!-- تم العودة لـ modal-lg مع توزيع جديد -->
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             
-            <!-- Header -->
             <div class="modal-header px-4 py-3 border-bottom border-light">
                 <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-share-fill" style="color: var(--primary);"></i> 
-                    إدارة منصات التواصل
+                    <i class="bi bi-share-fill" style="color: var(--primary);"></i> إدارة منصات التواصل
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- Body -->
             <div class="modal-body p-4">
                 <form id="socialLinksForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     
-                    <div id="socialRowsContainer" class="d-flex flex-column gap-2">
+                    <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;" id="row_<?php echo $index; ?>">
-                            <div class="row align-items-center g-3">
+                            <div class="d-flex align-items-start gap-3">
                                 <!-- الصورة -->
-                                <div class="col-auto">
-                                    <div class="rounded-2 border d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #fff;">
-                                        <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" class="img-fluid" style="width: 28px; height: 28px; object-fit: contain;">
-                                    </div>
+                                <div class="rounded-2 border bg-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" class="img-fluid" style="width: 28px; height: 28px; object-fit: contain;">
                                 </div>
                                 
-                                <!-- منطقة الإدخال -->
-                                <div class="col">
-                                    <div class="row g-2">
-                                        <div class="col-md-3">
-                                            <input type="text" class="form-control form-control-sm shadow-none" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
+                                <div class="flex-grow-1">
+                                    <!-- الصف الأول: الاسم والرابط -->
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control form-control-sm" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? ''); ?>" placeholder="اسم المنصة">
                                         </div>
-                                        <div class="col-md-6">
-                                            <input type="url" class="form-control form-control-sm shadow-none" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
+                                        <div class="col-md-8">
+                                            <input type="url" class="form-control form-control-sm" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
                                         </div>
-                                        <div class="col-md-3">
-                                            <input type="file" class="form-control form-control-sm shadow-none" name="social_img_<?php echo $index; ?>">
+                                    </div>
+                                    
+                                    <!-- الصف الثاني: رفع الصورة وزر الحذف -->
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col">
+                                            <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>">
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn-icon-trash shadow-sm" style="width: 32px; height: 32px;" onclick="removeSocialRow('row_<?php echo $index; ?>')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- الحذف -->
-                                <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
-                                <div class="col-auto">
-                                    <button type="button" class="btn-icon-trash shadow-sm" style="width: 38px; height: 38px;" onclick="removeSocialRow('row_<?php echo $index; ?>')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
                             </div>
+                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -128,16 +125,14 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
 
-            <!-- Footer -->
             <div class="modal-footer px-4 py-3 border-top border-light bg-light" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
                 <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">إلغاء</button>
-                <button type="submit" form="socialLinksForm" class="btn-premium px-4 py-2 shadow-sm">
-                    حفظ التغييرات
-                </button>
+                <button type="submit" form="socialLinksForm" class="btn-premium px-4 py-2 shadow-sm">حفظ التغييرات</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
     // التأكد من أن دالة الإضافة تستخدم نفس الستايل الجديد

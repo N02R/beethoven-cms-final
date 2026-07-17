@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Europe/Berlin'); 
 // 1. بدء الجلسة بأمان
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 

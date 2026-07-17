@@ -13,7 +13,7 @@ if (!function_exists('isUserAdmin')) {
 }
 $is_admin = isUserAdmin(); 
 
-// 4. تحميل البيانات من المصدر الموحد
+// 4. تحميل البيانات
 $site_logo_path = 'assets/img/logo.png'; 
 $config_file_path = __DIR__ . '/../announcement_config.json';
 $data = ['announcement' => [], 'menu_links' => [], 'social_links' => [], 'site_logo_path' => $site_logo_path];
@@ -33,13 +33,14 @@ $menu_links = $data['menu_links'] ?? [
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
+// 5. تجهيز منطق الإعلان الموحد
 $ad = $data['announcement'] ?? [];
-$is_visible = ($ad['status'] ?? 'Draft') === 'Published';
+$is_published = ($ad['status'] ?? 'Draft') === 'Published';
 $current_time = date('Y-m-d\TH:i');
-if ($is_visible) {
-    if (!empty($ad['start_date']) && $current_time < $ad['start_date']) { $is_visible = false; }
-    if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_visible = false; }
-}
+$is_in_time = true;
+if (!empty($ad['start_date']) && $current_time < $ad['start_date']) { $is_in_time = false; }
+if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_in_time = false; }
+$is_visible = ($is_published && $is_in_time);
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -48,7 +49,6 @@ if ($is_visible) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- استدعاء الـ CSS الموحد -->
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo (isset($page_css) ? "?files=" . implode(',', array_map('basename', $page_css)) : ""); ?>">
   <style>
     .logo-container { position: relative; display: inline-block; }
@@ -61,14 +61,10 @@ if ($is_visible) {
 </head>
 <body>
 
-
-
 <header>
-    <!-- nav top -->
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- Logo Desktop -->
         <div class="logo-container d-none d-lg-flex <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
           <?php if ($is_admin): ?><button class="edit-logo-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal">📝</button><?php endif; ?>
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
@@ -76,7 +72,6 @@ if ($is_visible) {
           </a>
         </div>
 
-        <!-- Dynamic Announcement -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
             <div class="w-100 text-center <?php echo $is_admin ? 'editable-admin-border position-relative p-1' : ''; ?>" style="max-width: 500px;">
@@ -99,7 +94,6 @@ if ($is_visible) {
           <?php endif; ?>
         </div>
 
-        <!-- Social Icons -->
         <div class="social-icons d-none d-lg-flex gap-3 position-relative <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
           <?php if ($is_admin): ?><button class="edit-social-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal">📝</button><?php endif; ?>
           <?php foreach (($data['social_links'] ?? []) as $s): ?>
@@ -109,7 +103,6 @@ if ($is_visible) {
       </div>
     </nav>
     
-    <!-- main nav -->
     <nav id="main-header" class="navbar navbar-expand-lg py-3">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         <div class="logo-container d-lg-none <?php echo $is_admin ? 'editable-admin-border p-1' : ''; ?>">
@@ -131,7 +124,6 @@ if ($is_visible) {
       </div>
     </nav>
     
-    <!-- offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path; ?>" height="50"></h5>

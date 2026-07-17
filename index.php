@@ -7,21 +7,36 @@ include 'includes/header.php';
 ?>
 
 
-  <!-- hero start -->
-  <section class="hero py-5" aria-label="قسم البداية">
+<?php
+// تأكدي من جلب بيانات الـ hero من الـ $data الموجودة في الملف الأساسي
+$hero = $data['hero'] ?? [
+    'title' => 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS',
+    'desc' => 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...',
+    'btn_text' => 'احجز استشارتك الآن',
+    'btn_url' => '#contact',
+    'img' => 'assets/img/hero-bg.jpg'
+];
+?>
+
+
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position:relative;">
+    <?php if ($is_admin): ?>
+        <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
+    <?php endif; ?>
+    
     <div class="custom-container">
       <div class="hero-container">
         <div class="hero-content">
-          <h1>ابدأ رحلتك الأكاديمية في ألمانيا مع BCS</h1>
-          <p>هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص
-            العربى،حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى..</p>
-          <a href="#contact" class="btn btn-lg hero-btn">
-            احجز استشارتك الآن</a>
+          <h1><?php echo htmlspecialchars($hero['title']); ?></h1>
+          <p><?php echo htmlspecialchars($hero['desc']); ?></p>
+          <a href="<?php echo htmlspecialchars($hero['btn_url']); ?>" class="btn btn-lg hero-btn">
+            <?php echo htmlspecialchars($hero['btn_text']); ?>
+          </a>
         </div>
       </div>
     </div>
-  </section>
-  <!-- hero end -->
+</section>
+
   
   <!-- services start -->
   <section class="services py-5">

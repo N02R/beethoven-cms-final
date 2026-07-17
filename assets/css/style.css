@@ -11,7 +11,7 @@
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  background: url("../img/home/home1.png") center/cover no-repeat;
+  background-image: url('<?php echo $path_prefix . $hero['img'] . '?' . time(); ?>') !important center/cover no-repeat;
   aspect-ratio: 1140 / 609;
 }
 

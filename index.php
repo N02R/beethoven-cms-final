@@ -5,17 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 include 'includes/header.php'; 
 ?>
 
-<?php
-// جلب البيانات من $data الموجودة في الهيدر
-$hero = $data['hero'] ?? [
-    'title' => 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS',
-    'desc' => 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...',
-    'btn_text' => 'احجز استشارتك الآن',
-    'btn_url' => '#contact',
-    'img' => 'assets/img/home/home1.png'
-];
-?>
-
 <!-- بداية قسم الهيرو -->
 <?php 
   // تتبع البيانات
@@ -23,31 +12,35 @@ $hero = $data['hero'] ?? [
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
 <!-- hero start -->
+<!-- hero start -->
 <section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
-  
-<?php if ($is_admin): ?>
+  <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
     </button>
-<?php endif; ?>
-
+  <?php endif; ?>
 
   <div class="custom-container">
-<div class="hero-container" style="background: url('<?php echo $data['hero']['img'] . '?v=' . time(); ?>') center/cover no-repeat;">
-
+    <?php 
+    $hero = $data['hero'] ?? [];
+    $hero_bg = !empty($hero['img']) ? $hero['img'] . '?v=' . time() : 'assets/img/home/home1.png';
+    ?>
+    <div class="hero-container" style="background: url('<?php echo $hero_bg; ?>') center/cover no-repeat;">
       <div class="hero-content">
-        <h1><?php echo htmlspecialchars($data['hero']['title']); ?></h1>
-        <p><?php echo htmlspecialchars($data['hero']['desc']); ?></p>
-        <a href="<?php echo htmlspecialchars($data['hero']['btn_url']); ?>" class="btn btn-lg hero-btn">
-          <?php echo htmlspecialchars($data['hero']['btn_text']); ?>
+        <h1><?php echo htmlspecialchars($hero['title'] ?? 'عنوان افتراضي'); ?></h1>
+        <p><?php echo htmlspecialchars($hero['desc'] ?? 'وصف افتراضي للقسم'); ?></p>
+        <a href="<?php echo htmlspecialchars($hero['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
+          <?php echo htmlspecialchars($hero['btn_text'] ?? 'اضغط هنا'); ?>
         </a>
       </div>
     </div>
   </div>
 </section>
+
 <!-- hero end -->
 
 
+<!-- services start -->
 <section class="services py-5" style="position: relative;">
   <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
@@ -58,13 +51,16 @@ $hero = $data['hero'] ?? [
   <div class="custom-container">
     <h2 class="mb-5 sec-title">خدماتنا المميزة</h2>
     <div class="row g-4">
-      <?php foreach ($data['services'] as $service): ?>
+      <?php 
+      // نستخدم (array) للتحويل الاجباري لمنع الخطأ إذا كانت القيمة فارغة
+      $services = $data['services'] ?? []; 
+      foreach ($services as $service): 
+      ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="<?php echo htmlspecialchars($service['url']); ?>" class="card-link text-decoration-none d-block">
-            <!-- استخدمنا ?t=time() لضمان تحديث الصورة -->
-            <div class="card" style="background: url('<?php echo $service['img'] . '?t=' . time(); ?>') no-repeat center/cover;">
+          <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
+            <div class="card" style="background: url('<?php echo ($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time(); ?>') no-repeat center/cover;">
               <div class="card-info">
-                <h3><?php echo htmlspecialchars($service['title']); ?></h3>
+                <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
                 <img src="assets/img/home/Arrow.svg" alt="Arrow">
               </div>
             </div>
@@ -74,6 +70,9 @@ $hero = $data['hero'] ?? [
     </div>
   </div>
 </section>
+<!-- services end -->
+
+
 
   
   <!-- choose start -->

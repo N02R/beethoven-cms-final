@@ -256,7 +256,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1">
+<!-- Hero Edit Modal -->
+<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -267,24 +268,41 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <form id="heroEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
                     <?php 
-                        // استخراج البيانات من $data المتوفرة عالمياً
                         $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; 
                     ?>
                     <div class="row g-3">
-                        <div class="col-12"><label>العنوان</label><input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? ''); ?>"></div>
-                        <div class="col-12"><label>النص الوصفي</label><textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($h['desc'] ?? ''); ?></textarea></div>
-                        <div class="col-md-6"><label>نص الزر</label><input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? ''); ?>"></div>
-                        <div class="col-md-6"><label>رابط الزر</label><input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? ''); ?>"></div>
-                        <div class="col-12"><label>صورة الخلفية</label><input type="file" class="form-control" name="hero_img"></div>
-                        <input type="hidden" name="old_hero_img" value="<?php echo $h['img'] ?? 'assets/img/hero-bg.jpg'; ?>">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">العنوان</label>
+                            <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? ''); ?>">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">النص الوصفي</label>
+                            <textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($h['desc'] ?? ''); ?></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">نص الزر</label>
+                            <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? ''); ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">رابط الزر</label>
+                            <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? ''); ?>">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">صورة الخلفية</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
+                            <input type="hidden" name="old_hero_img" value="<?php echo $h['img'] ?? 'assets/img/hero-bg.jpg'; ?>">
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button>
+            </div>
         </div>
     </div>
 </div>
-<script>
+هل تقصد هنا <script>
     // 1. منطق تبديل محتوى الإعلان
     function toggleAdContent(val) { 
         document.getElementById('textEditor').classList.toggle('d-none', val !== 'text'); 
@@ -341,22 +359,32 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
     function removeLangRow(id) { document.getElementById(id).remove(); }
 
-    // 5. معالج النماذج الموحد (يعمل مع أي فورم يحتوي على action)
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            fetch('admin/api/save_config.php', { method: 'POST', body: formData })
-            .then(r => r.json())
-            .then(d => { 
-                if(d.success) { 
-                    alert(d.message);
-                    location.reload(); 
-                } else { 
-                    alert(d.message); 
+/ 5. معالج النماذج الموحد والمحسّن
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // استخدام FormData مباشرة من الفورم
+        const formData = new FormData(this);
+        
+        fetch('admin/api/save_config.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // التحديث هنا سيجلب النسخة الجديدة من الصورة مع توقيت جديد
+                    location.reload();
+                } else {
+                    alert('خطأ: ' + data.message);
                 }
             })
-            .catch(err => console.error('Error:', err));
-        });
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+            });
     });
+});
 </script>

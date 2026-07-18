@@ -510,8 +510,43 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" data-bs-dismiss="modal">إلغاء</button>
                 <button type="submit" form="reviewsForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-book text-primary"></i> إدارة الدليل الشامل</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="guideForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_guide">
+                    <div class="mb-3">
+                        <label class="form-label">عنوان القسم</label>
+                        <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?>">
+                    </div>
+                    <div id="guideRowsContainer">
+                        <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
+                            <div class="card p-3 mb-2" id="guide_row_<?php echo $index; ?>">
+                                <input type="text" class="form-control mb-1" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title']); ?>">
+                                <textarea class="form-control mb-1" name="guide[<?php echo $index; ?>][desc]"><?php echo htmlspecialchars($item['desc']); ?></textarea>
+                                <input type="file" class="form-control mb-1" name="guide_img_<?php echo $index; ?>">
+                                <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo $item['img']; ?>">
+                                <button type="button" class="btn btn-danger" onclick="removeRow('guide_row_<?php echo $index; ?>')">حذف</button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="addGuideRow()">إضافة مقال</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="guideForm" class="btn-premium">حفظ</button>
             </div>
         </div>
     </div>
@@ -670,6 +705,36 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         const imageEditor = document.getElementById('imageEditor');
         if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
+    }
+        // إضافة صف للدليل الشامل (Guide)
+    let guideCount = <?php echo count($data['guide_items'] ?? []); ?>;
+    function addGuideRow() {
+        const container = document.getElementById('guideRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'guide_row_' + guideCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control form-control-sm mb-2" name="guide[${guideCount}][title]" placeholder="عنوان المقال">
+                    <input type="text" class="form-control form-control-sm" name="guide[${guideCount}][url]" placeholder="رابط الصفحة">
+                </div>
+                <div class="col-md-4">
+                    <textarea class="form-control form-control-sm" name="guide[${guideCount}][desc]" rows="3" placeholder="وصف قصير"></textarea>
+                </div>
+                <div class="col-md-3">
+                    <input type="file" class="form-control form-control-sm" name="guide_img_${guideCount}">
+                </div>
+                <div class="col-md-auto">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_${guideCount}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+    `;
+        container.appendChild(div);
+        guideCount++;
     }
 </script>
 

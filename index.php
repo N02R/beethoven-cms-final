@@ -171,135 +171,32 @@ include 'includes/header.php';
 </section>
 <!-- review end -->
 
-  <!-- guide start -->
-  <section class="guide py-2">
-    <div class="custom-container">
-      <h2 class="mb-2 pt-5 sec-title">دليل بيتهوفن الشامل</h2>
-      <p class="main-p">هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص</p>
+<section class="guide py-5" style="position: relative;">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal"><i class="bi bi-pencil-fill"></i></button>
+  <?php endif; ?>
 
-      <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
-        <div class="carousel-inner" dir="rtl">
+  <div class="custom-container">
+    <h2 class="sec-title"><?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?></h2>
+    <p class="main-p"><?php echo htmlspecialchars($data['guide_desc'] ?? ''); ?></p>
 
-          <!-- Slide 1 -->
-          <div class="carousel-item active">
-            <div class="row g-4">
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/home/image(0).jpg" alt="لماذا يختار الطلاب الدراسة في ألمانيا" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">لماذا يختار الطلاب الدراسة في ألمانيا ؟</h5>
-                    <p class="card-text">أكثر من 380 ألف طالب دولي- بنهم الاف العرب - يختارون ألمانيا سنويا لجودة تعليمها,رسومها المنخفضة,وفرص العمل بعد التخرج..</p>
-                    <a href="guide/guide-blog1.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (1).jpg" alt="التعليم والعمل في ألمانيا" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">التعليم والعمل في ألمانيا</h5>
-                    <p class="card-text">اكتشف بيئة تعليمية متقدمة تفتح أمامك أبواب التدريب والعمل في مجالات مطلوبة عالميا. ألمانيا تجمع بين الدراسة النوعية وفرص التطور المهني.</p>
-                    <a href="guide/guide-blog2.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image.jpg" alt="معالجة طلبات العملاء لدى BCS" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">معالجة طلبات العملاء لدى BCS</h5>
-                    <p class="card-text">نرافق عملاؤنا خطوة بخطوة من لحظة التواصل الأول حتى الوصول لألمانيا, عبر متابعة دقيقة وشفافة تضمن سرعة الاستجابة وجودة التنفيذ.</p>
-                    <a href="guide/guide-blog3.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
+    <div class="row g-4">
+      <?php foreach (($data['guide_items'] ?? []) as $item): ?>
+        <div class="col-lg-4">
+          <div class="card h-100">
+            <img src="<?php echo $item['img']; ?>" class="guide-img">
+            <div class="card-body">
+              <h5><?php echo htmlspecialchars($item['title']); ?></h5>
+              <p><?php echo htmlspecialchars($item['desc']); ?></p>
+              <a href="<?php echo $item['url']; ?>">قراءة المزيد</a>
             </div>
           </div>
-
-          <!-- Slide 2 -->
-          <div class="carousel-item">
-            <div class="row g-4">
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (2).jpg" alt="تعلم اللغة الالمانية" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">تعلم اللغة الالمانية بسرعة وكفاءة: دليل المبتدئين</h5>
-                    <p class="card-text">دليلك السريع لتعلم اللغة الألمانية بفعالية, من الأساسيات حتى التحدث بثقة, باستخدام طرق بسيطة تناسب المبتدئين.</p>
-                    <a href="guide/guide-blog4.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (3).jpg" alt="الستودينكولينغ" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">ما هو الستودينكولينغ؟ وهل تحتاجه فعلا؟</h5>
-                    <p class="card-text">الستودينكولينغ هو برنامج تحضيري للطلاب الأجانب قبل دخول الجامعة, وقد تحتاجه اذا كانت شهادتك الثانوية لا تعادل النظام الألماني.</p>
-                    <a href="guide/guide-blog5.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (4).jpg" alt="سكن طلابي في ألمانيا" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">كيف تحصل على سكن طلابي في ألمانيا؟</h5>
-                    <p class="card-text">السكن الطلابي في ألمانيا محدود, لذا ينصح بالبدء في البحث والتقديم مبكرا عبر منصات السكن الجامعي أو المواقع الخاصة, مع تجهيز المستندات المطلوبة مسبقا.</p>
-                    <a href="guide/guide-blog6.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 3 -->
-          <div class="carousel-item">
-            <div class="row g-4">
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (5).jpg" alt="الأوسبيلدونغ" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">ما هو الأوسبيلدونغ؟ وهل هو مناسب لك؟</h5>
-                    <p class="card-text">تدريب مهني عملي في ألمانيا يمكنك من دخول سوق العمل دون دراسة جامعية, وهو خيار مثالي لمن يفضل التعلم التطبيقي والحصول على راتب أثناء التدريب.</p>
-                    <a href="guide/guide-blog7.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (6).jpg" alt="أهم المهن المطلوبة في ألمانيا" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">أهم المهن المطلوبة في ألمانيا</h5>
-                    <p class="card-text">يشهد سوق العمل الألماني طلبا متزايدا على المهن التقنية, والرعاية الصحية, وتكنولوجيا المعلومات, ما يجعلها فرصا واعدة للمهنيين المؤهلين من خارج ألمانيا.</p>
-                    <a href="guide/guide-blog8.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card h-100">
-                  <div class="card-body d-flex flex-column">
-                    <img src="assets/img/guide/image (7).jpg" alt="السيرة الذاتية بالنمط الألماني" class="img-fluid guide-img">
-                    <h5 class="card-title fw-bold mt-3">كيف تكتب سيرة ذاتية بالنمط الألماني؟</h5>
-                    <p class="card-text">يركز النمط الألماني في كتابة السيرة الذاتية على البساطة, الترتيب الزمني, والمحتوى المهني المباشر. مع الحرص على تنظيم معلوماتك بدقة دون مبالغة في التنسيق أو التصميم.</p>
-                    <a href="guide/guide-blog9.php" class="btn fw-bold mt-auto">قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2"></a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-
-        <!-- Dots -->
-        <div class="dots mt-4">
-          <span class="dot active" data-bs-target="#carousel-guide" data-bs-slide-to="0"></span>
-          <span class="dot" data-bs-target="#carousel-guide" data-bs-slide-to="1"></span>
-          <span class="dot" data-bs-target="#carousel-guide" data-bs-slide-to="2"></span>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
-  </section>
-  <!-- guide end -->
+  </div>
+</section>
+
 
   <!-- popular start -->
   <section class="popular py-5">

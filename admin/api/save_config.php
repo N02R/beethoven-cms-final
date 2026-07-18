@@ -29,7 +29,11 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'choose_title'           => 'ما الذي يميز بيتهوفن سيتي',
     'choose_section_desc'    => '',
     'reviews_items'          => [],
-    'reviews_title'          => 'شاهد ماذا يقول عملاؤنا عنا'
+    'reviews_title'          => 'شاهد ماذا يقول عملاؤنا عنا',
+    // الأقسام الجديدة التي أضفناها للتو:
+    'guide_items'            => [],
+    'guide_title'            => 'دليل بيتهوفن الشامل',
+    'guide_desc'             => ''
 ];
 
 
@@ -167,6 +171,24 @@ switch ($action) {
         }
         $data['reviews_items'] = $reviews;
         break;
+case 'update_guide':
+    $data['guide_title'] = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
+    $data['guide_desc'] = $_POST['guide_desc'] ?? '';
+    
+    $new_guides = [];
+    if (isset($_POST['guide']) && is_array($_POST['guide'])) {
+        foreach ($_POST['guide'] as $index => $g) {
+            $img_path = handle_upload('guide_img_' . $index, $upload_path);
+            $new_guides[] = [
+                'title' => $g['title'] ?? '',
+                'desc'  => $g['desc'] ?? '',
+                'url'   => $g['url'] ?? '#',
+                'img'   => $img_path ?? ($g['old_img'] ?? 'assets/img/home/default.jpg')
+            ];
+        }
+    }
+    $data['guide_items'] = $new_guides;
+    break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid']));

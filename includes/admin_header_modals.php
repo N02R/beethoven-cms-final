@@ -31,48 +31,40 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 /* تنسيق الفوتر الموحد */
 .custom-modal .modal-footer {
     display: flex;
-    justify-content: flex-end; /* وضع الأزرار في الجهة المقابلة (اليمين في العربية) */
+    justify-content: center;
     align-items: center;
-    gap: 12px; /* مسافة ثابتة ومريحة بين الزرين */
+    gap: 16px; /* المسافة بين الزرين */
     padding: 16px 24px;
-    background: #f8fafc; /* لون خلفية خفيف للفوتر */
+    background: #f8fafc;
+}
+
+/* توزيع الأزرار لتأخذ 50% من العرض لكل منهما */
+.custom-modal .modal-footer button {
+    flex: 1; /* هذا هو السر: كل زر يأخذ مساحة متساوية */
+    height: 48px; /* ارتفاع مريح */
+    font-size: 15px;
 }
 
 /* تنسيق زر الإلغاء */
 .btn-cancel {
-    background-color: #e2e8f0; /* لون أغمق قليلاً من السابق ليكون أوضح */
+    background-color: #e2e8f0;
     color: #475569;
     border-radius: 12px;
-    padding: 10px 24px; /* مطابقة للـ padding الخاص بزر البريميوم */
-    font-weight: 600;
     border: none;
     transition: 0.3s;
-    height: 44px; /* تحديد ارتفاع ثابت للزرين */
-    display: inline-flex;
-    align-items: center;
 }
 .btn-cancel:hover {
     background-color: #cbd5e1;
     color: #1e293b;
 }
 
-/* تنسيق زر الحفظ (البريميوم) */
+/* تنسيق زر الحفظ */
 .btn-premium { 
     background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
     color: white; 
     border-radius: 12px; 
-    padding: 10px 24px; 
-    font-weight: 600; 
     border: none; 
     transition: 0.3s; 
-    height: 44px; /* نفس ارتفاع زر الإلغاء */
-    display: inline-flex;
-    align-items: center;
-}
-.btn-premium:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 4px 12px rgba(37,99,235,0.3); 
-    color: white; 
 }
 
     .btn-icon-trash { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; }

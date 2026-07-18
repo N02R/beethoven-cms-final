@@ -29,16 +29,21 @@ $hero = $data['hero'] ?? [
     <?php endif; ?>
     
     <!-- هنا التعديل: قمنا بإضافة الـ style هنا لتطبيق الصورة كخلفية للـ container -->
-    <div class="hero-container" style="background: url('<?php echo $path_prefix . ($data['hero']['img'] ?? 'assets/img/hero-bg.jpg'); ?>') no-repeat center center / cover;">
-        <div class="hero-content">
-          <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
-          <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
-<a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
-    <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
-</a>
-
-        </div>
+<div class="hero-container" style="position: relative;">
+    <!-- إضافة الصورة كعنصر HTML للتأكد من أنها موجودة ومسارها صحيح -->
+    <img src="<?php echo ($data['hero']['img'] ?? 'assets/img/hero-bg.jpg'); ?>" 
+         style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: 1;" 
+         alt="Hero Background">
+    
+    <div class="hero-content" style="z-index: 2; position: relative;">
+      <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
+      <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
+      <a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
+        <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
+      </a>
     </div>
+</div>
+
 </section>
 
 <!-- نهاية قسم الهيرو -->

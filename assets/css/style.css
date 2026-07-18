@@ -221,7 +221,7 @@ section.reviews {
 }
 
 .carousel-item .video-container {
-  background: url('../img/home/review.png') no-repeat center / cover;
+  
   border-radius: 32px;
   overflow: hidden;
   aspect-ratio: 16 / 9;

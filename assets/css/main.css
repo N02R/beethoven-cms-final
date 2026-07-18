@@ -98,52 +98,33 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* --- ستايل الأقلام الأوروبي الموحد (Glassmorphism) --- */
+/* ستايل قلم التعديل الآمن */
 .edit-pen {
     position: absolute !important;
-    top: 15px !important;
-    right: 15px !important;
-    width: 40px !important;
-    height: 40px !important;
-    
-    /* خلفية زجاجية */
-    background: rgba(255, 255, 255, 0.7) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    
-    /* حدود خفيفة */
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    border-radius: 12px !important;
-    
-    /* ترتيب وتوسيط */
+    top: 10px !important;
+    right: 10px !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: #ffffff !important; /* خلفية صلبة لتجنب مشاكل الشفافية */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    
-    /* تأثيرات */
     cursor: pointer !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
     color: #3b82f6 !important;
-    /* اللون الأزرق الأساسي */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    z-index: 999 !important;
-    
-    /* إخفاء الحدود الافتراضية للبوتون */
-    outline: none !important;
-    border: none !important;
+    transition: all 0.2s ease !important;
+    z-index: 9999 !important; /* ضمان الظهور فوق الجميع */
     padding: 0 !important;
+    margin: 0 !important;
 }
 
-/* تأثير عند المرور بالفأرة */
 .edit-pen:hover {
     background: #3b82f6 !important;
     color: #ffffff !important;
-    transform: translateY(-3px) scale(1.05) !important;
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
 }
 
-/* تنسيق الأيقونة داخل القلم */
 .edit-pen i {
-    font-size: 16px !important;
-    line-height: 1 !important;
+    font-size: 14px !important;
 }

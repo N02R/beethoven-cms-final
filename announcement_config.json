@@ -1,73 +1,66 @@
 {
   "announcement": {
     "status": "Published",
+    "announcement_text": "مرحباً بكم في بيتهوفن سيتي! نقدم لكم أفضل الخدمات التعليمية والمهنية.",
+    "link": "#",
     "type": "text",
-    "announcement_text": "BCS 🤩!",
-    "bg_color": "#0056b3",
-    "text_color": "#ffffff",
-    "font_size": "16",
-    "link": "",
-    "open_new_tab": "0",
-    "start_date": "",
-    "end_date": ""
-  },
-  "hero": {
-    "title": "ابدأ رحلتك الأكاديمية في ألمانيا مع BCS",
-    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
-    "btn_text": "احجز استشارتك الآن",
-    "btn_url": "#contact",
-    "img": "assets/img/home/home1.png"
+    "image_path": ""
   },
   "menu_links": [
     { "title": "الرئيسية", "url": "index.php", "order": 1 },
     { "title": "عن الشركة", "url": "about.php", "order": 2 },
-    { "title": "التعليم العالي", "url": "education.php", "order": 3 },
-    { "title": "التدريب المهني", "url": "job.php", "order": 4 },
-    { "title": "دليل بيتهوفن", "url": "guide.php", "order": 5 },
-    { "title": "تواصل معنا", "url": "contact.php", "order": 6 }
+    { "title": "الخدمات", "url": "services.php", "order": 3 },
+    { "title": "دليل الشركة", "url": "guide.php", "order": 4 },
+    { "title": "تواصل معنا", "url": "contact.php", "order": 5 }
+  ],
+  "social_links": [
+    { "name": "Facebook", "url": "#", "img": "assets/img/facebook.png" },
+    { "name": "Instagram", "url": "#", "img": "assets/img/instagram.png" }
   ],
   "languages": [
     { "name": "العربية", "url": "index.php" },
-    { "name": "English", "url": "index-en.php" }
-  ],
-  "social_links": [
-    { "name": "Facebook", "url": "https://fb.com", "img": "assets/img/fb.png" }
+    { "name": "Deutsch", "url": "index_de.php" }
   ],
   "site_logo_path": "assets/img/logo.png",
+  "hero": {
+    "title": "بيتهوفن سيتي للخدمات",
+    "desc": "وجهتك الأولى لتحقيق طموحاتك المهنية والأكاديمية في ألمانيا.",
+    "btn_text": "ابدأ الآن",
+    "btn_url": "services.php",
+    "img": "assets/img/hero-bg.jpg"
+  },
+  "services_section_title": "خدماتنا المميزة",
+  "services_section_desc": "نقدم حلولاً متكاملة لدعم مسيرتك المهنية والأكاديمية.",
   "services": [
-    {
-      "title": "التعليم العالي والجامعي",
-      "url": "education.php",
-      "img": "assets/img/home/education.jpg"
-    },
-    {
-      "title": "التأهيل المهني والعملي",
-      "url": "job.php",
-      "img": "assets/img/home/traning.jpg"
-    }
-  ]
-  ,
+    { "title": "التعليم العالي", "url": "education.php", "img": "assets/img/service1.png" },
+    { "title": "التدريب المهني", "url": "job.php", "img": "assets/img/service2.png" }
+  ],
   "choose_title": "ما الذي يميز بيتهوفن سيتي",
+  "choose_section_desc": "نحن نضع مصلحة عملائنا في المقام الأول بخبرة سنوات.",
   "choose_items": [
-    {
-      "title": "خدمة متعددة اللغات",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة",
-      "url": "#",
-      "img": "assets/img/home/Grouphome1.svg"
-    },
-    {
-      "title": "خبرة في السوق الألماني",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة",
-      "url": "#",
-      "img": "assets/img/home/Grouphome2.svg"
-    }
+    { "title": "سرعة الإنجاز", "desc": "نضمن لك إنهاء إجراءاتك في أسرع وقت.", "img": "assets/img/icon1.svg" },
+    { "title": "دعم مستمر", "desc": "فريقنا معك خطوة بخطوة حتى الوصول لهدفك.", "img": "assets/img/icon2.svg" }
+  ],
+  "reviews_title": "شاهد ماذا يقول عملاؤنا عنا",
+  "reviews_items": [
+    { "url": "https://www.youtube.com/watch?v=example1" }
+  ],
+  "guide_title": "دليل بيتهوفن الشامل",
+  "guide_desc": "كل ما تحتاجه من معلومات لتبدأ رحلتك في ألمانيا.",
+  "guide_items": [
+    { "title": "خطوات التقديم", "url": "guide1.php", "desc": "شرح مفصل لجميع خطوات التقديم.", "img": "assets/img/guide1.jpg" }
+  ],
+  "faq_title": "الأسئلة الشائعة",
+  "faq_items": [
+    { "question": "كيف يمكنني البدء؟", "answer": "يمكنك التواصل معنا عبر نموذج الاتصال أو زيارة مقرنا." }
+  ],
+  "consult_title": "احصل على استشارة مجانية",
+  "consult_desc": "لا تتردد في طلب استشارتك المجانية الأولى مع خبرائنا.",
+  "footer_desc": "بيتهوفن سيتي هي شركة رائدة في تقديم الخدمات الأكاديمية والمهنية في ألمانيا.",
+  "footer_col2_title": "روابط سريعة",
+  "footer_col3_title": "تواصل معنا",
+  "footer_col3_links": [
+    { "title": "666-230-71 176 49+", "url": "tel:+4917623071666", "img": "assets/img/call.svg" },
+    { "title": "info@beethoven-city.com", "url": "mailto:info@beethoven-city.com", "img": "assets/img/email.svg" }
   ]
-,
-"reviews_title": "شاهد ماذا يقول عملاؤنا عنا",
-"reviews_items": [
-    { "url": "https://www.youtube.com/embed/tu51jzzZO9Q" },
-    { "url": "https://www.youtube.com/embed/xcgM1t5H6dU" }
-]
-
 }
-

@@ -25,12 +25,12 @@ $hero = $data['hero'] ?? [
 <!-- hero start -->
 <section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
   
-  <?php if ($is_admin): ?>
-    <!-- استخدمي الكلاس الموحد فقط بدون أي ستايل inline -->
-    <button type="button" class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal">
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
     </button>
-  <?php endif; ?>
+<?php endif; ?>
+
 
   <div class="custom-container">
     <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">

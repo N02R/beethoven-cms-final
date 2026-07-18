@@ -76,9 +76,12 @@ $is_visible = ($is_published && $is_in_time);
         
         <!-- اللوجو الرئيسي -->
         <div class="editable-wrapper">
-          <?php if ($is_admin): ?>
-            <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#logoEditModal"><i class="bi bi-pencil"></i></button>
-          <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
+        <i class="bi bi-image"></i>
+    </button>
+<?php endif; ?>
+
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
@@ -88,9 +91,12 @@ $is_visible = ($is_published && $is_in_time);
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
             <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
-              <?php if ($is_admin): ?>
-                <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#announcementEditModal"><i class="bi bi-pencil"></i></button>
-              <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
+        <i class="bi bi-megaphone-fill"></i>
+    </button>
+<?php endif; ?>
+
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo $ad['bg_color'] ?? '#f1f5f9'; ?>; color: <?php echo $ad['text_color'] ?? '#1e293b'; ?>; font-size: <?php echo $ad['font_size'] ?? '16'; ?>px;">
@@ -106,7 +112,12 @@ $is_visible = ($is_published && $is_in_time);
 
         <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
-          <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
+        <i class="bi bi-share-fill"></i>
+    </button>
+<?php endif; ?>
+
           <div class="social-icons d-flex gap-3">
             <?php foreach (($data['social_links'] ?? []) as $s): ?><a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a><?php endforeach; ?>
           </div>
@@ -127,7 +138,12 @@ $is_visible = ($is_published && $is_in_time);
 
         <!-- Desktop Menu -->
         <div class="collapse navbar-collapse editable-wrapper">
-          <?php if ($is_admin): ?><button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#menuEditModal"><i class="bi bi-pencil"></i></button><?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
+        <i class="bi bi-list-nested"></i>
+    </button>
+<?php endif; ?>
+
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
@@ -144,11 +160,12 @@ $is_visible = ($is_published && $is_in_time);
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
           
           <div class="dropdown editable-wrapper">
-              <?php if ($is_admin): ?>
-                  <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#langEditModal" style="top:-30px; right:0;">
-                      <i class="bi bi-pencil"></i>
-                  </button>
-              <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
+        <i class="bi bi-translate"></i>
+    </button>
+<?php endif; ?>
+
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">

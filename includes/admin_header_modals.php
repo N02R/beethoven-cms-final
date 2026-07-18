@@ -513,15 +513,15 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 </div>
 
 <script>
-    // 1. منطق تبديل محتوى الإعلان
-    function toggleAdContent(val) { 
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
-        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
+    // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
     }
+
+    // 2. منطق إضافة الصفوف (Dynamic Rows Adders)
     
-    // 2. منطق السوشيال ميديا
+    // إضافة صف للسوشيال ميديا
     let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -545,7 +545,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         socialCount++;
     }
 
-    // 3. منطق القائمة الرئيسية
+    // إضافة صف للقائمة الرئيسية
     let menuCount = <?php echo count($data['menu_links'] ?? []); ?>;
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
@@ -564,7 +564,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         menuCount++;
     }
 
-    // 4. منطق إدارة اللغات
+    // إضافة صف للغات
     let langCount = <?php echo count($data['languages'] ?? []); ?>;
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
@@ -579,7 +579,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         langCount++;
     }
 
-    // 5. منطق الخدمات (Services)
+    // إضافة صف للخدمات
     let serviceCount = <?php echo count($data['services'] ?? []); ?>;
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
@@ -598,7 +598,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         serviceCount++;
     }
 
-    // 6. منطق المميزات (Choose Section)
+    // إضافة صف للمميزات (Choose)
     let chooseCount = <?php echo count($data['choose_items'] ?? []); ?>;
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
@@ -617,10 +617,24 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         chooseCount++;
     }
 
-    // دالة عامة للحذف
-    function removeRow(id) { const el = document.getElementById(id); if(el) el.remove(); }
+    // إضافة صف للتقييمات (Reviews)
+    let reviewCount = <?php echo count($data['reviews_items'] ?? []); ?>;
+    function addReviewRow() {
+        const container = document.getElementById('reviewsRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'rev_row_' + reviewCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-10"><input type="text" class="form-control form-control-sm" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
+                <div class="col-md-2 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_${reviewCount}')"><i class="bi bi-trash"></i></button></div>
+            </div>`;
+        container.appendChild(div);
+        reviewCount++;
+    }
 
-    // معالج النماذج الموحد
+    // 3. معالج النماذج الموحد (Unified Form Handler)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -632,7 +646,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    alert('تم الحفظ بنجاح');
                     location.reload();
                 } else {
                     alert('خطأ: ' + data.message);
@@ -644,24 +658,16 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             });
         });
     });
-    
-    let reviewCount = <?php echo count($data['reviews_items'] ?? []); ?>;
-function addReviewRow() {
-    const container = document.getElementById('reviewsRowsContainer');
-    const div = document.createElement('div');
-    div.className = 'card p-3 border-0';
-    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-    div.id = 'rev_row_' + reviewCount;
-    div.innerHTML = `
-        <div class="row g-2 align-items-center">
-            <div class="col-md-10"><input type="text" class="form-control form-control-sm" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
-            <div class="col-md-2 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_${reviewCount}')"><i class="bi bi-trash"></i></button></div>
-        </div>
-`;
-    container.appendChild(div);
-    reviewCount++;
-}
+
+    // 4. دالة تبديل الإعلان
+    function toggleAdContent(val) { 
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
+        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
+    }
 </script>
+
 
 
 

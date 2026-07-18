@@ -62,6 +62,12 @@
       "img": "assets/img/home/Grouphome2.svg"
     }
   ]
+,
+"reviews_title": "شاهد ماذا يقول عملاؤنا عنا",
+"reviews_items": [
+    { "url": "https://www.youtube.com/embed/tu51jzzZO9Q" },
+    { "url": "https://www.youtube.com/embed/xcgM1t5H6dU" }
+]
 
 }
 

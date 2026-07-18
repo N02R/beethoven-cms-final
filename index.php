@@ -114,53 +114,55 @@ include 'includes/header.php';
 
   <!-- choose end -->
   
-  <!-- review start -->
-  <section class="reviews py-5">
+<!-- review start -->
+<section class="reviews py-5">
     <div class="reviews-bg">
-      <div class="custom-container">
-        <h2 class="py-5 text-center sec-title">
-          شاهد ماذا يقول عملاؤنا عنا
-        </h2>
-      </div>
+        <div class="custom-container">
+            <h2 class="py-5 text-center sec-title">
+                <?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'); ?>
+            </h2>
+        </div>
     </div>
 
     <div class="custom-container">
-      <div class="reviews-carousel-wrapper">
-        <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="rtl">
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <div class="video-wrapper">
-                <div class="video-container">
-                  <iframe src="https://www.youtube.com/embed/tu51jzzZO9Q?si=12WzAl2S_7VIR0GC" allowfullscreen></iframe>
+        <div class="reviews-carousel-wrapper">
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="rtl">
+                
+                <!-- الفيديوهات الديناميكية -->
+                <div class="carousel-inner">
+                    <?php if (!empty($data['reviews_items'])): ?>
+                        <?php foreach ($data['reviews_items'] as $index => $item): ?>
+                            <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
+                                <div class="video-wrapper">
+                                    <div class="video-container">
+                                        <iframe src="<?php echo htmlspecialchars($item['url']); ?>" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="text-center">لا توجد فيديوهات للعرض حالياً.</p>
+                    <?php endif; ?>
                 </div>
-              </div>
-            </div>
-            <div class="carousel-item">
-              <div class="video-wrapper">
-                <div class="video-container">
-                  <iframe src="https://www.youtube.com/embed/xcgM1t5H6dU?si=7xKFttEK2kLpMODI" allowfullscreen></iframe>
-                </div>
-              </div>
-            </div>
-            <div class="carousel-item">
-              <div class="video-wrapper">
-                <div class="video-container">
-                  <iframe src="https://www.youtube.com/embed/jpaOEC2pVRc?si=XjB-kB9KnTuduh73" allowfullscreen></iframe>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="dots mt-4">
-            <span class="dot active" data-bs-target="#carousel-reviews" data-bs-slide-to="0"></span>
-            <span class="dot" data-bs-target="#carousel-reviews" data-bs-slide-to="1"></span>
-            <span class="dot" data-bs-target="#carousel-reviews" data-bs-slide-to="2"></span>
-          </div>
+                <!-- النقاط (Dots) الديناميكية -->
+                <div class="dots mt-4">
+                    <?php if (!empty($data['reviews_items'])): ?>
+                        <?php foreach ($data['reviews_items'] as $index => $item): ?>
+                            <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
+                                  data-bs-target="#carousel-reviews" 
+                                  data-bs-slide-to="<?php echo $index; ?>">
+                            </span>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                
+            </div>
         </div>
-      </div>
     </div>
-  </section>
-  <!-- review end -->
+</section>
+<!-- review end -->
+
 
   <!-- guide start -->
   <section class="guide py-2">

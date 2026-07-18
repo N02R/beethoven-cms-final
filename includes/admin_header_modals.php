@@ -563,7 +563,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
-                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -739,34 +738,25 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     }
         // إضافة صف للدليل الشامل (Guide)
     let guideCount = <?php echo count($data['guide_items'] ?? []); ?>;
-    function addGuideRow() {
-        const container = document.getElementById('guideRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'guide_row_' + guideCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-4">
-                    <input type="text" class="form-control form-control-sm mb-2" name="guide[${guideCount}][title]" placeholder="عنوان المقال">
-                    <input type="text" class="form-control form-control-sm" name="guide[${guideCount}][url]" placeholder="رابط الصفحة">
-                </div>
-                <div class="col-md-4">
-                    <textarea class="form-control form-control-sm" name="guide[${guideCount}][desc]" rows="3" placeholder="وصف قصير"></textarea>
-                </div>
-                <div class="col-md-3">
-                    <input type="file" class="form-control form-control-sm" name="guide_img_${guideCount}">
-                </div>
-                <div class="col-md-auto">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_${guideCount}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-    `;
-        container.appendChild(div);
-        guideCount++;
-    }
+function addGuideRow() {
+    const container = document.getElementById('guideRowsContainer');
+    const div = document.createElement('div');
+    div.className = 'card p-3 border-0';
+    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+    div.id = 'guide_row_' + guideCount;
+    div.innerHTML = `
+        <div class="row g-2">
+            <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][title]" placeholder="عنوان المقال"></div>
+            <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][url]" placeholder="رابط الصفحة"></div>
+            <div class="col-6"><input type="file" class="form-control form-control-sm" name="guide_img_${guideCount}"></div>
+            <div class="col-5"><textarea class="form-control form-control-sm" name="guide[${guideCount}][desc]" rows="1" placeholder="الوصف"></textarea></div>
+            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_${guideCount}')"><i class="bi bi-trash"></i></button></div>
+        </div>`;
+    container.appendChild(div);
+    guideCount++;
+}
+
+
 </script>
 
 

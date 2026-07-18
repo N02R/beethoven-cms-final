@@ -23,23 +23,24 @@ $hero = $data['hero'] ?? [
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
 
-<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position:relative; min-height: 400px; background: #eee;">
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية">
     <?php if ($is_admin): ?>
         <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
     <?php endif; ?>
     
-    <div class="custom-container">
-      <div class="hero-container">
+    <!-- هنا التعديل: قمنا بإضافة الـ style هنا لتطبيق الصورة كخلفية للـ container -->
+    <div class="hero-container" style="background: url('<?php echo $path_prefix . ($data['hero']['img'] ?? 'assets/img/hero-bg.jpg'); ?>') no-repeat center center / cover;">
         <div class="hero-content">
-          <h1><?php echo htmlspecialchars($hero_title ?? 'لا يوجد عنوان'); ?></h1>
-          <p><?php echo htmlspecialchars($hero_desc ?? 'لا يوجد وصف'); ?></p>
-          <a href="<?php echo htmlspecialchars($hero_btn_url ?? '#'); ?>" class="btn btn-lg hero-btn">
-            <?php echo htmlspecialchars($hero_btn_text ?? 'اضغط هنا'); ?>
-          </a>
+          <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
+          <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
+<a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
+    <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
+</a>
+
         </div>
-      </div>
     </div>
 </section>
+
 <!-- نهاية قسم الهيرو -->
 
   <!-- services start -->

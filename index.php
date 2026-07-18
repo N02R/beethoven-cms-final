@@ -49,7 +49,10 @@ include 'includes/header.php';
   <?php endif; ?>
 
   <div class="custom-container">
-    <h2 class="mb-5 sec-title">خدماتنا المميزة</h2>
+  <h2 class="mb-5 sec-title">
+    <?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>
+</h2>
+
     <div class="row g-4">
       <?php 
       // نستخدم (array) للتحويل الاجباري لمنع الخطأ إذا كانت القيمة فارغة

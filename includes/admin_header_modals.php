@@ -314,6 +314,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             <div class="modal-body p-4">
                 <form id="servicesEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_services">
+                    <div class="mb-3">
+    <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
+    <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>">
+</div>
                     <div id="servicesRowsContainer">
                         <?php foreach (($data['services'] ?? []) as $index => $service): ?>
                             <div class="card p-3 border-0 mb-2" id="service_row_<?php echo $index; ?>" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">

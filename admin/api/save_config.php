@@ -112,13 +112,14 @@ switch ($action) {
         ];
         break;
 
-    case 'update_services':
+        case 'update_services':
+        // حفظ العنوان الجديد
+        $data['services_section_title'] = $_POST['services_title'] ?? 'خدماتنا المميزة';
+        
         $new_services = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $s) {
-                // محاولة رفع صورة جديدة للخدمة
                 $img_path = handle_upload('service_img_' . $index, $upload_path);
-                
                 $new_services[] = [
                     'title' => $s['title'] ?? 'عنوان الخدمة',
                     'url'   => $s['url'] ?? '#',

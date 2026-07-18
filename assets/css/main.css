@@ -98,33 +98,41 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* القلم الموحد للوحة التحكم */
-.editable-wrapper { position: relative; display: inline-block; }
-
+/* ستايل أوروبي عائم للقلم */
 .admin-edit-btn {
     position: absolute !important;
-    top: -10px !important;
-    right: -10px !important;
-    width: 38px !important;
-    height: 38px !important;
-    background: white !important;
-    border: 1px solid var(--border-soft) !important;
-    border-radius: 12px !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 44px !important;
+    height: 44px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important; /* لمسة أوروبية (Glassmorphism) */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 14px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    box-shadow: var(--shadow-premium) !important;
-    transition: var(--transition) !important;
-    z-index: 100 !important;
-    color: var(--primary-blue) !important;
-    padding: 0 !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    color: #3b82f6 !important;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    z-index: 999 !important;
+    opacity: 0; /* مخفي افتراضياً */
+    transform: translateY(10px);
+}
+
+/* يظهر عند مرور الفأرة على السكشن */
+section:hover > .admin-edit-btn {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
 .admin-edit-btn:hover {
-    background: var(--hover-blue) !important;
-    border-color: #60a5fa !important;
+    background: #3b82f6 !important;
+    color: white !important;
     transform: scale(1.05) !important;
 }
 
-.admin-edit-btn i { font-size: 16px !important; }
+.admin-edit-btn i {
+    font-size: 18px !important;
+}

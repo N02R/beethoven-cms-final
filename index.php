@@ -25,17 +25,12 @@ $hero = $data['hero'] ?? [
 <!-- hero start -->
 <section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
   
-<?php if ($is_admin): ?>
-    <button type="button" data-bs-toggle="modal" data-bs-target="#heroEditModal"
-            style="position: absolute; top: 10px; right: 10px; z-index: 1000; 
-                   width: 35px; height: 35px; border-radius: 50%; border: none; 
-                   background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-                   color: #3b82f6; display: flex; align-items: center; 
-                   justify-content: center; cursor: pointer;">
+  <?php if ($is_admin): ?>
+    <!-- استخدمي الكلاس الموحد فقط بدون أي ستايل inline -->
+    <button type="button" class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal">
         <i class="bi bi-pencil-fill"></i>
     </button>
-<?php endif; ?>
-
+  <?php endif; ?>
 
   <div class="custom-container">
     <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">

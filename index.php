@@ -91,6 +91,11 @@ include 'includes/header.php';
 
   <div class="container-fluid custom-container choose-container">
     <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?></h2>
+    <?php if (!empty($data['choose_section_desc'])): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;">
+            <?php echo htmlspecialchars($data['choose_section_desc']); ?>
+        </p>
+    <?php endif; ?>
     <div class="row g-3">
       <?php foreach (($data['choose_items'] ?? []) as $item): ?>
         <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">

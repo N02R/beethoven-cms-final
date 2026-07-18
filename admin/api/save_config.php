@@ -134,8 +134,12 @@ switch ($action) {
         break;
         
             case 'update_choose':
-        $data['choose_title'] = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
-        $choose_items = [];
+    $data['choose_title'] = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
+    $data['choose_section_desc'] = $_POST['choose_desc'] ?? ''; // حفظ الوصف
+    
+    $choose_items = [];
+    // ... (بقية كود معالجة المصفوفة كما هو)
+
         if (isset($_POST['choose']) && is_array($_POST['choose'])) {
             foreach ($_POST['choose'] as $index => $c) {
                 $img_path = handle_upload('choose_img_' . $index, $upload_path);

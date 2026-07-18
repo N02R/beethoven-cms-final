@@ -362,7 +362,11 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?>">
                     </div>
 
-                    <hr>
+                   <div class="mb-4">
+    <label class="form-label fw-bold">وصف القسم (اختياري)</label>
+    <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء"><?php echo htmlspecialchars($data['choose_section_desc'] ?? ''); ?></textarea>
+</div>
+<hr>
 
                     <!-- حاوية الكاردات -->
                     <div id="chooseRowsContainer">

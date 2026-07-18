@@ -47,8 +47,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
 /* تنسيق زر الإلغاء */
 .btn-cancel {
-    background-color: #e2e8f0;
-    color: #475569;
+    background-color: #cbd5e1; /* الدرجة الأغمق المطلوبة */
+    color: #334155;   
     border-radius: 12px;
     border: none;
     transition: 0.3s;
@@ -109,8 +109,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
             <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>

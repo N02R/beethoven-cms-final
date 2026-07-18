@@ -96,7 +96,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     </div>
                                     <div class="row g-2 align-items-center">
                                         <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>"></div>
-                                        <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeSocialRow('row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                        <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_<?php echo $index; ?>')">
+    <i class="bi bi-trash"></i>
+</button>
+</div>
                                     </div>
                                 </div>
                             </div>

@@ -29,7 +29,13 @@ $hero = $data['hero'] ?? [
     <?php endif; ?>
     
     <!-- هنا التعديل: قمنا بإضافة الـ style هنا لتطبيق الصورة كخلفية للـ container -->
-<div class="hero-container" style="background-image: url('<?php echo strpos($data['hero']['img'], 'assets') === 0 ? '' : ''; ?><?php echo $data['hero']['img']; ?>'); background-size: cover; background-position: center;">
+<div class="hero-container">
+    <!-- الصورة هنا كجزء من الهيكل -->
+    <img src="<?php echo $data['hero']['img']; ?>" alt="Hero Image" class="hero-bg-img">
+    
+    <!-- الطبقة السوداء (Overlay) -->
+    <div class="hero-overlay"></div>
+
     <div class="hero-content">
         <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
         <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
@@ -38,6 +44,7 @@ $hero = $data['hero'] ?? [
         </a>
     </div>
 </div>
+
 
 
 

@@ -96,19 +96,32 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* 1. المودال الموحد (Universal Modal) */
-#universalModal {
-    display: none;
-    position: fixed;
-    z-index: 999999 !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    width: 90%;
-    max-width: 500px;
+/* تنسيق أيقونة القلم الموحدة للوحة التحكم */
+.admin-edit-trigger {
+    position: absolute;
+    top: 15px;      /* مسافة من الأعلى */
+    right: 15px;    /* مسافة من اليمين */
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    color: #64748b;
+    z-index: 99; /* لضمان ظهورها فوق العناصر الأخرى */
 }
 
+.admin-edit-trigger:hover {
+    background: var(--primary-color, #0d6efd); /* استخدمي متغير اللون الخاص بموقعك */
+    color: #ffffff;
+    transform: translateY(-2px) scale(1.05);
+}
+
+.admin-edit-trigger i {
+    font-size: 18px;
+}

@@ -27,15 +27,12 @@ $hero = $data['hero'] ?? [
   
   <!-- زر التعديل يظهر فقط للأدمن -->
 <!-- زر التعديل (أيقونة فقط) -->
-<?php if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin'): ?>
-    <button type="button" class="admin-edit-icon" 
-            data-bs-toggle="modal" data-bs-target="#heroEditModal"
-            title="تعديل الهيرو">
-      <i class="bi bi-pencil-fill"></i>
+<!-- أيقونة القلم الموحدة للوصول للمودل -->
+<?php if ($is_admin): ?>
+    <button type="button" class="admin-edit-trigger" data-bs-toggle="modal" data-bs-target="#heroEditModal">
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
-
-
   <div class="custom-container">
     <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">
       <div class="hero-content">

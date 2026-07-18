@@ -118,8 +118,16 @@ include 'includes/header.php';
 <section class="reviews py-5">
     <div class="reviews-bg">
         <div class="custom-container">
-            <h2 class="py-5 text-center sec-title">
+            <h2 class="py-5 text-center sec-title position-relative">
                 <?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'); ?>
+                
+                <?php if ($is_admin): ?>
+                    <button type="button" class="btn btn-link p-0 text-primary ms-2" 
+                            data-bs-toggle="modal" data-bs-target="#reviewsEditModal" 
+                            style="vertical-align: middle; font-size: 1.2rem;">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                <?php endif; ?>
             </h2>
         </div>
     </div>
@@ -162,7 +170,6 @@ include 'includes/header.php';
     </div>
 </section>
 <!-- review end -->
-
 
   <!-- guide start -->
   <section class="guide py-2">

@@ -348,10 +348,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 <div class="modal fade" id="chooseEditModal" tabindex="-1" aria-labelledby="chooseEditModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="chooseEditModalLabel">تعديل مميزات بيتهوفن سيتي</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+<div class="modal-header">
+    <h5 class="modal-title"><i class="bi bi-star text-primary"></i> تعديل المميزات</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+
             <div class="modal-body">
                 <form id="chooseForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">

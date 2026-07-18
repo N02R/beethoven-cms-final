@@ -71,7 +71,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addSocialRow()"><i class="bi bi-plus-circle me-1"></i> إضافة منصة جديدة</button>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button></div>
+            <div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -88,7 +93,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <input type="file" class="form-control w-100" name="logo_img" required>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="logoEditForm" class="btn-premium">حفظ الشعار</button></div>
+<div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="logoEditForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -151,7 +161,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($announcement['announcement']['link'] ?? ''); ?>" placeholder="https://">
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="announcementEditForm" class="btn-premium">حفظ التغييرات وتحديث الموقع</button></div>
+            <div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="announcementEditForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -198,10 +213,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
             
-            <div class="modal-footer px-4 py-3 border-top border-light bg-light" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
-                <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="submit" form="menuLinksForm" class="btn-premium px-5">حفظ التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="menuLinksForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -248,10 +265,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
             
-            <div class="modal-footer px-4 py-3 bg-light" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
-                <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="submit" form="langEditForm" class="btn-premium px-5">حفظ التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="langEditForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -295,10 +314,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -338,9 +359,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addServiceRow()">+ إضافة خدمة جديدة</button>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="submit" form="servicesEditForm" class="btn-premium">حفظ التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="servicesEditForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
         </div>
     </div>
 </div>
@@ -403,10 +427,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </button>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                <button type="submit" form="chooseForm" class="btn btn-primary">حفظ التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="submit" form="chooseForm" class="btn-premium">حفظ التغييرات</button>
+</div>
+
+
         </div>
     </div>
 </div>

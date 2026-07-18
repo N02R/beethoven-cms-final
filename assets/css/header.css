@@ -1,11 +1,11 @@
 /* HEADER */
-
 header {
     position: sticky;
     top: 0;
     z-index: 1050;
     background: #fff;
     box-shadow: 0 6px 20px rgba(0, 0, 0, .06);
+    transition: all 0.3s ease;
 }
 
 .offcanvas-header {
@@ -13,7 +13,6 @@ header {
     align-items: center;
     justify-content: space-between;
     direction: ltr;
-    
     padding: 1rem 1.25rem;
     border-bottom: 1px solid #CCCCCC3D;
 }
@@ -41,19 +40,52 @@ header {
     background: #e3effa;
     color: #66aeee;
 }
+
 .nav-top {
     border-bottom: 1px solid #CCCCCC3D;
     background: #fff;
+    transition: transform 0.3s ease, height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    height: auto;
+    overflow: hidden;
+}
+
+header.scrolled .nav-top {
+    transform: translateY(-100%);
+    height: 0;
+    padding: 0;
+    opacity: 0;
 }
 
 #main-header {
     padding: .5rem 0;
     background: #fff;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+header.scrolled #main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 0.3rem 0;
+    z-index: 1050;
 }
 
 .navbar-brand img {
     max-height: 72px;
     transition: .3s;
+}
+
+.navbar .logo-scroll {
+    display: none;
+    margin-left: 1rem;
+}
+
+header.scrolled .logo-scroll {
+    display: block;
 }
 
 #main-header .navbar-nav {
@@ -69,7 +101,6 @@ header {
     margin: 0 1.5rem;
 }
 
-
 .social-icons img {
     transition: .3s;
 }
@@ -80,7 +111,6 @@ header {
 }
 
 /* NAV LINKS */
-
 #main-header .nav-link {
     font-size: 1rem;
     font-weight: 400;
@@ -120,7 +150,6 @@ header {
 }
 
 /* Dropdown Menu */
-
 .dropdown-menu {
     min-width: 160px;
     border: none;
@@ -129,8 +158,6 @@ header {
     margin-top: 8px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
-
-/* Dropdown Item */
 
 .dropdown-menu .dropdown-item {
     font-size: 14px;
@@ -143,99 +170,6 @@ header {
     gap: 8px;
 }
 
-/* Hover */
-
 .dropdown-menu .dropdown-item:hover {
     background: #e3effa;
 }
-
-
-header {
-  position: sticky;
-  top: 0;
-  z-index: 1050;
-  background: #fff;
-  box-shadow: 0 6px 20px rgba(0,0,0,.06);
-  transition: all 0.3s ease;
-}
-
-/* ===== Nav Top ===== */
-.nav-top {
-  transition: transform 0.3s ease, height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-  height: auto;
-  overflow: hidden;
-}
-
-header.scrolled .nav-top {
-  transform: translateY(-100%);
-  height: 0;
-  padding: 0;
-  opacity: 0;
-}
-
-/* ===== Main Header ===== */
-#main-header {
-    position: relative;
-  transition: all 0.3s ease;
-}
-
-header.scrolled #main-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  padding: 0.3rem 0;
-  z-index: 1050;
-}
-
-/* logo-scroll خارج الـ flow */
-.navbar .logo-scroll {
-  display: none;
-margin-left: 1rem;
-}
-
-/* عند scroll يظهر */
-header.scrolled .logo-scroll {
-  display: block;
-}
-
-    :root {
-        --primary-blue: #3b82f6;
-        --hover-blue: #eff6ff;
-        --border-soft: #dbeafe;
-        --shadow-premium: 0 8px 20px rgba(15, 23, 42, 0.12);
-        --transition: all 220ms ease;
-    }
-
-    .logo-container, .editable-wrapper { position: relative; display: inline-block; }
-
-    /* الزر الجديد العائم (Floating Edit Button) */
-    .admin-edit-btn {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 38px;
-        height: 38px;
-        background: white;
-        border: 1px solid var(--border-soft);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: var(--shadow-premium);
-        transition: var(--transition);
-        z-index: 100;
-        color: var(--primary-blue);
-        padding: 0;
-    }
-
-    .admin-edit-btn:hover {
-        background: var(--hover-blue);
-        border-color: #60a5fa;
-        transform: scale(1.05);
-    }
-
-    .admin-edit-btn:active { transform: scale(0.95); }

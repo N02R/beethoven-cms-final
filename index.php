@@ -81,54 +81,32 @@ include 'includes/header.php';
   </div>
 </section>
 <!-- services end -->
-
-
-
-  
   <!-- choose start -->
-  <section class="choose py-5">
-    <div class="container-fluid custom-container choose-container">
-      <h2 class="mb-5 sec-title">ما الذي يميز بيتهوفن سيتي</h2>
-      <div class="row g-3">
+<section class="choose py-5" style="position: relative;">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="container-fluid custom-container choose-container">
+    <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?></h2>
+    <div class="row g-3">
+      <?php foreach (($data['choose_items'] ?? []) as $item): ?>
         <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
           <div class="card choose-card">
             <div class="card-body">
-              <a href="#"><img src="assets/img/home/Grouphome1.svg" alt="" /></a>
-              <h5 class="card-title">خدمة متعددة اللغات</h5>
-              <p class="card-text">هذا النص هو مثال لنص يستبدل في نفس المساحة، حيث يمكنك توليد النص</p>
+              <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>"><img src="<?php echo $item['img'] . '?v=' . time(); ?>" alt="icon"></a>
+              <h5 class="card-title"><?php echo htmlspecialchars($item['title']); ?></h5>
+              <p class="card-text"><?php echo htmlspecialchars($item['desc']); ?></p>
             </div>
           </div>
         </div>
-        <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="card active choose-card">
-            <div class="card-body">
-              <a href="#"><img src="assets/img/home/Grouphome2.svg" alt=""></a>
-              <h5 class="card-title">خبرة في السوق الألماني</h5>
-              <p class="card-text">هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="card choose-card">
-            <div class="card-body">
-              <a href="#"><img src="assets/img/home/Grouphome3.svg" alt=""></a>
-              <h5 class="card-title">متابعة شاملة للعميل</h5>
-              <p class="card-text">هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="card choose-card">
-            <div class="card-body">
-              <a href="#"><img src="assets/img/home/Grouphome4.svg" alt=""></a>
-              <h5 class="card-title">أسعار تنافسية</h5>
-              <p class="card-text">هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
-  </section>
+  </div>
+</section>
+
   <!-- choose end -->
   
   <!-- review start -->

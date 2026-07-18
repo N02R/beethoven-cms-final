@@ -345,6 +345,36 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+<div class="modal fade" id="chooseEditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header"><h5>تعديل المميزات</h5></div>
+            <div class="modal-body">
+                <form id="chooseForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_choose">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? ''); ?>">
+                    </div>
+                    <div id="chooseRowsContainer">
+                        <?php foreach (($data['choose_items'] ?? []) as $index => $item): ?>
+                            <div class="card p-2 mb-2" id="choose_row_<?php echo $index; ?>">
+                                <div class="row g-2">
+                                    <div class="col-3"><input type="text" class="form-control" name="choose[<?php echo $index; ?>][title]" value="<?php echo $item['title']; ?>"></div>
+                                    <div class="col-4"><input type="text" class="form-control" name="choose[<?php echo $index; ?>][desc]" value="<?php echo $item['desc']; ?>"></div>
+                                    <div class="col-3"><input type="file" class="form-control" name="choose_img_<?php echo $index; ?>"></div>
+                                    <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo $item['img']; ?>">
+                                    <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"><button type="submit" form="chooseForm" class="btn-premium">حفظ</button></div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 1. منطق تبديل محتوى الإعلان
     function toggleAdContent(val) { 
@@ -431,6 +461,25 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         serviceCount++;
     }
 
+    // 6. منطق المميزات (Choose Section)
+    let chooseCount = <?php echo count($data['choose_items'] ?? []); ?>;
+    function addChooseRow() {
+        const container = document.getElementById('chooseRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'choose_row_' + chooseCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][title]" placeholder="العنوان"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][desc]" placeholder="الوصف"></div>
+                <div class="col-md-3"><input type="file" class="form-control form-control-sm" name="choose_img_${chooseCount}"></div>
+                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_${chooseCount}')"><i class="bi bi-trash"></i></button></div>
+            </div>`;
+        container.appendChild(div);
+        chooseCount++;
+    }
+
     // دالة عامة للحذف
     function removeRow(id) { const el = document.getElementById(id); if(el) el.remove(); }
 
@@ -459,5 +508,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         });
     });
 </script>
+
 
 

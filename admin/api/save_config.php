@@ -132,6 +132,24 @@ switch ($action) {
         }
         $data['services'] = $new_services;
         break;
+        
+            case 'update_choose':
+        $data['choose_title'] = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
+        $choose_items = [];
+        if (isset($_POST['choose']) && is_array($_POST['choose'])) {
+            foreach ($_POST['choose'] as $index => $c) {
+                $img_path = handle_upload('choose_img_' . $index, $upload_path);
+                $choose_items[] = [
+                    'title' => $c['title'] ?? '',
+                    'desc'  => $c['desc'] ?? '',
+                    'url'   => $c['url'] ?? '#',
+                    'img'   => $img_path ?? ($c['old_img'] ?? 'assets/img/home/Grouphome1.svg')
+                ];
+            }
+        }
+        $data['choose_items'] = $choose_items;
+        break;
+
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid']));

@@ -98,35 +98,52 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* ستايل القلم الأوروبي العائم - ظاهر دائماً */
-.admin-edit-btn {
+/* --- ستايل الأقلام الأوروبي الموحد (Glassmorphism) --- */
+.edit-pen {
     position: absolute !important;
-    top: 20px !important;     /* يمكنك زيادته لأسفل */
-    right: 20px !important;   /* يمكنك تغييرها إلى left: 20px إذا أردتِ القلم على اليسار */
+    top: 15px !important;
+    right: 15px !important;
     width: 40px !important;
     height: 40px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    
+    /* خلفية زجاجية */
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    
+    /* حدود خفيفة */
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     border-radius: 12px !important;
+    
+    /* ترتيب وتوسيط */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    
+    /* تأثيرات */
     cursor: pointer !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
     color: #3b82f6 !important;
-    transition: all 0.3s ease !important;
+    /* اللون الأزرق الأساسي */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     z-index: 999 !important;
-    opacity: 1 !important; /* تأكيد الظهور الدائم */
+    
+    /* إخفاء الحدود الافتراضية للبوتون */
+    outline: none !important;
+    border: none !important;
+    padding: 0 !important;
 }
 
-.admin-edit-btn:hover {
+/* تأثير عند المرور بالفأرة */
+.edit-pen:hover {
     background: #3b82f6 !important;
-    color: white !important;
-    transform: translateY(-3px) !important;
-    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3) !important;
+    color: #ffffff !important;
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
 }
 
-.admin-edit-btn i {
+/* تنسيق الأيقونة داخل القلم */
+.edit-pen i {
     font-size: 16px !important;
+    line-height: 1 !important;
 }

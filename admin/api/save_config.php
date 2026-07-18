@@ -114,7 +114,10 @@ switch ($action) {
 
         case 'update_services':
         // حفظ العنوان الجديد
+        case 'update_services':
         $data['services_section_title'] = $_POST['services_title'] ?? 'خدماتنا المميزة';
+        // استقبال الوصف وحفظه
+        $data['services_section_desc'] = $_POST['services_desc'] ?? ''; 
         
         $new_services = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {

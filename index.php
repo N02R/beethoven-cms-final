@@ -49,9 +49,16 @@ include 'includes/header.php';
   <?php endif; ?>
 
   <div class="custom-container">
-  <h2 class="mb-5 sec-title">
-    <?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>
-</h2>
+<h2 class="mb-3 sec-title">
+        <?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>
+    </h2>
+    
+    <?php if (!empty($data['services_section_desc'])): ?>
+        <p class="mb-5 text-muted mx-auto" style="max-width: 700px;">
+            <?php echo htmlspecialchars($data['services_section_desc']); ?>
+        </p>
+    <?php endif; ?>
+
 
     <div class="row g-4">
       <?php 

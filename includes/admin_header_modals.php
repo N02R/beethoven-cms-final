@@ -318,6 +318,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
     <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>">
 </div>
+<div class="mb-3">
+    <label class="form-label fw-bold">وصف القسم (اختياري)</label>
+    <textarea class="form-control" name="services_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء"><?php echo htmlspecialchars($data['services_section_desc'] ?? ''); ?></textarea>
+</div>
                     <div id="servicesRowsContainer">
                         <?php foreach (($data['services'] ?? []) as $index => $service): ?>
                             <div class="card p-3 border-0 mb-2" id="service_row_<?php echo $index; ?>" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">

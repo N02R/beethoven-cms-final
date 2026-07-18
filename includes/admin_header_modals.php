@@ -19,7 +19,30 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     .custom-modal .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border-color); }
     .custom-modal .modal-title { margin: 0; display: flex; align-items: center; gap: .5rem; font-weight: 700; color: #1e293b; }
     .custom-modal .btn-close { margin: 0; flex-shrink: 0; }
-    .custom-modal .modal-footer { padding: 20px 28px; border-top: 1px solid var(--border-color); background: var(--bg-soft); }
+   /* تنسيق الفوتر الموحد */
+.custom-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end; /* الزرار تكون في جهة اليمين */
+    align-items: center;
+    gap: 12px; /* المسافة بين الزرين */
+    padding: 16px 24px;
+}
+
+/* تنسيق زر الإلغاء */
+.btn-cancel {
+    background-color: #f1f5f9;
+    color: #475569;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    border: none;
+    transition: 0.3s;
+}
+.btn-cancel:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+}
+
     
     /* Inputs */
     .custom-modal .form-control, .custom-modal .form-select { border-radius: 12px; border: 1px solid var(--border-color); height: 48px; padding: 0 16px; transition: 0.2s; width: 100%; }

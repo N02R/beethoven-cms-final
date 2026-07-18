@@ -20,30 +20,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     .custom-modal .modal-title { margin: 0; display: flex; align-items: center; gap: .5rem; font-weight: 700; color: #1e293b; }
     .custom-modal .btn-close { margin: 0; flex-shrink: 0; }
    /* تنسيق الفوتر الموحد */
-.custom-modal .modal-footer {
-    display: flex;
-    justify-content: space-between; /* الزرار تكون في جهة اليمين */
-    align-items: center;
-    gap: 12px; /* المسافة بين الزرين */
-    padding: 16px 24px;
-}
 
-/* تنسيق زر الإلغاء */
-.btn-cancel {
-    background-color: #f1f5f9;
-    color: #475569;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-weight: 600;
-    border: none;
-    transition: 0.3s;
-}
-.btn-cancel:hover {
-    background-color: #e2e8f0;
-    color: #1e293b;
-}
-
-    
     /* Inputs */
     .custom-modal .form-control, .custom-modal .form-select { border-radius: 12px; border: 1px solid var(--border-color); height: 48px; padding: 0 16px; transition: 0.2s; width: 100%; }
     .custom-modal .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
@@ -51,9 +28,53 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     /* File Upload - الموحد */
     .custom-modal input[type="file"].form-control { padding: 10px 16px; background: #fff; cursor: pointer; width: 100%; }
 
-    /* Buttons */
-    .btn-premium { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 12px; padding: 12px 24px; font-weight: 600; border: none; transition: 0.3s;  }
-    .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); color: white; }
+/* تنسيق الفوتر الموحد */
+.custom-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end; /* وضع الأزرار في الجهة المقابلة (اليمين في العربية) */
+    align-items: center;
+    gap: 12px; /* مسافة ثابتة ومريحة بين الزرين */
+    padding: 16px 24px;
+    background: #f8fafc; /* لون خلفية خفيف للفوتر */
+}
+
+/* تنسيق زر الإلغاء */
+.btn-cancel {
+    background-color: #e2e8f0; /* لون أغمق قليلاً من السابق ليكون أوضح */
+    color: #475569;
+    border-radius: 12px;
+    padding: 10px 24px; /* مطابقة للـ padding الخاص بزر البريميوم */
+    font-weight: 600;
+    border: none;
+    transition: 0.3s;
+    height: 44px; /* تحديد ارتفاع ثابت للزرين */
+    display: inline-flex;
+    align-items: center;
+}
+.btn-cancel:hover {
+    background-color: #cbd5e1;
+    color: #1e293b;
+}
+
+/* تنسيق زر الحفظ (البريميوم) */
+.btn-premium { 
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+    color: white; 
+    border-radius: 12px; 
+    padding: 10px 24px; 
+    font-weight: 600; 
+    border: none; 
+    transition: 0.3s; 
+    height: 44px; /* نفس ارتفاع زر الإلغاء */
+    display: inline-flex;
+    align-items: center;
+}
+.btn-premium:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(37,99,235,0.3); 
+    color: white; 
+}
+
     .btn-icon-trash { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; }
     .btn-icon-trash:hover { background: #fecaca; }
 </style>

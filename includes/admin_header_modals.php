@@ -603,7 +603,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<!-- Footer Edit Modal - المودل الكامل والمصحح -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -615,53 +614,39 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <form id="footerForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_footer">
                     
-                    <!-- 1. قسم الاستشارة - يظهر الآن في أعلى المودل -->
+                    <!-- 1. قسم الاستشارة -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card p-3 border-0" style="background:#eff6ff; border-radius: 12px;">
                                 <h6 class="text-primary mb-3"><i class="bi bi-chat-dots"></i> إعدادات قسم الاستشارة</h6>
                                 <div class="row g-2">
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>" placeholder="عنوان الاستشارة">
-                                    </div>
-                                    <div class="col-md-8">
-                                        <input type="text" class="form-control" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?>" placeholder="وصف الاستشارة">
-                                    </div>
+                                    <div class="col-md-4"><input type="text" class="form-control" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>" placeholder="عنوان الاستشارة"></div>
+                                    <div class="col-md-8"><input type="text" class="form-control" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?>" placeholder="وصف الاستشارة"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <!-- 2. العمود الأول: الوصف -->
+                        <!-- 2. العمود الأول -->
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded-3">
-                                <h6 class="text-primary mb-3">العمود الأول (وصف الموقع)</h6>
-                                <p class="small text-muted">اللوجو يُسحب تلقائياً من إعدادات الموقع العامة.</p>
-                                <label class="small fw-bold">وصف الفوتر:</label>
-                                <textarea class="form-control" name="footer_desc" rows="6" placeholder="اكتبي وصفاً مختصراً للشركة..."><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
-                            </div>
+                            <h6 class="text-primary mb-3">العمود الأول</h6>
+                            <label class="small fw-bold">وصف الفوتر:</label>
+                            <textarea class="form-control" name="footer_desc" rows="6"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
                         </div>
 
-                        <!-- 3. العمود الثاني: روابط سريعة -->
+                        <!-- 3. العمود الثاني (مربوط بالمنيو) -->
                         <div class="col-md-4">
-                            <h6 class="text-primary mb-3">العمود الثاني (روابط سريعة)</h6>
+                            <h6 class="text-primary mb-3">العمود الثاني</h6>
                             <input type="text" class="form-control mb-3" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?>">
-                            <div id="col2LinksContainer">
-                                <?php foreach(($data['footer_col2_links'] ?? []) as $i => $link): ?>
-                                    <div class="row g-1 mb-2 align-items-center" id="col2_<?php echo $i; ?>">
-                                        <div class="col-5"><input type="text" name="col2[<?php echo $i; ?>][title]" class="form-control form-control-sm" value="<?php echo $link['title']; ?>" placeholder="الاسم"></div>
-                                        <div class="col-6"><input type="text" name="col2[<?php echo $i; ?>][url]" class="form-control form-control-sm" value="<?php echo $link['url']; ?>" placeholder="الرابط"></div>
-                                        <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col2_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button></div>
-                                    </div>
-                                <?php endforeach; ?>
+                            <div class="p-3 bg-light rounded-3 text-muted small">
+                                <i class="bi bi-info-circle"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addCol2Link()">+ إضافة رابط</button>
                         </div>
 
-                        <!-- 4. العمود الثالث: التواصل -->
+                        <!-- 4. العمود الثالث -->
                         <div class="col-md-4">
-                            <h6 class="text-primary mb-3">العمود الثالث (بيانات التواصل)</h6>
+                            <h6 class="text-primary mb-3">العمود الثالث (التواصل)</h6>
                             <input type="text" class="form-control mb-3" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?>">
                             <div id="col3LinksContainer">
                                 <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
@@ -687,6 +672,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 
 <script>
@@ -881,6 +867,7 @@ function addFaqRow() {
 }
 
 let col3Count = <?php echo count($data['footer_col3_links'] ?? []); ?>;
+
 function addCol3Link() {
     const container = document.getElementById('col3LinksContainer');
     const div = document.createElement('div');
@@ -893,7 +880,7 @@ function addCol3Link() {
             <div class="col-4"><input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm" placeholder="الرابط"></div>
             <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col3_${col3Count}')"><i class="bi bi-trash"></i></button></div>
         </div>
-`;
+    `;
     container.appendChild(div);
     col3Count++;
 }

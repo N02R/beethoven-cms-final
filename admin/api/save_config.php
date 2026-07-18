@@ -220,14 +220,8 @@ case 'update_footer':
     // 2. بيانات العمود الأول
     $data['footer_desc'] = $_POST['footer_desc'] ?? '';
     
-    // 3. بيانات العمود الثاني (روابط سريعة)
+    // 3. بيانات العمود الثاني (تم إلغاء تخزينه هنا لأنه يُجلب من الـ menu_links)
     $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
-    $data['footer_col2_links'] = [];
-    if (isset($_POST['col2']) && is_array($_POST['col2'])) {
-        foreach ($_POST['col2'] as $link) {
-            $data['footer_col2_links'][] = ['title' => $link['title'], 'url' => $link['url']];
-        }
-    }
     
     // 4. بيانات العمود الثالث (تواصل) - مع دعم الصور
     $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
@@ -246,6 +240,7 @@ case 'update_footer':
         }
     }
     break;
+
 
 
     default:

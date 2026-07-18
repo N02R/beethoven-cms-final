@@ -11,6 +11,13 @@
     "start_date": "",
     "end_date": ""
   },
+  "hero": {
+    "title": "ابدأ رحلتك الأكاديمية في ألمانيا مع BCS",
+    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
+    "btn_text": "احجز استشارتك الآن",
+    "btn_url": "#contact",
+    "img": "assets/img/hero-bg.jpg"
+  },
   "social_links": [
     { "name": "Facebook", "url": "https://fb.com", "img": "assets/img/fb.png" }
   ],

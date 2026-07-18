@@ -1,46 +1,48 @@
 /* hero style start */
-.hero {
-  padding: 5rem 0;
-  position: relative;
-  overflow: hidden;
+/* القسم الكامل */
+.hero-section {
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-.hero-container {
+/* الغلاف الكامل */
+.hero-full-wrapper {
   position: relative;
   width: 100%;
-  margin: 0 auto;
-  border-radius: 16px;
+  height: 80vh; /* يغطي 80% من ارتفاع الشاشة، يمكنكِ تغييره لـ 100vh ليكون شاشة كاملة */
   overflow: hidden;
-  aspect-ratio: 1140 / 609;
 }
 
-/* الصورة داخل الهيرو */
+/* الصورة تمتد لتغطي الغلاف */
 .hero-bg-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* لضبط الصورة بحيث تغطي المساحة */
+  object-fit: cover;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
 }
 
-/* الطبقة السوداء (بدل الـ after) */
+/* الطبقة السوداء */
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, .2), rgba(0, 0, 0, .8));
-  z-index: 2;
+  background: rgba(0, 0, 0, 0.4); /* ظل خفيف */
+  z-index: 1;
 }
 
+/* المحتوى في المنتصف */
 .hero-content {
-  position: relative; /* لضمان ظهور المحتوى فوق الصورة */
-  z-index: 3;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  text-align: center;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* توسيط عمودي */
+  align-items: center;     /* توسيط أفقي */
+  color: white;
+  padding: 20px;
 }
 
 

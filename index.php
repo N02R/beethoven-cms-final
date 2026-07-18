@@ -22,33 +22,21 @@ $hero = $data['hero'] ?? [
   $hero_exists = isset($data['hero']);
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
-
-<section class="hero py-5 editable-wrapper" aria-label="قسم البداية">
-    <?php if ($is_admin): ?>
-        <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
-    <?php endif; ?>
-    
-    <!-- هنا التعديل: قمنا بإضافة الـ style هنا لتطبيق الصورة كخلفية للـ container -->
-<div class="hero-container">
-    <!-- الصورة هنا كجزء من الهيكل -->
-    <img src="<?php echo $data['hero']['img']; ?>" alt="Hero Image" class="hero-bg-img">
-    
-    <!-- الطبقة السوداء (Overlay) -->
-    <div class="hero-overlay"></div>
-
-    <div class="hero-content">
-        <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
-        <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
-        <a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
-            <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
-        </a>
+<!-- لا تضعي الكود داخل custom-container -->
+<section class="hero-section editable-wrapper">
+    <div class="hero-full-wrapper">
+        <img src="<?php echo $data['hero']['img']; ?>" alt="Hero Image" class="hero-bg-img">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
+            <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
+            <a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
+                <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
+            </a>
+        </div>
     </div>
-</div>
-
-
-
-
 </section>
+
 
 <!-- نهاية قسم الهيرو -->
 

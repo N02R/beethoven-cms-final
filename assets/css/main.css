@@ -117,15 +117,9 @@ body {
     color: #3b82f6 !important;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
     z-index: 999 !important;
-    opacity: 0; /* مخفي افتراضياً */
-    transform: translateY(10px);
 }
 
-/* يظهر عند مرور الفأرة على السكشن */
-section:hover > .admin-edit-btn {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-}
+
 
 .admin-edit-btn:hover {
     background: #3b82f6 !important;

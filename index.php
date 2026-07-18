@@ -16,9 +16,14 @@ $hero = $data['hero'] ?? [
 ];
 ?>
 
-<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" 
-         style="background-image: url('<?php echo $path_prefix . $hero_img; ?>') center/cover no-repeat !important ;">
-    
+<!-- بداية قسم الهيرو -->
+<?php 
+  // تتبع البيانات
+  $hero_exists = isset($data['hero']);
+  echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
+?>
+
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position:relative; min-height: 400px; background: #eee;">
     <?php if ($is_admin): ?>
         <button class="admin-edit-btn" data-bs-toggle="modal" data-bs-target="#heroEditModal"><i class="bi bi-pencil"></i></button>
     <?php endif; ?>
@@ -26,15 +31,16 @@ $hero = $data['hero'] ?? [
     <div class="custom-container">
       <div class="hero-container">
         <div class="hero-content">
-          <h1><?php echo htmlspecialchars($hero_title); ?></h1>
-          <p><?php echo htmlspecialchars($hero_desc); ?></p>
-          <a href="<?php echo htmlspecialchars($hero_btn_url); ?>" class="btn btn-lg hero-btn">
-            <?php echo htmlspecialchars($hero_btn_text); ?>
+          <h1><?php echo htmlspecialchars($hero_title ?? 'لا يوجد عنوان'); ?></h1>
+          <p><?php echo htmlspecialchars($hero_desc ?? 'لا يوجد وصف'); ?></p>
+          <a href="<?php echo htmlspecialchars($hero_btn_url ?? '#'); ?>" class="btn btn-lg hero-btn">
+            <?php echo htmlspecialchars($hero_btn_text ?? 'اضغط هنا'); ?>
           </a>
         </div>
       </div>
     </div>
 </section>
+<!-- نهاية قسم الهيرو -->
 
   <!-- services start -->
   <section class="services py-5">

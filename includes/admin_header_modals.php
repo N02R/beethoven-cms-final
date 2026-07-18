@@ -529,7 +529,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <form id="guideForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
                     
-                    <!-- عنوان ووصف القسم -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?>">
@@ -540,29 +539,17 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                     <hr>
 
-                    <!-- حاوية الكاردات -->
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="guide_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-md-3">
-                                        <input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="العنوان">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="رابط الصفحة">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="file" class="form-control form-control-sm" name="guide_img_<?php echo $index; ?>">
-                                        <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo $item['img'] ?? ''; ?>">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <textarea class="form-control form-control-sm" name="guide[<?php echo $index; ?>][desc]" rows="2" placeholder="الوصف"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></textarea>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_<?php echo $index; ?>')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                                <div class="row g-2">
+                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="عنوان المقال"></div>
+                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="رابط الصفحة"></div>
+                                    <div class="col-6"><input type="file" class="form-control form-control-sm" name="guide_img_<?php echo $index; ?>"></div>
+                                    <div class="col-5"><textarea class="form-control form-control-sm" name="guide[<?php echo $index; ?>][desc]" rows="1" placeholder="الوصف"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></textarea></div>
+                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo $item['img'] ?? ''; ?>">
+                                    <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -572,7 +559,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </button>
                 </form>
             </div>
-            
             <div class="modal-footer">
                 <button type="submit" form="guideForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
@@ -580,7 +566,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
-
 
 <script>
     // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)

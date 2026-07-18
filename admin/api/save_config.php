@@ -35,13 +35,14 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'guide_desc'             => '',
     'faq_items'              => [],
     'faq_title'              => 'الأسئلة الشائعة',
-    'footer_desc'    => '',
-'footer_phone'   => '',
-'footer_email'   => '',
-'footer_address' => '',
-'consult_title'  => 'احصل على استشارة مجانية',
-'consult_desc'   => 'هذا النص هو مثال لنص يمكن أن يُستبدل'
-
+    // إعدادات الفوتر الجديدة
+    'consult_title'          => 'احصل على استشارة مجانية',
+    'consult_desc'           => 'هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة',
+    'footer_desc'            => '',
+    'footer_col2_title'      => 'روابط سريعة',
+    'footer_col2_links'      => [],
+    'footer_col3_title'      => 'تواصل معنا',
+    'footer_col3_links'      => []
 ];
 
 
@@ -212,31 +213,39 @@ case 'update_guide':
     break;
 
 case 'update_footer':
-    // بيانات الاستشارة
+    // 1. بيانات الاستشارة
     $data['consult_title'] = $_POST['consult_title'] ?? '';
     $data['consult_desc']  = $_POST['consult_desc'] ?? '';
     
-    // بيانات العمود الأول (الوصف)
+    // 2. بيانات العمود الأول
     $data['footer_desc'] = $_POST['footer_desc'] ?? '';
     
-    // بيانات العمود الثاني (روابط سريعة)
+    // 3. بيانات العمود الثاني (روابط سريعة)
     $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
     $data['footer_col2_links'] = [];
-    if (isset($_POST['col2'])) {
+    if (isset($_POST['col2']) && is_array($_POST['col2'])) {
         foreach ($_POST['col2'] as $link) {
             $data['footer_col2_links'][] = ['title' => $link['title'], 'url' => $link['url']];
         }
     }
     
-    // بيانات العمود الثالث (تواصل)
+    // 4. بيانات العمود الثالث (تواصل) - مع دعم الصور
     $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
-    $data['footer_col3_items'] = [];
-    // هنا يمكننا مستقبلاً إضافة منطق رفع أيقونات لكل رابط إذا أردتِ
-    $data['footer_phone']   = $_POST['footer_phone'] ?? '';
-    $data['footer_email']   = $_POST['footer_email'] ?? '';
-    $data['footer_address'] = $_POST['footer_address'] ?? '';
+    $data['footer_col3_links'] = [];
+    
+    if (isset($_POST['col3']) && is_array($_POST['col3'])) {
+        foreach ($_POST['col3'] as $i => $item) {
+            // معالجة رفع الصورة لكل عنصر في التواصل
+            $img_path = handle_upload('col3_img_' . $i, $upload_path);
+            
+            $data['footer_col3_links'][] = [
+                'title' => $item['title'] ?? '',
+                'url'   => $item['url'] ?? '#',
+                'img'   => $img_path ?? ($item['old_img'] ?? '')
+            ];
+        }
+    }
     break;
-
 
 
     default:

@@ -96,10 +96,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     </div>
                                     <div class="row g-2 align-items-center">
                                         <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>"></div>
-                                        <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_<?php echo $index; ?>')">
-    <i class="bi bi-trash"></i>
-</button>
-</div>
+                                        <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
                                     </div>
                                 </div>
                             </div>
@@ -111,11 +108,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
             <div class="modal-footer">
-    <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
-    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div> <!-- هذا هو وسم الإغلاق الذي كان مفقوداً -->
+    </div>
 </div>
-</div>
+
 
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">

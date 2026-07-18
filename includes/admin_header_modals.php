@@ -238,9 +238,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo ($link['order'] ?? $index); ?>" placeholder="الترتيب">
                                 </div>
                                 <div class="col-auto">
-                                    <button type="button" class="btn-icon-trash" style="width:32px; height:32px;" onclick="removeMenuRow('menu_row_<?php echo $index; ?>')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+<button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_<?php echo $index; ?>')">
+    <i class="bi bi-trash"></i>
+</button>
+
                                 </div>
                             </div>
                         </div>
@@ -289,9 +290,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                         <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url']); ?>" placeholder="الرابط (مثلاً index.php)">
                                     </div>
                                     <div class="col-1">
-                                        <button type="button" class="btn-icon-trash" style="width:38px; height:38px;" onclick="removeLangRow('lang_row_<?php echo $index; ?>')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+<button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_<?php echo $index; ?>')">
+    <i class="bi bi-trash"></i>
+</button>
+
                                     </div>
                                 </div>
                             <?php endforeach; ?>

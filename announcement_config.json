@@ -16,7 +16,7 @@
     "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
     "btn_text": "احجز استشارتك الآن",
     "btn_url": "#contact",
-    "img": "assets/img/home/home1.png"
+    "img": "/assets/img/home/home1.png"
   },
   "menu_links": [
     { "title": "الرئيسية", "url": "index.php", "order": 1 },

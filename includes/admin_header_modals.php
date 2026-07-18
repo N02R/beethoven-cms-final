@@ -302,11 +302,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
- <script>
-    // 1. منطق تبديل محتوى الإعلان
+<script>
+    // 1. منطق تبديل محتوى الإعلان (Text vs Image)
     function toggleAdContent(val) { 
-        document.getElementById('textEditor').classList.toggle('d-none', val !== 'text'); 
-        document.getElementById('imageEditor').classList.toggle('d-none', val !== 'image'); 
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
+        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
     
     // 2. منطق السوشيال ميديا
@@ -317,11 +319,21 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'row_' + socialCount;
-        div.innerHTML = `<div class="d-flex align-items-start gap-3"><div class="rounded-2 border bg-white" style="width:50px; height:50px;"></div><div class="flex-grow-1"><div class="row g-2 mb-2"><div class="col-4"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="الاسم"></div><div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div></div><div class="row g-2 align-items-center"><div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div><div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeSocialRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div></div></div></div>`;
+        div.innerHTML = `<div class="d-flex align-items-start gap-3">
+            <div class="flex-grow-1">
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="الاسم"></div>
+                    <div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div>
+                </div>
+                <div class="row g-2 align-items-center">
+                    <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div>
+                    <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div>
+                </div>
+            </div>
+        </div>`;
         container.appendChild(div);
         socialCount++;
     }
-    function removeSocialRow(id) { document.getElementById(id).remove(); }
 
     // 3. منطق القائمة الرئيسية
     let menuCount = <?php echo count($data['menu_links'] ?? []); ?>;
@@ -334,14 +346,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         div.innerHTML = `
             <div class="row align-items-center g-2">
                 <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
-                <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][url]" placeholder="الرابط (URL)"></div>
+                <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][url]" placeholder="الرابط"></div>
                 <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="menu[${menuCount}][order]" value="${menuCount}"></div>
-                <div class="col-auto"><button type="button" class="btn-icon-trash" style="width:32px; height:32px;" onclick="removeMenuRow('menu_row_${menuCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_${menuCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         menuCount++;
     }
-    function removeMenuRow(id) { document.getElementById(id).remove(); }
 
     // 4. منطق إدارة اللغات
     let langCount = <?php echo count($data['languages'] ?? []); ?>;
@@ -353,21 +364,23 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         div.innerHTML = `
             <div class="col-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
             <div class="col-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
-            <div class="col-1"><button type="button" class="btn-icon-trash" style="width:40px; height:40px;" onclick="removeLangRow('lang_row_${langCount}')"><i class="bi bi-trash"></i></button></div>`;
+            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_${langCount}')"><i class="bi bi-trash"></i></button></div>`;
         container.appendChild(div);
         langCount++;
     }
-    function removeLangRow(id) { document.getElementById(id).remove(); }
 
-/ 5. معالج النماذج الموحد والمحسّن
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // استخدام FormData مباشرة من الفورم
-        const formData = new FormData(this);
-        
-        fetch('admin/api/save_config.php', {
+    // دالة عامة للحذف
+    function removeRow(id) { const el = document.getElementById(id); if(el) el.remove(); }
+
+    // 5. معالج النماذج الموحد (الذي يربط كل شيء بالـ API)
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // نستخدم FormData لالتقاط النصوص والملفات معاً
+            const formData = new FormData(this);
+            
+            fetch('admin/api/save_config.php', {
                 method: 'POST',
                 body: formData
             })
@@ -375,8 +388,7 @@ document.querySelectorAll('form').forEach(form => {
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    // التحديث هنا سيجلب النسخة الجديدة من الصورة مع توقيت جديد
-                    location.reload();
+                    location.reload(); // إعادة التحميل لتحديث الصور والنصوص
                 } else {
                     alert('خطأ: ' + data.message);
                 }
@@ -385,6 +397,7 @@ document.querySelectorAll('form').forEach(form => {
                 console.error('Fetch Error:', err);
                 alert('حدث خطأ أثناء الاتصال بالسيرفر');
             });
+        });
     });
-});
 </script>
+

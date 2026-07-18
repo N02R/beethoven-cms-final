@@ -229,69 +229,31 @@ include 'includes/header.php';
 
 
 
-  <!-- popular start -->
-  <section class="popular py-5">
-    <div class="container-fluid custom-container">
-      <h2 class="sec-title mb-5">الأسئلة الشائعة</h2>
-      <!-- Accordion -->
-      <div class="accordion mb-5" id="accordionExample">
+<section class="popular py-5" style="position: relative;">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal"><i class="bi bi-pencil-fill"></i></button>
+  <?php endif; ?>
+
+  <div class="container-fluid custom-container">
+    <h2 class="sec-title mb-5"><?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة'); ?></h2>
+    <div class="accordion mb-5" id="accordionExample">
+      <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-              aria-expanded="true" aria-controls="collapseOne">
-              ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟
+          <h2 class="accordion-header" id="heading<?php echo $index; ?>">
+            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>">
+              <?php echo htmlspecialchars($item['question']); ?>
             </button>
           </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              تحتاج إلى شهادة الثانوية العامة أو ما يعادلها، إثبات كفاءة في اللغة الألمانية أو الإنجليزية
-              (حسب لغة البرنامج)، وسيرة ذاتية وخطاب تحفيز.
-            </div>
+          <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
+            <div class="accordion-body"><?php echo htmlspecialchars($item['answer']); ?></div>
           </div>
         </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              هل يمكنني الدراسة في ألمانيا بدون لغة ألمانية؟
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              نعم، بعض الجامعات الألمانية تقدم برامج باللغة الإنجليزية بالكامل، لكن يُنصح بتعلم اللغة
-              الألمانية لتسهيل الحياة اليومية وفرص العمل لاحقًا.
-            </div>
-          </div>
-        </div>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingThree">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              ما هي تكلفة الدراسة والمعيشة في ألمانيا؟
-            </button>
-          </h2>
-          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-            data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              معظم الجامعات الحكومية مجانية، لكن يجب توفير مصاريف المعيشة (حوالي 900 يورو شهريًا) والتي
-              تشمل السكن، الطعام، والمواصلات.
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Form -->
-      <div class="call bg-white shadow-sm py-5 px-4">
-        <h5 class="mb-4">أخبرنا عمّا يدور في بالك أيضًا</h5>
-        <form class="form mx-auto" action="send_inquiry.php" method="POST">
-          <input type="text" name="question" placeholder="أدخل السؤال الذي يخطر ببالك لنقم بالرد عليك" required>
-          <button type="submit"><img src="assets/img/home/send-2.svg" alt="إرسال"></button>
-        </form>
-      </div>
+      <?php endforeach; ?>
     </div>
-  </section>
-  <!-- popular end -->
+    <!-- Form يبقى كما هو -->
+  </div>
+</section>
+
 
 <?php 
 include 'includes/footer.php'; 

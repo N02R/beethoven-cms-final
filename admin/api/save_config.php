@@ -30,10 +30,11 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'choose_section_desc'    => '',
     'reviews_items'          => [],
     'reviews_title'          => 'شاهد ماذا يقول عملاؤنا عنا',
-    // الأقسام الجديدة التي أضفناها للتو:
     'guide_items'            => [],
     'guide_title'            => 'دليل بيتهوفن الشامل',
-    'guide_desc'             => ''
+    'guide_desc'             => '',
+    'faq_items'              => [],
+    'faq_title'              => 'الأسئلة الشائعة'
 ];
 
 
@@ -189,6 +190,20 @@ case 'update_guide':
     }
     $data['guide_items'] = $new_guides;
     break;
+    case 'update_faq':
+    $data['faq_title'] = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
+    $new_faqs = [];
+    if (isset($_POST['faq']) && is_array($_POST['faq'])) {
+        foreach ($_POST['faq'] as $f) {
+            $new_faqs[] = [
+                'question' => $f['question'] ?? '',
+                'answer'   => $f['answer'] ?? ''
+            ];
+        }
+    }
+    $data['faq_items'] = $new_faqs;
+    break;
+
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid']));

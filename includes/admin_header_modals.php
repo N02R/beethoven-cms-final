@@ -567,6 +567,42 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+<div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-question-circle text-primary"></i> إدارة الأسئلة الشائعة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="faqForm">
+                    <input type="hidden" name="action" value="update_faq">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">عنوان القسم</label>
+                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة'); ?>">
+                    </div>
+                    <div id="faqRowsContainer" class="d-flex flex-column gap-3">
+                        <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
+                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="faq_row_<?php echo $index; ?>">
+                                <div class="row g-2">
+                                    <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question']); ?>" placeholder="السؤال"></div>
+                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer']); ?>" placeholder="الإجابة"></div>
+                                    <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addFaqRow()"><i class="bi bi-plus-circle"></i> إضافة سؤال جديد</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="faqForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
     function removeRow(id) {
@@ -740,7 +776,23 @@ function addGuideRow() {
     container.appendChild(div);
     guideCount++;
 }
-
+let faqCount = <?php echo count($data['faq_items'] ?? []); ?>;
+function addFaqRow() {
+    const container = document.getElementById('faqRowsContainer');
+    const div = document.createElement('div');
+    div.className = 'card p-3 border-0';
+    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+    div.id = 'faq_row_' + faqCount;
+    div.innerHTML = `
+        <div class="row g-2">
+            <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
+            <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
+            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_${faqCount}')"><i class="bi bi-trash"></i></button></div>
+        </div>
+`;
+    container.appendChild(div);
+    faqCount++;
+}
 
 </script>
 

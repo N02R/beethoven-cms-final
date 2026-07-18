@@ -266,13 +266,17 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             <div class="modal-body p-4">
                 <form id="heroEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
+                    <?php 
+                        // استخراج البيانات من $data المتوفرة عالمياً
+                        $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; 
+                    ?>
                     <div class="row g-3">
-                        <div class="col-12"><label>العنوان</label><input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($hero['title']); ?>"></div>
-                        <div class="col-12"><label>النص الوصفي</label><textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($hero['desc']); ?></textarea></div>
-                        <div class="col-md-6"><label>نص الزر</label><input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($hero['btn_text']); ?>"></div>
-                        <div class="col-md-6"><label>رابط الزر</label><input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($hero['btn_url']); ?>"></div>
+                        <div class="col-12"><label>العنوان</label><input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? ''); ?>"></div>
+                        <div class="col-12"><label>النص الوصفي</label><textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($h['desc'] ?? ''); ?></textarea></div>
+                        <div class="col-md-6"><label>نص الزر</label><input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? ''); ?>"></div>
+                        <div class="col-md-6"><label>رابط الزر</label><input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? ''); ?>"></div>
                         <div class="col-12"><label>صورة الخلفية</label><input type="file" class="form-control" name="hero_img"></div>
-                        <input type="hidden" name="old_hero_img" value="<?php echo $hero['img']; ?>">
+                        <input type="hidden" name="old_hero_img" value="<?php echo $h['img'] ?? 'assets/img/hero-bg.jpg'; ?>">
                     </div>
                 </form>
             </div>
@@ -280,6 +284,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 <script>
     // 1. منطق تبديل محتوى الإعلان

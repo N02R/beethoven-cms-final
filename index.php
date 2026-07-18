@@ -6,13 +6,14 @@ include 'includes/header.php';
 ?>
 
 <?php
-// جلب بيانات الـ hero من المصفوفة $data الموجودة في header.php
-$hero_data = $data['hero'] ?? [];
-$hero_title = $hero_data['title'] ?? 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS';
-$hero_desc = $hero_data['desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...';
-$hero_btn_text = $hero_data['btn_text'] ?? 'احجز استشارتك الآن';
-$hero_btn_url = $hero_data['btn_url'] ?? '#contact';
-$hero_img = $hero_data['img'] ?? 'assets/img/home/home1.png';
+// جلب البيانات من $data الموجودة في الهيدر
+$hero = $data['hero'] ?? [
+    'title' => 'ابدأ رحلتك الأكاديمية في ألمانيا مع BCS',
+    'desc' => 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...',
+    'btn_text' => 'احجز استشارتك الآن',
+    'btn_url' => '#contact',
+    'img' => 'assets/img/home/home1.png'
+];
 ?>
 
 <section class="hero py-5 editable-wrapper" aria-label="قسم البداية" 

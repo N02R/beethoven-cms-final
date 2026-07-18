@@ -256,35 +256,31 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-gear text-primary"></i> تعديل قسم البداية (Hero)</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form id="heroEditForm" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_hero">
-                    <?php 
-                        // استخراج البيانات من $data المتوفرة عالمياً
-                        $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; 
-                    ?>
-                    <div class="row g-3">
-                        <div class="col-12"><label>العنوان</label><input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? ''); ?>"></div>
-                        <div class="col-12"><label>النص الوصفي</label><textarea class="form-control" name="hero_desc" rows="3"><?php echo htmlspecialchars($h['desc'] ?? ''); ?></textarea></div>
-                        <div class="col-md-6"><label>نص الزر</label><input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? ''); ?>"></div>
-                        <div class="col-md-6"><label>رابط الزر</label><input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? ''); ?>"></div>
-                        <div class="col-12"><label>صورة الخلفية</label><input type="file" class="form-control" name="hero_img"></div>
-                        <input type="hidden" name="old_hero_img" value="<?php echo $h['img'] ?? 'assets/img/hero-bg.jpg'; ?>">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer"><button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button></div>
+<!-- Modal -->
+<div class="modal fade" id="heroEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="includes/save_config.php" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="action" value="update_hero">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">تعديل بيانات الهيرو</h5>
         </div>
-    </div>
+        <div class="modal-body">
+          <input type="text" name="hero_title" class="form-control mb-2" placeholder="العنوان" value="<?php echo htmlspecialchars($data['hero']['title']); ?>">
+          <textarea name="hero_desc" class="form-control mb-2" placeholder="الوصف"><?php echo htmlspecialchars($data['hero']['desc']); ?></textarea>
+          <input type="text" name="hero_btn_text" class="form-control mb-2" placeholder="نص الزر" value="<?php echo htmlspecialchars($data['hero']['btn_text']); ?>">
+          <input type="text" name="hero_btn_url" class="form-control mb-2" placeholder="رابط الزر" value="<?php echo htmlspecialchars($data['hero']['btn_url']); ?>">
+          <input type="file" name="hero_img" class="form-control">
+          <!-- إضافة حقل مخفي للصورة القديمة -->
+          <input type="hidden" name="old_hero_img" value="<?php echo $data['hero']['img']; ?>">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
-
 
 <script>
     // 1. منطق تبديل محتوى الإعلان

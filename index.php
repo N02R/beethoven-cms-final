@@ -22,23 +22,32 @@ $hero = $data['hero'] ?? [
   $hero_exists = isset($data['hero']);
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
-<!-- لا تضعي الكود داخل custom-container -->
 <!-- hero start -->
-<section class="hero py-5" aria-label="قسم البداية">
-    <div class="custom-container">
-        <!-- قمنا بإضافة style هنا لحقن الصورة ديناميكياً -->
-        <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">
-            <div class="hero-content">
-                <h1><?php echo htmlspecialchars($data['hero']['title']); ?></h1>
-                <p><?php echo htmlspecialchars($data['hero']['desc']); ?></p>
-                <a href="<?php echo htmlspecialchars($data['hero']['btn_url']); ?>" class="btn btn-lg hero-btn">
-                    <?php echo htmlspecialchars($data['hero']['btn_text']); ?>
-                </a>
-            </div>
-        </div>
+<section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
+  
+  <!-- زر التعديل يظهر فقط للأدمن -->
+  <?php if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin'): ?>
+    <button type="button" class="btn btn-sm btn-primary admin-edit-btn" 
+            data-bs-toggle="modal" data-bs-target="#heroEditModal"
+            style="position: absolute; top: 20px; left: 20px; z-index: 999;">
+      <i class="bi bi-pencil-square"></i> تعديل الهيرو
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">
+      <div class="hero-content">
+        <h1><?php echo htmlspecialchars($data['hero']['title']); ?></h1>
+        <p><?php echo htmlspecialchars($data['hero']['desc']); ?></p>
+        <a href="<?php echo htmlspecialchars($data['hero']['btn_url']); ?>" class="btn btn-lg hero-btn">
+          <?php echo htmlspecialchars($data['hero']['btn_text']); ?>
+        </a>
+      </div>
     </div>
+  </div>
 </section>
 <!-- hero end -->
+
 
   <!-- services start -->
   <section class="services py-5">

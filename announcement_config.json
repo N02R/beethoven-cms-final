@@ -46,9 +46,7 @@
       "img": "assets/img/home/traning.jpg"
     }
   ]
-}
-
-
+  ,
   "choose_title": "ما الذي يميز بيتهوفن سيتي",
   "choose_items": [
     {
@@ -64,3 +62,6 @@
       "img": "assets/img/home/Grouphome2.svg"
     }
   ]
+
+}
+

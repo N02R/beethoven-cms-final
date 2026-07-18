@@ -110,7 +110,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
     <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -131,8 +131,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
 <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="logoEditForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -199,8 +199,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
             <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="announcementEditForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -251,8 +251,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             
 <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="menuLinksForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -303,8 +303,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             
 <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="langEditForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -352,8 +352,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
 <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -397,8 +397,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
 <div class="modal-footer">
     <!-- دائماً زر إلغاء بجانب زر الحفظ -->
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="servicesEditForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
         </div>
@@ -464,8 +464,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 </form>
             </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
     <button type="submit" form="chooseForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
 </div>
 
 

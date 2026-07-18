@@ -160,3 +160,30 @@ body {
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
     .close-btn { cursor: pointer; border: none; background: none; font-size: 24px; float: left; }
+    
+    .admin-edit-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    /* يمكنك تغييرها لـ left إذا أردتِ */
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-size: 18px;
+    color: #333;
+}
+
+.admin-edit-icon:hover {
+    background: #007bff;
+    color: white;
+    transform: scale(1.1);
+}

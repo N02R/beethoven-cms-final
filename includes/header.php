@@ -63,46 +63,7 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php<?php echo (isset($page_css) ? "?files=" . implode(',', array_map('basename', $page_css)) : ""); ?>">
-<style>
-    :root {
-        --primary-blue: #3b82f6;
-        --hover-blue: #eff6ff;
-        --border-soft: #dbeafe;
-        --shadow-premium: 0 8px 20px rgba(15, 23, 42, 0.12);
-        --transition: all 220ms ease;
-    }
 
-    .logo-container, .editable-wrapper { position: relative; display: inline-block; }
-
-    /* الزر الجديد العائم (Floating Edit Button) */
-    .admin-edit-btn {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        width: 38px;
-        height: 38px;
-        background: white;
-        border: 1px solid var(--border-soft);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: var(--shadow-premium);
-        transition: var(--transition);
-        z-index: 100;
-        color: var(--primary-blue);
-        padding: 0;
-    }
-
-    .admin-edit-btn:hover {
-        background: var(--hover-blue);
-        border-color: #60a5fa;
-        transform: scale(1.05);
-    }
-
-    .admin-edit-btn:active { transform: scale(0.95); }
-</style>
 
 </head>
 <body>

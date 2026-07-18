@@ -26,13 +26,15 @@ $hero = $data['hero'] ?? [
 <section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
   
   <!-- زر التعديل يظهر فقط للأدمن -->
-  <?php if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin'): ?>
-    <button type="button" class="btn btn-sm btn-primary admin-edit-btn" 
+<!-- زر التعديل (أيقونة فقط) -->
+<?php if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin'): ?>
+    <button type="button" class="admin-edit-icon" 
             data-bs-toggle="modal" data-bs-target="#heroEditModal"
-            style="position: absolute; top: 20px; left: 20px; z-index: 999;">
-      <i class="bi bi-pencil-square"></i> تعديل الهيرو
+            title="تعديل الهيرو">
+      <i class="bi bi-pencil-fill"></i>
     </button>
-  <?php endif; ?>
+<?php endif; ?>
+
 
   <div class="custom-container">
     <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">

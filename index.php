@@ -171,31 +171,62 @@ include 'includes/header.php';
 </section>
 <!-- review end -->
 
-<section class="guide py-5" style="position: relative;">
+<!-- guide start -->
+<section class="guide py-2" style="position: relative;">
   <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal"><i class="bi bi-pencil-fill"></i></button>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
   <?php endif; ?>
 
   <div class="custom-container">
-    <h2 class="sec-title"><?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?></h2>
-    <p class="main-p"><?php echo htmlspecialchars($data['guide_desc'] ?? ''); ?></p>
+    <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?></h2>
+    <p class="main-p"><?php echo htmlspecialchars($data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة'); ?></p>
 
-    <div class="row g-4">
-      <?php foreach (($data['guide_items'] ?? []) as $item): ?>
-        <div class="col-lg-4">
-          <div class="card h-100">
-            <img src="<?php echo $item['img']; ?>" class="guide-img">
-            <div class="card-body">
-              <h5><?php echo htmlspecialchars($item['title']); ?></h5>
-              <p><?php echo htmlspecialchars($item['desc']); ?></p>
-              <a href="<?php echo $item['url']; ?>">قراءة المزيد</a>
-            </div>
-          </div>
-        </div>
-      <?php endforeach; ?>
+    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+      <div class="carousel-inner" dir="rtl">
+        <?php 
+        // تقسيم البيانات إلى مجموعات من 3 (لأن الكاروسيل يعرض 3 كاردات)
+        $items = $data['guide_items'] ?? [];
+        $chunks = array_chunk($items, 3);
+        
+        if (empty($chunks)) {
+            echo '<p class="text-center">لا توجد مقالات لعرضها حالياً.</p>';
+        } else {
+            foreach ($chunks as $index => $chunk): ?>
+                <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
+                    <div class="row g-4">
+                        <?php foreach ($chunk as $item): ?>
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <div class="card h-100">
+                                    <div class="card-body d-flex flex-column">
+                                        <img src="<?php echo $item['img'] . '?t=' . time(); ?>" alt="<?php echo htmlspecialchars($item['title']); ?>" class="img-fluid guide-img">
+                                        <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item['title']); ?></h5>
+                                        <p class="card-text"><?php echo htmlspecialchars($item['desc']); ?></p>
+                                        <a href="<?php echo htmlspecialchars($item['url']); ?>" class="btn fw-bold mt-auto">
+                                            قراءة المزيد <img src="assets/img/home/Arrow..svg" alt="" class="me-2">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; 
+        } ?>
+      </div>
+
+      <!-- Dots -->
+      <div class="dots mt-4">
+        <?php foreach ($chunks as $index => $chunk): ?>
+            <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" data-bs-target="#carousel-guide" data-bs-slide-to="<?php echo $index; ?>"></span>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
 </section>
+<!-- guide end -->
+
 
 
   <!-- popular start -->

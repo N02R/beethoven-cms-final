@@ -10,10 +10,18 @@ if (!isset($path_prefix)) {
     <div class="container-fluid custom-container">
         <div class="consult-banner">
             <div class="consult-banner-inner">
-                <div class="consult-banner-text">
-                    <h4><?php echo htmlspecialchars($data['consult_title'] ?? 'احصل على استشارة مجانية'); ?></h4>
-                    <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
-                </div>
+<div class="consult-banner-text position-relative">
+    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <button type="button" class="btn btn-sm btn-light position-absolute top-0 end-0" 
+                data-bs-toggle="modal" data-bs-target="#footerEditModal">
+            <i class="bi bi-pencil-square text-primary"></i>
+        </button>
+    <?php endif; ?>
+    
+    <h4><?php echo htmlspecialchars($data['consult_title'] ?? ''); ?></h4>
+    <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
+</div>
+
                 <form class="consult-banner-form" action="send_consult.php" method="POST">
                     <input type="email" name="email" placeholder="ادخل إيميلك..." required />
                     <button type="submit"><img src="assets/img/home/send-2.svg" alt="إرسال"></button>

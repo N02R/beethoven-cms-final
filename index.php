@@ -171,8 +171,6 @@ include 'includes/header.php';
 </section>
 <!-- review end -->
 
-
-
   <!-- guide start -->
   <section class="guide py-2">
     <div class="custom-container">

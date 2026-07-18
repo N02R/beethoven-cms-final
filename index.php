@@ -23,22 +23,22 @@ $hero = $data['hero'] ?? [
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
 <!-- لا تضعي الكود داخل custom-container -->
-<section class="hero-section editable-wrapper">
-    <div class="hero-full-wrapper">
-        <img src="<?php echo $data['hero']['img']; ?>" alt="Hero Image" class="hero-bg-img">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
-            <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
-            <a href="<?php echo htmlspecialchars($data['hero']['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
-                <?php echo htmlspecialchars($data['hero']['btn_text'] ?? 'اضغط هنا'); ?>
-            </a>
+<!-- hero start -->
+<section class="hero py-5" aria-label="قسم البداية">
+    <div class="custom-container">
+        <!-- قمنا بإضافة style هنا لحقن الصورة ديناميكياً -->
+        <div class="hero-container" style="background: url('<?php echo $data['hero']['img']; ?>') center/cover no-repeat;">
+            <div class="hero-content">
+                <h1><?php echo htmlspecialchars($data['hero']['title']); ?></h1>
+                <p><?php echo htmlspecialchars($data['hero']['desc']); ?></p>
+                <a href="<?php echo htmlspecialchars($data['hero']['btn_url']); ?>" class="btn btn-lg hero-btn">
+                    <?php echo htmlspecialchars($data['hero']['btn_text']); ?>
+                </a>
+            </div>
         </div>
     </div>
 </section>
-
-
-<!-- نهاية قسم الهيرو -->
+<!-- hero end -->
 
   <!-- services start -->
   <section class="services py-5">

@@ -593,7 +593,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
            <div class="modal-footer">
     <!-- زر الحفظ -->
-    <button type="submit" form="footerForm" class="btn-premium">حفظ التغييرات</button>
+    <button type="submit" form="faqForm" class="btn-premium">حفظ التغييرات</button>
     <!-- زر الإلغاء -->
     <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
 </div>
@@ -665,9 +665,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="submit" form="footerForm" class="btn-premium">حفظ جميع التغييرات</button>
-            </div>
+<div class="modal-footer">
+    <!-- زر الحفظ -->
+    <button type="submit" form="footerForm" class="btn-premium">حفظ التغييرات</button>
+    <!-- زر الإلغاء -->
+    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+</div>
+
         </div>
     </div>
 </div>

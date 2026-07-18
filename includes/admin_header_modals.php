@@ -22,7 +22,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
    /* تنسيق الفوتر الموحد */
 .custom-modal .modal-footer {
     display: flex;
-    justify-content: flex-end; /* الزرار تكون في جهة اليمين */
+    justify-content: space-between; /* الزرار تكون في جهة اليمين */
     align-items: center;
     gap: 12px; /* المسافة بين الزرين */
     padding: 16px 24px;
@@ -52,7 +52,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     .custom-modal input[type="file"].form-control { padding: 10px 16px; background: #fff; cursor: pointer; width: 100%; }
 
     /* Buttons */
-    .btn-premium { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 12px; padding: 12px 24px; font-weight: 600; border: none; transition: 0.3s; width: 100%; }
+    .btn-premium { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 12px; padding: 12px 24px; font-weight: 600; border: none; transition: 0.3s;  }
     .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); color: white; }
     .btn-icon-trash { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; }
     .btn-icon-trash:hover { background: #fecaca; }

@@ -47,3 +47,20 @@
     }
   ]
 }
+
+
+  "choose_title": "ما الذي يميز بيتهوفن سيتي",
+  "choose_items": [
+    {
+      "title": "خدمة متعددة اللغات",
+      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة",
+      "url": "#",
+      "img": "assets/img/home/Grouphome1.svg"
+    },
+    {
+      "title": "خبرة في السوق الألماني",
+      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة",
+      "url": "#",
+      "img": "assets/img/home/Grouphome2.svg"
+    }
+  ]

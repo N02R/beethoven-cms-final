@@ -345,32 +345,64 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<div class="modal fade" id="chooseEditModal" tabindex="-1">
+<div class="modal fade" id="chooseEditModal" tabindex="-1" aria-labelledby="chooseEditModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header"><h5>تعديل المميزات</h5></div>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="chooseEditModalLabel">تعديل مميزات بيتهوفن سيتي</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body">
                 <form id="chooseForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
-                    <div class="mb-3">
-                        <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? ''); ?>">
+                    
+                    <!-- عنوان القسم -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
+                        <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?>">
                     </div>
+
+                    <hr>
+
+                    <!-- حاوية الكاردات -->
                     <div id="chooseRowsContainer">
-                        <?php foreach (($data['choose_items'] ?? []) as $index => $item): ?>
-                            <div class="card p-2 mb-2" id="choose_row_<?php echo $index; ?>">
-                                <div class="row g-2">
-                                    <div class="col-3"><input type="text" class="form-control" name="choose[<?php echo $index; ?>][title]" value="<?php echo $item['title']; ?>"></div>
-                                    <div class="col-4"><input type="text" class="form-control" name="choose[<?php echo $index; ?>][desc]" value="<?php echo $item['desc']; ?>"></div>
-                                    <div class="col-3"><input type="file" class="form-control" name="choose_img_<?php echo $index; ?>"></div>
-                                    <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo $item['img']; ?>">
-                                    <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                        <?php if (!empty($data['choose_items'])): ?>
+                            <?php foreach ($data['choose_items'] as $index => $item): ?>
+                                <div class="card p-3 border-0 mb-3" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="choose_row_<?php echo $index; ?>">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-md-3">
+                                            <label class="small text-muted">العنوان</label>
+                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small text-muted">الوصف</label>
+                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="small text-muted">الأيقونة (صورة)</label>
+                                            <input type="file" class="form-control form-control-sm" name="choose_img_<?php echo $index; ?>">
+                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo $item['img']; ?>">
+                                        </div>
+                                        <div class="col-md-auto mt-4">
+                                            <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
+
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addChooseRow()">
+                        <i class="bi bi-plus-circle"></i> إضافة ميزة جديدة
+                    </button>
                 </form>
             </div>
-            <div class="modal-footer"><button type="submit" form="chooseForm" class="btn-premium">حفظ</button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="submit" form="chooseForm" class="btn btn-primary">حفظ التغييرات</button>
+            </div>
         </div>
     </div>
 </div>

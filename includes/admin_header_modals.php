@@ -302,7 +302,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
-هل تقصد هنا <script>
+ <script>
     // 1. منطق تبديل محتوى الإعلان
     function toggleAdContent(val) { 
         document.getElementById('textEditor').classList.toggle('d-none', val !== 'text'); 

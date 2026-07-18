@@ -34,7 +34,14 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'guide_title'            => 'دليل بيتهوفن الشامل',
     'guide_desc'             => '',
     'faq_items'              => [],
-    'faq_title'              => 'الأسئلة الشائعة'
+    'faq_title'              => 'الأسئلة الشائعة',
+    'footer_desc'    => '',
+'footer_phone'   => '',
+'footer_email'   => '',
+'footer_address' => '',
+'consult_title'  => 'احصل على استشارة مجانية',
+'consult_desc'   => 'هذا النص هو مثال لنص يمكن أن يُستبدل'
+
 ];
 
 
@@ -202,6 +209,15 @@ case 'update_guide':
         }
     }
     $data['faq_items'] = $new_faqs;
+    break;
+
+case 'update_footer':
+    $data['footer_desc'] = $_POST['footer_desc'] ?? '';
+    $data['footer_phone'] = $_POST['footer_phone'] ?? '';
+    $data['footer_email'] = $_POST['footer_email'] ?? '';
+    $data['footer_address'] = $_POST['footer_address'] ?? '';
+    $data['consult_title'] = $_POST['consult_title'] ?? 'احصل على استشارة مجانية';
+    $data['consult_desc'] = $_POST['consult_desc'] ?? '';
     break;
 
 

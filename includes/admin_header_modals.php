@@ -603,6 +603,34 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-layout-wtf text-primary"></i> تعديل الفوتر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="footerForm">
+                    <input type="hidden" name="action" value="update_footer">
+                    <h6 class="text-primary mb-3">قسم الاستشارة:</h6>
+                    <input type="text" class="form-control mb-2" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>">
+                    <textarea class="form-control mb-3" name="consult_desc" rows="2"><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></textarea>
+                    
+                    <h6 class="text-primary mb-3">معلومات الشركة:</h6>
+                    <textarea class="form-control mb-2" name="footer_desc" rows="3" placeholder="وصف الفوتر"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
+                    <input type="text" class="form-control mb-2" name="footer_phone" value="<?php echo htmlspecialchars($data['footer_phone'] ?? ''); ?>" placeholder="رقم الهاتف">
+                    <input type="email" class="form-control mb-2" name="footer_email" value="<?php echo htmlspecialchars($data['footer_email'] ?? ''); ?>" placeholder="البريد الإلكتروني">
+                    <input type="text" class="form-control" name="footer_address" value="<?php echo htmlspecialchars($data['footer_address'] ?? ''); ?>" placeholder="العنوان">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="footerForm" class="btn-premium">حفظ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
     function removeRow(id) {

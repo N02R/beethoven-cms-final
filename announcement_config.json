@@ -16,8 +16,20 @@
     "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
     "btn_text": "احجز استشارتك الآن",
     "btn_url": "#contact",
-    "img": "assets/img/hero-bg.jpg"
+    "img": "assets/img/home/home1.png"
   },
+  "menu_links": [
+    { "title": "الرئيسية", "url": "index.php", "order": 1 },
+    { "title": "عن الشركة", "url": "about.php", "order": 2 },
+    { "title": "التعليم العالي", "url": "education.php", "order": 3 },
+    { "title": "التدريب المهني", "url": "job.php", "order": 4 },
+    { "title": "دليل بيتهوفن", "url": "guide.php", "order": 5 },
+    { "title": "تواصل معنا", "url": "contact.php", "order": 6 }
+  ],
+  "languages": [
+    { "name": "العربية", "url": "index.php" },
+    { "name": "English", "url": "index-en.php" }
+  ],
   "social_links": [
     { "name": "Facebook", "url": "https://fb.com", "img": "assets/img/fb.png" }
   ],

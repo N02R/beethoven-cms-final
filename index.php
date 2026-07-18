@@ -29,7 +29,7 @@ $hero = $data['hero'] ?? [
     <?php endif; ?>
     
     <!-- هنا التعديل: قمنا بإضافة الـ style هنا لتطبيق الصورة كخلفية للـ container -->
-<div class="hero-container" style="background: url('/<?php echo ltrim($data['hero']['img'] ?? 'assets/img/hero-bg.jpg', '/'); ?>') no-repeat center center / cover;">
+<div class="hero-container" style="background-image: url('<?php echo strpos($data['hero']['img'], 'assets') === 0 ? '' : ''; ?><?php echo $data['hero']['img']; ?>'); background-size: cover; background-position: center;">
     <div class="hero-content">
         <h1><?php echo htmlspecialchars($data['hero']['title'] ?? ''); ?></h1>
         <p><?php echo htmlspecialchars($data['hero']['desc'] ?? ''); ?></p>
@@ -38,6 +38,7 @@ $hero = $data['hero'] ?? [
         </a>
     </div>
 </div>
+
 
 
 </section>

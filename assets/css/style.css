@@ -11,7 +11,11 @@
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  aspect-ratio: 1140 / 609;
+  min-height: 400px;
+  /* إضافة هذه الخاصية تضمن ظهور القسم */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-container::after {

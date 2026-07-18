@@ -35,3 +35,16 @@
   ],
   "site_logo_path": "assets/img/logo.png"
 }
+
+"services": [
+    {
+        "title": "التعليم العالي والجامعي",
+        "url": "education.php",
+        "img": "assets/img/home/education.jpg"
+    },
+    {
+        "title": "التأهيل المهني والعملي",
+        "url": "job.php",
+        "img": "assets/img/home/traning.jpg"
+    }
+]

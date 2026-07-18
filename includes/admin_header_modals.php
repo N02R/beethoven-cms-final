@@ -302,8 +302,43 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
+<!-- Services Edit Modal -->
+<div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-briefcase text-primary"></i> تعديل الخدمات</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="servicesEditForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_services">
+                    <div id="servicesRowsContainer">
+                        <?php foreach (($data['services'] ?? []) as $index => $service): ?>
+                            <div class="card p-3 border-0 mb-2" id="service_row_<?php echo $index; ?>" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title']); ?>" placeholder="العنوان"></div>
+                                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url']); ?>" placeholder="الرابط"></div>
+                                    <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="service_img_<?php echo $index; ?>"></div>
+                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo $service['img']; ?>">
+                                    <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('service_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addServiceRow()">+ إضافة خدمة جديدة</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="servicesEditForm" class="btn-premium">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // 1. منطق تبديل محتوى الإعلان (Text vs Image)
+    // 1. منطق تبديل محتوى الإعلان
     function toggleAdContent(val) { 
         const textEditor = document.getElementById('textEditor');
         const imageEditor = document.getElementById('imageEditor');
@@ -369,17 +404,33 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         langCount++;
     }
 
+    // 5. منطق الخدمات (Services)
+    let serviceCount = <?php echo count($data['services'] ?? []); ?>;
+    function addServiceRow() {
+        const container = document.getElementById('servicesRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'service_row_' + serviceCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][title]" placeholder="العنوان"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="service_img_${serviceCount}"></div>
+                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('service_row_${serviceCount}')"><i class="bi bi-trash"></i></button></div>
+            </div>`;
+        container.appendChild(div);
+        serviceCount++;
+    }
+
     // دالة عامة للحذف
     function removeRow(id) { const el = document.getElementById(id); if(el) el.remove(); }
 
-    // 5. معالج النماذج الموحد (الذي يربط كل شيء بالـ API)
+    // معالج النماذج الموحد
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // نستخدم FormData لالتقاط النصوص والملفات معاً
             const formData = new FormData(this);
-            
             fetch('admin/api/save_config.php', {
                 method: 'POST',
                 body: formData
@@ -388,7 +439,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    location.reload(); // إعادة التحميل لتحديث الصور والنصوص
+                    location.reload();
                 } else {
                     alert('خطأ: ' + data.message);
                 }
@@ -400,4 +451,5 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         });
     });
 </script>
+
 

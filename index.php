@@ -48,37 +48,33 @@ $hero = $data['hero'] ?? [
 <!-- hero end -->
 
 
-  <!-- services start -->
-  <section class="services py-5">
-    <div class="custom-container">
-      <h2 class="mb-5 sec-title">خدماتنا المميزة</h2>
-      <div class="row g-4">
-        <!-- الخدمة الأولى -->
+<section class="services py-5" style="position: relative;">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <h2 class="mb-5 sec-title">خدماتنا المميزة</h2>
+    <div class="row g-4">
+      <?php foreach ($data['services'] as $service): ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="education.php" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('assets/img/home/education.jpg') no-repeat center/cover;">
+          <a href="<?php echo htmlspecialchars($service['url']); ?>" class="card-link text-decoration-none d-block">
+            <!-- استخدمنا ?t=time() لضمان تحديث الصورة -->
+            <div class="card" style="background: url('<?php echo $service['img'] . '?t=' . time(); ?>') no-repeat center/cover;">
               <div class="card-info">
-                <h3>التعليم العالي والجامعي</h3>
+                <h3><?php echo htmlspecialchars($service['title']); ?></h3>
                 <img src="assets/img/home/Arrow.svg" alt="Arrow">
               </div>
             </div>
           </a>
         </div>
-        <!-- الخدمة الثانية -->
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="job.php" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('assets/img/home/traning.jpg') no-repeat center/cover;">
-              <div class="card-info">
-                <h3>التأهيل المهني والعملي</h3>
-                <img src="assets/img/home/Arrow.svg" alt="Arrow">
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
-  </section>
-  <!-- services end -->
+  </div>
+</section>
+
   
   <!-- choose start -->
   <section class="choose py-5">

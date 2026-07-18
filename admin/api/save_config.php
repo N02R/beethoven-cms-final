@@ -20,7 +20,8 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'social_links'   => [],
     'languages'      => [],
     'site_logo_path' => 'assets/img/logo.png',
-    'hero'           => []
+    'hero'           => [],
+    'services'       => [] // إضافة مفتاح الخدمات
 ];
 
 // 3. دالة رفع الملفات مع فحص الأمان
@@ -109,6 +110,23 @@ switch ($action) {
             'btn_url'  => $_POST['hero_btn_url'] ?? '',
             'img'      => $img_path ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg')
         ];
+        break;
+
+    case 'update_services':
+        $new_services = [];
+        if (isset($_POST['services']) && is_array($_POST['services'])) {
+            foreach ($_POST['services'] as $index => $s) {
+                // محاولة رفع صورة جديدة للخدمة
+                $img_path = handle_upload('service_img_' . $index, $upload_path);
+                
+                $new_services[] = [
+                    'title' => $s['title'] ?? 'عنوان الخدمة',
+                    'url'   => $s['url'] ?? '#',
+                    'img'   => $img_path ?? ($s['old_img'] ?? 'assets/img/home/default.jpg')
+                ];
+            }
+        }
+        $data['services'] = $new_services;
         break;
 
     default:

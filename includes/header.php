@@ -78,7 +78,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="editable-wrapper">
 <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
-        <i class="bi bi-image"></i>
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
 
@@ -93,7 +93,7 @@ $is_visible = ($is_published && $is_in_time);
             <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
 <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
-        <i class="bi bi-megaphone-fill"></i>
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
 
@@ -114,7 +114,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="editable-wrapper d-none d-lg-flex">
 <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
-        <i class="bi bi-share-fill"></i>
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
 
@@ -140,7 +140,7 @@ $is_visible = ($is_published && $is_in_time);
         <div class="collapse navbar-collapse editable-wrapper">
 <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
-        <i class="bi bi-list-nested"></i>
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
 
@@ -162,7 +162,7 @@ $is_visible = ($is_published && $is_in_time);
           <div class="dropdown editable-wrapper">
 <?php if ($is_admin): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
-        <i class="bi bi-translate"></i>
+        <i class="bi bi-pencil-fill"></i>
     </button>
 <?php endif; ?>
 

@@ -212,13 +212,31 @@ case 'update_guide':
     break;
 
 case 'update_footer':
+    // بيانات الاستشارة
+    $data['consult_title'] = $_POST['consult_title'] ?? '';
+    $data['consult_desc']  = $_POST['consult_desc'] ?? '';
+    
+    // بيانات العمود الأول (الوصف)
     $data['footer_desc'] = $_POST['footer_desc'] ?? '';
-    $data['footer_phone'] = $_POST['footer_phone'] ?? '';
-    $data['footer_email'] = $_POST['footer_email'] ?? '';
+    
+    // بيانات العمود الثاني (روابط سريعة)
+    $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
+    $data['footer_col2_links'] = [];
+    if (isset($_POST['col2'])) {
+        foreach ($_POST['col2'] as $link) {
+            $data['footer_col2_links'][] = ['title' => $link['title'], 'url' => $link['url']];
+        }
+    }
+    
+    // بيانات العمود الثالث (تواصل)
+    $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
+    $data['footer_col3_items'] = [];
+    // هنا يمكننا مستقبلاً إضافة منطق رفع أيقونات لكل رابط إذا أردتِ
+    $data['footer_phone']   = $_POST['footer_phone'] ?? '';
+    $data['footer_email']   = $_POST['footer_email'] ?? '';
     $data['footer_address'] = $_POST['footer_address'] ?? '';
-    $data['consult_title'] = $_POST['consult_title'] ?? 'احصل على استشارة مجانية';
-    $data['consult_desc'] = $_POST['consult_desc'] ?? '';
     break;
+
 
 
     default:

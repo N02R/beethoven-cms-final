@@ -603,33 +603,67 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-layout-wtf text-primary"></i> تعديل الفوتر</h5>
+                <h5 class="modal-title">إدارة الفوتر</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="footerForm">
                     <input type="hidden" name="action" value="update_footer">
-                    <h6 class="text-primary mb-3">قسم الاستشارة:</h6>
-                    <input type="text" class="form-control mb-2" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>">
-                    <textarea class="form-control mb-3" name="consult_desc" rows="2"><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></textarea>
                     
-                    <h6 class="text-primary mb-3">معلومات الشركة:</h6>
-                    <textarea class="form-control mb-2" name="footer_desc" rows="3" placeholder="وصف الفوتر"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
-                    <input type="text" class="form-control mb-2" name="footer_phone" value="<?php echo htmlspecialchars($data['footer_phone'] ?? ''); ?>" placeholder="رقم الهاتف">
-                    <input type="email" class="form-control mb-2" name="footer_email" value="<?php echo htmlspecialchars($data['footer_email'] ?? ''); ?>" placeholder="البريد الإلكتروني">
-                    <input type="text" class="form-control" name="footer_address" value="<?php echo htmlspecialchars($data['footer_address'] ?? ''); ?>" placeholder="العنوان">
+                    <!-- استشارة -->
+                    <div class="card p-3 mb-3 border-0" style="background:#eff6ff">
+                        <label class="fw-bold">عنوان الاستشارة</label>
+                        <input type="text" class="form-control mb-2" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>">
+                        <label class="fw-bold">وصف الاستشارة</label>
+                        <textarea class="form-control" name="consult_desc" rows="2"><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></textarea>
+                    </div>
+
+                    <div class="row">
+                        <!-- عمود 1: اللوجو والوصف -->
+                        <div class="col-md-4">
+                            <h6>العمود الأول (الوصف)</h6>
+                            <p class="small text-muted">اللوجو يُسحب تلقائياً من إعدادات الموقع</p>
+                            <textarea class="form-control" name="footer_desc" rows="4"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
+                        </div>
+                        
+                        <!-- عمود 2: الروابط السريعة -->
+                        <div class="col-md-4">
+                            <h6>العمود الثاني (الروابط)</h6>
+                            <input type="text" class="form-control mb-2" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?>">
+                            <div id="col2LinksContainer">
+                                <?php foreach(($data['footer_col2_links'] ?? []) as $i => $link): ?>
+                                    <div class="row g-1 mb-2" id="col2_<?php echo $i; ?>">
+                                        <div class="col-5"><input type="text" name="col2[<?php echo $i; ?>][title]" class="form-control form-control-sm" value="<?php echo $link['title']; ?>"></div>
+                                        <div class="col-6"><input type="text" name="col2[<?php echo $i; ?>][url]" class="form-control form-control-sm" value="<?php echo $link['url']; ?>"></div>
+                                        <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col2_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCol2Link()">+ رابط</button>
+                        </div>
+
+                        <!-- عمود 3: التواصل -->
+                        <div class="col-md-4">
+                            <h6>العمود الثالث (التواصل)</h6>
+                            <input type="text" class="form-control mb-2" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?>">
+                            <input type="text" class="form-control mb-1" name="footer_phone" value="<?php echo htmlspecialchars($data['footer_phone'] ?? ''); ?>" placeholder="الهاتف">
+                            <input type="email" class="form-control mb-1" name="footer_email" value="<?php echo htmlspecialchars($data['footer_email'] ?? ''); ?>" placeholder="البريد">
+                            <input type="text" class="form-control" name="footer_address" value="<?php echo htmlspecialchars($data['footer_address'] ?? ''); ?>" placeholder="العنوان">
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="footerForm" class="btn-premium">حفظ</button>
+                <button type="submit" form="footerForm" class="btn-premium">حفظ التغييرات</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
     // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
@@ -820,6 +854,20 @@ function addFaqRow() {
 `;
     container.appendChild(div);
     faqCount++;
+}
+
+let col2Count = <?php echo count($data['footer_col2_links'] ?? []); ?>;
+function addCol2Link() {
+    const container = document.getElementById('col2LinksContainer');
+    const div = document.createElement('div');
+    div.className = 'row g-1 mb-2';
+    div.id = 'col2_' + col2Count;
+    div.innerHTML = `
+        <div class="col-5"><input type="text" name="col2[${col2Count}][title]" class="form-control form-control-sm" placeholder="الاسم"></div>
+        <div class="col-6"><input type="text" name="col2[${col2Count}][url]" class="form-control form-control-sm" placeholder="الرابط"></div>
+        <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col2_${col2Count}')"><i class="bi bi-trash"></i></button></div>`;
+    container.appendChild(div);
+    col2Count++;
 }
 
 </script>

@@ -37,8 +37,8 @@ $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
 
 // مصفوفة الروابط
 $menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "index.php", "active" => true],
-    ["title" => "عن الشركة", "url" => "about.php", "active" => false],
+    ["title" => "الرئيسية", "url" => "home.php", "active" => true],
+    ["title" => "عن الشركة", "url" => "about.php" , "active"=> false],
     ["title" => "التعليم العالي", "url" => "education.php", "active" => false],
     ["title" => "التدريب المهني", "url" => "job.php", "active" => false],
     ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],

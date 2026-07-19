@@ -37,20 +37,29 @@ $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
 
 // مصفوفة الروابط
 $menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "/router.php?page=home", "active" => true],
-    ["title" => "عن الشركة", "url" => "/router.php?page=about", "active" => false],
-    ["title" => "التعليم العالي", "url" => "/router.php?page=education", "active" => false],
-    ["title" => "التدريب المهني", "url" => "/router.php?page=job", "active" => false],
-    ["title" => "دليل بيتهوفن", "url" => "/router.php?page=guide", "active" => false],
-    ["title" => "تواصل معنا", "url" => "/router.php?page=contact", "active" => false]
+    ["title" => "الرئيسية", "url" => "index.php", "active" => true],
+    ["title" => "عن الشركة", "url" => "about.php", "active" => false],
+    ["title" => "التعليم العالي", "url" => "education.php", "active" => false],
+    ["title" => "التدريب المهني", "url" => "job.php", "active" => false],
+    ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],
+    ["title" => "تواصل معنا", "url" => "contact.php", "active" => false]
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
-// دالة مساعدة لتصحيح الروابط برمجياً
+/**
+ * دالة ذكية لتصحيح الروابط برمجياً
+ * تحول أي رابط (مثل about.php) إلى الصيغة المطلوبة /router.php?page=about
+ */
 function fix_url($url) {
+    if (strpos($url, 'http') === 0 || strpos($url, 'tel:') === 0 || strpos($url, 'mailto:') === 0 || $url === '#') return $url;
+    
     $query = parse_url($url, PHP_URL_QUERY);
-    parse_str($query, $params);
-    $page = $params['page'] ?? 'home';
+    if ($query) {
+        parse_str($query, $params);
+        $page = $params['page'] ?? 'home';
+    } else {
+        $page = str_replace('.php', '', basename($url));
+    }
     return "/router.php?page=" . $page;
 }
 
@@ -153,7 +162,7 @@ $is_visible = ($is_published && $is_in_time);
                   <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => '/router.php?page=home']]) as $lang): ?>
+                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php']]) as $lang): ?>
                       <li><a class="dropdown-item" href="<?php echo fix_url($lang['url']); ?>"><?php echo $lang['name']; ?></a></li>
                   <?php endforeach; ?>
               </ul>

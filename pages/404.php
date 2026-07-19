@@ -1,4 +1,10 @@
 <?php 
+if (!defined('ALLOWED_ACCESS')) {
+    header("HTTP/1.1 403 Forbidden");
+    exit('Access Denied');
+}
+?>
+<?php 
 // تعريف ملفات الـ CSS الخاصة بصفحة 404
 $page_css = [
     'assets/css/style.css',
@@ -6,7 +12,7 @@ $page_css = [
 ];
 
 // استدعاء الهيدر المشترك
-include 'includes/header.php'; 
+
 ?>
 
 <style>
@@ -185,7 +191,4 @@ include 'includes/header.php';
 </section>
 <!-- ========== /نهاية القسم ========== -->
 
-<?php 
-// استدعاء الفوتر المشترك وبنر الاستشارة
-include 'includes/footer.php'; 
-?>
+

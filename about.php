@@ -37,7 +37,6 @@ $custom_script = '
 </script>';
 
 // استدعاء الهيدر
-include 'includes/header.php'; 
 ?>
 
   <!-- about start -->
@@ -307,5 +306,5 @@ include 'includes/header.php';
 
 <?php 
 // استدعاء الفوتر
-include 'includes/footer.php'; 
+
 ?>

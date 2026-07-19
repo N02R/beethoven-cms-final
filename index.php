@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include 'includes/header.php'; 
+
 ?>
 
 <!-- بداية قسم الهيرو -->
@@ -255,6 +255,4 @@ include 'includes/header.php';
 </section>
 
 
-<?php 
-include 'includes/footer.php'; 
-?>
+

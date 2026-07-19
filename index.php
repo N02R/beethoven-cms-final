@@ -1,3 +1,13 @@
+<?php
+// index.php في الجذر
+define('ALLOWED_ACCESS', true); 
+// إما أن تستدعي الـ router مباشرة:
+require_once 'router.php';
+// أو تقومين بتحويل الطلب لـ router:
+// header("Location: router.php?page=index");
+// exit;
+?>
+
 <?php 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

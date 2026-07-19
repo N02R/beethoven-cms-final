@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# 1. منع استعراض المجلدات
+Options -Indexes
+
+# 2. تحويل أي رابط يطلبه المستخدم إلى router.php مع الحفاظ على الرابط كـ Parameter
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)$ router.php?page=$1 [L,QSA]

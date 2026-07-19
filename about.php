@@ -2,14 +2,13 @@
 $path_prefix = ''; 
 // تعريف ملفات الـ CSS الخاصة بهذه الصفحة فقط
 $page_css = [
-    'assets/css/swiper-bundle.min.css',
-    'assets/css/about.css',
-    'assets/css/responsive-about.css'
-];
+    '/assets/css/swiper-bundle.min.css',
+    '/assets/css/about.css',
+    '/assets/css/responsive-about.css'
+]; 
 
-// تعريف ملفات الـ JS الخاصة بهذه الصفحة فقط
 $page_js = [
-    'assets/js/swiper-bundle.min.js'
+    '/assets/js/swiper-bundle.min.js'
 ];
 
 // كتابة السكربت المخصص لتشغيل السلايدر

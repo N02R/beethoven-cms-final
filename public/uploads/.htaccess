@@ -1,0 +1,4 @@
+# منع تنفيذ أي ملفات PHP داخل مجلد الرفع
+<Files *.php>
+    deny from all
+</Files>

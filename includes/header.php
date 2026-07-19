@@ -35,7 +35,7 @@ if (file_exists($config_file_path)) {
 
 $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
 
-// تحديث الروابط لتعمل عبر نظام الـ Router بمسار مطلق (بدءاً من الجذر)
+// مصفوفة الروابط
 $menu_links = $data['menu_links'] ?? [
     ["title" => "الرئيسية", "url" => "/router.php?page=home", "active" => true],
     ["title" => "عن الشركة", "url" => "/router.php?page=about", "active" => false],
@@ -45,6 +45,14 @@ $menu_links = $data['menu_links'] ?? [
     ["title" => "تواصل معنا", "url" => "/router.php?page=contact", "active" => false]
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
+
+// دالة مساعدة لتصحيح الروابط برمجياً
+function fix_url($url) {
+    $query = parse_url($url, PHP_URL_QUERY);
+    parse_str($query, $params);
+    $page = $params['page'] ?? 'home';
+    return "/router.php?page=" . $page;
+}
 
 // 5. تجهيز منطق الإعلان الموحد
 $ad = $data['announcement'] ?? [];
@@ -125,7 +133,7 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo htmlspecialchars($link['url']); ?>">
+                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo fix_url($link['url']); ?>">
                     <?php echo htmlspecialchars($link['title']); ?>
                   </a>
                 </li>
@@ -146,7 +154,7 @@ $is_visible = ($is_published && $is_in_time);
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => '/router.php?page=home']]) as $lang): ?>
-                      <li><a class="dropdown-item" href="<?php echo htmlspecialchars($lang['url']); ?>"><?php echo $lang['name']; ?></a></li>
+                      <li><a class="dropdown-item" href="<?php echo fix_url($lang['url']); ?>"><?php echo $lang['name']; ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -159,7 +167,7 @@ $is_visible = ($is_published && $is_in_time);
       <div class="offcanvas-body">
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): ?>
-                <li class="nav-item"><a class="nav-link" href="<?php echo htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+                <li class="nav-item"><a class="nav-link" href="<?php echo fix_url($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
             <?php endforeach; ?>
         </ul>
       </div>

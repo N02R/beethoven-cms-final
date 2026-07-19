@@ -69,7 +69,7 @@ if (!isset($path_prefix)) {
             <p class="mb-0 text-center text-md-start">
                 <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
             </p>
-            <a href="#">سياسة الخصوصية وشروط الإستخدام</a>
+            <a href="router.php?page=privacy">سياسة الخصوصية وشروط الإستخدام</a>
         </div>
     </div>
 </footer>

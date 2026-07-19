@@ -1,0 +1,6 @@
+RewriteEngine On
+# منع الوصول المباشر للملفات داخل المجلدات (Directory Traversal)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# تحويل جميع الطلبات إلى index.php
+RewriteRule ^ index.php [QSA,L]

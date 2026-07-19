@@ -1,9 +1,0 @@
-RewriteEngine On
-
-# منع استعراض المجلدات
-Options -Indexes
-
-# توجيه أي طلب لصفحة إلى router.php مع الاحتفاظ بالمتغيرات
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9_-]+)$ router.php?page=$1 [L,QSA]

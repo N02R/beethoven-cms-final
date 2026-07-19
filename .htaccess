@@ -1,0 +1,11 @@
+# منع الوصول إلى المجلدات وإخفاء ملفات النظام
+Options -Indexes
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# تحويل جميع الطلبات إلى مجلد الـ public
+RewriteEngine On
+RewriteRule ^$ public/index.php [L]
+RewriteRule ^((?!public/).*)$ public/$1 [L]

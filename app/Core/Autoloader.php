@@ -1,10 +1,9 @@
 <?php
-// app/Core/Autoloader.php
 spl_autoload_register(function ($class) {
-    // التحويل من Namespace إلى مسار ملف
+    // تحويل namespace App\Core إلى مسار مجلد
     $prefix = 'App\\';
     $base_dir = __DIR__ . '/../';
-
+    
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) return;
 

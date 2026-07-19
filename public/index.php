@@ -1,21 +1,40 @@
 <?php
-// public/index.php
 
-// 1. تحميل النظام
-require_once __DIR__ . '/../app/Core/Autoloader.php';
+/**
+ * ملف المدخل الرئيسي (Entry Point)
+ */
 
-// 2. استخدام الخدمات
-use App\Services\ConfigService;
+// 1. تحديد المسارات الأساسية
+define('ROOT', dirname(__DIR__) . DIRECTORY_SEPARATOR);
+define('APP_PATH', ROOT . 'app' . DIRECTORY_SEPARATOR);
 
+// 2. تفعيل تقرير الأخطاء
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// 3. استدعاء الأوتولودر
+require_once APP_PATH . 'Core/Autoloader.php';
+
+// 4. استخدام فضاءات الأسماء
+use App\Core\SessionManager;
+use App\Core\Router;
+
+// 5. بدء الجلسة بشكل آمن
+SessionManager::start();
+
+// 6. تشغيل النظام
 try {
-    $configService = new ConfigService();
-    $data = $configService->getData();
+    $router = new Router();
     
-    // هنا نقوم بتمرير البيانات للـ Router أو للـ Views
-    // ...
-    
+    // تعريف المسارات (يمكنك إضافة أي عدد تريدينه هنا)
+    $router->add('/', 'HomeController@index');
+    $router->add('/about', 'PageController@about');
+
+    // تنفيذ الطلب
+    $router->dispatch();
+
 } catch (\Exception $e) {
-    // في الإنتاج، لا نظهر تفاصيل الخطأ للعميل
-    error_log($e->getMessage());
-    die("عذراً، حدث خطأ تقني في النظام. يرجى المحاولة لاحقاً.");
+    // معالجة الأخطاء
+    echo "<h1>حدث خطأ في النظام</h1>";
+    echo "<p>" . $e->getMessage() . "</p>";
 }

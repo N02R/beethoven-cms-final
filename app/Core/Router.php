@@ -1,44 +1,41 @@
 <?php
+
 namespace App\Core;
 
 class Router {
-    private array $routes = [];
+    protected $routes = [];
 
-    public function __construct() {
-        // تعريف المسارات المسموح بها (أمان من نوع Whitelist)
-        $this->routes = [
-            '/' => 'home',
-            '/about' => 'aboutus',
-            '/education' => 'education',
-            '/job' => 'job',
-            '/contact' => 'contact'
-        ];
+    // دالة لإضافة المسارات
+    public function add($route, $action) {
+        $this->routes[$route] = $action;
     }
 
-    public function dispatch(string $url) {
-        // إزالة الاستعلامات (?page=...) لترتيب المسار
-        $path = parse_url($url, PHP_URL_PATH);
+    // دالة توجيه الطلب (التي استدعيناها في index.php)
+    public function dispatch() {
+        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // التحقق إذا كان المسار ضمن القائمة المعتمدة
-        if (array_key_exists($path, $this->routes)) {
-            $page = $this->routes[$path];
-            $this->render($page);
+        // إزالة الجزء الأساسي من المسار إذا كان الموقع في مجلد فرعي
+        $url = str_replace('/public', '', $url); 
+        if ($url == '') $url = '/';
+
+        if (array_key_exists($url, $this->routes)) {
+            $this->callAction($this->routes[$url]);
         } else {
-            $this->render404();
+            http_response_code(404);
+            echo "404 - الصفحة غير موجودة";
         }
     }
 
-    private function render(string $page) {
-        $file = __DIR__ . '/../../public/' . $page . '.php';
-        if (file_exists($file)) {
-            require_once $file;
-        } else {
-            $this->render404();
-        }
-    }
+    // دالة لتنفيذ الـ Controller
+    protected function callAction($action) {
+        list($controllerName, $method) = explode('@', $action);
+        $controllerClass = "App\\Controllers\\" . $controllerName;
 
-    private function render404() {
-        http_response_code(404);
-        echo "<h1>404 - الصفحة غير موجودة</h1>";
+        if (class_exists($controllerClass) && method_exists($controllerClass, $method)) {
+            $controller = new $controllerClass();
+            $controller->$method();
+        } else {
+            throw new \Exception("Controller $controllerClass or method $method not found.");
+        }
     }
 }

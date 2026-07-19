@@ -7,5 +7,13 @@ Options -Indexes
 
 # تحويل جميع الطلبات إلى مجلد الـ public
 RewriteEngine On
+
+# 1. القاعدة الذهبية: إذا كان الملف موجوداً فعلياً (صورة، CSS، JS)، لا تفعل شيئاً وافتحه مباشرة
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# 2. إذا كان الطلب هو الرابط الرئيسي، وجهه إلى index.php
 RewriteRule ^$ public/index.php [L]
+
+# 3. أي طلب آخر لا يبدأ بـ public/، وجهه إلى مجلد public
 RewriteRule ^((?!public/).*)$ public/$1 [L]

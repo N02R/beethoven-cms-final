@@ -1,4 +1,4 @@
 <?php
-header("Location: router.php?page=index");
+header("Location: router.php?page=home");
 exit();
 ?>

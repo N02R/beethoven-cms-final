@@ -1,14 +1,12 @@
 <?php
-// استدعاء ملف الإعدادات أو الاتصال بقاعدة البيانات إن وجد
+// router.php
+define('BASE_URL', '/'); // المسار الأساسي للمشروع
 require_once 'includes/header.php';
 
-// الحصول على الصفحة المطلوبة من الرابط (مثلاً: index.php?page=about)
-$page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$page = $_GET['page'] ?? 'index';
+$allowed = ['index', 'about', 'contact', 'education', 'job', 'guide'];
 
-// مصفوفة الصفحات المسموح بها (أمان عالي لمنع اختراق المسارات)
-$allowed_pages = ['home', 'about', 'contact', 'education', 'job'];
-
-if (in_array($page, $allowed_pages)) {
+if (in_array($page, $allowed)) {
     include($page . '.php');
 } else {
     include('404.php');

@@ -62,7 +62,8 @@ $is_visible = ($is_published && $is_in_time);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="/assets/css/minify.php?v=<?php echo time(); ?>">
+
 </head>
 <body>
 

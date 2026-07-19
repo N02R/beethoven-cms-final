@@ -11,17 +11,18 @@ if (!defined('ALLOWED_ACCESS')) {
 
 require_once 'includes/header.php';
 
-// 2. الحصول على الصفحة
-$page = $_GET['page'] ?? 'index';
+// الحصول على الصفحة المطلوبة
+$page = $_GET['page'] ?? 'index'; 
 
-// 3. مسار المجلد المحمي
+// مصفوفة الصفحات المسموح بها
+$allowed = ['home', 'about', 'contact', 'education', 'job', 'guide'];
+
+// التحقق من وجود الملف
 $page_path = __DIR__ . '/pages/' . $page . '.php';
 
-// 4. التحقق من وجود الملف (مع حماية ضد التلاعب بالمسارات)
-if (file_exists($page_path) && strpos($page, '..') === false) {
+if (in_array($page, $allowed) && file_exists($page_path)) {
     include($page_path);
 } else {
-    // صفحة 404 احترافية
     include(__DIR__ . '/pages/404.php');
 }
 

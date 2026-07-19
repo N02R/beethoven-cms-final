@@ -1,0 +1,4 @@
+.partenar { direction: rtl; background: var(--white); padding: 60px 0; }
+.partner-item { display: flex; justify-content: center; align-items: center; height: 140px; padding: 20px; background: var(--white); transition: var(--transition); }
+.partner-item:hover { transform: translateY(-5px); }
+.partner-item:hover img { opacity: 1; filter: grayscale(0%); transform: scale(1.08); }

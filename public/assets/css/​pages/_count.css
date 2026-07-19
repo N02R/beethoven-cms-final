@@ -1,0 +1,5 @@
+section.count { background: var(--main-color); padding: 60px 0; direction: rtl; }
+section.count .count-img { display: flex; justify-content: center; align-items: center; background: var(--bgDot-color); width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+section.count span { font-weight: var(--fw-bold); color: var(--white); }
+section.count p { font-weight: var(--fw-medium); color: var(--white); margin: 0; }
+section.count [class^="col-"]:not(:first-child)::before { background: rgba(255, 255, 255, 0.3); }

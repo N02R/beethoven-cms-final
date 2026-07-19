@@ -1,0 +1,8 @@
+/* GUIDE */
+section.guide .card { width: 100%; border: 0.25px solid var(--border); border-radius: 10px; background: #FAFAFA66; transition: var(--transition); }
+section.guide .card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07); }
+section.guide .guide-img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; }
+/* POPULAR ACCORDION */
+section.popular .accordion-item { background: none; border: none; margin: 1rem 0; overflow: hidden; }
+section.popular .accordion-header button { font-weight: var(--fw-medium); font-size: 20px; color: var(--dark); height: 64px; border-radius: 10px; background: rgba(102, 174, 238, 0.03); box-shadow: none; }
+section.popular .accordion-button::after { /* كود الـ SVG الخاص بك */ }

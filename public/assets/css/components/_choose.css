@@ -1,0 +1,9 @@
+section.choose { background: var(--bg-main); } /* لاحظي استخدام متغير اللون */
+section.choose .choose-card { min-height: 200px; border-radius: 16px; border: 0.25px solid var(--border); background: rgba(242, 242, 242, 0.2); transition: var(--transition); display: flex; flex-direction: column; justify-content: center; }
+section.choose .choose-card.active,
+section.choose .choose-card:hover { background: #66AEEE1A; border-color: var(--main-color); transform: translateY(-8px); box-shadow: var(--shadow-premium); }
+section.choose .choose-card img { width: 50px; height: auto; margin-bottom: 1.5rem; opacity: 0.6; transition: var(--transition); }
+section.choose .choose-card:hover img,
+section.choose .choose-card.active img { opacity: 1; transform: scale(1.1); }
+section.choose .card-title { font-weight: var(--fw-medium); line-height: 16px; font-size: 1rem; color: var(--black); margin-bottom: 0.8rem; }
+section.choose .card-text { font-weight: var(--fw-regular); font-size: 0.95rem; color: var(--dark); line-height: 1.6; }

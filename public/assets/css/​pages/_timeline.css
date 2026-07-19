@@ -1,0 +1,12 @@
+.timeline-section { background-color: var(--white); padding: 100px 0; overflow: visible; }
+.map-container { position: relative; width: 95%; max-width: 1053px; margin: 150px auto; aspect-ratio: 1053 / 198; }
+/* الألوان الديناميكية */
+.bg-blue { background-color: var(--main-color); }
+.bg-green { background-color: #4CAF50; }
+.bg-yellow { background-color: #FBD105; }
+.bg-orange { background-color: #F2994A; }
+.bg-red { background-color: #EB5757; }
+
+/* تبسيط الإحداثيات (أبقي القيم كما هي لضمان عدم كسر التصميم) */
+.step-wrapper { position: absolute; width: 180px; z-index: 10; transform: translateX(50%); }
+.icon-main { position: absolute; width: 46px; height: 46px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }

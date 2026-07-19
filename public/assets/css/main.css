@@ -1,124 +1,37 @@
-/* FONTS */
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/NeoSansArabicLight.ttf") format("truetype");
-    font-weight: 300;
-    font-display: swap;
-}
+/* ================================================
+   FILE: main.css
+   DESCRIPTION: Main entry point for site styles
+================================================ */
 
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/Neo Sans Arabic Regular.ttf") format("truetype");
-    font-weight: 400;
-    font-display: swap;
-}
+/* 1. المتغيرات والأساسيات (Variables & Base) */
+@import 'abstracts/_variables.css';
+@import 'abstracts/_fonts.css';
+@import 'base/_reset.css';        /* تصفير هوامش المتصفح الافتراضية */
+@import 'base/_typography.css';  /* إعدادات الخطوط والنصوص العامة */
 
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/NeoSansArabicMedium.ttf") format("truetype");
-    font-weight: 500;
-    font-display: swap;
-}
+/* 2. المكونات (Components) */
+/* قمت بوضع أهم المكونات التي تتكرر في صفحاتك */
+@import 'components/_buttons.css';
+@import 'components/_navbar.css';
+@import 'components/_footer.css';
+@import 'components/_cards.css';
+@import 'components/_forms.css';
 
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/NeoSansArabicBold.ttf") format("truetype");
-    font-weight: 700;
-    font-display: swap;
-}
+/* 3. الصفحات (Pages - إذا كانت موجودة) */
+/* يمكنكِ إضافة ملفات خاصة بكل صفحة هنا */
+@import 'pages/_home.css';
+@import 'pages/_about.css';
+@import 'pages/_services.css';
 
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/NeoSansArabicBlack.ttf") format("truetype");
-    font-weight: 800;
-    font-display: swap;
-}
+/* 4. نظام الـ Responsive (يجب أن يكون في نهاية الملف لضمان الأسبقية) */
+@import 'responsive/_mobile.css';
+@import 'responsive/_tablet.css';
+@import 'responsive/_desktop.css';
 
-@font-face {
-    font-family: "Neo Sans Arabic";
-    src: url("../font/neosansArabic/NeoSansArabicUltra.ttf") format("truetype");
-    font-weight: 900;
-    font-display: swap;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* VARIABLES */
-:root {
-    --main-color: #66aeee;
-    --primary-blue: #3b82f6;
-    --hoverDark: #489DE8;
-    --hoverLight: #e3effa;
-    --hoverBlue: #66afee3b;
-    --white: #fff;
-    --black: #000;
-    --dark: #4f4f4f;
-    --bg-main: #dfdfdf25;
-    --bg-secondary: #f1f7fd;
-    --bgDot-color: #F0F7FD;
-    --border: #c5c5c536;
-    --border-soft: #dbeafe;
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-bold: 700;
-    --main-font: "Neo Sans Arabic";
-    --shadow-premium: 0 8px 20px rgba(15, 23, 42, 0.12);
-    --transition: all 220ms ease;
-}
+html { scroll-behavior: smooth; background: #fff; }
+body { font-family: var(--main-font); color: var(--dark); overflow-x: hidden; width: 100%; }
 
-/* RESET */
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* GLOBAL */
-html {
-    scroll-behavior: smooth;
-    background: #fff;
-}
-
-body {
-    font-family: var(--main-font);
-    color: var(--dark);
-    overflow-x: hidden;
-    width: 100%;
-}
-
-.custom-container {
-    width: 92%;
-    max-width: 1400px;
-    margin: auto;
-}
-
-.sec-title {
-    font-weight: 700;
-    font-size: 32px;
-    color: rgba(0, 0, 0, 1);
-}
-
-/* ستايل قلم التعديل الآمن */
-.edit-pen {
-    width: 36px;
-    height: 36px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #3b82f6;
-    z-index: 1000;
-}
-
-
-.edit-pen:hover {
-    background: #3b82f6 !important;
-    color: #ffffff !important;
-}
-
-.edit-pen i {
-    font-size: 14px !important;
-}
+.custom-container { width: 92%; max-width: 1400px; margin: auto; }
+.sec-title { font-weight: var(--fw-bold); font-size: 32px; color: var(--black); }

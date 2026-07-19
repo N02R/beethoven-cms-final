@@ -1,0 +1,8 @@
+.hero { padding: 5rem 0; position: relative; overflow: hidden; }
+.hero-container { position: relative; width: 100%; margin: 0 auto; border-radius: 16px; overflow: hidden; aspect-ratio: 1140 / 609; }
+.hero-container::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, .2), rgba(0, 0, 0, .8)); }
+.hero-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -25%); width: 90%; text-align: center; z-index: 2; }
+.hero-content h1 { font-size: clamp(24px, 2vw, 32px); font-weight: var(--fw-medium); color: #e6e6e6; line-height: 1.3; margin-bottom: 2rem; }
+.hero-content p { font-size: clamp(18px, 2vw, 24px); font-weight: var(--fw-medium); color: #e6e6e6; max-width: 900px; margin: 0 auto; line-height: 1.6; }
+.hero-btn { padding: 1rem 3.5rem; font-size: 20px; font-weight: var(--fw-bold); border: none; border-radius: 12px; background: var(--main-color); color: var(--white); transition: var(--transition); margin-top: 3rem; }
+.hero-btn:hover { background: var(--hoverDark); transform: scale(1.05); color: #e6e6e6; }

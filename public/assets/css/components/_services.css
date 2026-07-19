@@ -1,0 +1,10 @@
+.services { background: rgba(223, 223, 223, 0.2); padding: 5rem 0; }
+.services .card { position: relative; min-height: 320px; border: none; border-radius: 15px; overflow: hidden; transition: .4s; }
+.services .card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, .1), rgba(0, 0, 0, .7)); opacity: .8; transition: .4s; }
+.services .card:hover { transform: translateY(-10px); }
+.services .card:hover::before { opacity: .4; }
+.services .card-info { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); width: 90%; padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; background: var(--bg-secondary); box-shadow: 0 4px 15px rgba(0, 0, 0, .1); transition: .3s; }
+.services .card-info h3 { font-size: clamp(16px, 1.2vw, 20px); font-weight: var(--fw-bold); color: var(--black); }
+.services .card:hover .card-info { background: var(--main-color); }
+.services .card:hover h3 { color: var(--white); }
+.services .card:hover img { filter: brightness(0) invert(1); transform: translateX(-5px); }

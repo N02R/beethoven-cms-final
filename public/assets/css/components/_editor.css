@@ -1,0 +1,23 @@
+/* components/_editor.css */
+.edit-pen {
+    width: 36px;
+    height: 36px;
+    background: var(--white);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-blue);
+    z-index: 1000;
+}
+
+.edit-pen:hover {
+    background: var(--primary-blue) !important;
+    color: var(--white) !important;
+}
+
+.edit-pen i {
+    font-size: 14px !important;
+}

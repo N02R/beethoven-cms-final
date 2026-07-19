@@ -20,118 +20,56 @@
     { "name": "English", "url": "index-en.php", "icon": "assets/img/en.svg" }
   ],
   "hero": {
-  "title": "ابدأ رحلتك الأكاديمية في ألمانيا مع BCS",
-  "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى،حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى..",
-  "btn_text": "احجز استشارتك الآن",
-  "btn_url": "#contact",
-  "img": "assets/img/hero-bg.jpg"
-}
-,
-"services_section_title": "خدماتنا المميزة",
-"services": [
-  {
-    "title": "التعليم العالي والجامعي",
-    "url": "education.php",
-    "img": "assets/img/home/education.jpg"
+    "title": "ابدأ رحلتك الأكاديمية في ألمانيا مع BCS",
+    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى،حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى..",
+    "btn_text": "احجز استشارتك الآن",
+    "btn_url": "#contact",
+    "img": "assets/img/hero-bg.jpg"
   },
-  {
-    "title": "التأهيل المهني والعملي",
-    "url": "job.php",
-    "img": "assets/img/home/traning.jpg"
+  "services_section_title": "خدماتنا المميزة",
+  "services": [
+    { "title": "التعليم العالي والجامعي", "url": "education.php", "img": "assets/img/home/education.jpg" },
+    { "title": "التأهيل المهني والعملي", "url": "job.php", "img": "assets/img/home/traning.jpg" }
+  ],
+  "choose": {
+    "title": "ما الذي يميز بيتهوفن سيتي",
+    "items": [
+      { "title": "خدمة متعددة اللغات", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة، حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome1.svg", "url": "#" },
+      { "title": "خبرة في السوق الألماني", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome2.svg", "url": "#" },
+      { "title": "متابعة شاملة للعميل", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome3.svg", "url": "#" },
+      { "title": "أسعار تنافسية", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome4.svg", "url": "#" }
+    ]
+  },
+  "reviews": {
+    "title": "شاهد ماذا يقول عملاؤنا عنا",
+    "videos": [
+      { "url": "https://www.youtube.com/embed/tu51jzzZO9Q", "title": "مراجعة عميل 1" },
+      { "url": "https://www.youtube.com/embed/xcgM1t5H6dU", "title": "مراجعة عميل 2" },
+      { "url": "https://www.youtube.com/embed/jpaOEC2pVRc", "title": "مراجعة عميل 3" }
+    ]
+  },
+  "guide": {
+    "title": "دليل بيتهوفن الشامل",
+    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص",
+    "items": [
+      { "title": "لماذا يختار الطلاب الدراسة في ألمانيا ؟", "desc": "أكثر من 380 ألف طالب دولي...", "img": "assets/img/home/image(0).jpg", "url": "guide-blog1.php" },
+      { "title": "التعليم والعمل في ألمانيا", "desc": "اكتشف بيئة تعليمية متقدمة...", "img": "assets/img/guide/image (1).jpg", "url": "guide-blog2.php" },
+      { "title": "معالجة طلبات العملاء لدى BCS", "desc": "نرافق عملاؤنا خطوة بخطوة...", "img": "assets/img/guide/image.jpg", "url": "guide-blog3.php" }
+    ]
+  },
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "items": [
+      { "question": "ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟", "answer": "تحتاج إلى شهادة الثانوية العامة..." },
+      { "question": "هل يمكنني الدراسة في ألمانيا بدون لغة ألمانية؟", "answer": "نعم، بعض الجامعات..." }
+    ]
+  },
+  "footer": {
+    "consult_title": "احصل على استشارة مجانية",
+    "consult_desc": "هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة",
+    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
+    "contact": {
+      "phone": { "text": "+49 (0) 176 71230-666", "url": "tel:+4917671230666", "icon": "img/contact us/call-calling.svg" }
+    }
   }
-]
-,
-{
-  "choose_title": "ما الذي يميز بيتهوفن سيتي",
-  "choose_items": [
-    {
-      "title": "خدمة متعددة اللغات",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة، حيث يمكنك توليد النص",
-      "img": "assets/img/home/Grouphome1.svg",
-      "url": "#"
-    },
-    {
-      "title": "خبرة في السوق الألماني",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص",
-      "img": "assets/img/home/Grouphome2.svg",
-      "url": "#"
-    },
-    {
-      "title": "متابعة شاملة للعميل",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص",
-      "img": "assets/img/home/Grouphome3.svg",
-      "url": "#"
-    },
-    {
-      "title": "أسعار تنافسية",
-      "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص",
-      "img": "assets/img/home/Grouphome4.svg",
-      "url": "#"
-    }
-  ]
-}
-,{
-  "reviews_title": "شاهد ماذا يقول عملاؤنا عنا",
-  "reviews_videos": [
-    {
-      "url": "https://www.youtube.com/embed/tu51jzzZO9Q",
-      "title": "مراجعة عميل 1"
-    },
-    {
-      "url": "https://www.youtube.com/embed/xcgM1t5H6dU",
-      "title": "مراجعة عميل 2"
-    },
-    {
-      "url": "https://www.youtube.com/embed/jpaOEC2pVRc",
-      "title": "مراجعة عميل 3"
-    }
-  ]
-}
-,{
-  "guide_title": "دليل بيتهوفن الشامل",
-  "guide_desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص",
-  "guide_items": [
-    { "title": "لماذا يختار الطلاب الدراسة في ألمانيا ؟", "desc": "أكثر من 380 ألف طالب دولي...", "img": "assets/img/home/image(0).jpg", "url": "guide-blog1.php" },
-    { "title": "التعليم والعمل في ألمانيا", "desc": "اكتشف بيئة تعليمية متقدمة...", "img": "assets/img/guide/image (1).jpg", "url": "guide-blog2.php" },
-    { "title": "معالجة طلبات العملاء لدى BCS", "desc": "نرافق عملاؤنا خطوة بخطوة...", "img": "assets/img/guide/image.jpg", "url": "guide-blog3.php" },
-    { "title": "تعلم اللغة الالمانية بسرعة وكفاءة", "desc": "دليلك السريع لتعلم اللغة الألمانية...", "img": "assets/img/guide/image (2).jpg", "url": "guide-blog4.php" },
-    { "title": "ما هو الستودينكولينغ؟", "desc": "برنامج تحضيري للطلاب الأجانب...", "img": "assets/img/guide/image (3).jpg", "url": "guide-blog5.php" },
-    { "title": "كيف تحصل على سكن طلابي؟", "desc": "السكن الطلابي في ألمانيا محدود...", "img": "assets/img/guide/image (4).jpg", "url": "guide-blog6.php" },
-    { "title": "ما هو الأوسبيلدونغ؟", "desc": "تدريب مهني عملي في ألمانيا...", "img": "assets/img/guide/image (5).jpg", "url": "guide-blog7.php" },
-    { "title": "أهم المهن المطلوبة في ألمانيا", "desc": "يشهد سوق العمل الألماني طلبا...", "img": "assets/img/guide/image (6).jpg", "url": "guide-blog8.php" },
-    { "title": "كيف تكتب سيرة ذاتية بالألماني؟", "desc": "يركز النمط الألماني على البساطة...", "img": "assets/img/guide/image (7).jpg", "url": "guide-blog9.php" }
-  ]
-}
-,
-{
-  "faq_title": "الأسئلة الشائعة",
-  "faq_items": [
-    {
-      "question": "ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟",
-      "answer": "تحتاج إلى شهادة الثانوية العامة أو ما يعادلها، إثبات كفاءة في اللغة الألمانية أو الإنجليزية (حسب لغة البرنامج)، وسيرة ذاتية وخطاب تحفيز."
-    },
-    {
-      "question": "هل يمكنني الدراسة في ألمانيا بدون لغة ألمانية؟",
-      "answer": "نعم، بعض الجامعات الألمانية تقدم برامج باللغة الإنجليزية بالكامل، لكن يُنصح بتعلم اللغة الألمانية لتسهيل الحياة اليومية وفرص العمل لاحقًا."
-    },
-    {
-      "question": "ما هي تكلفة الدراسة والمعيشة في ألمانيا؟",
-      "answer": "معظم الجامعات الحكومية مجانية، لكن يجب توفير مصاريف المعيشة (حوالي 900 يورو شهريًا) والتي تشمل السكن، الطعام، والمواصلات."
-    }
-  ]
-}
-,
-{
-  "consult_title": "احصل على استشارة مجانية",
-  "consult_desc": "هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة",
-  "footer_desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربي، حيث يمكنك..",
-  "footer_col2_title": "روابط سريعة",
-  "footer_col3_title": "تواصل معنا",
-  "footer_contact": {
-    "phone": { "text": "+49 (0) 176 71230-666", "url": "tel:+4917671230666", "icon": "img/contact us/call-calling.svg" },
-    "email": { "text": "info@Beethoven-City-Services.com", "url": "mailto:info@Beethoven-City-Services.com", "icon": "img/contact us/sms.svg" },
-    "address": { "text": "Rheinweg 140 ,53129 Bonn,Germany", "icon": "img/contact us/Location.svg" }
-  }
-}
-
 }

@@ -1,28 +1,17 @@
 <?php
-session_start();
+require_once __DIR__ . '/vendor/autoload.php';
+use App\Core\SessionManager;
+use App\Services\AuthService;
 
-// التحقق إذا كان الأدمن مسجل دخوله بالفعل
-if (isset($_SESSION['is_logged_in']) && $_SESSION['role'] === 'admin') {
-    header("Location: admin/admin_dashboard.php");
-    exit();
-}
-
-$error_message = "";
+SessionManager::startSecureSession();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim(htmlspecialchars(strip_tags($_POST['username'])));
-    $password = trim($_POST['password']);
-
-    if ($username === "admin" && $password === "admin123") {
-        $_SESSION['is_logged_in'] = true;
-        $_SESSION['username'] = "نور المسؤول";
-        $_SESSION['role'] = "admin";
-        
-        session_regenerate_id(true);
-        header("Location: admin/admin_dashboard.php");
-        exit();
+    $auth = new AuthService();
+    if ($auth->login($_POST['username'], $_POST['password'])) {
+        header('Location: admin_dashboard.php');
+        exit;
     } else {
-        $error_message = "بيانات الدخول غير صحيحة.";
+        $error = "بيانات الدخول غير صحيحة!";
     }
 }
 ?>

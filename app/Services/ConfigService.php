@@ -1,21 +1,19 @@
 <?php
-// app/Services/ConfigService.php
 namespace App\Services;
 
 class ConfigService {
     private string $filePath;
 
     public function __construct() {
-        // المسار آمن: خارج المجلد العام
+        // تحديد المسار الآمن (خارج مجلد public)
         $this->filePath = __DIR__ . '/../../storage/announcement_config.json';
     }
 
     /**
-     * جلب الإعدادات مع معالجة الأخطاء (Error Handling)
+     * جلب البيانات بأمان
      */
     public function getData(): array {
         if (!file_exists($this->filePath)) {
-            // هنا نستخدم Exception وليس إخراج نص مباشرة
             throw new \Exception("System configuration missing.");
         }
         
@@ -27,5 +25,27 @@ class ConfigService {
         }
         
         return $data;
+    }
+
+    /**
+     * حفظ البيانات بأمان مع منع التداخل (Concurrency Lock)
+     */
+    public function saveData(array $data): bool {
+        // تحويل المصفوفة إلى JSON مدعوم باللغة العربية ومنسق
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        
+        if ($json === false) {
+            throw new \Exception("فشل في تشفير البيانات إلى JSON.");
+        }
+
+        // استخدام LOCK_EX لمنع كتابة ملفين في نفس اللحظة (Thread Safety)
+        $result = file_put_contents($this->filePath, $json, LOCK_EX);
+        
+        if ($result === false) {
+            // رسالة خطأ واضحة في حال كانت تصاريح المجلد (Permissions) غير صحيحة
+            throw new \Exception("فشل في الكتابة على الملف. يرجى التحقق من تصاريح مجلد storage.");
+        }
+
+        return true;
     }
 }

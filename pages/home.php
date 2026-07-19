@@ -1,12 +1,10 @@
-<?php
-// index.php في الجذر
-define('ALLOWED_ACCESS', true); 
-// إما أن تستدعي الـ router مباشرة:
-require_once 'router.php';
-// أو تقومين بتحويل الطلب لـ router:
-// header("Location: router.php?page=index");
-// exit;
+<?php 
+if (!defined('ALLOWED_ACCESS')) {
+    header("HTTP/1.1 403 Forbidden");
+    exit('Access Denied');
+}
 ?>
+
 
 <?php 
 if (session_status() === PHP_SESSION_NONE) {

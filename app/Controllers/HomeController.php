@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 class HomeController {
     public function index() {
-        echo "<h1>مرحباً بكِ في متجري الإلكتروني!</h1>";
-        echo "<p>هذه هي الصفحة الرئيسية التي تم استدعاؤها عبر الـ Router.</p>";
+        // استدعاء الواجهة الرئيسية
+        require_once ROOT . 'public/pages/home.php';
     }
 }

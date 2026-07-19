@@ -1,6 +1,13 @@
 <?php
-// 1. حماية: منع الوصول المباشر لأي ملف داخل هذا المجلد
-define('ALLOWED_ACCESS', true); 
+// router.php
+
+// 1. تشغيل الجلسة (مرة واحدة فقط)
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// 2. تعريف الثابت مع التحقق لعدم تكرار التعريف
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
+}
 
 require_once 'includes/header.php';
 

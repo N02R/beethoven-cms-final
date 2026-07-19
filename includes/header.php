@@ -37,12 +37,12 @@ $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
 
 // تحديث الروابط لتعمل عبر نظام الـ Router
 $menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "/home", "active" => true],
-    ["title" => "عن الشركة", "url" => "/about", "active" => false],
-    ["title" => "التعليم العالي", "url" => "/education", "active" => false],
-    ["title" => "التدريب المهني", "url" => "/job", "active" => false],
-    ["title" => "دليل بيتهوفن", "url" => "/guide", "active" => false],
-    ["title" => "تواصل معنا", "url" => "/contact", "active" => false]
+    ["title" => "الرئيسية", "url" => "router.php?page=home", "active" => true],
+    ["title" => "عن الشركة", "url" => "router.php?page=about", "active" => false],
+    ["title" => "التعليم العالي", "url" => "router.php?page=education", "active" => false],
+    ["title" => "التدريب المهني", "url" => "router.php?page=job", "active" => false],
+    ["title" => "دليل بيتهوفن", "url" => "router.php?page=guide", "active" => false],
+    ["title" => "تواصل معنا", "url" => "router.php?page=contact", "active" => false]
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
@@ -75,7 +75,7 @@ $is_visible = ($is_published && $is_in_time);
           <?php if ($is_admin): ?>
             <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار"><i class="bi bi-pencil-fill"></i></button>
           <?php endif; ?>
-          <a class="navbar-brand m-0" href="/home">
+          <a class="navbar-brand m-0" href="router.php?page=home">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
         </div>
@@ -114,7 +114,7 @@ $is_visible = ($is_published && $is_in_time);
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
         <div class="d-lg-none">
-          <a class="navbar-brand" href="/home">
+          <a class="navbar-brand" href="router.php?page=home">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="Logo" height="50">
           </a>
         </div>

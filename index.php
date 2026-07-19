@@ -1,4 +1,4 @@
 <?php
-header("Location: router.php?page=home");
+header("Location: http://localhost:8080/home");
 exit();
 ?>

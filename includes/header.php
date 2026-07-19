@@ -46,9 +46,11 @@ $menu_links = $data['menu_links'] ?? [
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
+// الحصول على الصفحة الحالية لتحديد الرابط النشط
+$current_page = $_GET['page'] ?? 'home';
+
 /**
  * دالة ذكية لتصحيح الروابط برمجياً
- * تحول أي رابط (مثل about.php) إلى الصيغة المطلوبة /router.php?page=about
  */
 function fix_url($url) {
     if (strpos($url, 'http') === 0 || strpos($url, 'tel:') === 0 || strpos($url, 'mailto:') === 0 || $url === '#') return $url;
@@ -60,6 +62,12 @@ function fix_url($url) {
     } else {
         $page = str_replace('.php', '', basename($url));
     }
+    
+    // تصحيح اسم الصفحة: تحويل index إلى home
+    if ($page === 'index' || $page === 'index_de') {
+        $page = 'home';
+    }
+    
     return "/router.php?page=" . $page;
 }
 
@@ -140,9 +148,13 @@ $is_visible = ($is_published && $is_in_time);
             <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة"><i class="bi bi-pencil-fill"></i></button>
           <?php endif; ?>
           <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link): ?>
+            <?php foreach ($menu_links as $link): 
+                $link_page = str_replace('.php', '', basename(parse_url($link['url'], PHP_URL_QUERY) ? parse_url($link['url'], PHP_URL_QUERY) : $link['url']));
+                if ($link_page === 'index') $link_page = 'home';
+                $active_class = ($current_page === $link_page) ? 'active' : '';
+            ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo fix_url($link['url']); ?>">
+                  <a class="nav-link <?php echo $active_class; ?>" href="<?php echo fix_url($link['url']); ?>">
                     <?php echo htmlspecialchars($link['title']); ?>
                   </a>
                 </li>
@@ -175,8 +187,11 @@ $is_visible = ($is_published && $is_in_time);
       <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
-            <?php foreach ($menu_links as $link): ?>
-                <li class="nav-item"><a class="nav-link" href="<?php echo fix_url($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+            <?php foreach ($menu_links as $link): 
+                $link_page = str_replace('.php', '', basename(parse_url($link['url'], PHP_URL_QUERY) ? parse_url($link['url'], PHP_URL_QUERY) : $link['url']));
+                if ($link_page === 'index') $link_page = 'home';
+            ?>
+                <li class="nav-item"><a class="nav-link <?php echo ($current_page === $link_page) ? 'active' : ''; ?>" href="<?php echo fix_url($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
             <?php endforeach; ?>
         </ul>
       </div>

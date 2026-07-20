@@ -1,17 +1,26 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+// استدعاء الأوتولودر بالطريقة المتوافقة مع هيكلية المشروع
+require_once __DIR__ . '/../app/Core/Autoloader.php';
+
 use App\Core\SessionManager;
 use App\Services\AuthService;
 
-SessionManager::startSecureSession();
+// استخدام الدالة الصحيحة والمعرفة في SessionManager
+SessionManager::start();
+
+$error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    
     $auth = new AuthService();
-    if ($auth->login($_POST['username'], $_POST['password'])) {
+    if ($auth->login($username, $password)) {
         header('Location: admin_dashboard.php');
         exit;
     } else {
-        $error = "بيانات الدخول غير صحيحة!";
+        // توحيد اسم المتغير ليظهر في واجهة الـ HTML بشكل صحيح
+        $error_message = "اسم المستخدم أو كلمة المرور غير صحيحة!";
     }
 }
 ?>
@@ -67,16 +76,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="login.php" method="POST" autocomplete="off">
       <div class="mb-3">
         <label for="username" class="form-label fw-semibold text-secondary">اسم المستخدم</label>
-        <input type="text" class="form-control p-2.5" id="username" name="username" placeholder="ادخل اسم المستخدم" required>
+        <input type="text" class="form-control" id="username" name="username" placeholder="ادخل اسم المستخدم" required>
       </div>
       
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold text-secondary">كلمة المرور</label>
-        <input type="password" class="form-control p-2.5" id="password" name="password" placeholder="••••••••" required>
+        <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
       </div>
 
       <div class="d-grid">
-        <button type="submit" class="btn btn-primary p-2.5 fw-bold">تسجيل الدخول الآمن</button>
+        <button type="submit" class="btn btn-primary fw-bold py-2">تسجيل الدخول الآمن</button>
       </div>
     </form>
   </div>

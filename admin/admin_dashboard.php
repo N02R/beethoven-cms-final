@@ -1,19 +1,10 @@
 <?php
-// 1. بدء الجلسة بأمان للتحقق من الهوية
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// /admin/admin_dashboard.php
 
-// 2. جدار حماية صارم: منع أي شخص غير المسؤول من رؤية اللوحة
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+// 1. استخدام ملف الحماية المركزي الموحد (يغنيكِ عن تكرار التحقق من الجلسات والصلاحيات)
+require_once __DIR__ . '/admin_init.php';
 
-if (!$is_admin) {
-    // توجيه المتسلل إلى صفحة تسجيل الدخول أو عرض رسالة حظر
-    header("Location: ../login.php");
-    exit();
-}
-
-// 3. قراءة البيانات الحالية من ملف الـ JSON لعرض الإحصائيات والحالة الحالية
+// 2. قراءة البيانات الحالية من ملف الـ JSON لعرض الإحصائيات والحالة الحالية
 $config_file_path = __DIR__ . '/../announcement_config.json';
 $config_data = [];
 if (file_exists($config_file_path)) {

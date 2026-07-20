@@ -170,6 +170,30 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
                     
+                    <!-- صندوق معاينة الإعلان الحالي -->
+                    <div class="card p-3 mb-4 border" style="background: #f8fafc; border-color: var(--border-color);">
+                        <div class="section-label mb-2 fw-bold text-primary"><i class="bi bi-eye"></i> معاينة الإعلان الحالي في الموقع</div>
+                        <div class="p-3 rounded border bg-white d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="badge bg-<?php echo (($announcement['announcement']['status'] ?? '') == 'Published' ? 'success' : 'secondary'); ?> mb-2">
+                                    <?php echo (($announcement['announcement']['status'] ?? '') == 'Published' ? 'نشط حالياً' : 'مخفي (مسودة)'); ?>
+                                </span>
+                                <?php if((($announcement['announcement']['type'] ?? 'text') == 'text')): ?>
+                                    <p class="mb-1 text-muted small"><strong>النص:</strong> <?php echo htmlspecialchars($announcement['announcement']['announcement_text'] ?? 'لا يوجد نص'); ?></p>
+                                <?php else: ?>
+                                    <p class="mb-1 text-muted small"><strong>النوع:</strong> بانر صورة</p>
+                                    <?php if(!empty($announcement['announcement']['ad_image'])): ?>
+                                        <img src="<?php echo htmlspecialchars($announcement['announcement']['ad_image']); ?>" class="thumb-preview mt-1" style="width: 80px; height: 40px;">
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="text-end small text-muted">
+                                <div>من: <?php echo htmlspecialchars($announcement['announcement']['start_date'] ?? 'غير محدد'); ?></div>
+                                <div>إلى: <?php echo htmlspecialchars($announcement['announcement']['end_date'] ?? 'غير محدد'); ?></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- المجموعة 1: حالة الإعلان -->
                     <div class="card p-3 mb-4 border-0" style="background: #f1f5f9;">
                         <div class="section-label mb-2 fw-bold"><i class="bi bi-gear"></i> حالة الإعلان والتوقيت</div>
@@ -208,12 +232,14 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         <div id="imageEditor" class="<?php echo (($announcement['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
                             <?php if (!empty($announcement['announcement']['ad_image'])): ?>
                                 <label class="small mb-1 fw-bold">بانر الإعلان الحالي:</label>
-                                <div class="mb-2 p-2 border rounded text-center bg-light">
-                                    <img src="<?php echo htmlspecialchars($announcement['announcement']['ad_image']); ?>" style="max-height: 100px; object-fit: contain;">
+                                <div class="mb-2 p-2 border rounded text-center bg-light d-flex align-items-center justify-content-center gap-2">
+                                    <img src="<?php echo htmlspecialchars($announcement['announcement']['ad_image']); ?>" class="thumb-preview" style="width: 60px; height: 60px;">
+                                    <span class="small text-muted dir-ltr"><?php echo htmlspecialchars($announcement['announcement']['ad_image']); ?></span>
                                 </div>
                             <?php endif; ?>
                             <label class="small mb-1 fw-bold">ارفع صورة جديدة للإعلان:</label>
                             <input type="file" class="form-control" name="ad_image" accept="image/*">
+                            <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars($announcement['announcement']['ad_image'] ?? ''); ?>">
                         </div>
                     </div>
 

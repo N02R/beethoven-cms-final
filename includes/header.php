@@ -14,9 +14,10 @@ if (!function_exists('isUserAdmin')) {
 }
 $is_admin = isUserAdmin(); 
 
-// 4. تحميل البيانات
+// 4. تحميل البيانات (تم تعريف $data هنا لتكون متاحة لكل الصفحات)
 $site_logo_path = 'assets/img/logo.png'; 
 $config_file_path = __DIR__ . '/../announcement_config.json';
+// تهيئة افتراضية للمصفوفة لتجنب أي خطأ في الصفحات الأخرى
 $data = [
     'announcement' => [], 
     'menu_links' => [], 
@@ -34,42 +35,15 @@ if (file_exists($config_file_path)) {
 }
 
 $site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
-
-// مصفوفة الروابط
 $menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "home.php", "active" => true],
-    ["title" => "عن الشركة", "url" => "about.php" , "active"=> false],
+    ["title" => "الرئيسية", "url" => "index.php", "active" => true],
+    ["title" => "عن الشركة", "url" => "about.php", "active" => false],
     ["title" => "التعليم العالي", "url" => "education.php", "active" => false],
     ["title" => "التدريب المهني", "url" => "job.php", "active" => false],
     ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],
     ["title" => "تواصل معنا", "url" => "contact.php", "active" => false]
 ];
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
-
-// الحصول على الصفحة الحالية لتحديد الرابط النشط
-$current_page = $_GET['page'] ?? 'home';
-
-/**
- * دالة ذكية لتصحيح الروابط برمجياً
- */
-function fix_url($url) {
-    if (strpos($url, 'http') === 0 || strpos($url, 'tel:') === 0 || strpos($url, 'mailto:') === 0 || $url === '#') return $url;
-    
-    $query = parse_url($url, PHP_URL_QUERY);
-    if ($query) {
-        parse_str($query, $params);
-        $page = $params['page'] ?? 'home';
-    } else {
-        $page = str_replace('.php', '', basename($url));
-    }
-    
-    // تصحيح اسم الصفحة: تحويل index إلى home
-    if ($page === 'index' || $page === 'index_de') {
-        $page = 'home';
-    }
-    
-    return "/router.php?page=" . $page;
-}
 
 // 5. تجهيز منطق الإعلان الموحد
 $ad = $data['announcement'] ?? [];
@@ -87,35 +61,42 @@ $is_visible = ($is_published && $is_in_time);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  
-  <!-- استدعاء ملفات الـ CSS الأساسية والمضغوطة ديناميكياً (المسار الصحيح بناءً على أن public هو الجذر) -->
-<!-- استدعاء ملف الـ main.css الرئيسي مباشرة للتأكد من ظهور التصميم -->
-<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-<link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
-<link rel="stylesheet" href="assets/css/main.css">
+
+<link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php?v=<?php echo time(); ?>">
+
+
 
 </head>
 <body>
 
 <header>
+    <!-- NavTop -->
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
+        <!-- اللوجو الرئيسي -->
         <div class="editable-wrapper">
-          <?php if ($is_admin): ?>
-            <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار"><i class="bi bi-pencil-fill"></i></button>
-          <?php endif; ?>
-          <a class="navbar-brand m-0" href="/router.php?page=home">
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+<?php endif; ?>
+
+          <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
         </div>
 
+        <!-- منطقة الإعلان -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
             <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
-              <?php if ($is_admin): ?>
-                <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان"><i class="bi bi-pencil-fill"></i></button>
-              <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+<?php endif; ?>
+
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo $ad['bg_color'] ?? '#f1f5f9'; ?>; color: <?php echo $ad['text_color'] ?? '#1e293b'; ?>; font-size: <?php echo $ad['font_size'] ?? '16'; ?>px;">
@@ -129,10 +110,14 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
         </div>
 
+        <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
-          <?php if ($is_admin): ?>
-            <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل"><i class="bi bi-pencil-fill"></i></button>
-          <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+<?php endif; ?>
+
           <div class="social-icons d-flex gap-3">
             <?php foreach (($data['social_links'] ?? []) as $s): ?><a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a><?php endforeach; ?>
           </div>
@@ -140,27 +125,29 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </nav>
     
+    <!-- Main Header -->
     <nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="القائمة الرئيسية">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
+        <!-- اللوجو (Mobile Only) -->
         <div class="d-lg-none">
-          <a class="navbar-brand" href="/router.php?page=home">
+          <a class="navbar-brand" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="Logo" height="50">
           </a>
         </div>
 
+        <!-- Desktop Menu -->
         <div class="collapse navbar-collapse editable-wrapper">
-          <?php if ($is_admin): ?>
-            <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة"><i class="bi bi-pencil-fill"></i></button>
-          <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+<?php endif; ?>
+
           <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link): 
-                $link_page = str_replace('.php', '', basename(parse_url($link['url'], PHP_URL_QUERY) ? parse_url($link['url'], PHP_URL_QUERY) : $link['url']));
-                if ($link_page === 'index') $link_page = 'home';
-                $active_class = ($current_page === $link_page) ? 'active' : '';
-            ?>
+            <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo $active_class; ?>" href="<?php echo fix_url($link['url']); ?>">
+                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
                     <?php echo htmlspecialchars($link['title']); ?>
                   </a>
                 </li>
@@ -168,12 +155,18 @@ $is_visible = ($is_published && $is_in_time);
           </ul>
         </div>
 
+        <!-- Controls -->
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
+          
           <div class="dropdown editable-wrapper">
-              <?php if ($is_admin): ?>
-                <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات"><i class="bi bi-pencil-fill"></i></button>
-              <?php endif; ?>
+<?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+<?php endif; ?>
+
+              
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
                   <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
@@ -181,7 +174,7 @@ $is_visible = ($is_published && $is_in_time);
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php']]) as $lang): ?>
-                      <li><a class="dropdown-item" href="<?php echo fix_url($lang['url']); ?>"><?php echo $lang['name']; ?></a></li>
+                      <li><a class="dropdown-item" href="<?php echo $path_prefix . $lang['url']; ?>"><?php echo $lang['name']; ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -189,15 +182,13 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </nav>
     
+    <!-- Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
       <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
-            <?php foreach ($menu_links as $link): 
-                $link_page = str_replace('.php', '', basename(parse_url($link['url'], PHP_URL_QUERY) ? parse_url($link['url'], PHP_URL_QUERY) : $link['url']));
-                if ($link_page === 'index') $link_page = 'home';
-            ?>
-                <li class="nav-item"><a class="nav-link <?php echo ($current_page === $link_page) ? 'active' : ''; ?>" href="<?php echo fix_url($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+            <?php foreach ($menu_links as $link): ?>
+                <li class="nav-item"><a class="nav-link" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
             <?php endforeach; ?>
         </ul>
       </div>

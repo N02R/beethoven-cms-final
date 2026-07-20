@@ -87,12 +87,9 @@ $is_visible = ($is_published && $is_in_time);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- استدعاء ملفات الـ CSS الأساسية والإضافية عبر أداة الـ Minify الديناميكية -->
-<link rel="stylesheet" href="/public/assets/css/minify.php">
-
-
-
-
+  
+  <!-- استدعاء ملفات الـ CSS الأساسية والمضغوطة ديناميكياً (المسار الصحيح بناءً على أن public هو الجذر) -->
+  <link rel="stylesheet" href="/assets/css/minify.php">
 </head>
 <body>
 

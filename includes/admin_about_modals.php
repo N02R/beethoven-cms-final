@@ -190,62 +190,51 @@ $ab = $data['about'] ?? [];
     </div>
 </div>
 
-<!-- Modal الشركاء -->
-<div class="modal fade" id="partnersEditModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">تعديل قسم الشركاء</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form enctype="multipart/form-data">
-        <input type="hidden" name="action" value="update_about_partners">
-        <div class="modal-body">
-          
-          <div class="mb-3">
-            <label class="form-label">عنوان القسم</label>
-            <input type="text" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا'); ?>">
-          </div>
-          
-          <hr>
-          
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">قائمة الشركاء</h6>
-            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addPartnerRow()">
-              <i class="bi bi-plus-lg"></i> إضافة شريك
-            </button>
-          </div>
-          
-          <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
-            <?php foreach (($data['partners_items'] ?? []) as $index => $partner): ?>
-              <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
-                <div class="row g-2 align-items-center">
-                  <div class="col-md-10">
-                    <label class="form-label small text-muted mb-1">صورة الشريك</label>
-                    <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
-                    <input type="hidden" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
-                  </div>
-                  <div class="col-md-2 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="حذف">
-                      <i class="bi bi-trash"></i>
+<!-- 4. Partners Edit Modal (قسم الشركاء) -->
+<div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-handshake text-primary"></i> إدارة الشركاء</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="partnersForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_about_partners">
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">عنوان القسم</label>
+                        <input type="text" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا'); ?>">
+                    </div>
+
+                    <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
+                        <?php foreach (($data['partners_items'] ?? []) as $index => $partner): ?>
+                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-11">
+                                        <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                        <input type="hidden" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
+                                    </div>
+                                    <div class="col-md-1 text-end">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addPartnerRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة شريك جديد
                     </button>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          </div>
-
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="partnersForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-          <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
-
-
 
 <!-- Dynamic Rows JS Engine -->
 <script>
@@ -295,7 +284,7 @@ $ab = $data['about'] ?? [];
         countsCount++;
     }
 
-    // إضافة الشركاء (تم التحديث لإضافة الحقل المخفي المفتاح لربط المصفوفة بالسيرفر)
+    // إضافة الشركاء
     let partnerCount = <?php echo count($data['partners_items'] ?? []); ?>;
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
@@ -305,11 +294,11 @@ $ab = $data['about'] ?? [];
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-10">
+                <div class="col-md-11">
                     <input type="file" class="form-control form-control-sm" name="partner_img_${partnerCount}" accept="image/*">
                     <input type="hidden" name="partners[${partnerCount}][old_img]" value="">
                 </div>
-                <div class="col-md-2 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         partnerCount++;
@@ -341,4 +330,3 @@ $ab = $data['about'] ?? [];
         });
     });
 </script>
-

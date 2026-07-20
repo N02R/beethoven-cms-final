@@ -59,21 +59,28 @@ $is_visible = ($is_published && $is_in_time);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
+  <title><?php echo $page_title ?? 'BCS || Beethoven City Services'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
- <link rel="stylesheet" href="assets/css/bootstrap.min.css"> 
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">-->
-  <link rel="stylesheet" href="assets/css/all.min.css">
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/header.css">
-  <link rel="stylesheet" href="assets/css/footer.css">
-  <link rel="stylesheet" href="assets/css/responsive-index.css">
+  <!-- الملفات الأساسية لكل الصفحات -->
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/bootstrap.min.css"> 
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/all.min.css">
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/main.css">
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/header.css">
+  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/footer.css">
 
-
-
+  <!-- حقن ملفات الـ CSS الديناميكية الخاصة بكل صفحة (مثل about.css) -->
+  <?php 
+  if (isset($page_css) && is_array($page_css)) {
+      foreach ($page_css as $css_file) {
+          $clean_css = ltrim($css_file, '/');
+          echo '<link rel="stylesheet" href="' . $path_prefix . $clean_css . '?v=' . time() . '">' . PHP_EOL;
+      }
+  }
+  ?>
 </head>
+
 <body>
 
 <header>

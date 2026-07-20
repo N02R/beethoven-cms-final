@@ -1,13 +1,18 @@
+
 <?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+    define('ALLOWED_ACCESS', true);
 }
 
 $path_prefix = ''; 
 
-// 1. استدعاء الهيدر الأساسي (يقوم بتهيئة $data و $is_admin تلقائياً)
+// استدعاء الهيدر الأساسي
 include_once 'includes/header.php'; 
+
 
 // تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة
 $page_css = [

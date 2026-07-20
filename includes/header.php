@@ -89,7 +89,11 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
   <!-- استدعاء ملفات الـ CSS الأساسية والمضغوطة ديناميكياً (المسار الصحيح بناءً على أن public هو الجذر) -->
-  <link rel="stylesheet" href="/assets/css/minify.php">
+<!-- استدعاء ملف الـ main.css الرئيسي مباشرة للتأكد من ظهور التصميم -->
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
+<link rel="stylesheet" href="/assets/css/main.css">
+
 </head>
 <body>
 

@@ -456,6 +456,22 @@ switch ($action) {
         }
         $data['job_services_items'] = $new_job_srv;
         break;
+    case 'update_contact_hero':
+        $img_path = handle_upload('contact_hero_img', $upload_path);
+        $data['contact_hero_img'] = $img_path ?: ($_POST['old_contact_hero_img'] ?? '');
+        break;
+
+    case 'update_contact_info':
+        $data['contact_address'] = $_POST['contact_address'] ?? '';
+        $data['contact_email']   = $_POST['contact_email'] ?? '';
+        $data['contact_phone']   = $_POST['contact_phone'] ?? '';
+        break;
+
+    case 'update_whatsapp_section':
+        $data['whatsapp_text']    = $_POST['whatsapp_text'] ?? '';
+        $data['whatsapp_url']     = $_POST['whatsapp_url'] ?? '';
+        $data['whatsapp_btn_txt'] = $_POST['whatsapp_btn_txt'] ?? '';
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

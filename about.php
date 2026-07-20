@@ -11,7 +11,7 @@ if (!defined('ALLOWED_ACCESS')) {
 
 $path_prefix = ''; 
 
-// 1. تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة (يجب أن يكون قبل الهيدر)
+// 1. تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة
 $page_css = [
     'assets/css/swiper-bundle.min.css',
     'assets/css/about.css',
@@ -45,17 +45,21 @@ $custom_script = '
   });
 </script>';
 
-// 2. استدعاء الهيدر الأساسي بعد تجهيز المسارات
+// 2. استدعاء الهيدر الأساسي
 include_once 'includes/header.php'; 
 
-// تجهيز بيانات صفحة عن الشركة من مصفوفة $data
-$ab = $data['about'] ?? [];
+// 3. تجهيز متغيرات بيانات "عن الشركة" من $data
+$ab       = $data['about'] ?? [];
+$services = $data['services'] ?? [];
+$counts   = $data['about_counts'] ?? [];
+$team     = $data['team_members'] ?? [];
+$partners = $data['partners_items'] ?? [];
 ?>
 
-  <!-- about start -->
+  <!-- 1. about start -->
   <section class="about py-5" style="position: relative;">
     <?php if ($is_admin): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#aboutEditModal" title="تعديل قسم من نحن" style="position: absolute; top: 15px; right: 20px; z-index: 10;">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#aboutEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم من نحن">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
@@ -64,9 +68,7 @@ $ab = $data['about'] ?? [];
       <div class="row align-items-center g-5">
         <div class="col-lg-6 order-2 order-lg-1">
           <h2 class="sec-title mb-3"><?php echo htmlspecialchars($ab['title'] ?? 'من نحن'); ?></h2>
-          <p class="about-par mb-4">
-            <?php echo nl2br(htmlspecialchars($ab['desc'] ?? 'شركة بيتهوفن سيتي للخدمات (BCS)...')); ?>
-          </p>
+          <p class="about-par mb-4"><?php echo htmlspecialchars($ab['desc'] ?? ''); ?></p>
           
           <div class="row g-3 mb-4">
             <!-- رؤية الشركة -->
@@ -105,11 +107,12 @@ $ab = $data['about'] ?? [];
           </a>
         </div>
 
+        <!-- صور القسم -->
         <div class="col-lg-6 order-1 order-lg-2 position-relative">
           <div class="image-stack">
-            <img src="<?php echo $path_prefix . ($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg') . '?v=' . time(); ?>" alt="عمل جماعي" class="img-fluid main-img">
+            <img src="<?php echo $path_prefix . ($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg') . '?v=' . time(); ?>" alt="Main About Image" class="img-fluid main-img">
             <div class="sub-img-wrapper">
-              <img src="<?php echo $path_prefix . ($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png') . '?v=' . time(); ?>" alt="Beethoven City" class="img-fluid sub-img">
+              <img src="<?php echo $path_prefix . ($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png') . '?v=' . time(); ?>" alt="Sub About Image" class="img-fluid sub-img">
               <div class="dots-bg"></div>
             </div>
           </div>
@@ -119,10 +122,10 @@ $ab = $data['about'] ?? [];
   </section>
   <!-- about end -->
 
-  <!-- services start -->
+  <!-- 2. services start -->
   <section class="services py-5" style="position: relative;">
     <?php if ($is_admin): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="تعديل الخدمات" style="position: absolute; top: 15px; right: 20px; z-index: 10;">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
@@ -130,56 +133,27 @@ $ab = $data['about'] ?? [];
     <div class="custom-container">
       <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?></h2>
       <div class="row g-4">
-        <?php 
-        $services = $data['services'] ?? []; 
-        if (!empty($services)):
-          foreach ($services as $service): 
-        ?>
+        <?php foreach ($services as $service): ?>
           <div class="col-lg-6 col-md-6 col-sm-12">
-            <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
-              <div class="card" style="background: url('<?php echo ($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time(); ?>') no-repeat center/cover;">
+            <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none">
+              <div class="card" style="background: url('<?php echo $path_prefix . ($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time(); ?>') no-repeat center/cover;">
                 <div class="card-info">
-                  <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
+                  <h3><?php echo htmlspecialchars($service['title'] ?? 'اسم الخدمة'); ?></h3>
                   <img src="assets/img/home/Arrow.svg" alt="Arrow">
                 </div>
               </div>
             </a>
           </div>
-        <?php 
-          endforeach;
-        else:
-        ?>
-          <!-- عرض أفتراضي في حال كانت القائمة فارغة -->
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <a href="education.php" class="card-link text-decoration-none">
-              <div class="card" style="background: url('assets/img/home/education.jpg') no-repeat center/cover;">
-                <div class="card-info">
-                  <h3>التعليم العالي والجامعي</h3>
-                  <img src="assets/img/home/Arrow.svg" alt="Arrow">
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <a href="job.php" class="card-link text-decoration-none">
-              <div class="card" style="background: url('assets/img/home/traning.jpg') no-repeat center/cover;">
-                <div class="card-info">
-                  <h3>التأهيل المهني والعملي</h3>
-                  <img src="assets/img/home/Arrow.svg" alt="Arrow">
-                </div>
-              </div>
-            </a>
-          </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
       </div>
     </div>
   </section>
   <!-- services end -->
 
-  <!-- team start -->
+  <!-- 3. team start -->
   <section class="team py-5" style="position: relative;">
     <?php if ($is_admin): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#teamEditModal" title="تعديل فريق العمل" style="position: absolute; top: 15px; right: 20px; z-index: 10;">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#teamEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل فريق العمل">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
@@ -187,42 +161,25 @@ $ab = $data['about'] ?? [];
     <div class="custom-container">
       <div class="team-text mb-5">
         <h2 class="sec-title"><?php echo htmlspecialchars($data['team_title'] ?? 'فريق العمل'); ?></h2>
-        <p class="description main-p">
-          <?php echo htmlspecialchars($data['team_desc'] ?? 'يسر فريق العمل تقديم خدمات عالية الجودة لتتناسب مع احتياجات العميل الكريم وتوقعاته.'); ?>
-        </p>
+        <p class="description main-p"><?php echo htmlspecialchars($data['team_desc'] ?? ''); ?></p>
       </div>
-      
       <div class="swiper-container-wrapper">
         <div class="swiper mySwiper">
           <div class="swiper-wrapper">
-            <?php 
-            $team = $data['team_members'] ?? [];
-            if (!empty($team)):
-              foreach ($team as $member):
-            ?>
-              <div class="swiper-slide">
-                <div class="team-card">
-                  <img src="<?php echo $path_prefix . ($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time(); ?>" alt="<?php echo htmlspecialchars($member['name']); ?>" />
-                  <div class="info">
-                    <h5><?php echo htmlspecialchars($member['name']); ?></h5>
-                    <p><?php echo htmlspecialchars($member['role']); ?></p>
+            <?php if (!empty($team)): ?>
+              <?php foreach ($team as $member): ?>
+                <div class="swiper-slide">
+                  <div class="team-card">
+                    <img src="<?php echo $path_prefix . ($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time(); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
+                    <div class="info">
+                      <h5><?php echo htmlspecialchars($member['name'] ?? ''); ?></h5>
+                      <p><?php echo htmlspecialchars($member['role'] ?? ''); ?></p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <?php 
-              endforeach;
-            else:
-            ?>
-              <!-- عناصر افتراضية -->
-              <div class="swiper-slide">
-                <div class="team-card">
-                  <img src="assets/img/team/member1.jpg" alt="أحمد السالم" />
-                  <div class="info">
-                    <h5>أحمد السالم</h5>
-                    <p>مدير المشروع</p>
-                  </div>
-                </div>
-              </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p class="text-center w-100">لا يوجد أعضاء مضافون حالياً.</p>
             <?php endif; ?>
           </div>
         </div>
@@ -235,71 +192,38 @@ $ab = $data['about'] ?? [];
   </section>
   <!-- team end -->
 
-  <!-- count start -->
+  <!-- 4. count start -->
   <section class="count" style="position: relative;">
     <?php if ($is_admin): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#countsEditModal" title="تعديل العدادات" style="position: absolute; top: 15px; right: 20px; z-index: 10;">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#countsEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الإحصائيات">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="custom-container">
       <div class="row g-4">
-        <?php 
-        $counts = $data['about_counts'] ?? [];
-        if (!empty($counts)):
-          foreach ($counts as $c):
-        ?>
+        <?php foreach ($counts as $c): ?>
           <div class="col-lg-3 col-md-6">
             <div class="count-card">
               <div class="count-img">
-                <img src="<?php echo $path_prefix . ($c['img'] ?? 'assets/img/about us icon, image/Program Education.svg') . '?v=' . time(); ?>" alt="Icon">
+                <img src="<?php echo $path_prefix . ($c['img'] ?? '') . '?v=' . time(); ?>" alt="icon">
               </div>
               <div class="count-info">
-                <span><?php echo htmlspecialchars($c['number']); ?></span>
-                <p><?php echo htmlspecialchars($c['title']); ?></p>
+                <span><?php echo htmlspecialchars($c['number'] ?? ''); ?></span>
+                <p><?php echo htmlspecialchars($c['title'] ?? ''); ?></p>
               </div>
             </div>
           </div>
-        <?php 
-          endforeach;
-        else:
-        ?>
-          <!-- العدادات الافتراضية -->
-          <div class="col-lg-3 col-md-6">
-            <div class="count-card">
-              <div class="count-img"><img src="assets/img/about us icon, image/Program Education.svg" alt="Programs"></div>
-              <div class="count-info"><span>700K+</span><p>برنامج تعليمي</p></div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <div class="count-card">
-              <div class="count-img"><img src="assets/img/about us icon, image/Course Education.svg" alt="Courses"></div>
-              <div class="count-info"><span>500+</span><p>كورس لغة ألمانية</p></div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <div class="count-card">
-              <div class="count-img"><img src="assets/img/about us icon, image/Educational institute.svg" alt="Institutes"></div>
-              <div class="count-info"><span>300+</span><p>معهد تعليمي</p></div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6">
-            <div class="count-card">
-              <div class="count-img"><img src="assets/img/about us icon, image/Experience Year.svg" alt="Experience"></div>
-              <div class="count-info"><span>6Y+</span><p>سنوات خبرة</p></div>
-            </div>
-          </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
       </div>
     </div>
   </section>
   <!-- count end -->
 
-  <!-- partenar start -->
+  <!-- 5. partenar start -->
   <section class="partenar py-5" style="position: relative;">
     <?php if ($is_admin): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#partnersEditModal" title="تعديل الشركاء" style="position: absolute; top: 15px; right: 20px; z-index: 10;">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#partnersEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الشركاء">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
@@ -307,37 +231,24 @@ $ab = $data['about'] ?? [];
     <div class="custom-container">
       <h2 class="sec-title mb-5"><?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا'); ?></h2>
       <div class="row row-cols-2 row-cols-md-4 g-4 align-items-center justify-content-center">
-        <?php 
-        $partners = $data['partners_items'] ?? [];
-        if (!empty($partners)):
-          foreach ($partners as $partner):
-        ?>
+        <?php foreach ($partners as $p): ?>
           <div class="col">
             <div class="partner-item">
-              <img src="<?php echo $path_prefix . ($partner['img'] ?? '') . '?v=' . time(); ?>" alt="Partner" class="img-fluid" />
+              <img src="<?php echo $path_prefix . ($p['img'] ?? '') . '?v=' . time(); ?>" alt="Partner" class="img-fluid" />
             </div>
           </div>
-        <?php 
-          endforeach;
-        else:
-        ?>
-          <!-- شركاء أفتراضيين -->
-          <div class="col"><div class="partner-item"><img src="assets/img/about us icon, image/image 9.jpg" alt="Partner" class="img-fluid" /></div></div>
-          <div class="col"><div class="partner-item"><img src="assets/img/about us icon, image/image 2.jpg" alt="Partner" class="img-fluid" /></div></div>
-          <div class="col"><div class="partner-item"><img src="assets/img/about us icon, image/image 3.jpg" alt="Partner" class="img-fluid" /></div></div>
-          <div class="col"><div class="partner-item"><img src="assets/img/about us icon, image/image 5.jpg" alt="Partner" class="img-fluid" /></div></div>
-        <?php endif; ?>
+        <?php endforeach; ?>
       </div>
     </div>
   </section>
   <!-- partenar end -->
 
 <?php 
-// 2. استدعاء المودالات الخاصة بصفحة About إذا كان المستخدم مسؤول
-if ($is_admin) {
-    include_once 'includes/admin_about_modals.php';
+// 4. استدعاء ملف مودالات صفحة about للأدمن
+if ($is_admin) { 
+    include_once __DIR__ . '/includes/admin_about_modals.php'; 
 }
 
-// 3. استدعاء الفوتر الموحد
+// 5. استدعاء الفوتر الأساسي
 include_once 'includes/footer.php'; 
 ?>

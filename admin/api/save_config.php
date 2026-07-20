@@ -13,8 +13,6 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 $file = __DIR__ . '/../../announcement_config.json';
 $upload_path = __DIR__ . '/../../assets/img/';
 
-// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية
-// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية كاملة
 // 2. قراءة البيانات أو تهيئة مصفوفة افتراضية كاملة
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'announcement'           => [],
@@ -67,14 +65,34 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'team_members'           => [],
     'about_counts'           => [],
     'partners_title'         => 'شركاؤنا داخل وخارج ألمانيا',
-    'partners_items'         => []
+    'partners_items'         => [],
+
+    // ==========================================
+    // القيم الافتراضية لصفحة التعليم العالي (education.php)
+    // ==========================================
+    'edu_hero'               => [
+        'title'    => 'ابدأ رحلتك التعليمية في ألمانيا – مع خدماتنا، التعليم العالي أقرب إليك من أي وقت مضى!',
+        'desc'     => 'نوفر لك دعمًا شاملًا في كل خطوة.. من اختيار التخصص والجامعة، إلى التقديم والحصول على القبول، وحتى تأمين السكن والتأشيرة، و بفضل خبرتنا ووجودنا داخل ألمانيا، نضمن لك تجربة سلسة وموثوقة، بلغتك، وبأسعار تنافسية',
+        'btn_text' => 'ابدأ الآن',
+        'btn_url'  => '#',
+        'img'      => 'assets/img/education/hero.jpg'
+    ],
+    'edu_why_title'          => 'لماذا الدراسة في ألمانيا؟',
+    'edu_why_desc'           => 'إنها بيئة مثالية للطلاب الطموحين من جميع أنحاء العالم لبناء مستقبل أكاديمي ومهني قوي',
+    'edu_why_items'          => [],
+    'edu_timeline_title'     => 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS',
+    'edu_timeline_desc'      => 'نرشدك من أول استشارة حتى استقرارك في ألمانيا — إليك كيف تتم العملية معنا.',
+    'edu_timeline_steps'     => [],
+    'edu_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
+    'edu_services_desc'      => 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالالتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا',
+    'edu_services_items'     => []
 ];
 
 
 // 3. دالة رفع الملفات مع فحص الأمان
 function handle_upload($file_key, $upload_dir) {
     if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-        $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
         $file_name = $_FILES[$file_key]['name'];
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
@@ -205,66 +223,68 @@ switch ($action) {
         }
         $data['reviews_items'] = $reviews;
         break;
-case 'update_guide':
-    $data['guide_title'] = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
-    $data['guide_desc'] = $_POST['guide_desc'] ?? '';
-    
-    $new_guides = [];
-    if (isset($_POST['guide']) && is_array($_POST['guide'])) {
-        foreach ($_POST['guide'] as $index => $g) {
-            $img_path = handle_upload('guide_img_' . $index, $upload_path);
-            $new_guides[] = [
-                'title' => $g['title'] ?? '',
-                'desc'  => $g['desc'] ?? '',
-                'url'   => $g['url'] ?? '#',
-                'img'   => $img_path ?? ($g['old_img'] ?? 'assets/img/home/default.jpg')
-            ];
-        }
-    }
-    $data['guide_items'] = $new_guides;
-    break;
-    case 'update_faq':
-    $data['faq_title'] = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
-    $new_faqs = [];
-    if (isset($_POST['faq']) && is_array($_POST['faq'])) {
-        foreach ($_POST['faq'] as $f) {
-            $new_faqs[] = [
-                'question' => $f['question'] ?? '',
-                'answer'   => $f['answer'] ?? ''
-            ];
-        }
-    }
-    $data['faq_items'] = $new_faqs;
-    break;
 
-case 'update_footer':
-    // 1. بيانات الاستشارة
-    $data['consult_title'] = $_POST['consult_title'] ?? '';
-    $data['consult_desc']  = $_POST['consult_desc'] ?? '';
-    
-    // 2. بيانات العمود الأول
-    $data['footer_desc'] = $_POST['footer_desc'] ?? '';
-    
-    // 3. بيانات العمود الثاني (تم إلغاء تخزينه هنا لأنه يُجلب من الـ menu_links)
-    $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
-    
-    // 4. بيانات العمود الثالث (تواصل) - مع دعم الصور
-    $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
-    $data['footer_col3_links'] = [];
-    
-    if (isset($_POST['col3']) && is_array($_POST['col3'])) {
-        foreach ($_POST['col3'] as $i => $item) {
-            // معالجة رفع الصورة لكل عنصر في التواصل
-            $img_path = handle_upload('col3_img_' . $i, $upload_path);
-            
-            $data['footer_col3_links'][] = [
-                'title' => $item['title'] ?? '',
-                'url'   => $item['url'] ?? '#',
-                'img'   => $img_path ?? ($item['old_img'] ?? '')
-            ];
+    case 'update_guide':
+        $data['guide_title'] = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
+        $data['guide_desc'] = $_POST['guide_desc'] ?? '';
+        
+        $new_guides = [];
+        if (isset($_POST['guide']) && is_array($_POST['guide'])) {
+            foreach ($_POST['guide'] as $index => $g) {
+                $img_path = handle_upload('guide_img_' . $index, $upload_path);
+                $new_guides[] = [
+                    'title' => $g['title'] ?? '',
+                    'desc'  => $g['desc'] ?? '',
+                    'url'   => $g['url'] ?? '#',
+                    'img'   => $img_path ?? ($g['old_img'] ?? 'assets/img/home/default.jpg')
+                ];
+            }
         }
-    }
-    break;
+        $data['guide_items'] = $new_guides;
+        break;
+
+    case 'update_faq':
+        $data['faq_title'] = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
+        $new_faqs = [];
+        if (isset($_POST['faq']) && is_array($_POST['faq'])) {
+            foreach ($_POST['faq'] as $f) {
+                $new_faqs[] = [
+                    'question' => $f['question'] ?? '',
+                    'answer'   => $f['answer'] ?? ''
+                ];
+            }
+        }
+        $data['faq_items'] = $new_faqs;
+        break;
+
+    case 'update_footer':
+        // 1. بيانات الاستشارة
+        $data['consult_title'] = $_POST['consult_title'] ?? '';
+        $data['consult_desc']  = $_POST['consult_desc'] ?? '';
+        
+        // 2. بيانات العمود الأول
+        $data['footer_desc'] = $_POST['footer_desc'] ?? '';
+        
+        // 3. بيانات العمود الثاني (تم إلغاء تخزينه هنا لأنه يُجلب من الـ menu_links)
+        $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
+        
+        // 4. بيانات العمود الثالث (تواصل) - مع دعم الصور
+        $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
+        $data['footer_col3_links'] = [];
+        
+        if (isset($_POST['col3']) && is_array($_POST['col3'])) {
+            foreach ($_POST['col3'] as $i => $item) {
+                // معالجة رفع الصورة لكل عنصر في التواصل
+                $img_path = handle_upload('col3_img_' . $i, $upload_path);
+                
+                $data['footer_col3_links'][] = [
+                    'title' => $item['title'] ?? '',
+                    'url'   => $item['url'] ?? '#',
+                    'img'   => $img_path ?? ($item['old_img'] ?? '')
+                ];
+            }
+        }
+        break;
 
     // ==========================================
     // معالجات صفحة "عن الشركة" (about.php)
@@ -327,28 +347,90 @@ case 'update_footer':
         $data['about_counts'] = $new_counts;
         break;
 
-        case 'update_about_partners':
+    case 'update_about_partners':
         $data['partners_title'] = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
         
         $new_partners = [];
         if (isset($_POST['partners']) && is_array($_POST['partners'])) {
             foreach ($_POST['partners'] as $index => $p) {
-                // معالجة رفع الصورة للشريك
                 $img_path = handle_upload('partner_img_' . $index, $upload_path);
-                
-                // حفظ المسار الجديد إن وجد، أو الاحتفاظ بالمسار القديم
-                $final_img = $img_path ?? ($p['old_img'] ?? '');
-
-                if (!empty($final_img)) {
-                    $new_partners[] = [
-                        'img' => $final_img
-                    ];
-                }
+                $new_partners[] = [
+                    'img' => $img_path ?? ($p['old_img'] ?? '')
+                ];
             }
         }
         $data['partners_items'] = $new_partners;
         break;
 
+    // ==========================================
+    // معالجات صفحة "التعليم العالي" (education.php)
+    // ==========================================
+
+    case 'update_edu_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        $data['edu_hero'] = [
+            'title'    => $_POST['title'] ?? '',
+            'desc'     => $_POST['desc'] ?? '',
+            'btn_text' => $_POST['btn_text'] ?? 'ابدأ الآن',
+            'btn_url'  => $_POST['btn_url'] ?? '#',
+            'img'      => $img_path ?? ($_POST['old_img'] ?? 'assets/img/education/hero.jpg')
+        ];
+        break;
+
+    case 'update_edu_why':
+        $data['edu_why_title'] = $_POST['why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
+        $data['edu_why_desc']  = $_POST['why_desc'] ?? '';
+        
+        $new_why_items = [];
+        if (isset($_POST['items']) && is_array($_POST['items'])) {
+            foreach ($_POST['items'] as $index => $item) {
+                $img_path = handle_upload('why_img_' . $index, $upload_path);
+                $new_why_items[] = [
+                    'title' => $item['title'] ?? '',
+                    'desc'  => $item['desc'] ?? '',
+                    'img'   => $img_path ?? ($item['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['edu_why_items'] = $new_why_items;
+        break;
+
+    case 'update_edu_timeline':
+        $data['edu_timeline_title'] = $_POST['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
+        $data['edu_timeline_desc']  = $_POST['timeline_desc'] ?? '';
+        
+        $new_steps = [];
+        if (isset($_POST['steps']) && is_array($_POST['steps'])) {
+            foreach ($_POST['steps'] as $index => $step) {
+                $icon_path = handle_upload('step_icon_' . $index, $upload_path);
+                $new_steps[] = [
+                    'title'    => $step['title'] ?? '',
+                    'subtitle' => $step['subtitle'] ?? '',
+                    'desc'     => $step['desc'] ?? '',
+                    'icon'     => $icon_path ?? ($step['old_icon'] ?? '')
+                ];
+            }
+        }
+        $data['edu_timeline_steps'] = $new_steps;
+        break;
+
+    case 'update_edu_services':
+        $data['edu_services_title'] = $_POST['services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
+        $data['edu_services_desc']  = $_POST['services_desc'] ?? '';
+        
+        $new_edu_services = [];
+        if (isset($_POST['services']) && is_array($_POST['services'])) {
+            foreach ($_POST['services'] as $index => $srv) {
+                $img_path = handle_upload('srv_img_' . $index, $upload_path);
+                $new_edu_services[] = [
+                    'title' => $srv['title'] ?? '',
+                    'url'   => $srv['url'] ?? '#',
+                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['edu_services_items'] = $new_edu_services;
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid']));

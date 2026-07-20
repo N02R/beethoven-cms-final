@@ -201,13 +201,16 @@ $ab = $data['about'] ?? [];
       <form enctype="multipart/form-data">
         <input type="hidden" name="action" value="update_about_partners">
         <div class="modal-body">
+          
           <div class="mb-3">
             <label class="form-label">عنوان القسم</label>
             <input type="text" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا'); ?>">
           </div>
+          
           <hr>
+          
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6>قائمة الشركاء</h6>
+            <h6 class="mb-0">قائمة الشركاء</h6>
             <button type="button" class="btn btn-sm btn-outline-primary" onclick="addPartnerRow()">
               <i class="bi bi-plus-lg"></i> إضافة شريك
             </button>
@@ -218,17 +221,20 @@ $ab = $data['about'] ?? [];
               <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
                 <div class="row g-2 align-items-center">
                   <div class="col-md-10">
+                    <label class="form-label small text-muted mb-1">صورة الشريك</label>
                     <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
-                    <!-- حقل الصورة القديمة المخفي الضروري للسيرفر -->
                     <input type="hidden" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
                   </div>
-                  <div class="col-md-2 text-end">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                  <div class="col-md-2 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="حذف">
+                      <i class="bi bi-trash"></i>
+                    </button>
                   </div>
                 </div>
               </div>
             <?php endforeach; ?>
           </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
@@ -238,6 +244,7 @@ $ab = $data['about'] ?? [];
     </div>
   </div>
 </div>
+
 
 
 <!-- Dynamic Rows JS Engine -->

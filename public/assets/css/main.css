@@ -1,37 +1,41 @@
 /* ================================================
    FILE: main.css
-   DESCRIPTION: Main entry point for site styles
+   DESCRIPTION: Main entry point for site styles (Updated for Actual Structure)
 ================================================ */
 
-/* 1. المتغيرات والأساسيات (Variables & Base) */
+/* 1. المتغيرات والأساسيات (Variables & Fonts) */
 @import 'abstracts/_variables.css';
 @import 'abstracts/_fonts.css';
-@import 'base/_reset.css';        /* تصفير هوامش المتصفح الافتراضية */
-@import 'base/_typography.css';  /* إعدادات الخطوط والنصوص العامة */
 
 /* 2. المكونات (Components) */
-/* قمت بوضع أهم المكونات التي تتكرر في صفحاتك */
-@import 'components/_buttons.css';
 @import 'components/_navbar.css';
+@import 'components/_hero.css';
+@import 'components/_services.css';
+@import 'components/_choose.css';
+@import 'components/_reviews.css';
+@import 'components/_guide_popular.css';
 @import 'components/_footer.css';
-@import 'components/_cards.css';
-@import 'components/_forms.css';
+@import 'components/_editor.css';
 
-/* 3. الصفحات (Pages - إذا كانت موجودة) */
-/* يمكنكِ إضافة ملفات خاصة بكل صفحة هنا */
-@import 'pages/_home.css';
+/* 3. الصفحات (Pages) */
 @import 'pages/_about.css';
-@import 'pages/_services.css';
+@import 'pages/_contact.css';
+@import 'pages/_count.css';
+@import 'pages/_edu_programs.css';
+@import 'pages/_partners.css';
+@import 'pages/_team.css';
+@import 'pages/_timeline.css';
 
-/* 4. نظام الـ Responsive (يجب أن يكون في نهاية الملف لضمان الأسبقية) */
+/* 4. نظام الـ Responsive (يجب أن يكون في النهاية لضمان الأسبقية) */
 @import 'responsive/_mobile.css';
 @import 'responsive/_tablet.css';
 @import 'responsive/_desktop.css';
 
+/* الأساسيات العامة */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; background: #fff; }
-body { font-family: var(--main-font); color: var(--dark); overflow-x: hidden; width: 100%; }
+body { font-family: var(--main-font, sans-serif); color: var(--dark, #222); overflow-x: hidden; width: 100%; }
 
 .custom-container { width: 92%; max-width: 1400px; margin: auto; }
-.sec-title { font-weight: var(--fw-bold); font-size: 32px; color: var(--black); }
+.sec-title { font-weight: bold; font-size: 32px; color: #000; }

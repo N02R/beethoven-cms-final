@@ -10,13 +10,10 @@ header("Cache-Control: public, max-age=" . $offset);
 // 3. الملفات الأساسية (تأكدي أنها موجودة بالفعل في مجلد assets/css/)
 $base_files = [
     'bootstrap.min.css',
-    'all.min.css',
-    'main.css',
-    'style.css',
-    'header.css',
-    'footer.css',
-    'responsive-index.css'
+    'swiper-bundle.min.css',
+    'main.css'
 ];
+
 
 // 4. استقبال الملفات الإضافية المحقونة من الصفحات
 $extra_files = isset($_GET['files']) ? explode(',', $_GET['files']) : [];

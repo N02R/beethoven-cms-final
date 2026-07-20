@@ -85,9 +85,9 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'edu_timeline_steps'     => [],
     'edu_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
     'edu_services_desc'      => 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالالتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا',
-    'edu_services_items'     => []
-    ,
-        // ==========================================
+    'edu_services_items'     => [],
+
+    // ==========================================
     // القيم الافتراضية لصفحة التدريب المهني والتوظيف (job.php)
     // ==========================================
     'job_hero'               => [
@@ -109,7 +109,6 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'job_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
     'job_services_desc'      => 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالإلتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا',
     'job_services_items'     => []
-
 ];
 
 
@@ -282,25 +281,16 @@ switch ($action) {
         break;
 
     case 'update_footer':
-        // 1. بيانات الاستشارة
         $data['consult_title'] = $_POST['consult_title'] ?? '';
         $data['consult_desc']  = $_POST['consult_desc'] ?? '';
-        
-        // 2. بيانات العمود الأول
         $data['footer_desc'] = $_POST['footer_desc'] ?? '';
-        
-        // 3. بيانات العمود الثاني (تم إلغاء تخزينه هنا لأنه يُجلب من الـ menu_links)
         $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
-        
-        // 4. بيانات العمود الثالث (تواصل) - مع دعم الصور
         $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
         $data['footer_col3_links'] = [];
         
         if (isset($_POST['col3']) && is_array($_POST['col3'])) {
             foreach ($_POST['col3'] as $i => $item) {
-                // معالجة رفع الصورة لكل عنصر في التواصل
                 $img_path = handle_upload('col3_img_' . $i, $upload_path);
-                
                 $data['footer_col3_links'][] = [
                     'title' => $item['title'] ?? '',
                     'url'   => $item['url'] ?? '#',
@@ -313,15 +303,12 @@ switch ($action) {
     // ==========================================
     // معالجات صفحة "عن الشركة" (about.php)
     // ==========================================
-
     case 'update_about_section':
-        // 1. رفع الصور المرفقة إن وجدت
         $main_img = handle_upload('about_main_img', $upload_path);
         $sub_img  = handle_upload('about_sub_img', $upload_path);
         $vision_icon = handle_upload('about_vision_icon', $upload_path);
         $message_icon = handle_upload('about_message_icon', $upload_path);
 
-        // 2. تحديث بيانات مصفوفة "عن الشركة"
         $data['about'] = [
             'title'        => $_POST['about_title'] ?? 'من نحن',
             'desc'         => $_POST['about_desc'] ?? '',
@@ -373,7 +360,6 @@ switch ($action) {
 
     case 'update_about_partners':
         $data['partners_title'] = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
-        
         $new_partners = [];
         if (isset($_POST['partners']) && is_array($_POST['partners'])) {
             foreach ($_POST['partners'] as $index => $p) {
@@ -389,7 +375,6 @@ switch ($action) {
     // ==========================================
     // معالجات صفحة "التعليم العالي" (education.php)
     // ==========================================
-
     case 'update_edu_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         $data['edu_hero'] = [
@@ -404,7 +389,6 @@ switch ($action) {
     case 'update_edu_why':
         $data['edu_why_title'] = $_POST['why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
         $data['edu_why_desc']  = $_POST['why_desc'] ?? '';
-        
         $new_why_items = [];
         if (isset($_POST['items']) && is_array($_POST['items'])) {
             foreach ($_POST['items'] as $index => $item) {
@@ -419,10 +403,9 @@ switch ($action) {
         $data['edu_why_items'] = $new_why_items;
         break;
 
-        case 'update_edu_timeline':
+    case 'update_edu_timeline':
         $data['edu_timeline_title'] = $_POST['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
         $data['edu_timeline_desc']  = $_POST['timeline_desc'] ?? '';
-        
         $new_steps = [];
         if (isset($_POST['steps']) && is_array($_POST['steps'])) {
             foreach ($_POST['steps'] as $index => $step) {
@@ -436,7 +419,6 @@ switch ($action) {
                 ];
             }
         }
-        // ترتيب الخطوات بناءً على حقل order
         usort($new_steps, fn($a, $b) => $a['order'] <=> $b['order']);
         $data['edu_timeline_steps'] = $new_steps;
         break;
@@ -444,7 +426,6 @@ switch ($action) {
     case 'update_edu_services':
         $data['edu_services_title'] = $_POST['services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
         $data['edu_services_desc']  = $_POST['services_desc'] ?? '';
-        
         $new_edu_services = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $srv) {
@@ -458,10 +439,97 @@ switch ($action) {
         }
         $data['edu_services_items'] = $new_edu_services;
         break;
-        
+
+    // ==========================================
+    // معالجات صفحة "التدريب المهني والتوظيف" (job.php)
+    // ==========================================
+    case 'update_job_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        $data['job_hero'] = [
+            'title'    => $_POST['title'] ?? '',
+            'desc'     => $_POST['desc'] ?? '',
+            'btn_text' => $_POST['btn_text'] ?? 'ابدأ الآن',
+            'btn_url'  => $_POST['btn_url'] ?? '#',
+            'img'      => $img_path ?? ($_POST['old_img'] ?? 'assets/img/job/hero.jpg')
+        ];
+        break;
+
+    case 'update_job_why':
+        $data['job_why_title'] = $_POST['why_title'] ?? 'لماذا التدريب معنا؟';
+        $data['job_why_desc']  = $_POST['why_desc'] ?? '';
+        $new_job_why = [];
+        if (isset($_POST['items']) && is_array($_POST['items'])) {
+            foreach ($_POST['items'] as $index => $item) {
+                $img_path = handle_upload('why_img_' . $index, $upload_path);
+                $new_job_why[] = [
+                    'title' => $item['title'] ?? '',
+                    'desc'  => $item['desc'] ?? '',
+                    'img'   => $img_path ?? ($item['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['job_why_items'] = $new_job_why;
+        break;
+
+    case 'update_job_program':
+        $data['job_program_title'] = $_POST['program_title'] ?? 'أنواع التدريب المهني';
+        $data['job_program_desc']  = $_POST['program_desc'] ?? '';
+        $new_programs = [];
+        if (isset($_POST['programs']) && is_array($_POST['programs'])) {
+            foreach ($_POST['programs'] as $index => $prog) {
+                $img_path = handle_upload('prog_img_' . $index, $upload_path);
+                $new_programs[] = [
+                    'title'    => $prog['title'] ?? '',
+                    'desc'     => $prog['desc'] ?? '',
+                    'btn_text' => $prog['btn_text'] ?? 'اطلب الآن',
+                    'btn_url'  => $prog['btn_url'] ?? '#',
+                    'img'      => $img_path ?? ($prog['old_img'] ?? ''),
+                    'is_dark'  => isset($prog['is_dark']) && $prog['is_dark'] == '1'
+                ];
+            }
+        }
+        $data['job_program_types'] = $new_programs;
+        break;
+
+    case 'update_job_timeline':
+        $data['job_timeline_title'] = $_POST['timeline_title'] ?? 'كيف نساعدك خطوة بخطوة؟';
+        $data['job_timeline_desc']  = $_POST['timeline_desc'] ?? '';
+        $new_job_steps = [];
+        if (isset($_POST['steps']) && is_array($_POST['steps'])) {
+            foreach ($_POST['steps'] as $index => $step) {
+                $icon_path = handle_upload('step_icon_' . $index, $upload_path);
+                $new_job_steps[] = [
+                    'title'    => $step['title'] ?? '',
+                    'subtitle' => $step['subtitle'] ?? '',
+                    'desc'     => $step['desc'] ?? '',
+                    'order'    => (int)($step['order'] ?? $index),
+                    'icon'     => $icon_path ?? ($step['old_icon'] ?? '')
+                ];
+            }
+        }
+        usort($new_job_steps, fn($a, $b) => $a['order'] <=> $b['order']);
+        $data['job_timeline_steps'] = $new_job_steps;
+        break;
+
+    case 'update_job_services':
+        $data['job_services_title'] = $_POST['services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
+        $data['job_services_desc']  = $_POST['services_desc'] ?? '';
+        $new_job_services = [];
+        if (isset($_POST['services']) && is_array($_POST['services'])) {
+            foreach ($_POST['services'] as $index => $srv) {
+                $img_path = handle_upload('srv_img_' . $index, $upload_path);
+                $new_job_services[] = [
+                    'title' => $srv['title'] ?? '',
+                    'url'   => $srv['url'] ?? '#',
+                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['job_services_items'] = $new_job_services;
+        break;
 
     default:
-        die(json_encode(['success' => false, 'message' => 'Action invalid']));
+        die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));
 }
 
 

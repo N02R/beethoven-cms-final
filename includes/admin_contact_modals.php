@@ -43,34 +43,68 @@ $path_prefix = $path_prefix ?? '';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary"></i> تعديل معلومات التواصل</h5>
+                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary"></i> تعديل معلومات وأيقونات التواصل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactInfoForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">العنوان (المدينة، الدولة)</label>
-                        <input type="text" class="form-control" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>">
+                    
+                    <!-- 1. العنوان -->
+                    <div class="card p-3 mb-3 border-0 bg-light rounded-3">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-geo-alt text-danger"></i> خانة العنوان</h6>
+                        <div class="mb-2">
+                            <label class="small text-muted mb-1">نص العنوان</label>
+                            <input type="text" class="form-control form-control-sm" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>">
+                        </div>
+                        <div class="mb-1">
+                            <label class="small text-muted mb-1">أيقونة العنوان الحالية</label>
+                            <?php if (!empty($contact_address_icon)): ?>
+                                <div class="mb-1">
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_address_icon); ?>" class="thumb-preview" style="max-height: 40px;">
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" class="form-control form-control-sm" name="contact_address_icon" accept="image/*">
+                            <input type="hidden" name="old_contact_address_icon" value="<?php echo htmlspecialchars($contact_address_icon ?? ''); ?>">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">البريد الإلكتروني</label>
-                        <input type="email" class="form-control" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>">
+
+                    <!-- 2. البريد الإلكتروني -->
+                    <div class="card p-3 mb-3 border-0 bg-light rounded-3">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-envelope text-primary"></i> خانة البريد الإلكتروني</h6>
+                        <div class="mb-2">
+                            <label class="small text-muted mb-1">البريد الإلكتروني</label>
+                            <input type="email" class="form-control form-control-sm" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>">
+                        </div>
+                        <div class="mb-1">
+                            <label class="small text-muted mb-1">أيقونة البريد الحالية</label>
+                            <?php if (!empty($contact_email_icon)): ?>
+                                <div class="mb-1">
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_email_icon); ?>" class="thumb-preview" style="max-height: 40px;">
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" class="form-control form-control-sm" name="contact_email_icon" accept="image/*">
+                            <input type="hidden" name="old_contact_email_icon" value="<?php echo htmlspecialchars($contact_email_icon ?? ''); ?>">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رقم الهاتف</label>
-                        <input type="text" class="form-control" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold d-block">صورة أو أيقونة التواصل الحالية</label>
-                        <?php if (!empty($contact_info_img)): ?>
-                            <div class="p-2 border rounded bg-light mb-2 text-center">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($contact_info_img) . '?' . time(); ?>" style="max-height: 80px; object-fit: contain;">
-                            </div>
-                        <?php endif; ?>
-                        <label class="form-label fw-bold">تغيير الصورة / الأيقونة</label>
-                        <input type="file" class="form-control" name="contact_info_img" accept="image/*">
-                        <input type="hidden" name="old_contact_info_img" value="<?php echo htmlspecialchars($contact_info_img ?? ''); ?>">
+
+                    <!-- 3. الهاتف -->
+                    <div class="card p-3 mb-0 border-0 bg-light rounded-3">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-telephone text-success"></i> خانة الهاتف</h6>
+                        <div class="mb-2">
+                            <label class="small text-muted mb-1">رقم الهاتف</label>
+                            <input type="text" class="form-control form-control-sm" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>">
+                        </div>
+                        <div class="mb-1">
+                            <label class="small text-muted mb-1">أيقونة الهاتف الحالية</label>
+                            <?php if (!empty($contact_phone_icon)): ?>
+                                <div class="mb-1">
+                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_phone_icon); ?>" class="thumb-preview" style="max-height: 40px;">
+                                </div>
+                            <?php endif; ?>
+                            <input type="file" class="form-control form-control-sm" name="contact_phone_icon" accept="image/*">
+                            <input type="hidden" name="old_contact_phone_icon" value="<?php echo htmlspecialchars($contact_phone_icon ?? ''); ?>">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -81,6 +115,7 @@ $path_prefix = $path_prefix ?? '';
         </div>
     </div>
 </div>
+
 
 
 <!-- 3. WhatsApp Section Modal -->

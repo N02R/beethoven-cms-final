@@ -472,14 +472,21 @@ switch ($action) {
         $data['contact_hero_img'] = $img_path ?: ($_POST['old_contact_hero_img'] ?? '');
         break;
 
-        case 'update_contact_info':
+    case 'update_contact_info':
         $data['contact_address'] = $_POST['contact_address'] ?? '';
         $data['contact_email']   = $_POST['contact_email'] ?? '';
         $data['contact_phone']   = $_POST['contact_phone'] ?? '';
-        
-        $img_path = handle_upload('contact_info_img', $upload_path);
-        $data['contact_info_img'] = $img_path ?: ($_POST['old_contact_info_img'] ?? '');
+
+        $addr_icon = handle_upload('contact_address_icon', $upload_path);
+        $data['contact_address_icon'] = $addr_icon ?: ($_POST['old_contact_address_icon'] ?? '');
+
+        $email_icon = handle_upload('contact_email_icon', $upload_path);
+        $data['contact_email_icon'] = $email_icon ?: ($_POST['old_contact_email_icon'] ?? '');
+
+        $phone_icon = handle_upload('contact_phone_icon', $upload_path);
+        $data['contact_phone_icon'] = $phone_icon ?: ($_POST['old_contact_phone_icon'] ?? '');
         break;
+
 
     case 'update_whatsapp_section':
         $data['whatsapp_text']    = $_POST['whatsapp_text'] ?? '';

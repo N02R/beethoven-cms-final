@@ -472,10 +472,13 @@ switch ($action) {
         $data['contact_hero_img'] = $img_path ?: ($_POST['old_contact_hero_img'] ?? '');
         break;
 
-    case 'update_contact_info':
+        case 'update_contact_info':
         $data['contact_address'] = $_POST['contact_address'] ?? '';
         $data['contact_email']   = $_POST['contact_email'] ?? '';
         $data['contact_phone']   = $_POST['contact_phone'] ?? '';
+        
+        $img_path = handle_upload('contact_info_img', $upload_path);
+        $data['contact_info_img'] = $img_path ?: ($_POST['old_contact_info_img'] ?? '');
         break;
 
     case 'update_whatsapp_section':

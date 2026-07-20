@@ -47,7 +47,7 @@ $path_prefix = $path_prefix ?? '';
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="contactInfoForm">
+                <form id="contactInfoForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
                     <div class="mb-3">
                         <label class="form-label fw-bold">العنوان (المدينة، الدولة)</label>
@@ -61,6 +61,17 @@ $path_prefix = $path_prefix ?? '';
                         <label class="form-label fw-bold">رقم الهاتف</label>
                         <input type="text" class="form-control" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>">
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold d-block">صورة أو أيقونة التواصل الحالية</label>
+                        <?php if (!empty($contact_info_img)): ?>
+                            <div class="p-2 border rounded bg-light mb-2 text-center">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($contact_info_img) . '?' . time(); ?>" style="max-height: 80px; object-fit: contain;">
+                            </div>
+                        <?php endif; ?>
+                        <label class="form-label fw-bold">تغيير الصورة / الأيقونة</label>
+                        <input type="file" class="form-control" name="contact_info_img" accept="image/*">
+                        <input type="hidden" name="old_contact_info_img" value="<?php echo htmlspecialchars($contact_info_img ?? ''); ?>">
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -70,6 +81,7 @@ $path_prefix = $path_prefix ?? '';
         </div>
     </div>
 </div>
+
 
 <!-- 3. WhatsApp Section Modal -->
 <div class="modal fade custom-modal" id="whatsappSectionModal" tabindex="-1" aria-hidden="true">

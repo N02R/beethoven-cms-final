@@ -10,9 +10,8 @@ if (!defined('ALLOWED_ACCESS')) {
 
 $path_prefix = ''; 
 
-// استدعاء الهيدر الأساسي
+// 1. استدعاء الهيدر الأساسي
 include_once 'includes/header.php'; 
-
 
 // تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة
 $page_css = [

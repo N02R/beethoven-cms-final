@@ -170,14 +170,13 @@ include 'includes/header.php';
 </section>
 <!-- review end -->
 
-  <!-- ===== GUIDE START (Dynamic from JSON) ===== -->
-  <section class="guide py-5">
+  <!-- ===== GUIDE HOME SECTION START ===== -->
+  <section class="guide py-5" style="position: relative;">
     <div class="custom-container">
       <div class="text-center mb-5">
         <?php 
-            // جلب البيانات من ملف الـ JSON الموحد
             $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
-            $guide_desc = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
+            $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
             $guide_items = $data['guide_items'] ?? [];
         ?>
         <h2 class="sec-title mb-3"><?php echo htmlspecialchars($guide_title); ?></h2>
@@ -189,8 +188,7 @@ include 'includes/header.php';
       <div class="row g-4">
         <?php if (!empty($guide_items)): ?>
           <?php 
-            // في الصفحة الرئيسية، قد نفضل عرض عينة محددة (مثلاً أول 3 أو 6 مقالات فقط)
-            // استخدام array_slice لعرض أول 3 مقالات كمثال، أو إزالة array_slice لعرض الكل
+            // عرض أول 6 مقالات فقط في الصفحة الرئيسية
             $home_guide_items = array_slice($guide_items, 0, 6); 
           ?>
           <?php foreach ($home_guide_items as $item): ?>
@@ -198,7 +196,7 @@ include 'includes/header.php';
               <div class="card h-100 border-0 shadow-sm">
                 <?php if (!empty($item['img'])): ?>
                   <div class="card-img-wrapper">
-                    <img src="<?php echo htmlspecialchars($path_prefix . $item['img']); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
+                    <img src="<?php echo htmlspecialchars($path_prefix . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
                   </div>
                 <?php endif; ?>
                 <div class="card-body d-flex flex-column">
@@ -220,7 +218,8 @@ include 'includes/header.php';
       </div>
     </div>
   </section>
-  <!-- ===== GUIDE END ===== -->
+  <!-- ===== GUIDE HOME SECTION END ===== -->
+
 
 <section class="popular py-5" style="position: relative;">
   <?php if ($is_admin): ?>

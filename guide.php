@@ -19,14 +19,15 @@ $page_js = [];
 // 2. استدعاء الهيدر الأساسي
 include_once 'includes/header.php'; 
 
-// 3. جلب بيانات الدليل من ملف التكوين (JSON) مع القيم الافتراضية
+// 3. جلب بيانات الدليل من ملف التكوين (JSON) مع القيم الافتراضية المطابقة لتصميمك
 $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
 $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
 $guide_items = $data['guide_items'] ?? [];
 ?>
 
-  <!-- ===== GUIDE START ===== -->
+  <!-- ===== GUIDE PAGE START ===== -->
   <section class="guide py-5" style="position: relative;">
+    <!-- زر التعديل الخاص بالأدمن بنفس ستايل صفحة job -->
     <?php if (isset($is_admin) && $is_admin): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
           <i class="bi bi-pencil-fill"></i>
@@ -70,7 +71,7 @@ $guide_items = $data['guide_items'] ?? [];
       </div>
     </div>
   </section>
-  <!-- ===== GUIDE END ===== -->
+  <!-- ===== GUIDE PAGE END ===== -->
 
 <?php 
 // 4. استدعاء الفوتر الأساسي

@@ -1,16 +1,8 @@
 <?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
-?>
-
-
-<?php 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+include 'includes/header.php'; 
 ?>
 
 <!-- بداية قسم الهيرو -->
@@ -263,4 +255,6 @@ if (session_status() === PHP_SESSION_NONE) {
 </section>
 
 
-
+<?php 
+include 'includes/footer.php'; 
+?>

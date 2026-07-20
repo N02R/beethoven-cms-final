@@ -109,8 +109,11 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     // صفحة اتصل بنا (contact.php)
     'contact_hero_img'       => 'assets/img/contact us/contacthero.png',
     'contact_address'        => 'Rheinweg 140 ,53129 Bonn,Germany',
+    'contact_address_icon'   => 'assets/img/Location.svg',
     'contact_email'          => 'info@Beethoven-City-Services.com',
+    'contact_email_icon'     => 'assets/img/Mail.svg',
     'contact_phone'          => '666-230-71 176 (0) 49+',
+    'contact_phone_icon'     => 'assets/img/Call.svg',
     'whatsapp_text'          => 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات',
     'whatsapp_url'           => 'https://wa.me/4917671230666',
     'whatsapp_btn_txt'       => 'تواصل معنا عبر واتساب'
@@ -476,6 +479,18 @@ switch ($action) {
         $data['contact_address'] = $_POST['contact_address'] ?? '';
         $data['contact_email']   = $_POST['contact_email'] ?? '';
         $data['contact_phone']   = $_POST['contact_phone'] ?? '';
+
+        // حفظ أيقونة العنوان
+        $addr_icon = handle_upload('contact_address_icon', $upload_path);
+        $data['contact_address_icon'] = $addr_icon ?: ($_POST['old_contact_address_icon'] ?? '');
+
+        // حفظ أيقونة البريد
+        $email_icon = handle_upload('contact_email_icon', $upload_path);
+        $data['contact_email_icon'] = $email_icon ?: ($_POST['old_contact_email_icon'] ?? '');
+
+        // حفظ أيقونة الهاتف
+        $phone_icon = handle_upload('contact_phone_icon', $upload_path);
+        $data['contact_phone_icon'] = $phone_icon ?: ($_POST['old_contact_phone_icon'] ?? '');
         break;
 
     case 'update_whatsapp_section':

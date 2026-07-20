@@ -395,7 +395,7 @@ switch ($action) {
         $data['edu_why_items'] = $new_why_items;
         break;
 
-    case 'update_edu_timeline':
+        case 'update_edu_timeline':
         $data['edu_timeline_title'] = $_POST['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
         $data['edu_timeline_desc']  = $_POST['timeline_desc'] ?? '';
         
@@ -407,10 +407,13 @@ switch ($action) {
                     'title'    => $step['title'] ?? '',
                     'subtitle' => $step['subtitle'] ?? '',
                     'desc'     => $step['desc'] ?? '',
+                    'order'    => (int)($step['order'] ?? $index),
                     'icon'     => $icon_path ?? ($step['old_icon'] ?? '')
                 ];
             }
         }
+        // ترتيب الخطوات بناءً على حقل order
+        usort($new_steps, fn($a, $b) => $a['order'] <=> $b['order']);
         $data['edu_timeline_steps'] = $new_steps;
         break;
 

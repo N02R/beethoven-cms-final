@@ -168,11 +168,15 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                         <label class="small text-muted">اسم الخطوة</label>
                                         <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="small text-muted">العنوان الفرعي</label>
                                         <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
+                                        <label class="small text-muted">الترتيب</label>
+                                        <input type="number" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
+                                    </div>
+                                    <div class="col-md-3">
                                         <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
@@ -182,12 +186,12 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                         </div>
                                         <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-11">
-                                        <label class="small text-muted">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
-                                    </div>
                                     <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                    <div class="col-md-12 mt-2">
+                                        <label class="small text-muted">التفاصيل</label>
+                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
                                     </div>
                                 </div>
                             </div>
@@ -206,6 +210,7 @@ $edu_services_items = $data['edu_services_items'] ?? [];
         </div>
     </div>
 </div>
+
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">
@@ -309,13 +314,14 @@ $edu_services_items = $data['edu_services_items'] ?? [];
         div.innerHTML = `
             <div class="row g-2">
                 <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][title]" placeholder="اسم الخطوة"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
-                <div class="col-md-4">
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
+                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="steps[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب"></div>
+                <div class="col-md-3">
                     <input type="file" class="form-control form-control-sm" name="step_icon_${eduStepCount}" accept="image/*">
                     <input type="hidden" name="steps[${eduStepCount}][old_icon]" value="">
                 </div>
-                <div class="col-md-11"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][desc]" placeholder="التفاصيل"></div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('step_row_${eduStepCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-12 mt-2"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][desc]" placeholder="التفاصيل"></div>
             </div>`;
         container.appendChild(div);
         eduStepCount++;
@@ -367,3 +373,4 @@ $edu_services_items = $data['edu_services_items'] ?? [];
         });
     });
 </script>
+

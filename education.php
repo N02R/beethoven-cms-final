@@ -51,13 +51,18 @@ $edu_why_items = $data['edu_why_items'] ?? [
 $edu_timeline_title = $data['edu_timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
 $edu_timeline_desc  = $data['edu_timeline_desc'] ?? 'نرشدك من أول استشارة حتى استقرارك في ألمانيا — إليك كيف تتم العملية معنا.';
 $edu_timeline_steps = $data['edu_timeline_steps'] ?? [
-    ['title' => 'استشارة أولية', 'subtitle' => 'نرسم معك طريقك الدراسي في ألمانيا', 'desc' => 'نساعدك على تحديد التخصص والجامعة المناسبة حسب أهدافك الأكاديمية والمهنية.', 'icon' => 'assets/img/vector/Grouptime1.png'],
-    ['title' => 'تجهيز المستندات', 'subtitle' => 'نجهز ملفك بالشكل المثالي', 'desc' => 'ترجمة، تصديق، تنسيق السيرة الذاتية، كتابة خطاب الدافع وكل ما تحتاجه لتقديم قوي', 'icon' => 'assets/img/vector/Grouptime2.png'],
-    ['title' => 'تقديم الطلبات', 'subtitle' => 'نقدم لك على أفضل الجامعات', 'desc' => 'نختار أفضل الجامعات ونرسل طلباتك ونتابع الردود معك', 'icon' => 'assets/img/vector/Grouptime3.png'],
-    ['title' => 'دعم التأشيرة', 'subtitle' => 'نضمن جهوزيتك الكاملة للمقابلة', 'desc' => 'نعد معك ملف الفيزا بالكامل ونرشدك خلال الإجراءات الرسمية خطوة بخطوة', 'icon' => 'assets/img/vector/Grouptime4.png'],
-    ['title' => 'الوصول والاستقرار', 'subtitle' => 'نستقبلك ونرتب تفاصيل حياتك', 'desc' => 'من الاستقبال في المطار، إلى السكن، إلى التسجيل في المدينة وفتح الحساب البنكي', 'icon' => 'assets/img/vector/Grouptime5.png'],
-    ['title' => 'دعم بعد الوصول', 'subtitle' => 'نبقى معك حتى تستقر تمامًا', 'desc' => 'دعم دائم بعد الوصول يشمل الإرشاد، المتابعة الدراسية، وحل أي تحديات تواجهها', 'icon' => 'assets/img/vector/Grouptime6.png']
+    ['title' => 'استشارة أولية', 'subtitle' => 'نرسم معك طريقك الدراسي في ألمانيا', 'desc' => 'نساعدك على تحديد التخصص والجامعة المناسبة حسب أهدافك الأكاديمية والمهنية.', 'order' => 0, 'icon' => 'assets/img/vector/Grouptime1.png'],
+    ['title' => 'تجهيز المستندات', 'subtitle' => 'نجهز ملفك بالشكل المثالي', 'desc' => 'ترجمة، تصديق، تنسيق السيرة الذاتية، كتابة خطاب الدافع وكل ما تحتاجه لتقديم قوي', 'order' => 1, 'icon' => 'assets/img/vector/Grouptime2.png'],
+    ['title' => 'تقديم الطلبات', 'subtitle' => 'نقدم لك على أفضل الجامعات', 'desc' => 'نختار أفضل الجامعات ونرسل طلباتك ونتابع الردود معك', 'order' => 2, 'icon' => 'assets/img/vector/Grouptime3.png'],
+    ['title' => 'دعم التأشيرة', 'subtitle' => 'نضمن جهوزيتك الكاملة للمقابلة', 'desc' => 'نعد معك ملف الفيزا بالكامل ونرشدك خلال الإجراءات الرسمية خطوة بخطوة', 'order' => 3, 'icon' => 'assets/img/vector/Grouptime4.png'],
+    ['title' => 'الوصول والاستقرار', 'subtitle' => 'نستقبلك ونرتب تفاصيل حياتك', 'desc' => 'من الاستقبال في المطار، إلى السكن، إلى التسجيل في المدينة وفتح الحساب البنكي', 'order' => 4, 'icon' => 'assets/img/vector/Grouptime5.png'],
+    ['title' => 'دعم بعد الوصول', 'subtitle' => 'نبقى معك حتى تستقر تمامًا', 'desc' => 'دعم دائم بعد الوصول يشمل الإرشاد، المتابعة الدراسية، وحل أي تحديات تواجهها', 'order' => 5, 'icon' => 'assets/img/vector/Grouptime6.png']
 ];
+
+// فرز مصفوفة الـ timeline بحسب حقل order
+usort($edu_timeline_steps, function($a, $b) {
+    return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
+});
 
 $edu_services_title = $data['edu_services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
 $edu_services_desc  = $data['edu_services_desc'] ?? 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالالتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا';

@@ -8,8 +8,8 @@
     { "platform": "YouTube", "url": "https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY", "img": "assets/img/socialicons/youtube.png" }
   ],
   "menu_links": [
-    { "title": "الرئيسية", "url": "index.php", "order": 1 },
-    { "title": "عن الشركة", "url": "aboutus.php", "order": 2 },
+    { "title": "الرئيسية", "url": "index.php", "class": "active" ,"order": 1 },
+    { "title": "عن الشركة", "url": "about.php", "order": 2 },
     { "title": "التعليم العالي", "url": "education.php", "order": 3 },
     { "title": "التدريب المهني", "url": "job.php", "order": 4 },
     { "title": "دليل بيتهوفن", "url": "guide.php", "order": 5 },

@@ -1,129 +1,78 @@
 <?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-?>
 
-<?php 
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
+}
+
 $path_prefix = ''; 
-// تعريف ملفات الـ CSS الخاصة بصفحة الدليل فقط
+
+// 1. تعريف ملفات الـ CSS الخاصة بصفحة الدليل
 $page_css = [
     'assets/css/style.css'
 ];
 
+$page_js = [];
 
+// 2. استدعاء الهيدر الأساسي
+include_once 'includes/header.php'; 
+
+// 3. جلب بيانات الدليل من ملف التكوين (JSON) مع القيم الافتراضية
+$guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
+$guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
+$guide_items = $data['guide_items'] ?? [];
 ?>
 
   <!-- ===== GUIDE START ===== -->
-  <section class="guide py-5">
+  <section class="guide py-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <div class="text-center mb-5">
-        <h2 class="sec-title mb-3">دليل بيتهوفن الشامل</h2>
+        <h2 class="sec-title mb-3"><?php echo htmlspecialchars($guide_title); ?></h2>
         <p class="main-p mx-auto" style="max-width: 700px;">
-          هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.
+          <?php echo nl2br(htmlspecialchars($guide_desc)); ?>
         </p>
       </div>
 
       <div class="row g-4">
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/home/image(0).jpg" alt="الدراسة في ألمانيا" class="card-img-top img-fluid">
+        <?php if (!empty($guide_items)): ?>
+          <?php foreach ($guide_items as $item): ?>
+            <div class="col-lg-4 col-md-6">
+              <div class="card h-100 border-0 shadow-sm">
+                <?php if (!empty($item['img'])): ?>
+                  <div class="card-img-wrapper">
+                    <img src="<?php echo htmlspecialchars($path_prefix . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
+                  </div>
+                <?php endif; ?>
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
+                  <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
+                  <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
+                    قراءة المزيد
+                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
+                  </a>
+                </div>
+              </div>
             </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">لماذا يختار الطلاب الدراسة في ألمانيا؟</h5>
-              <p class="card-text flex-grow-1">أكثر من 380 ألف طالب دولي - بينهم آلاف العرب - يختارون ألمانيا سنوياً لجودة تعليمها، رسومها المنخفضة، وفرص العمل بعد التخرج.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="col-12 text-center text-muted py-4">
+            <p>لا توجد مقالات مضافة في الدليل حالياً.</p>
           </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/guide/image (1).jpg" alt="التعليم والعمل" class="card-img-top img-fluid">
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">التعليم والعمل في ألمانيا</h5>
-              <p class="card-text flex-grow-1">اكتشف بيئة تعليمية متقدمة تفتح أمامك أبواب التدريب والعمل في مجالات مطلوبة عالمياً. ألمانيا تجمع بين الدراسة النوعية وفرص التطور المهني.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/guide/image.jpg" alt="معالجة الطلبات" class="card-img-top img-fluid">
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">معالجة طلبات العملاء لدى BCS</h5>
-              <p class="card-text flex-grow-1">نرافق عملاؤنا خطوة بخطوة من لحظة التواصل الأول حتى الوصول لألمانيا، عبر متابعة دقيقة وشفافة تضمن سرعة الاستجابة وجودة التنفيذ.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/guide/image (2).jpg" alt="تعلم الألمانية" class="card-img-top img-fluid">
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">تعلم اللغة الألمانية بسرعة وكفاءة</h5>
-              <p class="card-text flex-grow-1">دليلك السريع لتعلم اللغة الألمانية بفعالية، من الأساسيات حتى التحدث بثقة، باستخدام طرق بسيطة تناسب المبتدئين.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/guide/image (3).jpg" alt="الستودينكولينغ" class="card-img-top img-fluid">
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">ما هو الستودينكولينغ؟ وهل تحتاجه؟</h5>
-              <p class="card-text flex-grow-1">الستودينكولينغ هو برنامج تحضيري للطلاب الأجانب قبل دخول الجامعة، وقد تحتاجه إذا كانت شهادتك الثانوية لا تعادل النظام الألماني.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-img-wrapper">
-              <img src="assets/img/guide/image (4).jpg" alt="سكن طلابي" class="card-img-top img-fluid">
-            </div>
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-bold">كيف تحصل على سكن طلابي في ألمانيا؟</h5>
-              <p class="card-text flex-grow-1">السكن الطلابي في ألمانيا محدود، لذا ينصح بالبدء في البحث مبكراً عبر منصات السكن الجامعي مع تجهيز المستندات المطلوبة مسبقاً.</p>
-              <a href="#" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                قراءة المزيد
-                <img src="assets/img/home/Arrow..svg" alt="arrow" width="18">
-              </a>
-            </div>
-          </div>
-        </div>
+        <?php endif; ?>
       </div>
     </div>
   </section>
   <!-- ===== GUIDE END ===== -->
 
-
+<?php 
+// 4. استدعاء الفوتر الأساسي
+include_once 'includes/footer.php'; 
+?>

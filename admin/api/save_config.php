@@ -132,9 +132,14 @@ switch ($action) {
         $img_path = handle_upload('ad_image', $upload_path);
         $data['announcement'] = [
             'status'            => $_POST['status'] ?? 'Draft',
+            'type'              => $_POST['type'] ?? 'text',
             'announcement_text' => $_POST['announcement_text'] ?? '',
             'link'              => $_POST['link'] ?? '',
-            'type'              => $_POST['type'] ?? 'text',
+            'start_date'        => $_POST['start_date'] ?? '',
+            'end_date'          => $_POST['end_date'] ?? '',
+            'bg_color'          => $_POST['bg_color'] ?? '#f1f5f9',
+            'text_color'        => $_POST['text_color'] ?? '#1e293b',
+            'font_size'         => $_POST['font_size'] ?? '16',
             'image_path'        => $img_path ?? ($data['announcement']['image_path'] ?? '')
         ];
         break;

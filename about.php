@@ -11,18 +11,15 @@ if (!defined('ALLOWED_ACCESS')) {
 
 $path_prefix = ''; 
 
-// 1. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة
+// 1. تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة (يجب أن يكون قبل الهيدر)
 $page_css = [
-    '/assets/css/swiper-bundle.min.css',
-    '/assets/css/about.css',
-    '/assets/css/responsive-about.css'
+    'assets/css/swiper-bundle.min.css',
+    'assets/css/about.css',
+    'assets/css/responsive-about.css'
 ]; 
 
 $page_js = [
-    '/assets/js/swiper-bundle.min.js'
+    'assets/js/swiper-bundle.min.js'
 ];
 
 $custom_script = '
@@ -47,6 +44,9 @@ $custom_script = '
     }
   });
 </script>';
+
+// 2. استدعاء الهيدر الأساسي بعد تجهيز المسارات
+include_once 'includes/header.php'; 
 
 // تجهيز بيانات صفحة عن الشركة من مصفوفة $data
 $ab = $data['about'] ?? [];

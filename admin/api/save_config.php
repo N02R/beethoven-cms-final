@@ -327,16 +327,23 @@ case 'update_footer':
         $data['about_counts'] = $new_counts;
         break;
 
-    case 'update_about_partners':
+        case 'update_about_partners':
         $data['partners_title'] = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
         
         $new_partners = [];
         if (isset($_POST['partners']) && is_array($_POST['partners'])) {
             foreach ($_POST['partners'] as $index => $p) {
+                // معالجة رفع الصورة للشريك
                 $img_path = handle_upload('partner_img_' . $index, $upload_path);
-                $new_partners[] = [
-                    'img' => $img_path ?? ($p['old_img'] ?? '')
-                ];
+                
+                // حفظ المسار الجديد إن وجد، أو الاحتفاظ بالمسار القديم
+                $final_img = $img_path ?? ($p['old_img'] ?? '');
+
+                if (!empty($final_img)) {
+                    $new_partners[] = [
+                        'img' => $final_img
+                    ];
+                }
             }
         }
         $data['partners_items'] = $new_partners;

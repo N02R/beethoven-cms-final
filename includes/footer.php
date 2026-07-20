@@ -76,17 +76,22 @@ if (!isset($path_prefix)) {
 <!-- footer end -->
 
 <?php 
-// جلب السكربتات الإضافية
+// 1. حقن ملفات الـ JS الديناميكية الخاصة بكل صفحة (مثل Swiper JS)
 if (isset($page_js) && is_array($page_js)) {
-    $cleaned_js_files = array_map('basename', $page_js);
-    echo "<!-- Dynamic JS Injector -->";
+    echo "<!-- Dynamic JS Injector -->" . PHP_EOL;
+    foreach ($page_js as $js_file) {
+        // تنظيف المسار لضمان عدم تكرار الشرطة المائلة /
+        $clean_js = ltrim($js_file, '/');
+        echo '<script src="' . $path_prefix . $clean_js . '?v=' . time() . '"></script>' . PHP_EOL;
+    }
 }
 ?>
 
+<!-- المكتبات والملفات الأساسية للموقع -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo $path_prefix; ?>assets/js/main.js?v=<?php echo time(); ?>"></script>
 
+<!-- 2. تشغيل السكربت المخصص الممرّر من الصفحة (مثل تهيئة Swiper) -->
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
-
 </body>
 </html>

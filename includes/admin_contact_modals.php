@@ -101,7 +101,7 @@ if (!defined('ALLOWED_ACCESS')) {
         </div>
     </div>
 </div>
-
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     // التقاط إرسال أي فورم داخل مودلات الإدارة
     const adminForms = document.querySelectorAll('.custom-modal form');
@@ -165,3 +165,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+</script>

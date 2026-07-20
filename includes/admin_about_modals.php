@@ -35,18 +35,41 @@ $ab = $data['about'] ?? [];
                             <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد'); ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">رابط الزر</label>
+                            <label class="form-label fw-bold">رابط الزر الحالي</label>
                             <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#'); ?>">
                         </div>
 
-                        <!-- الصور الرئيسية -->
+                        <!-- الصور الرئيسية والمعاينة -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">الصورة الرئيسية</label>
+                            <label class="form-label fw-bold d-flex justify-content-between">
+                                <span>الصورة الرئيسية الحالية</span>
+                                <?php if (!empty($ab['main_img'])): ?>
+                                    <span class="badge bg-light text-dark border">موجودة</span>
+                                <?php endif; ?>
+                            </label>
+                            <?php if (!empty($ab['main_img'])): ?>
+                                <div class="mb-2 p-1 border rounded bg-light text-center">
+                                    <img src="<?php echo htmlspecialchars($ab['main_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
+                                    <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($ab['main_img']); ?></div>
+                                </div>
+                            <?php endif; ?>
                             <input type="file" class="form-control" name="about_main_img" accept="image/*">
                             <input type="hidden" name="old_about_main_img" value="<?php echo htmlspecialchars($ab['main_img'] ?? ''); ?>">
                         </div>
+
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">الصورة الفرعية</label>
+                            <label class="form-label fw-bold d-flex justify-content-between">
+                                <span>الصورة الفرعية الحالية</span>
+                                <?php if (!empty($ab['sub_img'])): ?>
+                                    <span class="badge bg-light text-dark border">موجودة</span>
+                                <?php endif; ?>
+                            </label>
+                            <?php if (!empty($ab['sub_img'])): ?>
+                                <div class="mb-2 p-1 border rounded bg-light text-center">
+                                    <img src="<?php echo htmlspecialchars($ab['sub_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
+                                    <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($ab['sub_img']); ?></div>
+                                </div>
+                            <?php endif; ?>
                             <input type="file" class="form-control" name="about_sub_img" accept="image/*">
                             <input type="hidden" name="old_about_sub_img" value="<?php echo htmlspecialchars($ab['sub_img'] ?? ''); ?>">
                         </div>
@@ -60,7 +83,14 @@ $ab = $data['about'] ?? [];
                             <input type="text" class="form-control mb-2" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?>">
                             <label class="small text-muted">الوصف</label>
                             <textarea class="form-control mb-2" name="vision_desc" rows="2"><?php echo htmlspecialchars($ab['vision_desc'] ?? ''); ?></textarea>
-                            <label class="small text-muted">الأيقونة</label>
+                            
+                            <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
+                            <?php if (!empty($ab['vision_icon'])): ?>
+                                <div class="d-flex height-auto align-items-center gap-2 mb-2 p-1 border rounded bg-light">
+                                    <img src="<?php echo htmlspecialchars($ab['vision_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                    <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon']); ?></span>
+                                </div>
+                            <?php endif; ?>
                             <input type="file" class="form-control" name="about_vision_icon" accept="image/*">
                             <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? ''); ?>">
                         </div>
@@ -72,7 +102,14 @@ $ab = $data['about'] ?? [];
                             <input type="text" class="form-control mb-2" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?>">
                             <label class="small text-muted">الوصف</label>
                             <textarea class="form-control mb-2" name="message_desc" rows="2"><?php echo htmlspecialchars($ab['message_desc'] ?? ''); ?></textarea>
-                            <label class="small text-muted">الأيقونة</label>
+                            
+                            <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
+                            <?php if (!empty($ab['message_icon'])): ?>
+                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-light">
+                                    <img src="<?php echo htmlspecialchars($ab['message_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                    <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['message_icon']); ?></span>
+                                </div>
+                            <?php endif; ?>
                             <input type="file" class="form-control" name="about_message_icon" accept="image/*">
                             <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? ''); ?>">
                         </div>
@@ -113,16 +150,24 @@ $ab = $data['about'] ?? [];
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="team_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
+                                        <label class="small text-muted">الاسم</label>
                                         <input type="text" class="form-control form-control-sm" name="team[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" placeholder="الاسم">
                                     </div>
                                     <div class="col-md-3">
+                                        <label class="small text-muted">المسمى الوظيفي</label>
                                         <input type="text" class="form-control form-control-sm" name="team[<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? ''); ?>" placeholder="المسمى الوظيفي">
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="file" class="form-control form-control-sm" name="team_img_<?php echo $index; ?>" accept="image/*">
+                                        <label class="small text-muted">الصورة الحالية / الجديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($member['img'])): ?>
+                                                <img src="<?php echo htmlspecialchars($member['img']); ?>" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" title="<?php echo htmlspecialchars($member['img']); ?>">
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control form-control-sm" name="team_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
                                         <input type="hidden" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-end">
+                                    <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
@@ -160,16 +205,24 @@ $ab = $data['about'] ?? [];
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="count_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
-                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? ''); ?>" placeholder="الرقم (مثلاً 500+)">
+                                        <label class="small text-muted">الرقم</label>
+                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? ''); ?>" placeholder="الرقم">
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? ''); ?>" placeholder="الوصف (مثلاً كورس ألماني)">
+                                        <label class="small text-muted">الوصف</label>
+                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? ''); ?>" placeholder="الوصف">
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="file" class="form-control form-control-sm" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                        <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($c['img'])): ?>
+                                                <img src="<?php echo htmlspecialchars($c['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control form-control-sm" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
                                         <input type="hidden" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-end">
+                                    <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
@@ -212,10 +265,16 @@ $ab = $data['about'] ?? [];
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-11">
-                                        <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                        <label class="small text-muted mb-1">صورة الشريك الحالية / اختيار جديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($partner['img'])): ?>
+                                                <img src="<?php echo htmlspecialchars($partner['img']); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
                                         <input type="hidden" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-end">
+                                    <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
@@ -238,15 +297,11 @@ $ab = $data['about'] ?? [];
 
 <!-- Dynamic Rows JS Engine -->
 <script>
-    // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 2. منطق إضافة الصفوف الديناميكية (Dynamic Rows Adders)
-
-    // إضافة فريق العمل
     let teamCount = <?php echo count($data['team_members'] ?? []); ?>;
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
@@ -265,7 +320,6 @@ $ab = $data['about'] ?? [];
         teamCount++;
     }
 
-    // إضافة العدادات
     let countsCount = <?php echo count($data['about_counts'] ?? []); ?>;
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
@@ -284,7 +338,6 @@ $ab = $data['about'] ?? [];
         countsCount++;
     }
 
-    // إضافة الشركاء
     let partnerCount = <?php echo count($data['partners_items'] ?? []); ?>;
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
@@ -304,7 +357,6 @@ $ab = $data['about'] ?? [];
         partnerCount++;
     }
 
-    // 3. معالج النماذج الموحد لصفحة about (Unified Form Handler)
     document.querySelectorAll('#aboutEditModal form, #teamEditModal form, #countsEditModal form, #partnersEditModal form, #servicesEditModal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();

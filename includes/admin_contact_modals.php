@@ -101,3 +101,67 @@ if (!defined('ALLOWED_ACCESS')) {
         </div>
     </div>
 </div>
+
+document.addEventListener('DOMContentLoaded', function () {
+    // التقاط إرسال أي فورم داخل مودلات الإدارة
+    const adminForms = document.querySelectorAll('.custom-modal form');
+    
+    adminForms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = document.querySelector(`[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'جاري الحفظ...';
+            }
+
+            fetch('save_config.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' || data.success) {
+                    // إغلاق المودل المفتوح حالياً
+                    const activeModal = bootstrap.Modal.getInstance(this.closest('.modal'));
+                    if (activeModal) {
+                        activeModal.hide();
+                    }
+                    
+                    // إظهار رسالة النجاح (تأكد من وجود مكتبة SweetAlert2 أو استبدالها بـ alert عادي)
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم التحديث بنجاح',
+                            text: 'جاري تحديث الصفحة...',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        alert('تم التحديث بنجاح!');
+                        location.reload();
+                    }
+                } else {
+                    alert('حدث خطأ ما: ' + (data.message || 'يرجى المحاولة مجدداً'));
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'حفظ التغييرات';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'حفظ التغييرات';
+                }
+            });
+        });
+    });
+});

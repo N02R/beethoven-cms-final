@@ -62,7 +62,14 @@ $is_visible = ($is_published && $is_in_time);
   <title><?php echo $page_title ?? 'BCS || الصفحة الرئيسية'; ?></title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/minify.php?v=<?php echo time(); ?>">
+ <link rel="stylesheet" href="assets/css/bootstrap.min.css"> 
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">-->
+  <link rel="stylesheet" href="assets/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/header.css">
+  <link rel="stylesheet" href="assets/css/footer.css">
+  <link rel="stylesheet" href="assets/css/responsive-index.css">
 
 
 

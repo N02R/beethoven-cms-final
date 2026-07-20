@@ -1,0 +1,97 @@
+/* FONTS */
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicLight.ttf") format("truetype");
+    font-weight: 300;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/Neo Sans Arabic Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicMedium.ttf") format("truetype");
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicBold.ttf") format("truetype");
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicBlack.ttf") format("truetype");
+    font-weight: 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicUltra.ttf") format("truetype");
+    font-weight: 900;
+    font-display: swap;
+}
+
+
+/*  VARIABLES */
+:root {
+    --main-color: #66aeee;
+    --hoverDark: #489DE8;
+    --hoverLight: #e3effa;
+    --hoverBlue: #66afee3b;
+    --white: #fff;
+    --black: #000;
+    --dark: #4f4f4f;
+    --bg-main: #dfdfdf25;
+    --bg-secondary: #f1f7fd;
+    --bgDot-color: #F0F7FD;
+    --border: #c5c5c536;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+    --main-font: "Neo Sans Arabic"
+}
+
+/* RESET */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* GLOBAL */
+html {
+    scroll-behavior: smooth;
+    background: #fff;
+}
+
+body {
+    font-family: var(--main-font);
+    color: var(--dark);
+    overflow-x: hidden;
+    width: 100%;
+}
+
+
+.custom-container {
+    width: 92%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.sec-title {
+    font-weight: 700;
+    font-size: 32px;
+    color: rgba(0, 0, 0, 1);
+}

@@ -1,7 +1,0 @@
-.team { background: var(--white); }
-.team .description { color: #636363; margin-bottom: 2rem; font-size: clamp(16px, 1.5vw, 20px); }
-.team-card { position: relative; height: 320px; border-radius: 12px; overflow: hidden; background: #f8f8f8; border: 1px solid var(--border); transition: transform 0.3s ease; }
-.team-card .info { width: 100%; height: 88px; background: var(--bgDot-color); position: absolute; bottom: -100px; left: 0; text-align: center; padding: 15px 10px; transition: bottom 0.4s ease; z-index: 5; }
-.team-card:hover .info { bottom: 0px; }
-.team-card .info h5 { font-weight: var(--fw-medium); color: var(--black); margin-bottom: 2px; }
-.team-card .info p { font-weight: var(--fw-medium); color: var(--main-color); margin: 0; }

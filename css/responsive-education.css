@@ -1,0 +1,486 @@
+@media (max-width: 767px) {
+
+    .education,
+    .job {
+        padding: 30px 0 !important;
+        text-align: center;
+        /* توسيط النصوص لسهولة القراءة */
+    }
+
+    .education .img-hero,
+    .job .img-hero {
+        min-height: 250px;
+        /* تقليل الارتفاع ليناسب شاشة الموبايل */
+        margin-bottom: 20px;
+    }
+
+    .education .education-info h2,
+    .job .job-info h2 {
+        font-size: 20px;
+        line-height: 1.4;
+    }
+
+    .education .education-info p,
+    .job .job-info p {
+        font-size: 15px;
+        margin-top: 1rem;
+        padding: 0 10px;
+    }
+
+    .education .education-info .btn-education,
+    .job .job-info .btn-job {
+        width: 100%;
+        /* زر عريض يسهل الضغط عليه */
+        padding: 0.8rem 2rem;
+        font-size: 18px;
+    }
+
+    /* لضمان ظهور الصورة فوق النص في قسم الـ Job (لأنها تأتي بعده في الكود) */
+    .job .row {
+        flex-direction: column-reverse;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+    .education .img-hero,
+    .job .img-hero {
+        min-height: 350px;
+    }
+
+    .education .education-info h2,
+    .job .job-info h2 {
+        font-size: 22px;
+    }
+}
+
+@media (min-width: 992px) {
+
+    .education-info,
+    .job-info {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .study .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 15px;
+    }
+}
+
+@media (min-width: 1920px) {
+
+    .education,
+    .job {
+        padding: 100px 0 !important;
+    }
+
+    .education .img-hero,
+    .job .img-hero {
+        min-height: 600px;
+        /* صورة ضخمة وفخمة */
+        border-radius: 30px;
+    }
+
+    .education .education-info h2,
+    .job .job-info h2 {
+        font-size: 42px;
+        /* عنوان عريض جداً */
+        line-height: 1.5;
+    }
+
+    .education .education-info p,
+    .job .job-info p {
+        font-size: 22px;
+        line-height: 2;
+        margin-top: 3rem;
+    }
+
+    .education .education-info .btn-education,
+    .job .job-info .btn-job {
+        padding: 1.5rem 6rem;
+        font-size: 26px;
+        margin-top: 3rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .study .choose-card {
+        text-align: center;
+        padding: 20px;
+        min-height: auto;
+        /* ترك الارتفاع يتحدد حسب النص */
+    }
+
+    .study .card-title,
+    .study .card-text {
+        text-align: center;
+        /* توسيط النص في الموبايل أجمل */
+    }
+
+    .study img {
+        width: 50px;
+        /* تصغير الأيقونات قليلاً لتناسب الشاشة */
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+    .study .choose-card {
+        min-height: 200px;
+        /* توحيد الارتفاع لمنع حدوث فراغات بيضاء غير متساوية */
+    }
+}
+
+@media (min-width: 1920px) {
+    .study {
+        padding: 100px 0 !important;
+    }
+
+    .study .choose-card {
+        padding: 30px;
+        min-height: 250px;
+        /* زيادة الارتفاع ليتناسب مع فخامة الشاشة */
+    }
+
+    .study img {
+        width: 70px;
+        /* أيقونات أكبر */
+    }
+
+    .study .card-title {
+        font-size: 22px;
+        margin-top: 1.5rem;
+    }
+
+    .study .card-text {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 991px) {
+    /* إخفاء الخريطة الأفقية الأصلية */
+    .map-container {
+        display: none !important;
+    }
+
+    .mobile-timeline {
+        position: relative;
+        padding-right: 50px; /* زيادة المسافة قليلاً لاستيعاب الدائرة الرقمية */
+        margin-top: 50px;
+        direction: rtl;
+    }
+
+    /* الخط العمودي الواصل */
+    .mobile-timeline::before {
+        content: "";
+        position: absolute;
+        right: 15px;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: #66AEEE;
+        opacity: 0.3;
+        z-index: 1;
+    }
+
+    .m-step {
+        position: relative;
+        margin-bottom: 40px;
+        z-index: 2;
+    }
+
+    /* الدائرة الرقمية (التي تقع فوق الخط) */
+    .m-num {
+        position: absolute;
+        right: -45px; /* موازنة مكانها فوق الخط العمودي */
+        top: 0;
+        width: 32px;
+        height: 32px;
+        background: #fff;
+        border: 2px solid #66AEEE;
+        color: #66AEEE;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* الحاوية التي تجمع الأيقونة مع العنوان h3 */
+    .m-header {
+        display: flex;
+        align-items: center;
+        gap: 12px; /* المسافة بين الأيقونة والعنوان */
+        margin-bottom: 10px;
+    }
+
+    .m-icon {
+        width: 35px;
+        height: 35px;
+        background: #F0F7FD;
+        padding: 6px;
+        border-radius: 8px;
+        flex-shrink: 0; /* لمنع تقلص الأيقونة */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .m-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .m-content h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #000;
+        margin: 0; /* إزالة المارجن ليبقى بمحاذاة الأيقونة */
+    }
+
+    .m-content h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        margin: 8px 0;
+    }
+
+    .m-content p {
+        font-size: 14px;
+        color: #4F4F4F;
+        line-height: 1.6;
+    }
+}
+
+/* الشاشات الصغيرة (الموبايل 576px وأقل) */
+@media (max-width: 575px) {
+    .service-card {
+        height: 180px; /* تقليل الارتفاع في الموبايل ليظهر عدد أكبر من البطاقات */
+        border-radius: 15px !important;
+    }
+    
+    .service-card .card-body {
+        padding: 10px !important;
+    }
+    
+    .service-card .card-title {
+        font-size: 0.9rem;
+    }
+
+    /* جعل الهوامش الجانبية أصغر لاستغلال المساحة */
+    .edu-services .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .g-3 {
+        --bs-gutter-x: 0.5rem; /* تقليل المسافات بين الكروت في الموبايل */
+        --bs-gutter-y: 0.5rem;
+    }
+}
+
+/* معالجة الشاشات الصغيرة جداً (320px) */
+@media (max-width: 350px) {
+    .row-cols-2 > * {
+        flex: 0 0 100%;
+        max-width: 100%; /* كرت واحد في السطر إذا كانت الشاشة ضيقة جداً */
+    }
+    .service-card {
+        height: 200px;
+    }
+}
+
+@media (min-width: 1920px) {
+    .timeline-section {
+        padding: 150px 0;
+    }
+
+    .map-container {
+        max-width: 1400px;
+        /* تكبير الخارطة لتناسب الشاشة الضخمة */
+        margin: 250px auto;
+        /* زيادة الهامش العلوي لأن النصوص ستكبر */
+    }
+
+    .step-wrapper {
+        width: 250px;
+        /* تكبير مساحة النص */
+    }
+
+    .info-content h3 {
+        font-size: 24px;
+        /* عناوين أضخم */
+    }
+
+    .info-content h4 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .info-content p {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    .icon-main {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* step-1 */
+    .step-1 {
+        right: 3.25%;
+        top: 35%;
+    }
+
+    .step-1 .info-content {
+        margin-top: 1rem;
+    }
+
+    /* step-2 */
+    .step-2 {
+        right: 21%;
+        top: 5%;
+    }
+
+    .step-2 .icon-main {
+        top: 4px;
+        right: 55%;
+        transform: translateX(50%);
+    }
+
+    /* step-3 */
+
+    .step-3 {
+        right: 40%;
+        top: 50%;
+    }
+
+    .step-3 .icon-main {
+        top: 55px;
+        right: 53%;
+        transform: translateX(50%);
+    }
+
+    .step-3 .info-content {
+        margin-top: 1rem;
+    }
+
+    /* step-4 */
+    .step-4 {
+        right: 60%;
+        top: 5%;
+    }
+
+    .step-4 .icon-main {
+        top: 5px;
+        right: 45%;
+        transform: translateX(50%);
+    }
+
+    /* step-5 */
+
+    .step-5 {
+        right: 78%;
+        top: 51%;
+    }
+
+
+    .step-5 .icon-main {
+        top: 50px;
+        right: 49%;
+        transform: translateX(50%);
+    }
+
+    .step-5 .info-content {
+        margin-top: 1rem;
+    }
+
+/* step-6 */
+.step-6 {
+    right: 94.8%;
+    top: 18%;
+}
+
+    .step-6 .icon-main {
+        top: 15px;
+        right: 60%;
+        transform: translateX(50%);
+    }
+
+    .step-6 .info-content {
+        top: 140px;
+        right: 10%;
+    }
+}
+
+/* شاشات الـ Tablet (من 768px إلى 991px) */
+@media (max-width: 991px) {
+    .program-info {
+        padding: 2rem 1.5rem 5.5rem 1.5rem !important;
+        min-height: 400px;
+    }
+    
+    .btn-info-wrapper {
+        width: 90%; /* تكبير الزر قليلاً في الشاشات الأصغر */
+    }
+}
+
+/* شاشات الموبايل (أقل من 768px) */
+@media (max-width: 767px) {
+    .program .sec-title {
+        text-align: center;
+        font-size: 1.6rem;
+    }
+    
+    .program .main-p {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .program-info {
+        min-height: auto; /* ترك الارتفاع يتحدد بالمحتوى */
+        margin-bottom: 10px;
+    }
+
+    .program-info h4 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .program-info p {
+        font-size: 14.5px;
+        line-height: 1.7;
+    }
+
+    .btn-info-wrapper {
+        position: relative; /* تحويل الزر إلى نسبي لسهولة النقر */
+        bottom: 0;
+        left: 0;
+        transform: none;
+        width: 100%;
+        margin-top: 20px;
+        justify-content: center; /* توسيط المحتوى داخل الزر */
+        gap: 15px;
+    }
+    
+    /* إلغاء الـ Hover Effect للـ Width في الموبايل */
+    .btn-info-wrapper:hover {
+        width: 100%;
+    }
+}
+
+/* لمسة جمالية لشاشات الـ 1920px */
+@media (min-width: 1400px) {
+    .program-info {
+        padding: 3rem 2.5rem 7rem 2.5rem !important;
+    }
+    .btn-info-wrapper {
+        padding: 1.1rem 2rem;
+    }
+}

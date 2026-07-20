@@ -989,6 +989,16 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // إضافة مؤشر تحميل مؤقت على الزر المُستخدم
+            const submitBtn = this.querySelector('button[type="submit"]');
+            let originalText = '';
+            if (submitBtn) {
+                originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> جاري الحفظ...';
+                submitBtn.disabled = true;
+            }
+
             const formData = new FormData(this);
             fetch('admin/api/save_config.php', {
                 method: 'POST',
@@ -1000,12 +1010,20 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     alert('تم الحفظ بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + data.message);
+                    alert('خطأ: ' + (data.message || 'حدث خطأ غير معروف'));
+                    if (submitBtn) {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
                 alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
             });
         });
     });
@@ -1017,3 +1035,4 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+

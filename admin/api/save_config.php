@@ -104,7 +104,16 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'job_timeline_steps'     => [],
     'job_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
     'job_services_desc'      => '',
-    'job_services_items'     => []
+    'job_services_items'     => [],
+
+    // صفحة اتصل بنا (contact.php)
+    'contact_hero_img'       => 'assets/img/contact us/contacthero.png',
+    'contact_address'        => 'Rheinweg 140 ,53129 Bonn,Germany',
+    'contact_email'          => 'info@Beethoven-City-Services.com',
+    'contact_phone'          => '666-230-71 176 (0) 49+',
+    'whatsapp_text'          => 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات',
+    'whatsapp_url'           => 'https://wa.me/4917671230666',
+    'whatsapp_btn_txt'       => 'تواصل معنا عبر واتساب'
 ];
 
 // دالة رفع الملفات الآمنة

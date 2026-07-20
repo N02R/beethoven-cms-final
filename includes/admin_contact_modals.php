@@ -103,7 +103,6 @@ if (!defined('ALLOWED_ACCESS')) {
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // التقاط إرسال أي فورم داخل مودلات الإدارة
     const adminForms = document.querySelectorAll('.custom-modal form');
     
     adminForms.forEach(form => {
@@ -111,10 +110,12 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             
             const formData = new FormData(this);
+            // البحث عن زر الحفظ المرتبط بهذا الفورم
             const submitBtn = document.querySelector(`[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
             
             if (submitBtn) {
                 submitBtn.disabled = true;
+                submitBtn.setAttribute('data-original-text', submitBtn.innerHTML);
                 submitBtn.innerHTML = 'جاري الحفظ...';
             }
 
@@ -124,33 +125,35 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success' || data.success) {
+                // التحقق من مفتاح success الذي يرسله الـ PHP
+                if (data.success === true) {
                     // إغلاق المودل المفتوح حالياً
-                    const activeModal = bootstrap.Modal.getInstance(this.closest('.modal'));
+                    const modalElement = this.closest('.modal');
+                    const activeModal = bootstrap.Modal.getInstance(modalElement);
                     if (activeModal) {
                         activeModal.hide();
                     }
                     
-                    // إظهار رسالة النجاح (تأكد من وجود مكتبة SweetAlert2 أو استبدالها بـ alert عادي)
+                    // إظهار رسالة النجاح وإعادة تحميل الصفحة لتظهر التحديثات فوراً
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'success',
                             title: 'تم التحديث بنجاح',
-                            text: 'جاري تحديث الصفحة...',
-                            timer: 1500,
+                            text: data.message || 'جاري تحديث الصفحة...',
+                            timer: 1200,
                             showConfirmButton: false
                         }).then(() => {
                             location.reload();
                         });
                     } else {
-                        alert('تم التحديث بنجاح!');
+                        alert(data.message || 'تم التحديث بنجاح!');
                         location.reload();
                     }
                 } else {
-                    alert('حدث خطأ ما: ' + (data.message || 'يرجى المحاولة مجدداً'));
+                    alert('حدث خطأ: ' + (data.message || 'يرجى المحاولة مجدداً'));
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'حفظ التغييرات';
+                        submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'حفظ التغييرات';
                     }
                 }
             })
@@ -159,10 +162,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('حدث خطأ في الاتصال بالخادم.');
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'حفظ التغييرات';
+                    submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'حفظ التغييرات';
                 }
             });
         });
     });
 });
+
 </script>

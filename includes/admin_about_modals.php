@@ -238,6 +238,14 @@ $ab = $data['about'] ?? [];
 
 <!-- Dynamic Rows JS Engine -->
 <script>
+    // 1. الدالة العامة للحذف (تعمل مع أي صف يُمرر لها الـ ID)
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    // 2. منطق إضافة الصفوف الديناميكية (Dynamic Rows Adders)
+
     // إضافة فريق العمل
     let teamCount = <?php echo count($data['team_members'] ?? []); ?>;
     function addTeamRow() {
@@ -292,4 +300,31 @@ $ab = $data['about'] ?? [];
         container.appendChild(div);
         partnerCount++;
     }
+
+    // 3. معالج النماذج الموحد لصفحة about (Unified Form Handler)
+    document.querySelectorAll('#aboutEditModal form, #teamEditModal form, #countsEditModal form, #partnersEditModal form, #servicesEditModal form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('admin/api/save_config.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم الحفظ بنجاح');
+                    location.reload();
+                } else {
+                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+            });
+        });
+    });
 </script>
+

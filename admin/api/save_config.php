@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -13,13 +13,16 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 $file = __DIR__ . '/../../announcement_config.json';
 $upload_path = __DIR__ . '/../../assets/img/';
 
-// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية كاملة
+// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية شاملة لكل الموقع
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
+    // إعدادات عامة
     'announcement'           => [],
     'menu_links'             => [],
     'social_links'           => [],
     'languages'              => [],
     'site_logo_path'         => 'assets/img/logo.png',
+    
+    // الصفحة الرئيسية (Home)
     'hero'                   => [],
     'services'               => [],
     'services_section_title' => 'خدماتنا المميزة',
@@ -34,85 +37,77 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'guide_desc'             => '',
     'faq_items'              => [],
     'faq_title'              => 'الأسئلة الشائعة',
-    // إعدادات الفوتر
     'consult_title'          => 'احصل على استشارة مجانية',
-    'consult_desc'           => 'هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة',
+    'consult_desc'           => '',
     'footer_desc'            => '',
     'footer_col2_title'      => 'روابط سريعة',
     'footer_col2_links'      => [],
     'footer_col3_title'      => 'تواصل معنا',
     'footer_col3_links'      => [],
 
-    // ==========================================
-    // القيم الافتراضية لصفحة عن الشركة (about.php)
-    // ==========================================
+    // صفحة عن الشركة (about.php)
     'about'                  => [
         'title'        => 'من نحن',
-        'desc'         => 'شركة بيتهوفن سيتي للخدمات (BCS) تأسست في عام 2014 في بون/ألمانيا..',
+        'desc'         => '',
         'btn_text'     => 'قراءة المزيد',
         'btn_url'      => '#',
         'main_img'     => 'assets/img/about us icon, image/about1.jpg',
         'sub_img'      => 'assets/img/about us icon, image/about2.png',
         'vision_title' => 'رؤية الشركة',
-        'vision_desc'  => 'نطمح لنكون من بين الجهات الرائدة في خدمة الأجانب وتعزيز التفاهم بين الثقافات في ألمانيا.',
+        'vision_desc'  => '',
         'vision_icon'  => 'assets/img/About us Icon, image/Company vision.svg',
         'message_title'=> 'رسالة الشركة',
-        'message_desc' => 'نقدّم خدمات متكاملة ومتعددة اللغات بأسعار منافسة لتحقيق طموحاتك في التعليم، التدريب، والعلاج في ألمانيا.',
+        'message_desc' => '',
         'message_icon' => 'assets/img/About us Icon, image/Company message.svg'
     ],
     'team_title'             => 'فريق العمل',
-    'team_desc'              => 'يسر فريق العمل تقديم خدمات عالية الجودة لتتناسب مع احتياجات العميل الكريم وتوقعاته.',
+    'team_desc'              => '',
     'team_members'           => [],
     'about_counts'           => [],
     'partners_title'         => 'شركاؤنا داخل وخارج ألمانيا',
     'partners_items'         => [],
 
-    // ==========================================
-    // القيم الافتراضية لصفحة التعليم العالي (education.php)
-    // ==========================================
+    // صفحة التعليم العالي (education.php)
     'edu_hero'               => [
-        'title'    => 'ابدأ رحلتك التعليمية في ألمانيا – مع خدماتنا، التعليم العالي أقرب إليك من أي وقت مضى!',
-        'desc'     => 'نوفر لك دعمًا شاملًا في كل خطوة.. من اختيار التخصص والجامعة، إلى التقديم والحصول على القبول، وحتى تأمين السكن والتأشيرة، و بفضل خبرتنا ووجودنا داخل ألمانيا، نضمن لك تجربة سلسة وموثوقة، بلغتك، وبأسعار تنافسية',
+        'title'    => '',
+        'desc'     => '',
         'btn_text' => 'ابدأ الآن',
         'btn_url'  => '#',
         'img'      => 'assets/img/education/hero.jpg'
     ],
     'edu_why_title'          => 'لماذا الدراسة في ألمانيا؟',
-    'edu_why_desc'           => 'إنها بيئة مثالية للطلاب الطموحين من جميع أنحاء العالم لبناء مستقبل أكاديمي ومهني قوي',
+    'edu_why_desc'           => '',
     'edu_why_items'          => [],
     'edu_timeline_title'     => 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS',
-    'edu_timeline_desc'      => 'نرشدك من أول استشارة حتى استقرارك في ألمانيا — إليك كيف تتم العملية معنا.',
+    'edu_timeline_desc'      => '',
     'edu_timeline_steps'     => [],
     'edu_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
-    'edu_services_desc'      => 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالالتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا',
+    'edu_services_desc'      => '',
     'edu_services_items'     => [],
 
-    // ==========================================
-    // القيم الافتراضية لصفحة التدريب المهني والتوظيف (job.php)
-    // ==========================================
+    // صفحة التدريب المهني (job.php)
     'job_hero'               => [
-        'title'    => 'ابدأ طريقك المهني في ألمانيا - تدريب عملي حقيقي، خبرة معترف بها، وفرص عمل تليق بطموحك!',
-        'desc'     => 'نساعدك على ربط تعليمك الأكاديمي بالحياة العملية في ألمانيا من خلال برامج تدريب احترافية، بشراكة مع شركات ألمانية حقيقية. فرصة ذهبية لاكتساب خبرة أوروبية تُعزز سيرتك الذاتية وتفتح لك أبواب سوق العمل الدولي',
+        'title'    => '',
+        'desc'     => '',
         'btn_text' => 'ابدأ الآن',
         'btn_url'  => '#',
         'img'      => 'assets/img/job/hero.jpg'
     ],
     'job_why_title'          => 'لماذا التدريب معنا؟',
-    'job_why_desc'           => 'في بيتهوفن سيتي، نوفر لك تدريبًا مهنيًا مميزًا مع دعم مستمر وشراكات مع شركات ألمانية رائدة لبناء مستقبل مهني ناجح.',
+    'job_why_desc'           => '',
     'job_why_items'          => [],
     'job_program_title'      => 'أنواع التدريب المهني',
-    'job_program_desc'       => 'في ألمانيا، التدريب المهني ليس مسارًا واحدًا، بل يتفرّع إلى نوعين رئيسيين يلبيان احتياجات مختلفة للطلاب والمتدربين.',
+    'job_program_desc'       => '',
     'job_program_types'      => [],
     'job_timeline_title'     => 'كيف نساعدك خطوة بخطوة؟',
-    'job_timeline_desc'      => 'رحلة واضحة تبدأ بالاستشارة وتنتهي بشهادة تدريب وخبرة مهنية حقيقية.',
+    'job_timeline_desc'      => '',
     'job_timeline_steps'     => [],
     'job_services_title'     => 'ماذا تقدم في بيتهوفن سيتي؟',
-    'job_services_desc'      => 'توفر شركة بيتهوفن سيتي خدمات متكاملة للطلبة الراغبين بالإلتحاق بالجامعات الألمانية بما في ذلك طلبة الدراسات العليا',
+    'job_services_desc'      => '',
     'job_services_items'     => []
 ];
 
-
-// 3. دالة رفع الملفات مع فحص الأمان
+// دالة رفع الملفات الآمنة
 function handle_upload($file_key, $upload_dir) {
     if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
         $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
@@ -131,8 +126,8 @@ function handle_upload($file_key, $upload_dir) {
 
 $action = $_POST['action'] ?? '';
 
-// 4. معالجة العمليات
 switch ($action) {
+    // --- إعدادات عامة ---
     case 'update_announcement':
         $img_path = handle_upload('ad_image', $upload_path);
         $data['announcement'] = [
@@ -149,46 +144,7 @@ switch ($action) {
         if ($img_path) $data['site_logo_path'] = $img_path;
         break;
 
-    case 'update_social':
-        $socials = [];
-        if (isset($_POST['social']) && is_array($_POST['social'])) {
-            foreach ($_POST['social'] as $index => $s) {
-                $img_path = handle_upload('social_img_' . $index, $upload_path);
-                $socials[] = [
-                    'name' => $s['name'] ?? '',
-                    'url'  => $s['url'] ?? '',
-                    'img'  => $img_path ?? ($s['old_img'] ?? '')
-                ];
-            }
-        }
-        $data['social_links'] = $socials;
-        break;
-
-    case 'update_menu':
-        $new_menu = [];
-        if (isset($_POST['menu']) && is_array($_POST['menu'])) {
-            foreach ($_POST['menu'] as $item) {
-                $new_menu[] = [
-                    'title' => $item['title'] ?? 'رابط جديد',
-                    'url'   => $item['url'] ?? '#',
-                    'order' => (int)($item['order'] ?? 0)
-                ];
-            }
-        }
-        usort($new_menu, fn($a, $b) => $a['order'] <=> $b['order']);
-        $data['menu_links'] = $new_menu;
-        break;
-
-    case 'update_languages':
-        $new_langs = [];
-        if (isset($_POST['lang']) && is_array($_POST['lang'])) {
-            foreach ($_POST['lang'] as $l) {
-                if (!empty($l['name'])) $new_langs[] = ['name' => $l['name'], 'url' => $l['url'] ?? '#'];
-            }
-        }
-        $data['languages'] = $new_langs;
-        break;
-
+    // --- صفحة Home ---
     case 'update_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         $data['hero'] = [
@@ -201,16 +157,16 @@ switch ($action) {
         break;
 
     case 'update_services':
-        $data['services_section_title'] = $_POST['services_title'] ?? 'خدماتنا المميزة';
+        $data['services_section_title'] = $_POST['services_title'] ?? '';
         $data['services_section_desc'] = $_POST['services_desc'] ?? ''; 
         $new_services = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $s) {
                 $img_path = handle_upload('service_img_' . $index, $upload_path);
                 $new_services[] = [
-                    'title' => $s['title'] ?? 'عنوان الخدمة',
+                    'title' => $s['title'] ?? '',
                     'url'   => $s['url'] ?? '#',
-                    'img'   => $img_path ?? ($s['old_img'] ?? 'assets/img/home/default.jpg')
+                    'img'   => $img_path ?? ($s['old_img'] ?? '')
                 ];
             }
         }
@@ -218,7 +174,7 @@ switch ($action) {
         break;
 
     case 'update_choose':
-        $data['choose_title'] = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
+        $data['choose_title'] = $_POST['choose_title'] ?? '';
         $data['choose_section_desc'] = $_POST['choose_desc'] ?? '';
         $choose_items = [];
         if (isset($_POST['choose']) && is_array($_POST['choose'])) {
@@ -227,7 +183,7 @@ switch ($action) {
                 $choose_items[] = [
                     'title' => $c['title'] ?? '',
                     'desc'  => $c['desc'] ?? '',
-                    'img'   => $img_path ?? ($c['old_img'] ?? 'assets/img/home/Grouphome1.svg')
+                    'img'   => $img_path ?? ($c['old_img'] ?? '')
                 ];
             }
         }
@@ -235,22 +191,19 @@ switch ($action) {
         break;
 
     case 'update_reviews':
-        $data['reviews_title'] = $_POST['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+        $data['reviews_title'] = $_POST['reviews_title'] ?? '';
         $reviews = [];
         if (isset($_POST['reviews']) && is_array($_POST['reviews'])) {
             foreach ($_POST['reviews'] as $r) {
-                if (!empty($r['url'])) {
-                    $reviews[] = ['url' => $r['url']];
-                }
+                if (!empty($r['url'])) $reviews[] = ['url' => $r['url']];
             }
         }
         $data['reviews_items'] = $reviews;
         break;
 
     case 'update_guide':
-        $data['guide_title'] = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
+        $data['guide_title'] = $_POST['guide_title'] ?? '';
         $data['guide_desc'] = $_POST['guide_desc'] ?? '';
-        
         $new_guides = [];
         if (isset($_POST['guide']) && is_array($_POST['guide'])) {
             foreach ($_POST['guide'] as $index => $g) {
@@ -259,7 +212,7 @@ switch ($action) {
                     'title' => $g['title'] ?? '',
                     'desc'  => $g['desc'] ?? '',
                     'url'   => $g['url'] ?? '#',
-                    'img'   => $img_path ?? ($g['old_img'] ?? 'assets/img/home/default.jpg')
+                    'img'   => $img_path ?? ($g['old_img'] ?? '')
                 ];
             }
         }
@@ -267,14 +220,11 @@ switch ($action) {
         break;
 
     case 'update_faq':
-        $data['faq_title'] = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
+        $data['faq_title'] = $_POST['faq_title'] ?? '';
         $new_faqs = [];
         if (isset($_POST['faq']) && is_array($_POST['faq'])) {
             foreach ($_POST['faq'] as $f) {
-                $new_faqs[] = [
-                    'question' => $f['question'] ?? '',
-                    'answer'   => $f['answer'] ?? ''
-                ];
+                $new_faqs[] = ['question' => $f['question'] ?? '', 'answer' => $f['answer'] ?? ''];
             }
         }
         $data['faq_items'] = $new_faqs;
@@ -284,10 +234,9 @@ switch ($action) {
         $data['consult_title'] = $_POST['consult_title'] ?? '';
         $data['consult_desc']  = $_POST['consult_desc'] ?? '';
         $data['footer_desc'] = $_POST['footer_desc'] ?? '';
-        $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? 'روابط سريعة';
-        $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? 'تواصل معنا';
+        $data['footer_col2_title'] = $_POST['footer_col2_title'] ?? '';
+        $data['footer_col3_title'] = $_POST['footer_col3_title'] ?? '';
         $data['footer_col3_links'] = [];
-        
         if (isset($_POST['col3']) && is_array($_POST['col3'])) {
             foreach ($_POST['col3'] as $i => $item) {
                 $img_path = handle_upload('col3_img_' . $i, $upload_path);
@@ -300,9 +249,7 @@ switch ($action) {
         }
         break;
 
-    // ==========================================
-    // معالجات صفحة "عن الشركة" (about.php)
-    // ==========================================
+    // --- صفحة About ---
     case 'update_about_section':
         $main_img = handle_upload('about_main_img', $upload_path);
         $sub_img  = handle_upload('about_sub_img', $upload_path);
@@ -310,25 +257,24 @@ switch ($action) {
         $message_icon = handle_upload('about_message_icon', $upload_path);
 
         $data['about'] = [
-            'title'        => $_POST['about_title'] ?? 'من نحن',
+            'title'        => $_POST['about_title'] ?? '',
             'desc'         => $_POST['about_desc'] ?? '',
-            'btn_text'     => $_POST['about_btn_text'] ?? 'قراءة المزيد',
+            'btn_text'     => $_POST['about_btn_text'] ?? '',
             'btn_url'      => $_POST['about_btn_url'] ?? '#',
-            'main_img'     => $main_img ?? ($_POST['old_about_main_img'] ?? 'assets/img/about us icon, image/about1.jpg'),
-            'sub_img'      => $sub_img ?? ($_POST['old_about_sub_img'] ?? 'assets/img/about us icon, image/about2.png'),
-            'vision_title' => $_POST['vision_title'] ?? 'رؤية الشركة',
+            'main_img'     => $main_img ?? ($_POST['old_about_main_img'] ?? ''),
+            'sub_img'      => $sub_img ?? ($_POST['old_about_sub_img'] ?? ''),
+            'vision_title' => $_POST['vision_title'] ?? '',
             'vision_desc'  => $_POST['vision_desc'] ?? '',
-            'vision_icon'  => $vision_icon ?? ($_POST['old_vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg'),
-            'message_title'=> $_POST['message_title'] ?? 'رسالة الشركة',
+            'vision_icon'  => $vision_icon ?? ($_POST['old_vision_icon'] ?? ''),
+            'message_title'=> $_POST['message_title'] ?? '',
             'message_desc' => $_POST['message_desc'] ?? '',
-            'message_icon' => $message_icon ?? ($_POST['old_message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg')
+            'message_icon' => $message_icon ?? ($_POST['old_message_icon'] ?? '')
         ];
         break;
 
     case 'update_about_team':
-        $data['team_title'] = $_POST['team_title'] ?? 'فريق العمل';
+        $data['team_title'] = $_POST['team_title'] ?? '';
         $data['team_desc']  = $_POST['team_desc'] ?? '';
-        
         $new_team = [];
         if (isset($_POST['team']) && is_array($_POST['team'])) {
             foreach ($_POST['team'] as $index => $member) {
@@ -336,7 +282,7 @@ switch ($action) {
                 $new_team[] = [
                     'name' => $member['name'] ?? '',
                     'role' => $member['role'] ?? '',
-                    'img'  => $img_path ?? ($member['old_img'] ?? 'assets/img/team/member1.jpg')
+                    'img'  => $img_path ?? ($member['old_img'] ?? '')
                 ];
             }
         }
@@ -359,52 +305,44 @@ switch ($action) {
         break;
 
     case 'update_about_partners':
-        $data['partners_title'] = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
+        $data['partners_title'] = $_POST['partners_title'] ?? '';
         $new_partners = [];
         if (isset($_POST['partners']) && is_array($_POST['partners'])) {
             foreach ($_POST['partners'] as $index => $p) {
                 $img_path = handle_upload('partner_img_' . $index, $upload_path);
-                $new_partners[] = [
-                    'img' => $img_path ?? ($p['old_img'] ?? '')
-                ];
+                $new_partners[] = ['img' => $img_path ?? ($p['old_img'] ?? '')];
             }
         }
         $data['partners_items'] = $new_partners;
         break;
 
-    // ==========================================
-    // معالجات صفحة "التعليم العالي" (education.php)
-    // ==========================================
+    // --- صفحة Education ---
     case 'update_edu_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         $data['edu_hero'] = [
             'title'    => $_POST['title'] ?? '',
             'desc'     => $_POST['desc'] ?? '',
-            'btn_text' => $_POST['btn_text'] ?? 'ابدأ الآن',
+            'btn_text' => $_POST['btn_text'] ?? '',
             'btn_url'  => $_POST['btn_url'] ?? '#',
-            'img'      => $img_path ?? ($_POST['old_img'] ?? 'assets/img/education/hero.jpg')
+            'img'      => $img_path ?? ($_POST['old_img'] ?? '')
         ];
         break;
 
     case 'update_edu_why':
-        $data['edu_why_title'] = $_POST['why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
+        $data['edu_why_title'] = $_POST['why_title'] ?? '';
         $data['edu_why_desc']  = $_POST['why_desc'] ?? '';
-        $new_why_items = [];
+        $new_why = [];
         if (isset($_POST['items']) && is_array($_POST['items'])) {
             foreach ($_POST['items'] as $index => $item) {
                 $img_path = handle_upload('why_img_' . $index, $upload_path);
-                $new_why_items[] = [
-                    'title' => $item['title'] ?? '',
-                    'desc'  => $item['desc'] ?? '',
-                    'img'   => $img_path ?? ($item['old_img'] ?? '')
-                ];
+                $new_why[] = ['title' => $item['title'] ?? '', 'desc' => $item['desc'] ?? '', 'img' => $img_path ?? ($item['old_img'] ?? '')];
             }
         }
-        $data['edu_why_items'] = $new_why_items;
+        $data['edu_why_items'] = $new_why;
         break;
 
     case 'update_edu_timeline':
-        $data['edu_timeline_title'] = $_POST['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
+        $data['edu_timeline_title'] = $_POST['timeline_title'] ?? '';
         $data['edu_timeline_desc']  = $_POST['timeline_desc'] ?? '';
         $new_steps = [];
         if (isset($_POST['steps']) && is_array($_POST['steps'])) {
@@ -424,55 +362,45 @@ switch ($action) {
         break;
 
     case 'update_edu_services':
-        $data['edu_services_title'] = $_POST['services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
+        $data['edu_services_title'] = $_POST['services_title'] ?? '';
         $data['edu_services_desc']  = $_POST['services_desc'] ?? '';
-        $new_edu_services = [];
+        $new_edu_srv = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $srv) {
                 $img_path = handle_upload('srv_img_' . $index, $upload_path);
-                $new_edu_services[] = [
-                    'title' => $srv['title'] ?? '',
-                    'url'   => $srv['url'] ?? '#',
-                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
-                ];
+                $new_edu_srv[] = ['title' => $srv['title'] ?? '', 'url' => $srv['url'] ?? '#', 'img' => $img_path ?? ($srv['old_img'] ?? '')];
             }
         }
-        $data['edu_services_items'] = $new_edu_services;
+        $data['edu_services_items'] = $new_edu_srv;
         break;
 
-    // ==========================================
-    // معالجات صفحة "التدريب المهني والتوظيف" (job.php)
-    // ==========================================
+    // --- صفحة Job ---
     case 'update_job_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         $data['job_hero'] = [
             'title'    => $_POST['title'] ?? '',
             'desc'     => $_POST['desc'] ?? '',
-            'btn_text' => $_POST['btn_text'] ?? 'ابدأ الآن',
+            'btn_text' => $_POST['btn_text'] ?? '',
             'btn_url'  => $_POST['btn_url'] ?? '#',
-            'img'      => $img_path ?? ($_POST['old_img'] ?? 'assets/img/job/hero.jpg')
+            'img'      => $img_path ?? ($_POST['old_img'] ?? '')
         ];
         break;
 
     case 'update_job_why':
-        $data['job_why_title'] = $_POST['why_title'] ?? 'لماذا التدريب معنا؟';
+        $data['job_why_title'] = $_POST['why_title'] ?? '';
         $data['job_why_desc']  = $_POST['why_desc'] ?? '';
         $new_job_why = [];
         if (isset($_POST['items']) && is_array($_POST['items'])) {
             foreach ($_POST['items'] as $index => $item) {
                 $img_path = handle_upload('why_img_' . $index, $upload_path);
-                $new_job_why[] = [
-                    'title' => $item['title'] ?? '',
-                    'desc'  => $item['desc'] ?? '',
-                    'img'   => $img_path ?? ($item['old_img'] ?? '')
-                ];
+                $new_job_why[] = ['title' => $item['title'] ?? '', 'desc' => $item['desc'] ?? '', 'img' => $img_path ?? ($item['old_img'] ?? '')];
             }
         }
         $data['job_why_items'] = $new_job_why;
         break;
 
     case 'update_job_program':
-        $data['job_program_title'] = $_POST['program_title'] ?? 'أنواع التدريب المهني';
+        $data['job_program_title'] = $_POST['program_title'] ?? '';
         $data['job_program_desc']  = $_POST['program_desc'] ?? '';
         $new_programs = [];
         if (isset($_POST['programs']) && is_array($_POST['programs'])) {
@@ -481,7 +409,7 @@ switch ($action) {
                 $new_programs[] = [
                     'title'    => $prog['title'] ?? '',
                     'desc'     => $prog['desc'] ?? '',
-                    'btn_text' => $prog['btn_text'] ?? 'اطلب الآن',
+                    'btn_text' => $prog['btn_text'] ?? '',
                     'btn_url'  => $prog['btn_url'] ?? '#',
                     'img'      => $img_path ?? ($prog['old_img'] ?? ''),
                     'is_dark'  => isset($prog['is_dark']) && $prog['is_dark'] == '1'
@@ -492,7 +420,7 @@ switch ($action) {
         break;
 
     case 'update_job_timeline':
-        $data['job_timeline_title'] = $_POST['timeline_title'] ?? 'كيف نساعدك خطوة بخطوة؟';
+        $data['job_timeline_title'] = $_POST['timeline_title'] ?? '';
         $data['job_timeline_desc']  = $_POST['timeline_desc'] ?? '';
         $new_job_steps = [];
         if (isset($_POST['steps']) && is_array($_POST['steps'])) {
@@ -512,28 +440,23 @@ switch ($action) {
         break;
 
     case 'update_job_services':
-        $data['job_services_title'] = $_POST['services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
+        $data['job_services_title'] = $_POST['services_title'] ?? '';
         $data['job_services_desc']  = $_POST['services_desc'] ?? '';
-        $new_job_services = [];
+        $new_job_srv = [];
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $srv) {
                 $img_path = handle_upload('srv_img_' . $index, $upload_path);
-                $new_job_services[] = [
-                    'title' => $srv['title'] ?? '',
-                    'url'   => $srv['url'] ?? '#',
-                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
-                ];
+                $new_job_srv[] = ['title' => $srv['title'] ?? '', 'url' => $srv['url'] ?? '#', 'img' => $img_path ?? ($srv['old_img'] ?? '')];
             }
         }
-        $data['job_services_items'] = $new_job_services;
+        $data['job_services_items'] = $new_job_srv;
         break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));
 }
 
-
-// 5. حفظ البيانات
+// حفظ النتيجة النهائية
 if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
     echo json_encode(['success' => true, 'message' => 'تم الحفظ بنجاح']);
 } else {

@@ -90,9 +90,9 @@ $is_visible = ($is_published && $is_in_time);
   
   <!-- استدعاء ملفات الـ CSS الأساسية والمضغوطة ديناميكياً (المسار الصحيح بناءً على أن public هو الجذر) -->
 <!-- استدعاء ملف الـ main.css الرئيسي مباشرة للتأكد من ظهور التصميم -->
-<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-<link rel="stylesheet" href="/assets/css/swiper-bundle.min.css">
-<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+<link rel="stylesheet" href="assets/css/main.css">
 
 </head>
 <body>

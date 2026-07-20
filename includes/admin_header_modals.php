@@ -158,9 +158,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
-<!-- 3. المودل المحدث للإعلان -->
-<!-- 3. المودل المحدث للإعلان -->
-<!-- 3. المودل المحدث للإعلان المتوافق مع ملف الحفظ -->
+<!-- 3. المودل الكامل للإعلان مع الحفاظ على التصميم وكل الحقول -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -170,13 +168,18 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
             <div class="modal-body p-4">
                 <?php 
-                    // جلب بيانات الإعلان بدقة من المصفوفة العامة $data
+                    // جلب بيانات الإعلان مع القيم الافتراضية لمنع أي فراغ
                     $ad_data = $data['announcement'] ?? [];
                     $ad_status = $ad_data['status'] ?? 'Draft';
                     $ad_type = $ad_data['type'] ?? 'text';
                     $ad_text = $ad_data['announcement_text'] ?? '';
-                    $ad_img = $ad_data['image_path'] ?? ''; // مطبق حسب save_config.php
+                    $ad_img = $ad_data['image_path'] ?? '';
                     $ad_link = $ad_data['link'] ?? '';
+                    $ad_start = $ad_data['start_date'] ?? '';
+                    $ad_end = $ad_data['end_date'] ?? '';
+                    $ad_bg = $ad_data['bg_color'] ?? '#f1f5f9';
+                    $ad_color = $ad_data['text_color'] ?? '#1e293b';
+                    $ad_size = $ad_data['font_size'] ?? '16';
                 ?>
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
@@ -198,42 +201,69 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
+                            <div class="text-end small text-muted">
+                                <div>من: <?php echo htmlspecialchars($ad_start ?: 'غير محدد'); ?></div>
+                                <div>إلى: <?php echo htmlspecialchars($ad_end ?: 'غير محدد'); ?></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- حالة الإعلان -->
+                    <!-- المجموعة 1: حالة الإعلان والتوقيت -->
                     <div class="card p-3 mb-4 border-0" style="background: #f1f5f9;">
-                        <div class="section-label mb-2 fw-bold"><i class="bi bi-gear"></i> حالة الإعلان</div>
+                        <div class="section-label mb-2 fw-bold"><i class="bi bi-gear"></i> حالة الإعلان والتوقيت</div>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <label class="small fw-bold">حالة العرض</label>
                                 <select class="form-select" name="status">
                                     <option value="Draft" <?php echo ($ad_status == 'Draft' ? 'selected' : ''); ?>>مخفي (مسودة)</option>
                                     <option value="Published" <?php echo ($ad_status == 'Published' ? 'selected' : ''); ?>>نشط (يظهر للزوار)</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold">تاريخ البدء</label>
+                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $ad_start); ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold">تاريخ الانتهاء</label>
+                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $ad_end); ?>">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- محتوى الإعلان -->
+                    <!-- المجموعة 2: محتوى الإعلان -->
                     <div class="card p-3 mb-4 border" style="border-color: var(--border-color);">
                         <div class="section-label mb-2 fw-bold"><i class="bi bi-pencil-square"></i> محتوى الإعلان</div>
                         <label class="small mb-2 fw-bold">نوع الإعلان:</label>
                         <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo ($ad_type == 'text' ? 'selected' : ''); ?>>نص متحرك</option>
-                            <option value="image" <?php echo ($ad_type == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي)</option>
+                            <option value="text" <?php echo ($ad_type == 'text' ? 'selected' : ''); ?>>نص متحرك (اختر هذا لنص سريع)</option>
+                            <option value="image" <?php echo ($ad_type == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي كامل)</option>
                         </select>
 
                         <div id="textEditor" class="<?php echo ($ad_type == 'text' ? '' : 'd-none'); ?>">
-                            <label class="small mb-1 fw-bold">نص الإعلان:</label>
+                            <label class="small mb-1 fw-bold">نص الإعلان الحالي:</label>
                             <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars($ad_text); ?></textarea>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <label class="small">لون الخلفية</label>
+                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo $ad_bg; ?>">
+                                </div>
+                                <div class="col-4">
+                                    <label class="small">لون الخط</label>
+                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo $ad_color; ?>">
+                                </div>
+                                <div class="col-4">
+                                    <label class="small">حجم الخط</label>
+                                    <input type="number" class="form-control" name="font_size" value="<?php echo $ad_size; ?>">
+                                </div>
+                            </div>
                         </div>
 
                         <div id="imageEditor" class="<?php echo ($ad_type == 'image' ? '' : 'd-none'); ?>">
                             <?php if (!empty($ad_img)): ?>
-                                <label class="small mb-1 fw-bold">البانر الحالي:</label>
+                                <label class="small mb-1 fw-bold">بانر الإعلان الحالي:</label>
                                 <div class="mb-2 p-2 border rounded text-center bg-light d-flex align-items-center justify-content-center gap-2">
                                     <img src="<?php echo htmlspecialchars('../../' . $ad_img); ?>" class="thumb-preview" style="width: 60px; height: 60px;">
+                                    <span class="small text-muted dir-ltr"><?php echo htmlspecialchars($ad_img); ?></span>
                                 </div>
                             <?php endif; ?>
                             <label class="small mb-1 fw-bold">ارفع صورة جديدة للإعلان:</label>
@@ -241,8 +271,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         </div>
                     </div>
 
-                    <!-- التوجيه -->
-                    <div class="section-label mb-1 fw-bold"><i class="bi bi-link-45deg"></i> رابط التوجيه</div>
+                    <!-- المجموعة 3: التوجيه -->
+                    <div class="section-label mb-1 fw-bold"><i class="bi bi-link-45deg"></i> رابط التوجيه الحالي</div>
                     <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($ad_link); ?>" placeholder="https://">
                 </form>
             </div>
@@ -253,9 +283,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
-
-
-
 <!-- 4. مودل إدارة القائمة الرئيسية (Menu Edit Modal) -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

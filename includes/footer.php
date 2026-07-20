@@ -5,7 +5,8 @@ if (!isset($path_prefix)) {
 }
 ?>
 
-<!-- footer start -->
+<!--footer start -->
+
 <section class="consult-banner-section" style="position: relative;">
     <?php if ($is_admin): ?>
         <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" style="top: 10px; right: 10px;">
@@ -20,14 +21,62 @@ if (!isset($path_prefix)) {
                     <h4><?php echo htmlspecialchars($data['consult_title'] ?? 'احصل على استشارة مجانية'); ?></h4>
                     <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
                 </div>
-                <form class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
-                    <input type="email" name="email" placeholder="ادخل إيميلك..." required />
-                    <button type="submit"><img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال"></button>
+                
+                <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
+                    <div class="d-flex flex-column w-100">
+                        <div class="d-flex align-items-center">
+                            <input type="email" name="email" placeholder="ادخل إيميلك..." required />
+                            <button type="submit"><img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال"></button>
+                        </div>
+                        
+                        <!-- متطلب قانوني ألماني: خانة الموافقة وسياسة الخصوصية (DSGVO) -->
+                        <div class="form-check mt-2 text-start" style="font-size: 0.85rem; color: #fff;">
+                            <input class="form-check-input" type="checkbox" name="privacy_consent" id="privacyConsent" required>
+                            <label class="form-check-label" for="privacyConsent">
+                                أوافق على شروط تخزين ومعالجة بياناتي وفقاً لـ <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" style="color: #fff; text-decoration: underline;">سياسة الخصوصية (Datenschutzerklärung)</a>.
+                            </label>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </section>
+
+<!-- جافاسكريبت لضمان الإرسال الآمن عبر AJAX -->
+<script>
+document.getElementById('consultForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // التحقق البرمجي من تفعيل الشروط الألمانية
+    const checkbox = document.getElementById('privacyConsent');
+    if (!checkbox.checked) {
+        alert('يجب الموافقة على سياسة الخصوصية أولاً وفقاً للقوانين الأوروبية.');
+        return;
+    }
+
+    const formData = new FormData(this);
+
+    fetch(this.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('تم استلام طلبك بنجاح. شكراً لك!');
+            this.reset();
+        } else {
+            alert('خطأ: ' + (data.message || 'حدث خطأ ما'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('حدث خطأ في الاتصال بالخادم');
+    });
+});
+</script>
+
 
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">

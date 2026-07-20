@@ -15,6 +15,7 @@ $upload_path = __DIR__ . '/../../assets/img/';
 
 // 2. قراءة البيانات أو تهيئة مصفوفة افتراضية
 // 2. قراءة البيانات أو تهيئة مصفوفة افتراضية كاملة
+// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية كاملة
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'announcement'           => [],
     'menu_links'             => [],
@@ -35,14 +36,38 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'guide_desc'             => '',
     'faq_items'              => [],
     'faq_title'              => 'الأسئلة الشائعة',
-    // إعدادات الفوتر الجديدة
+    // إعدادات الفوتر
     'consult_title'          => 'احصل على استشارة مجانية',
     'consult_desc'           => 'هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة',
     'footer_desc'            => '',
     'footer_col2_title'      => 'روابط سريعة',
     'footer_col2_links'      => [],
     'footer_col3_title'      => 'تواصل معنا',
-    'footer_col3_links'      => []
+    'footer_col3_links'      => [],
+
+    // ==========================================
+    // القيم الافتراضية لصفحة عن الشركة (about.php)
+    // ==========================================
+    'about'                  => [
+        'title'        => 'من نحن',
+        'desc'         => 'شركة بيتهوفن سيتي للخدمات (BCS) تأسست في عام 2014 في بون/ألمانيا..',
+        'btn_text'     => 'قراءة المزيد',
+        'btn_url'      => '#',
+        'main_img'     => 'assets/img/about us icon, image/about1.jpg',
+        'sub_img'      => 'assets/img/about us icon, image/about2.png',
+        'vision_title' => 'رؤية الشركة',
+        'vision_desc'  => 'نطمح لنكون من بين الجهات الرائدة في خدمة الأجانب وتعزيز التفاهم بين الثقافات في ألمانيا.',
+        'vision_icon'  => 'assets/img/About us Icon, image/Company vision.svg',
+        'message_title'=> 'رسالة الشركة',
+        'message_desc' => 'نقدّم خدمات متكاملة ومتعددة اللغات بأسعار منافسة لتحقيق طموحاتك في التعليم، التدريب، والعلاج في ألمانيا.',
+        'message_icon' => 'assets/img/About us Icon, image/Company message.svg'
+    ],
+    'team_title'             => 'فريق العمل',
+    'team_desc'              => 'يسر فريق العمل تقديم خدمات عالية الجودة لتتناسب مع احتياجات العميل الكريم وتوقعاته.',
+    'team_members'           => [],
+    'about_counts'           => [],
+    'partners_title'         => 'شركاؤنا داخل وخارج ألمانيا',
+    'partners_items'         => []
 ];
 
 
@@ -241,6 +266,81 @@ case 'update_footer':
     }
     break;
 
+    // ==========================================
+    // معالجات صفحة "عن الشركة" (about.php)
+    // ==========================================
+
+    case 'update_about_section':
+        // 1. رفع الصور المرفقة إن وجدت
+        $main_img = handle_upload('about_main_img', $upload_path);
+        $sub_img  = handle_upload('about_sub_img', $upload_path);
+        $vision_icon = handle_upload('about_vision_icon', $upload_path);
+        $message_icon = handle_upload('about_message_icon', $upload_path);
+
+        // 2. تحديث بيانات مصفوفة "عن الشركة"
+        $data['about'] = [
+            'title'        => $_POST['about_title'] ?? 'من نحن',
+            'desc'         => $_POST['about_desc'] ?? '',
+            'btn_text'     => $_POST['about_btn_text'] ?? 'قراءة المزيد',
+            'btn_url'      => $_POST['about_btn_url'] ?? '#',
+            'main_img'     => $main_img ?? ($_POST['old_about_main_img'] ?? 'assets/img/about us icon, image/about1.jpg'),
+            'sub_img'      => $sub_img ?? ($_POST['old_about_sub_img'] ?? 'assets/img/about us icon, image/about2.png'),
+            'vision_title' => $_POST['vision_title'] ?? 'رؤية الشركة',
+            'vision_desc'  => $_POST['vision_desc'] ?? '',
+            'vision_icon'  => $vision_icon ?? ($_POST['old_vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg'),
+            'message_title'=> $_POST['message_title'] ?? 'رسالة الشركة',
+            'message_desc' => $_POST['message_desc'] ?? '',
+            'message_icon' => $message_icon ?? ($_POST['old_message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg')
+        ];
+        break;
+
+    case 'update_about_team':
+        $data['team_title'] = $_POST['team_title'] ?? 'فريق العمل';
+        $data['team_desc']  = $_POST['team_desc'] ?? '';
+        
+        $new_team = [];
+        if (isset($_POST['team']) && is_array($_POST['team'])) {
+            foreach ($_POST['team'] as $index => $member) {
+                $img_path = handle_upload('team_img_' . $index, $upload_path);
+                $new_team[] = [
+                    'name' => $member['name'] ?? '',
+                    'role' => $member['role'] ?? '',
+                    'img'  => $img_path ?? ($member['old_img'] ?? 'assets/img/team/member1.jpg')
+                ];
+            }
+        }
+        $data['team_members'] = $new_team;
+        break;
+
+    case 'update_about_counts':
+        $new_counts = [];
+        if (isset($_POST['counts']) && is_array($_POST['counts'])) {
+            foreach ($_POST['counts'] as $index => $c) {
+                $img_path = handle_upload('count_img_' . $index, $upload_path);
+                $new_counts[] = [
+                    'number' => $c['number'] ?? '',
+                    'title'  => $c['title'] ?? '',
+                    'img'    => $img_path ?? ($c['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['about_counts'] = $new_counts;
+        break;
+
+    case 'update_about_partners':
+        $data['partners_title'] = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
+        
+        $new_partners = [];
+        if (isset($_POST['partners']) && is_array($_POST['partners'])) {
+            foreach ($_POST['partners'] as $index => $p) {
+                $img_path = handle_upload('partner_img_' . $index, $upload_path);
+                $new_partners[] = [
+                    'img' => $img_path ?? ($p['old_img'] ?? '')
+                ];
+            }
+        }
+        $data['partners_items'] = $new_partners;
+        break;
 
 
     default:

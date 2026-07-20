@@ -1,30 +1,32 @@
 <?php
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
+
+$path_prefix = $path_prefix ?? '';
 ?>
 
-<!-- 1. Modal: Edit Contact Hero -->
+<!-- 1. Contact Hero Modal -->
 <div class="modal fade custom-modal" id="contactHeroModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تعديل صورة الهيرو</h5>
+                <h5 class="modal-title"><i class="bi bi-image-fill text-primary"></i> تعديل صورة الهيرو (تواصل معنا)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactHeroForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_hero">
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">صورة الهيرو الحالية / اختيار صورة جديدة</label>
-                        <?php if (!empty($data['contact_hero_img'])): ?>
-                            <div class="mb-2">
-                                <img src="<?php echo htmlspecialchars('../../' . $data['contact_hero_img']); ?>" class="thumb-preview" style="max-height: 100px; border-radius: 8px;">
+                        <label class="form-label fw-bold d-block">الصورة الحالية</label>
+                        <?php if (!empty($contact_hero_img)): ?>
+                            <div class="p-2 border rounded bg-light mb-2 text-center">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($contact_hero_img) . '?' . time(); ?>" style="max-height: 120px; object-fit: contain;">
                             </div>
                         <?php endif; ?>
+                        <label class="form-label fw-bold">تغيير الصورة</label>
                         <input type="file" class="form-control" name="contact_hero_img" accept="image/*">
-                        <input type="hidden" name="old_contact_hero_img" value="<?php echo htmlspecialchars($data['contact_hero_img'] ?? ''); ?>">
+                        <input type="hidden" name="old_contact_hero_img" value="<?php echo htmlspecialchars($contact_hero_img ?? ''); ?>">
                     </div>
                 </form>
             </div>
@@ -36,28 +38,28 @@ if (!defined('ALLOWED_ACCESS')) {
     </div>
 </div>
 
-<!-- 2. Modal: Edit Contact Info -->
+<!-- 2. Contact Info Modal -->
 <div class="modal fade custom-modal" id="contactInfoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle text-primary"></i> تعديل معلومات التواصل</h5>
+                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary"></i> تعديل معلومات التواصل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactInfoForm">
                     <input type="hidden" name="action" value="update_contact_info">
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">العنوان</label>
-                        <input type="text" class="form-control" name="contact_address" value="<?php echo htmlspecialchars($data['contact_address'] ?? 'Rheinweg 140 ,53129 Bonn,Germany'); ?>">
+                        <label class="form-label fw-bold">العنوان (المدينة، الدولة)</label>
+                        <input type="text" class="form-control" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>">
                     </div>
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">البريد الإلكتروني</label>
-                        <input type="email" class="form-control" name="contact_email" value="<?php echo htmlspecialchars($data['contact_email'] ?? 'info@Beethoven-City-Services.com'); ?>">
+                        <label class="form-label fw-bold">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>">
                     </div>
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">رقم الهاتف</label>
-                        <input type="text" class="form-control" name="contact_phone" value="<?php echo htmlspecialchars($data['contact_phone'] ?? '666-230-71 176 (0) 49+'); ?>">
+                        <label class="form-label fw-bold">رقم الهاتف</label>
+                        <input type="text" class="form-control" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>">
                     </div>
                 </form>
             </div>
@@ -69,104 +71,63 @@ if (!defined('ALLOWED_ACCESS')) {
     </div>
 </div>
 
-<!-- 3. Modal: Edit WhatsApp Section -->
+<!-- 3. WhatsApp Section Modal -->
 <div class="modal fade custom-modal" id="whatsappSectionModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-whatsapp text-success"></i> تعديل قسم الواتساب</h5>
+                <h5 class="modal-title"><i class="bi bi-whatsapp text-success"></i> تعديل قسم الواتساب والتواصل المباشر</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="whatsappForm">
                     <input type="hidden" name="action" value="update_whatsapp_section">
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">النص الترويجي</label>
-                        <textarea class="form-control" name="whatsapp_text" rows="3"><?php echo htmlspecialchars($data['whatsapp_text'] ?? 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات'); ?></textarea>
+                        <label class="form-label fw-bold">النص الترويجي للواتساب</label>
+                        <textarea class="form-control" name="whatsapp_text" rows="3" style="height: auto;"><?php echo htmlspecialchars($whatsapp_text ?? ''); ?></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">رابط الواتساب (URL)</label>
-                        <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($data['whatsapp_url'] ?? 'https://wa.me/4917671230666'); ?>">
+                        <label class="form-label fw-bold">رابط المحادثة (URL)</label>
+                        <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>">
                     </div>
                     <div class="mb-3">
-                        <label class="small fw-bold mb-1">نص الزر</label>
-                        <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($data['whatsapp_btn_txt'] ?? 'تواصل معنا عبر واتساب'); ?>">
+                        <label class="form-label fw-bold">نص زر الواتساب</label>
+                        <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? ''); ?>">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="submit" form="whatsappForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاءون</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const adminForms = document.querySelectorAll('.custom-modal form');
-    
-    adminForms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            // البحث عن زر الحفظ المرتبط بهذا الفورم
-            const submitBtn = document.querySelector(`[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
-            
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.setAttribute('data-original-text', submitBtn.innerHTML);
-                submitBtn.innerHTML = 'جاري الحفظ...';
-            }
 
-            fetch('save_config.php', {
+<!-- AJAX Submission Engine -->
+<script>
+    document.querySelectorAll('#contactHeroModal form, #contactInfoModal form, #whatsappSectionModal form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('admin/api/save_config.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                // التحقق من مفتاح success الذي يرسله الـ PHP
-                if (data.success === true) {
-                    // إغلاق المودل المفتوح حالياً
-                    const modalElement = this.closest('.modal');
-                    const activeModal = bootstrap.Modal.getInstance(modalElement);
-                    if (activeModal) {
-                        activeModal.hide();
-                    }
-                    
-                    // إظهار رسالة النجاح وإعادة تحميل الصفحة لتظهر التحديثات فوراً
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'تم التحديث بنجاح',
-                            text: data.message || 'جاري تحديث الصفحة...',
-                            timer: 1200,
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        alert(data.message || 'تم التحديث بنجاح!');
-                        location.reload();
-                    }
+                if (data.success) {
+                    alert('تم الحفظ بنجاح');
+                    location.reload();
                 } else {
-                    alert('حدث خطأ: ' + (data.message || 'يرجى المحاولة مجدداً'));
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'حفظ التغييرات';
-                    }
+                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('حدث خطأ في الاتصال بالخادم.');
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'حفظ التغييرات';
-                }
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                alert('حدث خطأ أثناء الاتصال بالسيرفر');
             });
         });
     });
-});
-
 </script>

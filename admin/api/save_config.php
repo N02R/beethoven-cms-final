@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -465,6 +465,8 @@ switch ($action) {
         }
         $data['job_services_items'] = $new_job_srv;
         break;
+
+    // --- صفحة Contact ---
     case 'update_contact_hero':
         $img_path = handle_upload('contact_hero_img', $upload_path);
         $data['contact_hero_img'] = $img_path ?: ($_POST['old_contact_hero_img'] ?? '');

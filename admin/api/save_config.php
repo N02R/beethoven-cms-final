@@ -818,6 +818,57 @@ switch ($action) {
         $data['english_programs_page']['note_highlight'] = $_POST['note_highlight'] ?? 'ملاحظة:';
         $data['english_programs_page']['note_text']      = $_POST['note_text'] ?? '';
         break;
+    // --- صفحة الضمانات المالية والحساب المغلق (Blocked Account Page) ---
+    case 'update_blocked_breadcrumb':
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $data['blocked_account_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['blocked_account_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_blocked_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $data['blocked_account_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg7.png');
+        break;
+
+    case 'update_blocked_main':
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $data['blocked_account_page']['main_title']       = $_POST['main_title'] ?? '';
+        $data['blocked_account_page']['main_desc']        = $_POST['main_desc'] ?? '';
+        $data['blocked_account_page']['importance_title'] = $_POST['importance_title'] ?? '';
+        $data['blocked_account_page']['importance_desc']  = $_POST['importance_desc'] ?? '';
+        break;
+
+    case 'update_blocked_options':
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $data['blocked_account_page']['options_title'] = $_POST['options_title'] ?? '';
+        $opts = $_POST['options_items'] ?? [];
+        $data['blocked_account_page']['options_items'] = array_values(array_filter(array_map('trim', $opts)));
+        break;
+
+    case 'update_blocked_account':
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $data['blocked_account_page']['account_title'] = $_POST['account_title'] ?? '';
+        $pts = $_POST['account_points'] ?? [];
+        $data['blocked_account_page']['account_points'] = array_values(array_filter(array_map('trim', $pts)));
+        break;
+
+    case 'update_blocked_links':
+        if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
+        $texts = $_POST['link_texts'] ?? [];
+        $urls  = $_POST['link_urls'] ?? [];
+        $service_links = [];
+        for ($i = 0; $i < count($texts); $i++) {
+            $txt = trim($texts[$i]);
+            if (!empty($txt)) {
+                $service_links[] = [
+                    'text' => $txt,
+                    'url'  => format_service_url(trim($urls[$i] ?? '#'))
+                ];
+            }
+        }
+        $data['blocked_account_page']['service_links'] = $service_links;
+        break;
 
 
     default:

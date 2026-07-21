@@ -156,16 +156,18 @@ $arrival_data = $data['arrival_page'] ?? [];
                         <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?>">
                     </div>
                     <label class="form-label fw-bold">قائمة الملاحظات (تعديل / حذف / إضافة)</label>
-                    <div id="notesRowsContainer" class="d-flex flex-column gap-2 mb-3">
-                        <?php if (!empty($arrival_data['notes'])): ?>
-                            <?php foreach ($arrival_data['notes'] as $index => $note): ?>
-                                <div class="input-group note-item" id="note_row_<?php echo $index; ?>">
-                                    <textarea class="form-control" name="notes[]" rows="2"><?php echo htmlspecialchars($note); ?></textarea>
-                                    <button type="button" class="btn btn-outline-danger" onclick="removeRow('note_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
+<div id="notesRowsContainer" class="d-flex flex-column gap-2 mb-3">
+    <?php if (!empty($arrival_data['notes'])): ?>
+        <?php foreach ($arrival_data['notes'] as $index => $note): ?>
+            <div class="input-group note-item" id="note_row_<?php echo $index; ?>">
+                <!-- يسمح للمدير برؤية وتعديل النص مع الأكواد بداخل الـ Textarea -->
+                <textarea class="form-control" name="notes[]" rows="2"><?php echo htmlspecialchars($note); ?></textarea>
+                <button type="button" class="btn btn-outline-danger" onclick="removeRow('note_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
                     <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addNoteRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
                     </button>

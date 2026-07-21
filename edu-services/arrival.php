@@ -79,7 +79,7 @@ include_once $path_prefix . 'includes/header.php';
     <div class="custom-container">
       
       <!-- 1. قسم العنوان الرئيسي والوصف (مع قلم تعديل مستقل) -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (isset($is_admin) && $is_admin): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#arrivalMainTitleModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -91,7 +91,7 @@ include_once $path_prefix . 'includes/header.php';
       </div>
 
       <!-- 2. قسم النصائح والإرشادات (مع قلم تعديل مستقل) -->
-      <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-check py-4 mb-4" style="position: relative;">
         <?php if (isset($is_admin) && $is_admin): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#arrivalTipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل التوصيات والنصائح">
               <i class="bi bi-pencil-fill"></i>
@@ -118,13 +118,15 @@ include_once $path_prefix . 'includes/header.php';
         <?php endif; ?>
 
         <h5 class="mb-4 note-text"><?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?></h5>
-        <ul class="star-list">
-          <?php foreach (($arrival_data['notes'] ?? []) as $note): ?>
-            <li class="mb-2">
-              <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"><?php echo $note; ?></p>
-            </li>
-          <?php endforeach; ?>
-        </ul>
+<ul class="star-list">
+  <?php foreach (($arrival_data['notes'] ?? []) as $note): ?>
+    <li class="mb-2">
+      <!-- لاحظي أننا استبدلنا htmlspecialchars بـ echo العادية ليتم تفعيل الـ span والستايل -->
+      <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"><?php echo $note; ?></p>
+    </li>
+  <?php endforeach; ?>
+</ul>
+
       </div>
 
     </div>

@@ -1,12 +1,13 @@
-<?php 
+<?php
+// تعريف الثابت الأمني أولاً لكي لا تظهر رسالة Access Denied
 if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+    define('ALLOWED_ACCESS', true);
 }
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 

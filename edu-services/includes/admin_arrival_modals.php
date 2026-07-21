@@ -2,7 +2,7 @@
 <div class="modal fade" id="arrivalBreadcrumbModal" tabindex="-1" aria-labelledby="arrivalBreadcrumbModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form id="arrivalBreadcrumbForm">
+      <form id="arrivalBreadcrumbForm" method="POST">
         <input type="hidden" name="action" value="update_arrival_breadcrumb">
         <div class="modal-header">
           <h5 class="modal-title" id="arrivalBreadcrumbModalLabel">تعديل عنوان مسار التنقل (Breadcrumb)</h5>
@@ -32,7 +32,7 @@
 <div class="modal fade" id="arrivalHeroModal" tabindex="-1" aria-labelledby="arrivalHeroModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <form id="arrivalHeroForm" enctype="multipart/form-data">
+      <form id="arrivalHeroForm" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="action" value="update_arrival_hero">
         <div class="modal-header">
           <h5 class="modal-title" id="arrivalHeroModalLabel">تعديل القسم العلوي (الهيرو والصورة)</h5>
@@ -62,7 +62,7 @@
 <div class="modal fade" id="arrivalContentModal" tabindex="-1" aria-labelledby="arrivalContentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
     <div class="modal-content">
-      <form id="arrivalContentForm">
+      <form id="arrivalContentForm" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="action" value="update_arrival_content">
         <div class="modal-header">
           <h5 class="modal-title" id="arrivalContentModalLabel">تعديل المحتوى، النصائح، والملاحظات</h5>
@@ -143,8 +143,8 @@
     </div>
   </div>
 </div>
-<script>
 
+<script>
 // جافاسكريبت تفاعلي ديناميكي متكامل لإدارة صفحة الاستقبال والخدمات (Arrival Page)
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -223,5 +223,4 @@ document.addEventListener('DOMContentLoaded', function() {
     handleFormSubmit('arrivalContentForm');
     handleFormSubmit('arrivalBreadcrumbForm');
 });
-
 </script>

@@ -581,5 +581,19 @@
       }
     ]
   }
+,
+  "pricelist_page": {
+    "page_breadcrumb": "قائمة أسعار الخدمات",
+    "page_breadcrumb_url": "#",
+    "hero_img": "assets/img/education/servicesimg15.png",
+    "hero_position": "center center",
+    "main_title": "قائمة الأسعار العامة",
+    "main_desc": "يسعى فريق عمل بيتهوفن سيتي جاهدين لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.",
+    "download_item": {
+      "type": "pdf",
+      "title": "قائمة الأسعار العامة",
+      "file": "assets/files/general_price_list.pdf"
+    }
+  }
 
 }

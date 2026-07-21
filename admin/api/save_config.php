@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, Offers, etc.)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, Offers, Price List, etc.)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -12,6 +12,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 
 $file = __DIR__ . '/../../announcement_config.json';
 $upload_path = __DIR__ . '/../../assets/img/';
+$files_upload_path = __DIR__ . '/../../assets/files/';
 
 // دالة ذكية لتصحيح الروابط تلقائياً وحمايتها من أخطاء الإدخال البشري
 function format_service_url($raw_url) {
@@ -269,10 +270,25 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
                 'active' => false
             ]
         ]
+    ],
+
+    // --- صفحة قائمة الأسعار العامة (Price List Page) ---
+    'pricelist_page'         => [
+        'page_breadcrumb'     => 'قائمة أسعار الخدمات',
+        'page_breadcrumb_url' => '#',
+        'hero_img'            => 'assets/img/education/servicesimg15.png',
+        'hero_position'       => 'center center',
+        'main_title'          => 'قائمة الأسعار العامة',
+        'main_desc'           => 'يسعى فريق عمل بيتهوفن سيتي جاهداً لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.',
+        'download_item'       => [
+            'type'  => 'pdf',
+            'title' => 'قائمة الأسعار العامة',
+            'file'  => 'assets/files/general_price_list.pdf'
+        ]
     ]
 ];
 
-// دالة رفع الملفات الآمنة
+// دالة رفع الملفات الآمنة للصور
 function handle_upload($file_key, $upload_dir) {
     if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
         $allowed_ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
@@ -283,6 +299,23 @@ function handle_upload($file_key, $upload_dir) {
             $new_name = $file_key . '_' . time() . '.' . $ext;
             if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $upload_dir . $new_name)) {
                 return 'assets/img/' . $new_name;
+            }
+        }
+    }
+    return null;
+}
+
+// دالة رفع الملفات المستندية (PDF / Word)
+function handle_document_upload($file_key, $upload_dir) {
+    if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
+        $allowed_ext = ['pdf', 'doc', 'docx'];
+        $file_name = $_FILES[$file_key]['name'];
+        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        if (in_array($ext, $allowed_ext)) {
+            $new_name = $file_key . '_' . time() . '.' . $ext;
+            if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $upload_dir . $new_name)) {
+                return 'assets/files/' . $new_name;
             }
         }
     }
@@ -1427,7 +1460,6 @@ switch ($action) {
             foreach ($titles as $index => $title) {
                 $t = trim($title);
                 if (!empty($t)) {
-                    // التحقق مما إذا كان الكرت مفعلاً (يعتمد على معرفة ما إذا كان الـ index موجوداً في مصفوفة الـ checkboxes)
                     $is_active = isset($actives[$index]) || in_array((string)$index, array_map('strval', array_keys($actives)), true);
 
                     $download_cards[] = [
@@ -1441,6 +1473,43 @@ switch ($action) {
             }
         }
         $data['offers_page']['download_cards'] = $download_cards;
+        break;
+
+    // --- صفحة قائمة الأسعار العامة (Price List Page) ---
+    case 'update_pricelist_breadcrumb':
+        if (!isset($data['pricelist_page'])) { $data['pricelist_page'] = []; }
+        $data['pricelist_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['pricelist_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_pricelist_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['pricelist_page'])) { $data['pricelist_page'] = []; }
+        $data['pricelist_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/education/servicesimg15.png');
+        $data['pricelist_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_pricelist_main':
+        if (!isset($data['pricelist_page'])) { $data['pricelist_page'] = []; }
+        $data['pricelist_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['pricelist_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_pricelist_card':
+        if (!isset($data['pricelist_page'])) { $data['pricelist_page'] = []; }
+        
+        $item_title = trim($_POST['item_title'] ?? 'قائمة الأسعار العامة');
+        $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
+        
+        // معالجة رفع الملف الجديد إن وجد، وإلا الحفاظ على القديم
+        $new_file = handle_document_upload('item_file', $files_upload_path);
+        $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/general_price_list.pdf');
+
+        $data['pricelist_page']['download_item'] = [
+            'type'  => ($item_type === 'word' || $item_type === 'docx') ? 'word' : 'pdf',
+            'title' => $item_title,
+            'file'  => $final_file
+        ];
         break;
 
     default:

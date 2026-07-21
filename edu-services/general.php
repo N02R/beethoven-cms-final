@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!defined('ALLOWED_ACCESS')) {
     define('ALLOWED_ACCESS', true);
 }
+
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
@@ -24,13 +25,12 @@ $visa_data = $global_data['visa_requirements_page'] ?? [
     'main_desc'           => '',
     'note_title'          => 'ملاحظة !!',
     'note_text'           => '',
-    'pdf_title'           => 'قائمة مراجعات عامة لِمتطلبات تأشيرات مختلفة',
-    'pdf_file'            => 'assets/files/checklist.pdf'
+    'download_items'      => []
 ];
 
 $data['visa_requirements_page'] = $visa_data;
 
-// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
+// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً
 $page_css = [
     'edu-services/css/edu-services.css'
 ];
@@ -113,25 +113,35 @@ include_once $path_prefix . 'includes/header.php';
         </ul>
       </div>
 
-      <!-- ملف التحميل PDF -->
-      <div class="row py-4" style="position: relative;">
+      <!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
+      <div class="py-4" style="position: relative;">
         <?php if (isset($is_admin) && $is_admin): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaPdfModal" style="position: absolute; top: 10px; right: 12px; z-index: 10;" title="تعديل ملف الـ PDF">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaDownloadModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <div class="col-lg-12 col-md-12 col-sm-12">
-          <div class="download-card mb-3">
-            <div class="download-row">
-              <img src="<?php echo $path_prefix; ?>assets/img/education/Grouppdf.png" alt="ملف PDF" />
-              <div class="dl-info">
-                <div class="dl-title"><?php echo htmlspecialchars($visa_data['pdf_title'] ?? ''); ?></div>
+        <div class="row">
+          <?php if (!empty($visa_data['download_items'])): ?>
+            <?php foreach ($visa_data['download_items'] as $item): ?>
+              <?php 
+                $file_type = strtolower($item['type'] ?? 'pdf');
+                $icon_img = ($file_type === 'word') ? 'Grouppdf.png' : 'Grouppdf.png'; // يمكنك تخصيص الأيقونة حسب النوع إذا رغبتِ
+              ?>
+              <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="download-card mb-3">
+                  <div class="download-row">
+                    <img src="<?php echo $path_prefix; ?>assets/img/education/<?php echo $icon_img; ?>" alt="ملف التحميل" />
+                    <div class="dl-info">
+                      <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
+                    </div>
+                    <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
+                    <a class="download-link" href="<?php echo $path_prefix . htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
+                  </div>
+                </div>
               </div>
-              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
-              <a class="download-link" href="<?php echo $path_prefix . htmlspecialchars($visa_data['pdf_file'] ?? 'assets/files/checklist.pdf'); ?>" download>Download</a>
-            </div>
-          </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
 

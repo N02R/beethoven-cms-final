@@ -128,33 +128,55 @@ $visa_data = $data['visa_requirements_page'] ?? [];
     </div>
 </div>
 
-<!-- 5. PDF File Modal -->
-<div class="modal fade custom-modal" id="visaPdfModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<!-- 5. Download Files Modal (إدارة الملفات مع اختيار النوع PDF/Word وحذف وإضافة عناصر) -->
+<div class="modal fade custom-modal" id="visaDownloadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-file-earmark-pdf text-primary"></i> تعديل ملف الـ PDF والوصف</h5>
+                <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-down text-primary"></i> إدارة ملفات ونماذج متطلبات التأشيرة</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="visaPdfForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_visa_pdf">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان ملف التحميل</label>
-                        <input type="text" class="form-control" name="pdf_title" value="<?php echo htmlspecialchars($visa_data['pdf_title'] ?? ''); ?>" required>
+                <form id="visaDownloadForm" method="POST">
+                    <input type="hidden" name="action" value="update_visa_downloads">
+                    <label class="form-label fw-bold">قائمة الملفات (تعديل / إضافة / حذف)</label>
+                    <div id="visaDownloadContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($visa_data['download_items'])): ?>
+                            <?php foreach ($visa_data['download_items'] as $index => $item): ?>
+                                <div class="p-3 border rounded bg-light position-relative download-item-box" id="visa_download_<?php echo $index; ?>">
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">نوع الملف</label>
+                                            <select class="form-select form-select-sm" name="download_types[]">
+                                                <option value="pdf" <?php echo (strtolower($item['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($item['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label small fw-bold">عنوان البطاقة</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_titles[]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_subs[]" value="<?php echo htmlspecialchars($item['sub'] ?? 'Checklist'); ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">مسار الملف (URL)</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_files[]" value="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeVisaRow('visa_download_<?php echo $index; ?>')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if (!empty($visa_data['pdf_file'])): ?>
-                        <div class="mb-2 text-muted small">الملف الحالي: <code><?php echo htmlspecialchars($visa_data['pdf_file']); ?></code></div>
-                    <?php endif; ?>
-                    <input type="hidden" name="old_pdf" value="<?php echo htmlspecialchars($visa_data['pdf_file'] ?? ''); ?>">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رفع ملف PDF جديد (اختياري)</label>
-                        <input type="file" class="form-control" name="pdf_file" accept=".pdf">
-                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addVisaDownloadRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة نموذج تحميل جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="visaPdfForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="visaDownloadForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -163,7 +185,47 @@ $visa_data = $data['visa_requirements_page'] ?? [];
 
 <!-- JS Engine -->
 <script>
-    document.querySelectorAll('#visaBreadcrumbForm, #visaHeroForm, #visaMainForm, #visaNoteForm, #visaPdfForm').forEach(form => {
+    function removeVisaRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    let visaDownloadIndex = <?php echo count($visa_data['download_items'] ?? []); ?>;
+    function addVisaDownloadRow() {
+        const container = document.getElementById('visaDownloadContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 border rounded bg-light position-relative download-item-box';
+        div.id = 'visa_download_' + visaDownloadIndex;
+        div.innerHTML = `
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">نوع الملف</label>
+                    <select class="form-select form-select-sm" name="download_types[]">
+                        <option value="pdf" selected>PDF</option>
+                        <option value="word">Word</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label small fw-bold">عنوان البطاقة</label>
+                    <input type="text" class="form-control form-control-sm" name="download_titles[]" value="قائمة مراجعة متطلبات التأشيرة">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
+                    <input type="text" class="form-control form-control-sm" name="download_subs[]" value="Checklist">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold">مسار الملف (URL)</label>
+                    <input type="text" class="form-control form-control-sm" name="download_files[]" value="assets/files/checklist.pdf">
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeVisaRow('visa_download_${visaDownloadIndex}')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+        `;
+        container.appendChild(div);
+        visaDownloadIndex++;
+    }
+
+    // ربط كافة النماذج عبر AJAX
+    document.querySelectorAll('#visaBreadcrumbForm, #visaHeroForm, #visaMainForm, #visaNoteForm, #visaDownloadForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);

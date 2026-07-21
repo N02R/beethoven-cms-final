@@ -870,6 +870,84 @@ switch ($action) {
         $data['blocked_account_page']['service_links'] = $service_links;
         break;
 
+    // --- صفحة الدورة التأسيسية / السنة التحضيرية (Studienkolleg Page) ---
+    case 'update_stk_breadcrumb':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['studienkolleg_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_stk_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/serviceimg11.png');
+        $data['studienkolleg_page']['hero_position'] = $_POST['hero_position'] ?? 'center -20rem';
+        break;
+
+    case 'update_stk_main':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['studienkolleg_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_stk_goals':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['goals_title'] = $_POST['goals_title'] ?? '';
+        $items = $_POST['goals_items'] ?? [];
+        $data['studienkolleg_page']['goals_items'] = array_values(array_filter(array_map('trim', $items)));
+        break;
+
+    case 'update_stk_learning':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['learning_title'] = $_POST['learning_title'] ?? '';
+        $data['studienkolleg_page']['learning_intro'] = $_POST['learning_intro'] ?? '';
+        $data['studienkolleg_page']['learning_p1']    = $_POST['learning_p1'] ?? '';
+        $data['studienkolleg_page']['learning_p2']    = $_POST['learning_p2'] ?? '';
+        break;
+
+    case 'update_stk_courses':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['courses_title'] = $_POST['courses_title'] ?? '';
+        $courses = $_POST['courses_items'] ?? [];
+        $data['studienkolleg_page']['courses_items'] = array_values(array_filter(array_map('trim', $courses)));
+        break;
+
+    case 'update_stk_unitype':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['uni_type_title'] = $_POST['uni_type_title'] ?? '';
+        $data['studienkolleg_page']['uni_type_intro'] = $_POST['uni_type_intro'] ?? '';
+        $data['studienkolleg_page']['uni_public']     = $_POST['uni_public'] ?? '';
+        $data['studienkolleg_page']['uni_applied']    = $_POST['uni_applied'] ?? '';
+        break;
+
+    case 'update_stk_types':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['types_title']      = $_POST['types_title'] ?? '';
+        $data['studienkolleg_page']['type_public_desc'] = $_POST['type_public_desc'] ?? '';
+        $data['studienkolleg_page']['type_private_desc']= $_POST['type_private_desc'] ?? '';
+        break;
+
+    case 'update_stk_notes':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['notes_title'] = $_POST['notes_title'] ?? '';
+        $notes = $_POST['notes_items'] ?? [];
+        $data['studienkolleg_page']['notes_items'] = array_values(array_filter(array_map('trim', $notes)));
+        break;
+
+    case 'update_stk_examfsp':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['exam_title'] = $_POST['exam_title'] ?? '';
+        $data['studienkolleg_page']['exam_desc']  = $_POST['exam_desc'] ?? '';
+        $data['studienkolleg_page']['fsp_title']  = $_POST['fsp_title'] ?? '';
+        $data['studienkolleg_page']['fsp_desc']   = $_POST['fsp_desc'] ?? '';
+        break;
+
+    case 'update_stk_tips':
+        if (!isset($data['studienkolleg_page'])) { $data['studienkolleg_page'] = []; }
+        $data['studienkolleg_page']['tips_title'] = $_POST['tips_title'] ?? '';
+        $tips = $_POST['tips_items'] ?? [];
+        $data['studienkolleg_page']['tips_items'] = array_values(array_filter(array_map('trim', $tips)));
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

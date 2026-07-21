@@ -1,38 +1,97 @@
 <?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+ob_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-?>
-<?php 
+
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
+}
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
-$page_css = [
-    'css/edu-services.css'
+// 2. تحميل البيانات من ملف الـ JSON المركزي
+$config_file = __DIR__ . '/../announcement_config.json';
+$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+$stk_data = $global_data['studienkolleg_page'] ?? [
+    'page_breadcrumb'   => 'الدورة التأسيسية / السنة التحضيرية',
+    'page_breadcrumb_url' => '#',
+    'hero_img'          => 'assets/img/education/serviceimg11.png',
+    'hero_position'     => 'center -20rem',
+    'main_title'        => 'الدورة التأسيسيّة/السنة التحضيرية \"Studienkolleg\"',
+    'main_desc'         => '',
+    'goals_title'       => 'أهداف الدورة التأسيسية',
+    'goals_items'       => [],
+    'learning_title'    => '',
+    'learning_intro'    => '',
+    'learning_p1'       => '',
+    'learning_p2'       => '',
+    'courses_title'     => 'أنواع دورات السنة التحضيرية',
+    'courses_items'     => [],
+    'uni_type_title'    => '',
+    'uni_type_intro'    => '',
+    'uni_public'        => '',
+    'uni_applied'       => '',
+    'types_title'       => 'أنواع السنة التحضيرية في ألمانيا',
+    'type_public_desc'  => '',
+    'type_private_desc' => '',
+    'notes_title'       => 'ملاحظات هامة !!',
+    'notes_items'       => [],
+    'exam_title'        => '',
+    'exam_desc'         => '',
+    'fsp_title'         => '',
+    'fsp_desc'          => '',
+    'tips_title'        => 'نصائح مهمة قبل التقديم',
+    'tips_items'        => []
 ];
 
-// 3. استدعاء الهيدر ذ
+$data['studienkolleg_page'] = $stk_data;
 
+// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
+$page_css = [
+    'edu-services/css/edu-services.css'
+];
+$page_js = [];
+
+// 4. استدعاء الهيدر المشترك
+include_once $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- Breadcrumb start-->
-  <div class="custom-container pt-5">
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item" aria-current="page">الدورة التأسيسية / السنة التحضيرية</li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($stk_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($stk_data['page_breadcrumb'] ?? 'الدورة التأسيسية / السنة التحضيرية'); ?>
+          </a>
+        </li>
       </ol>
     </nav>
   </div>
   <!-- Breadcrumb end-->
 
   <!-- custom-services start-->
-  <section class="custom-services py-5">
-    <div class="custom-container ">
-      <div class="foundation-hero custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/serviceimg11.png'); background-position: center -20rem">
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <div class="custom-container">
+      <div class="foundation-hero custom-hero" 
+           style="background-image: url('<?php echo $path_prefix . htmlspecialchars($stk_data['hero_img'] ?? 'assets/img/education/serviceimg11.png'); ?>?v=<?php echo time(); ?>'); background-position: <?php echo htmlspecialchars($stk_data['hero_position'] ?? 'center -20rem'); ?>;">
       </div>
     </div>
   </section>
@@ -41,129 +100,169 @@ $page_css = [
   <!-- custom-services-info start-->
   <section class="custom-services-info py-5">
     <div class="custom-container">
-      <div class="head-info">
-        <h2 class="main-text">الدورة التأسيسيّة/السنة التحضيرية "Studienkolleg"</h2>
-        <p class="par-text">السنة التحضيرية أو الدورة التأسيسية هي برنامج أكاديمي يُعدّ جسرًا بين شهادتك الثانوية في بلدك ومتطلبات القبول في الجامعات الألمانية. هذا البرنامج يُعَد إلزاميًا إذا كانت شهادتك لا تعادل الثانوية الألمانية، وهو بمثابة خطوة أساسية لبدء دراستك الجامعية في ألمانيا.</p>
+      
+      <!-- 1. العنوان الرئيسي -->
+      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان الرئيسي والوصف">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($stk_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['main_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-check py-5">
-        <h5 class="advice-text"> أهداف الدورة التأسيسية</h5>
+      <!-- 2. أهداف الدورة التأسيسية -->
+      <div class="advice-check py-5 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkGoalsModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل أهداف الدورة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($stk_data['goals_title'] ?? 'أهداف الدورة التأسيسية'); ?></h5>
         <div class="row">
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ معادلة المؤهل الدراسي بشروط القبول الجامعي الألماني</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ تحسين اللغة الألمانية الأكاديمية</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅  إعدادك بالمواد التخصصية المرتبطة بمجالك الجامعي</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ التأهل لاجتياز امتحان التأهيل الجامعي (FSP)</p>
-          </div>
+          <?php foreach (($stk_data['goals_items'] ?? []) as $goal): ?>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+              <p class="mb-0">✅ <?php echo htmlspecialchars($goal); ?></p>
+            </div>
+          <?php endforeach; ?>
         </div>
       </div>
 
-      <div class="head-info">
-        <h5 class="advice-text">ماذا يدرس و يتعلم الطالب خِلال السنة التحضيرية?</h5>
-        <p class="par-text" style="font-weight: 500;">سوف تجهز السنه التحضيرية الطالب من خلال فصلين للبرنامج الدراسي “التخصص الأكاديمي” الذي يريد دِراسته في الجامعة وذلك من ناحيتين..</p>
-        <p class="par-text"><span style="font-weight: 500;">اولاً:</span> برنامج دراسة اللغة الألمانية، لكي لا يواجه الطالب صعوبات من ناحية اللغة الألمانية خلال الدراسة الجامعيّة.</p>
-        <p class="par-text"><span style="font-weight: 500;">ثانياً:</span> الناحية الفنية أو التِقنيّه. من الضروري أن يتقن الطلاب تخصصات العلوم والتربية ذات الصلة بما يريد دراستهُ في الجامعة.</p>
+      <!-- 3. ماذا يدرس و يتعلم الطالب -->
+      <div class="head-info py-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkLearningModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل المحتوى الدراسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-3"><?php echo htmlspecialchars($stk_data['learning_title'] ?? ''); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars($stk_data['learning_intro'] ?? ''); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['learning_p1'] ?? '')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['learning_p2'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-stars my-5">
-        <h5 class="mb-4 advice-text">أنواع دورات السنة التحضيرية</h5>
+      <!-- 4. أنواع دورات السنة التحضيرية -->
+      <div class="advice-stars my-5 pb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkCoursesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أنواع الدورات">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 advice-text"><?php echo htmlspecialchars($stk_data['courses_title'] ?? 'أنواع دورات السنة التحضيرية'); ?></h5>
         <ul class="star-list">
           <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>M‑Kurs: الطب، الأحياء، الصيدلة</p>
-              </li>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>T‑Kurs: الهندسة، الرياضيات، الفيزياء</p>
-              </li>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>S‑Kurs: اللغات</p>
-              </li>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>W‑Kurs: الإدارة، الاقتصاد، العلوم الاجتماعية</p>
-              </li>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>G‑Kurs: التاريخ، الأدب، الإحصاء</p>
-              </li>
-            </div>
+            <?php foreach (($stk_data['courses_items'] ?? []) as $course): ?>
+              <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                <li>
+                  <p class="mb-0">
+                    <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>
+                    <?php echo htmlspecialchars($course); ?>
+                  </p>
+                </li>
+              </div>
+            <?php endforeach; ?>
           </div>
         </ul>
       </div>
 
-      <div class="head-info">
-        <h5 class="advice-text">الفرق بين السنة التحضيرية من حيث إرتباطها بالجامعات العامة أو جامعات العلوم التطبيقية؟</h5>
-        <p class="par-text" style="font-weight: 500;">ترتبط السنة التحضيرية إما بالجامعات العامة أو بجامعات العلوم التطبيقية، (ونقصَد هنا، أن برنامج السنة التحضيرية يكون من خلال الجامعة العامة المُتعارف عليها و تحت إشرافِها أو يكون تحت إشراف جامعة العلوم التطبيقية).</p>
-        <p class="par-text"><span style="font-weight: 500;">الجامعات العامة:</span>تؤهلك للدراسة في جميع الجامعات الألمانية، بما فيها جامعات العلوم التطبيقية، بعد اجتياز امتحان التأهيل الجامعي</p>
-        <p class="par-text"><span style="font-weight: 500;">جامعات العلوم التطبيقية:</span>تؤهلك للدراسة في معظم جامعات العلوم التطبيقية فقط، ولا تشمل الجامعات العامة</p>
+      <!-- 5. ارتباطها بالجامعات -->
+      <div class="head-info py-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkUniTypeModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل علاقة الجامعات">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-3"><?php echo htmlspecialchars($stk_data['uni_type_title'] ?? ''); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars($stk_data['uni_type_intro'] ?? ''); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['uni_public'] ?? '')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['uni_applied'] ?? '')); ?></p>
       </div>
 
-      <div class="head-info py-5">
-        <h5 class="advice-text">أنواع السنة التحضيرية في ألمانيا</h5>
-        <p class="par-text"><span style="font-weight: 500;">1. السنة التحضيرية الحكومية:</span><br> تُشرف عليها الجامعات، وتُعد شبه مجانية (رسوم فصل دراسي بين 150–300 يورو). القبول يتطلب اجتياز امتحان تنافسي بسبب محدودية المقاعد</p>
-        <p class="par-text"><span style="font-weight: 500;"> 2. السنة التحضيرية الخاصة:</span><br>خيار مناسب لمن لم يحالفهم الحظ بالجامعات الحكومية. لا يتطلب امتحان قبول، لكن بتكلفة أعلى (بين 1800–3000 يورو للفصل الواحد)</p>
+      <!-- 6. أنواع السنة التحضيرية (حكومية / خاصة) -->
+      <div class="head-info py-5 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTypesModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل الأنواع الحكومية والخاصة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($stk_data['types_title'] ?? 'أنواع السنة التحضيرية في ألمانيا'); ?></h5>
+        <p class="par-text mb-4"><?php echo nl2br(htmlspecialchars($stk_data['type_public_desc'] ?? '')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($stk_data['type_private_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-stars">
-        <h5 class="note-text">ملاحظات هامة !!</h5>
+      <!-- 7. ملاحظات هامة -->
+      <div class="advice-stars py-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="note-text mb-4"><?php echo htmlspecialchars($stk_data['notes_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list">
-          <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>اختر السنة التحضيرية المناسبة لتخصصك</p>
-          </li>
-          <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>تحقق من صلاحية الشهادة للتخصص المطلوب</p>
-          </li>
-          <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>تأكد إن كانت الشهادة تؤهلك لجميع الجامعات أو فقط لجامعات العلوم التطبيقية</p>
-          </li>
+          <div class="d-flex flex-column gap-2">
+            <?php foreach (($stk_data['notes_items'] ?? []) as $note): ?>
+              <li>
+                <p class="mb-0">
+                  <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>
+                  <?php echo htmlspecialchars($note); ?>
+                </p>
+              </li>
+            <?php endforeach; ?>
+          </div>
         </ul>
       </div>
 
-      <div class="head-info py-5">
-        <h5 class="mb-4 advice-text">اختبار القبول للسنة التحضيرية (Aufnahmeprüfung)</h5>
-        <p class="par-text" style="font-weight: 500;">للالتحاق بالسنة التحضيرية الحكومية في ألمانيا، يجب اجتياز اختبار قبول تنافسي، حيث يتقدم عدد كبير من الطلاب لمقاعد محدودة. يُنصح بالاستعداد الجيد، ويتطلب عادة مستوى B2 في اللغة الألمانية، وقد يُقبل B1 في بعض المعاهد. يشمل الامتحان اللغة والرياضيات.</p>
+      <!-- 8. اختبار القبول والـ FSP -->
+      <div class="head-info py-5 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkExamFspModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل اختبار القبول والتقييم">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-3 advice-text"><?php echo htmlspecialchars($stk_data['exam_title'] ?? ''); ?></h5>
+        <p class="par-text mb-4" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars($stk_data['exam_desc'] ?? '')); ?></p>
+
+        <h5 class="mb-3 advice-text mt-5"><?php echo htmlspecialchars($stk_data['fsp_title'] ?? ''); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars($stk_data['fsp_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="head-info">
-        <h5 class="mb-4 advice-text">المدة والتقييم النهائي (Feststellungsprüfung - FSP)</h5>
-        <p class="par-text" style="font-weight: 500;">تستغرق السنة التحضيرية فصلين دراسيين. بنهايتها، يخضع الطالب لاختبار "FSP" الذي يؤهله للالتحاق بالجامعات. تتراوح نتائجه بين 1.0 (ممتاز) و5.0 (راسب). بعض الطلاب قد يجتازونه بعد فصل واحد فقط في حالات استثنائية.</p>
-      </div>
+      <!-- 9. نصائح مهمة قبل التقديم -->
+      <div class="advice-check py-5" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTipsModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل النصائح">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <div class="advice-check py-5">
-        <h5 class="advice-text"> نصائح مهمة قبل التقديم</h5>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($stk_data['tips_title'] ?? 'نصائح مهمة قبل التقديم'); ?></h5>
         <div class="row">
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ تأكد أنك مؤهل للدورة المناسبة لتخصصك</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅  تحقق إن كانت الشهادة معترف بها في الجامعات العامة أو التطبيقية</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ تأكد أن الشهادة بعد الدورة صالحة للتخصص المطلوب</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅ جهّز نفسك جيدًا لاجتياز امتحان القبول</p>
-          </div>
+          <?php foreach (($stk_data['tips_items'] ?? []) as $tip): ?>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+              <p class="mb-0">✅ <?php echo htmlspecialchars($tip); ?></p>
+            </div>
+          <?php endforeach; ?>
         </div>
       </div>
+
     </div>
   </section>
   <!-- custom-services-info end-->
 
 <?php 
-// 4. استدعاء الفوتر المشترك
+// 5. استدعاء مودالات الأدمن الخاصة لهذه الصفحة
+if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_studienkolleg_modals.php')) { 
+    include_once __DIR__ . '/includes/admin_studienkolleg_modals.php'; 
+}
 
+// 6. استدعاء الفوتر المشترك
+include_once $path_prefix . 'includes/footer.php'; 
 ?>

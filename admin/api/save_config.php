@@ -675,6 +675,48 @@ switch ($action) {
         }
         $data['language_page']['cost_items'] = $cost_items;
         break;
+    // --- صفحة خطاب الطلب (Cover Letter) ---
+    case 'update_cover_breadcrumb':
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['coverletter_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_cover_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg1.jpg');
+        break;
+
+    case 'update_cover_main':
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['coverletter_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_cover_advice':
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['advice_title'] = $_POST['advice_title'] ?? '';
+        $points = $_POST['advice_points'] ?? [];
+        $data['coverletter_page']['advice_points'] = array_values(array_filter(array_map('trim', $points)));
+        break;
+
+    case 'update_cover_notes':
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['note_title'] = $_POST['note_title'] ?? '';
+        $notes = $_POST['notes'] ?? [];
+        $data['coverletter_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
+        break;
+
+    case 'update_cover_downloads':
+        if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
+        $data['coverletter_page']['pdf_title'] = $_POST['pdf_title'] ?? '';
+        $data['coverletter_page']['pdf_sub']   = $_POST['pdf_sub'] ?? '';
+        $data['coverletter_page']['pdf_file']  = $_POST['pdf_file'] ?? '';
+        $data['coverletter_page']['word_title'] = $_POST['word_title'] ?? '';
+        $data['coverletter_page']['word_sub']   = $_POST['word_sub'] ?? '';
+        $data['coverletter_page']['word_file']  = $_POST['word_file'] ?? '';
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

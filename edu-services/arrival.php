@@ -12,14 +12,14 @@ if (!defined('ALLOWED_ACCESS')) {
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
+// 2. ضبط مسار ملف الـ CSS الخاص بالصفحة الفرعية بدقة ليعمل مع الهيدر المشترك
 $page_css = [
     'edu-services/css/edu-services.css'
 ];
 
 $page_js = [];
 
-// 3. استدعاء الهيدر المشترك (والذي سيقوم بجلب كل التصميم والروابط وملفات الـ CSS تلقائياً)
+// 3. استدعاء الهيدر المشترك
 include_once $path_prefix . 'includes/header.php'; 
 
 // 4. جلب البيانات الخاصة بالصفحة من المصفوفة العامة $data أو استخدام القيم الافتراضية
@@ -27,7 +27,7 @@ $arrival_data = $data['arrival_page'] ?? [
     'hero_img'     => 'assets/img/education/servicesimg9.png',
     'main_title'   => 'إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!',
     'main_desc'    => 'كثيرٌ من الطلبة يَصِلون إلى ألمانيا دون ترتيب وحجز مكان السكن و الإقامة أو حجز وسيلة نقل مناسبة تسهل عليهم الوصول إلى مكان السكن الجديد. سيواجه هؤلاء الطلاب الكثير من الضغط النفسي والمشقه وسينفقون الكثير من المال للمبيت في الفنادق و التنقل بينها!',
-    'advice_title' => 'ما الذي يجب فعله قبل السفر؟',
+    'advice_title' => ' ما الذي يجب فعله قبل السفر؟',
     'advice_desc'  => 'قبل السفر إلى ألمانيا، تأكد من التخطيط الجيد لتفادي التوتر والمصاريف غير المتوقعة. إليك أهم التوصيات:',
     'tips'         => [
         'احجز الاستقبال ووسيلة النقل من المطار مسبقًا',
@@ -44,7 +44,14 @@ $arrival_data = $data['arrival_page'] ?? [
 ?>
 
   <!-- Breadcrumb start-->
-  <div class="custom-container pt-5">
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <!-- زر تعديل خاص بمسار التنقل وعنوان الصفحة إن رغبت -->
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#arrivalBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
@@ -55,7 +62,7 @@ $arrival_data = $data['arrival_page'] ?? [
   </div>
   <!-- Breadcrumb end-->
 
-  <!-- custom-services start-->
+  <!-- custom-services start (Hero Section) -->
   <section class="custom-services py-5" style="position: relative;">
     <?php if (isset($is_admin) && $is_admin): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#arrivalHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الهيدر والصورة">

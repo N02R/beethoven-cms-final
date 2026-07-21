@@ -1,38 +1,82 @@
 <?php 
+ob_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!defined('ALLOWED_ACCESS')) {
     header("HTTP/1.1 403 Forbidden");
     exit('Access Denied');
 }
-?>
-<?php 
+
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
-$page_css = [
-    'css/edu-services.css'
+// 2. تحميل البيانات من ملف الـ JSON المركزي
+$config_file = __DIR__ . '/../announcement_config.json';
+$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+$english_data = $global_data['english_programs_page'] ?? [
+    'page_breadcrumb'     => 'برامج دراسية باللغة الإنجليزية',
+    'page_breadcrumb_url' => '#',
+    'hero_img'            => 'assets/img/education/servicesimg5.png',
+    'main_title'          => 'برامج دراسية باللغة الإنجليزية في ألمانيا',
+    'main_desc'           => '',
+    'who_title'           => 'من يمكنه الاستفادة من هذه البرامج',
+    'who_subtitle'        => 'كل من يستوفي الشروط التالية:',
+    'who_items'           => [],
+    'lang_title'          => 'متطلبات اللغة بشكل عام',
+    'lang_points'         => [],
+    'note_highlight'      => 'ملاحظة:',
+    'note_text'           => ''
 ];
 
-// 3. استدعاء الهيدر المشترك
- 
+$data['english_programs_page'] = $english_data;
+
+// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
+$page_css = [
+    'edu-services/css/edu-services.css'
+];
+$page_js = [];
+
+// 4. استدعاء الهيدر المشترك
+include_once $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- Breadcrumb start-->
-  <div class="custom-container pt-5">
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item" aria-current="page">دورات اللغة الألمانية</li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($english_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($english_data['page_breadcrumb'] ?? 'برامج دراسية باللغة الإنجليزية'); ?>
+          </a>
+        </li>
       </ol>
     </nav>
   </div>
   <!-- Breadcrumb end-->
 
   <!-- custom-services start -->
-  <section class="custom-services py-5">
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
-      <div class="germanlang-hero custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/servicesimg5.png');">
+      <div class="germanlang-hero custom-hero"
+        style="background-image: url('<?php echo $path_prefix . htmlspecialchars($english_data['hero_img'] ?? 'assets/img/education/servicesimg5.png'); ?>?v=<?php echo time(); ?>');">
       </div>
     </div>
   </section>
@@ -41,61 +85,83 @@ $page_css = [
   <!-- custom-services-info start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
-      <div class="head-info">
-        <h2 class="main-text">برامج دراسية باللغة الإنجليزية في ألمانيا</h2>
-        <p class="par-text">ألمانيا تعد وجهة مفضلة للكثير من الطلاب الدوليين بسبب وجود أكثر من 1450 برنامج دراسي يدرس بالكامل بالإنجليزية، مما يتيح لهم بدء الدراسة دون الحاجة لإتقان اللغة الألمانية مسبقاً - شرط استيفاء المتطلبات الأكاديمية.</p>
+      
+      <!-- 1. العنوان والوصف الرئيسي -->
+      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($english_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($english_data['main_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-check my-5">
-        <h5 class="advice-text mb-4">من يمكنه الاستفادة من هذه البرامج</h5>
-        <h6>كل من يستوفي الشروط التالية:</h6>
+      <!-- 2. من يمكنه الاستفادة والشروط -->
+      <div class="advice-check my-5 pb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishWhoModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل شروط الاستفادة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($english_data['who_title'] ?? 'من يمكنه الاستفادة من هذه البرامج'); ?></h5>
+        <h6 class="mb-3"><?php echo htmlspecialchars($english_data['who_subtitle'] ?? 'كل من يستوفي الشروط التالية:'); ?></h6>
         <div class="row">
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅️شهادة دراسية معترف بها تؤهلك للتسجيل في الجامعة الألمانية.</p>
-          </div>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <p>✅️إثبات كفاءة في اللغة الإنجليزية (TOEFL, IELTS).</p>
-          </div>
-          <div class="col-lg-4 col-md-4 col-sm-12">
-            <p>✅️كشف علامات أكاديمي موثّق.</p>
-          </div>
-          <div class="col-lg-8 col-md-8 col-sm-12">
-            <p>✅️وثائق داعمة "سيرة ذاتية، خطاب دافع، إثبات تمويل، تأمين صحي، قبول جامعي".</p>
-          </div>
+          <?php foreach (($english_data['who_items'] ?? []) as $index => $item): 
+              $col_class = ($index == 2) ? 'col-lg-4 col-md-4 col-sm-12' : (($index == 3) ? 'col-lg-8 col-md-8 col-sm-12' : 'col-lg-6 col-md-6 col-sm-12');
+          ?>
+            <div class="<?php echo $col_class; ?> mb-2">
+              <p>✅️<?php echo htmlspecialchars($item); ?></p>
+            </div>
+          <?php endforeach; ?>
         </div>
       </div>
 
-      <div class="advice-stars">
-        <h5 class="advice-text mb-4">متطلبات اللغة بشكل عام</h5>
+      <!-- 3. متطلبات اللغة -->
+      <div class="advice-stars pb-4 mb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishLangModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل متطلبات اللغة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($english_data['lang_title'] ?? 'متطلبات اللغة بشكل عام'); ?></h5>
         <ul class="star-list">
           <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>بنتيجة 80 نقطة كحد أدنى TOEFL.</p>
-              </li>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>بنتيجة لا تقل عن 6.0 IELTS.</p>
-              </li>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
-              <li>
-                <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>برامج الماجستير والدكتوراه تتطلب درجات أعلى مقارنة بالبرامج الجامعية.</p>
-              </li>
-            </div>
+            <?php foreach (($english_data['lang_points'] ?? []) as $point): ?>
+              <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                <li>
+                  <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2"/><?php echo htmlspecialchars($point); ?></p>
+                </li>
+              </div>
+            <?php endforeach; ?>
           </div>
         </ul>
       </div>
       
-      <div class="note mt-5">
-        <p><span style="color: #66aeee;">ملاحظة:</span> كل جامعة تحدد الحد الأدنى الخاص بها بشكل مستقل</p>
+      <!-- 4. الملاحظة -->
+      <div class="note mt-5" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishNoteModal" style="position: absolute; top: -10px; right: 0; z-index: 10;" title="تعديل الملاحظة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <p><span style="color: #66aeee;"><?php echo htmlspecialchars($english_data['note_highlight'] ?? 'ملاحظة:'); ?></span> <?php echo htmlspecialchars($english_data['note_text'] ?? ''); ?></p>
       </div>
+
     </div>
   </section>
   <!-- custom-services-info end -->
 
 <?php 
-// 4. استدعاء الفوتر المشترك
+// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
+if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_english_modals.php')) { 
+    include_once __DIR__ . '/includes/admin_english_modals.php'; 
+}
 
+// 6. استدعاء الفوتر المشترك
+include_once $path_prefix . 'includes/footer.php'; 
 ?>

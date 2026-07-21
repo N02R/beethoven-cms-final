@@ -779,6 +779,46 @@ switch ($action) {
         }
         $data['cv_page']['download_items'] = $download_items;
         break;
+            // --- صفحة برامج دراسية باللغة الإنجليزية (English Programs Page) ---
+    case 'update_english_breadcrumb':
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['english_programs_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_english_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg5.png');
+        break;
+
+    case 'update_english_main':
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['english_programs_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_english_who':
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['who_title']    = $_POST['who_title'] ?? '';
+        $data['english_programs_page']['who_subtitle'] = $_POST['who_subtitle'] ?? '';
+        $items = $_POST['who_items'] ?? [];
+        $data['english_programs_page']['who_items'] = array_values(array_filter(array_map('trim', $items)));
+        break;
+
+    case 'update_english_lang':
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['lang_title'] = $_POST['lang_title'] ?? '';
+        $points = $_POST['lang_points'] ?? [];
+        $data['english_programs_page']['lang_points'] = array_values(array_filter(array_map('trim', $points)));
+        break;
+
+    case 'update_english_note':
+        if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
+        $data['english_programs_page']['note_highlight'] = $_POST['note_highlight'] ?? 'ملاحظة:';
+        $data['english_programs_page']['note_text']      = $_POST['note_text'] ?? '';
+        break;
+
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

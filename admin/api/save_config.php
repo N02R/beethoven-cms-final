@@ -948,6 +948,49 @@ switch ($action) {
         $tips = $_POST['tips_items'] ?? [];
         $data['studienkolleg_page']['tips_items'] = array_values(array_filter(array_map('trim', $tips)));
         break;
+    // --- صفحة متطلبات التأشيرة (Visa Requirements Page) ---
+    case 'update_visa_breadcrumb':
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $data['visa_requirements_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['visa_requirements_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_visa_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $data['visa_requirements_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg14.png');
+        $data['visa_requirements_page']['hero_position'] = $_POST['hero_position'] ?? 'center center';
+        break;
+
+    case 'update_visa_main':
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $data['visa_requirements_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['visa_requirements_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_visa_note':
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $data['visa_requirements_page']['note_title'] = $_POST['note_title'] ?? '';
+        $data['visa_requirements_page']['note_text']  = $_POST['note_text'] ?? '';
+        break;
+
+    case 'update_visa_pdf':
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $data['visa_requirements_page']['pdf_title'] = $_POST['pdf_title'] ?? '';
+        
+        // التعامل مع رفع ملف الـ PDF
+        if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
+            $pdf_name = time() . '_' . basename($_FILES['pdf_file']['name']);
+            $target_dir = __DIR__ . '/../assets/files/';
+            if (!is_dir($target_dir)) { mkdir($target_dir, 0755, true); }
+            $target_file = $target_dir . $pdf_name;
+            if (move_uploaded_file($_FILES['pdf_file']['tmp_name'], $target_file)) {
+                $data['visa_requirements_page']['pdf_file'] = 'assets/files/' . $pdf_name;
+            }
+        } else {
+            $data['visa_requirements_page']['pdf_file'] = $_POST['old_pdf'] ?? 'assets/files/checklist.pdf';
+        }
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

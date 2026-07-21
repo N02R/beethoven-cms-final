@@ -55,7 +55,7 @@ $is_admin = $is_admin ?? ($_SESSION['is_admin'] ?? (isset($_SESSION['is_logged_i
 
 // 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
 $page_css = [
-    'css/edu-services.css'
+    'edu-services/css/edu-services.css'
 ];
 $page_js = [];
 

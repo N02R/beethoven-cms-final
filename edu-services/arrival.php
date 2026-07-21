@@ -12,11 +12,11 @@ if (!defined('ALLOWED_ACCESS')) {
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// --- التصحيح الجذري الآمن لقراءة البيانات وتهيئة arrival_page إن لمש تكن موجودة ---
+// 2. تحميل البيانات الأساسية مباشرة من ملف JSON لضمان توفرها قبل أي استدعاء
 $config_file = __DIR__ . '/../announcement_config.json';
 $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
 
-// التأكد من وجود مفتاح arrival_page بداخل المصفوفة وجلب بياناته أو تعبئته بقيم افتراضية آمنة لمنع أي خطأ
+// دمج البيانات وتوفير قيم افتراضية آمنة لمنع أي خطأ
 $arrival_data = $global_data['arrival_page'] ?? [
     'hero_img'            => 'assets/img/education/servicesimg9.png',
     'main_title'          => 'الإستقبال في المطار والمواصلات',
@@ -29,19 +29,20 @@ $arrival_data = $global_data['arrival_page'] ?? [
     'page_breadcrumb'     => 'الإستقبال في المطار',
     'page_breadcrumb_url' => '#'
 ];
-// ---------------------------------------------------------------------------------
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
+// جعل المصفوفة متاحة عالمياً لملفات الـ Includes والهيدر إن طلبتها
+$data['arrival_page'] = $arrival_data;
+
+// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
 $page_css = [
     'edu-services/css/edu-services.css'
 ];
 
 $page_js = [];
 
-// 3. استدعاء الهيدر المشترك
+// 4. استدعاء الهيدر المشترك
 include_once $path_prefix . 'includes/header.php'; 
 ?>
-
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
@@ -65,8 +66,6 @@ include_once $path_prefix . 'includes/header.php';
   </div>
   <!-- Breadcrumb end-->
 
-
-
   <!-- custom-services start-->
   <section class="custom-services py-5" style="position: relative;">
     <?php if (isset($is_admin) && $is_admin): ?>
@@ -76,7 +75,7 @@ include_once $path_prefix . 'includes/header.php';
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo $path_prefix . ($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png'); ?>?v=<?php echo time(); ?>');">
+      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo $path_prefix . htmlspecialchars($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png'); ?>?v=<?php echo time(); ?>');">
       </div>
     </div>
   </section>
@@ -92,15 +91,15 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="head-info">
-        <h2 class="main-text"><?php echo htmlspecialchars($arrival_data['main_title']); ?></h2>
-        <p class="par-text"><?php echo nl2br(htmlspecialchars($arrival_data['main_desc'])); ?></p>
+        <h2 class="main-text"><?php echo htmlspecialchars($arrival_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($arrival_data['main_desc'] ?? '')); ?></p>
       </div>
 
       <div class="advice-check py-5">
-        <h5 class="advice-text"><?php echo htmlspecialchars($arrival_data['advice_title']); ?></h5>
-        <p><?php echo htmlspecialchars($arrival_data['advice_desc']); ?></p>
+        <h5 class="advice-text"><?php echo htmlspecialchars($arrival_data['advice_title'] ?? ''); ?></h5>
+        <p><?php echo htmlspecialchars($arrival_data['advice_desc'] ?? ''); ?></p>
         <div class="row">
-          <?php foreach ($arrival_data['tips'] as $tip): ?>
+          <?php foreach (($arrival_data['tips'] ?? []) as $tip): ?>
             <div class="col-lg-6 col-md-6 col-sm-12">
               <p>✅ <?php echo htmlspecialchars($tip); ?></p>
             </div>
@@ -109,11 +108,10 @@ include_once $path_prefix . 'includes/header.php';
       </div>
 
       <div class="advice-stars my-5">
-        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($arrival_data['note_title']); ?></h5>
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?></h5>
         <ul class="star-list">
-          <?php foreach ($arrival_data['notes'] as $note): ?>
+          <?php foreach (($arrival_data['notes'] ?? []) as $note): ?>
             <li>
-              <!-- لاحظي أننا لم نستخدم htmlspecialchars هنا للملاحظات للسماح بوجود أكواد HTML مثل span لتلوين البريد الإلكتروني -->
               <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"><?php echo $note; ?></p>
             </li>
           <?php endforeach; ?>
@@ -123,9 +121,8 @@ include_once $path_prefix . 'includes/header.php';
   </section>
   <!-- custom-services-info end-->
 
-
 <?php 
-// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة إذا كان مسجلاً للدخول كأدمن
+// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
 if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_arrival_modals.php')) { 
     include_once __DIR__ . '/includes/admin_arrival_modals.php'; 
 }

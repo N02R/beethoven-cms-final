@@ -370,7 +370,7 @@ $arrival_data = $data['arrival_page'] ?? [];
             e.preventDefault();
             const formData = new FormData(this);
 
-            fetch('../dashboard/save_config.php', {
+            fetch('../admin/api/save_config.php', {
                 method: 'POST',
                 body: formData
             })

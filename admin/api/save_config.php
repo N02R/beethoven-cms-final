@@ -717,6 +717,54 @@ switch ($action) {
         $data['coverletter_page']['word_sub']   = $_POST['word_sub'] ?? '';
         $data['coverletter_page']['word_file']  = $_POST['word_file'] ?? '';
         break;
+    // --- صفحة السيرة الذاتية (CV Page) ---
+    case 'update_cv_breadcrumb':
+        if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
+        $data['cv_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['cv_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_cv_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
+        $data['cv_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg2.jpg');
+        break;
+
+    case 'update_cv_main':
+        if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
+        $data['cv_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['cv_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_cv_advice':
+        if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
+        $data['cv_page']['advice_title'] = $_POST['advice_title'] ?? '';
+        $points = $_POST['advice_points'] ?? [];
+        $data['cv_page']['advice_points'] = array_values(array_filter(array_map('trim', $points)));
+        break;
+
+    case 'update_cv_downloads':
+        if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
+        
+        $types  = $_POST['download_types'] ?? [];
+        $titles = $_POST['download_titles'] ?? [];
+        $subs   = $_POST['download_subs'] ?? [];
+        $files  = $_POST['download_files'] ?? [];
+        
+        $download_items = [];
+        for ($i = 0; $i < count($titles); $i++) {
+            $t = trim($titles[$i]);
+            if (!empty($t)) {
+                $download_items[] = [
+                    'type'  => $_POST['download_types'][$i] ?? 'pdf',
+                    'title' => $t,
+                    'sub'   => trim($_POST['download_subs'][$i] ?? 'Example'),
+                    'file'  => trim($_POST['download_files'][$i] ?? '#')
+                ];
+            }
+        }
+        $data['cv_page']['download_items'] = $download_items;
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

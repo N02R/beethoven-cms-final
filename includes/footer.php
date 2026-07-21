@@ -22,20 +22,21 @@ if (!isset($path_prefix)) {
                     <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
                 </div>
                 
-                <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
-                    <div class="d-flex flex-column w-100">
-                        <div class="d-flex align-items-center">
-                            <input type="email" name="email" placeholder="ادخل إيميلك..." required />
-                            <button type="submit"><img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال"></button>
-                        </div>
-                        
-                        <!-- متطلب قانوني ألماني: خانة الموافقة وسياسة الخصوصية (DSGVO) -->
-                        <div class="form-check mt-2 text-start" style="font-size: 0.85rem; color: #fff;">
-                            <input class="form-check-input" type="checkbox" name="privacy_consent" id="privacyConsent" required>
-                            <label class="form-check-label" for="privacyConsent">
-                                أوافق على شروط تخزين ومعالجة بياناتي وفقاً لـ <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" style="color: #fff; text-decoration: underline;">سياسة الخصوصية (Datenschutzerklärung)</a>.
-                            </label>
-                        </div>
+                <form id="consultForm" class="consult-banner-form d-flex flex-column align-items-end" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
+                    <!-- حقل الإدخال وزر الإرسال الأصلي -->
+                    <div class="d-flex align-items-center w-100 bg-white rounded-pill overflow-hidden p-1 shadow-sm">
+                        <button type="submit" class="btn btn-dark rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; min-width: 45px;">
+                            <img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال" style="width: 20px;">
+                        </button>
+                        <input type="email" name="email" class="form-control border-0 px-3 shadow-none bg-transparent text-end" placeholder="ادخل إيميلك..." required style="box-shadow: none !important;" />
+                    </div>
+                    
+                    <!-- خانة الموافقة الألمانية بتصميم متناسق وناعم أسفل الحقل -->
+                    <div class="form-check mt-2 text-end w-100 px-2" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.9);">
+                        <input class="form-check-input float-end ms-2" type="checkbox" name="privacy_consent" id="privacyConsent" required style="cursor: pointer;">
+                        <label class="form-check-label d-block text-end" for="privacyConsent" style="cursor: pointer;">
+                            أوافق على تخزين ومعالجة بياناتي وفقاً لـ <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" style="color: #fff; text-decoration: underline; font-weight: 600;">سياسة الخصوصية</a>.
+                        </label>
                     </div>
                 </form>
             </div>
@@ -43,15 +44,14 @@ if (!isset($path_prefix)) {
     </div>
 </section>
 
-<!-- جافاسكريبت لضمان الإرسال الآمن عبر AJAX -->
+<!-- سكريبت التحقق والإرسال -->
 <script>
 document.getElementById('consultForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // التحقق البرمجي من تفعيل الشروط الألمانية
     const checkbox = document.getElementById('privacyConsent');
     if (!checkbox.checked) {
-        alert('يجب الموافقة على سياسة الخصوصية أولاً وفقاً للقوانين الأوروبية.');
+        alert('يجب الموافقة على سياسة الخصوصية أولاً وفقاً للمتطلبات القانونية.');
         return;
     }
 
@@ -64,7 +64,7 @@ document.getElementById('consultForm').addEventListener('submit', function(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('تم استلام طلبك بنجاح. شكراً لك!');
+            alert('تم إرسال طلبك بنجاح. شكراً لك!');
             this.reset();
         } else {
             alert('خطأ: ' + (data.message || 'حدث خطأ ما'));

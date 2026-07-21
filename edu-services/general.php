@@ -94,24 +94,35 @@ include_once $path_prefix . 'includes/header.php';
         <p class="par-text"><?php echo nl2br(htmlspecialchars($visa_data['main_desc'] ?? '')); ?></p>
       </div>
 
-      <!-- الملاحظة -->
+      <!-- الملاحظات (ديناميكية) -->
       <div class="advice-stars py-4 border-bottom" style="position: relative;">
         <?php if (isset($is_admin) && $is_admin): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaNoteModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظة">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <h5 class="mb-3 note-text"><?php echo htmlspecialchars($visa_data['note_title'] ?? 'ملاحظة !!'); ?></h5>
+        <?php 
+          $notes_sec = $visa_data['notes_section'] ?? [];
+          $note_title = $notes_sec['title'] ?? 'ملاحظة !!';
+          $notes_list = $notes_sec['notes_list'] ?? [];
+        ?>
+
+        <h5 class="mb-3 note-text"><?php echo htmlspecialchars($note_title); ?></h5>
         <ul class="star-list">
-          <li>
-            <p class="mb-0">
-              <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" />
-              <?php echo htmlspecialchars($visa_data['note_text'] ?? ''); ?>
-            </p>
-          </li>
+          <?php if (!empty($notes_list)): ?>
+            <?php foreach ($notes_list as $note_text): ?>
+              <li class="mb-2">
+                <p class="mb-0">
+                  <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" />
+                  <?php echo htmlspecialchars($note_text); ?>
+                </p>
+              </li>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </ul>
       </div>
+
 
       <!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
       <div class="py-4" style="position: relative;">

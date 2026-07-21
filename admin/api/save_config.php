@@ -949,6 +949,24 @@ switch ($action) {
         $data['studienkolleg_page']['tips_items'] = array_values(array_filter(array_map('trim', $tips)));
         break;
     // --- صفحة متطلبات التأشيرة (Visa Requirements Page) ---
+        case 'update_visa_notes':
+        if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
+        $title = $_POST['note_title'] ?? 'ملاحظة !!';
+        $raw_notes = $_POST['notes_list'] ?? [];
+        
+        $clean_notes = [];
+        foreach ($raw_notes as $note) {
+            if (!empty(trim($note))) {
+                $clean_notes[] = trim($note);
+            }
+        }
+        
+        $data['visa_requirements_page']['notes_section'] = [
+            'title' => trim($title),
+            'notes_list' => $clean_notes
+        ];
+        break;
+
         case 'update_visa_downloads':
         if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
         $types  = $_POST['download_types'] ?? [];

@@ -99,29 +99,39 @@ $visa_data = $data['visa_requirements_page'] ?? [];
     </div>
 </div>
 
-<!-- 4. Note Modal -->
-<div class="modal fade custom-modal" id="visaNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+<!-- 4. Notes Modal (ديناميكي لإضافة وتعديل وحذف الملاحظات) -->
+<div class="modal fade custom-modal" id="visaNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-exclamation-circle text-primary"></i> تعديل الملاحظة</h5>
+                <h5 class="modal-title"><i class="bi bi-exclamation-circle text-primary"></i> تعديل وإدارة الملاحظات</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="visaNoteForm" method="POST">
-                    <input type="hidden" name="action" value="update_visa_note">
+                <form id="visaNotesForm" method="POST">
+                    <input type="hidden" name="action" value="update_visa_notes">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان الملاحظة</label>
-                        <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($visa_data['note_title'] ?? ''); ?>">
+                        <label class="form-label fw-bold">عنوان الملاحظات العام</label>
+                        <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($visa_data['notes_section']['title'] ?? 'ملاحظة !!'); ?>">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">نص الملاحظة</label>
-                        <textarea class="form-control" name="note_text" rows="3"><?php echo htmlspecialchars($visa_data['note_text'] ?? ''); ?></textarea>
+                    <label class="form-label fw-bold">قائمة الملاحظات (تعديل / إضافة / حذف)</label>
+                    <div id="visaNotesContainer" class="d-flex flex-column gap-2 mb-3">
+                        <?php if (!empty($visa_data['notes_section']['notes_list'])): ?>
+                            <?php foreach ($visa_data['notes_section']['notes_list'] as $index => $note): ?>
+                                <div class="input-group note-item" id="visa_note_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="notes_list[]" value="<?php echo htmlspecialchars($note); ?>">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeVisaRow('visa_note_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addVisaNoteRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="visaNoteForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="visaNotesForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -182,19 +192,34 @@ $visa_data = $data['visa_requirements_page'] ?? [];
         </div>
     </div>
 </div>
-
-<!-- JS Engine -->
 <script>
+    // دالة عامة لحذف أي صف (ملاحظة أو ملف تحميل)
     function removeVisaRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
+    // 1. إدارة صفوف الملاحظات الديناميكية
+    let visaNoteIndex = <?php echo count($visa_data['notes_section']['notes_list'] ?? []); ?>;
+    function addVisaNoteRow() {
+        const container = document.getElementById('visaNotesContainer');
+        const div = document.createElement('div');
+        div.className = 'input-group note-item mb-2';
+        div.id = 'visa_note_' + visaNoteIndex;
+        div.innerHTML = `
+            <input type="text" class="form-control" name="notes_list[]" placeholder="اكتب الملاحظة الجديدة هنا...">
+            <button type="button" class="btn btn-outline-danger" onclick="removeVisaRow('visa_note_${visaNoteIndex}')"><i class="bi bi-trash"></i></button>
+        `;
+        container.appendChild(div);
+        visaNoteIndex++;
+    }
+
+    // 2. إدارة صفوف ملفات التحميل الديناميكية
     let visaDownloadIndex = <?php echo count($visa_data['download_items'] ?? []); ?>;
     function addVisaDownloadRow() {
         const container = document.getElementById('visaDownloadContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 border rounded bg-light position-relative download-item-box';
+        div.className = 'p-3 border rounded bg-light position-relative download-item-box mb-3';
         div.id = 'visa_download_' + visaDownloadIndex;
         div.innerHTML = `
             <div class="row g-2">
@@ -224,8 +249,8 @@ $visa_data = $data['visa_requirements_page'] ?? [];
         visaDownloadIndex++;
     }
 
-    // ربط كافة النماذج عبر AJAX
-    document.querySelectorAll('#visaBreadcrumbForm, #visaHeroForm, #visaMainForm, #visaNoteForm, #visaDownloadForm').forEach(form => {
+    // 3. ربط كافة النماذج (بما فيها نموذج الملاحظات الجديد) عبر AJAX
+    document.querySelectorAll('#visaBreadcrumbForm, #visaHeroForm, #visaMainForm, #visaNotesForm, #visaDownloadForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);

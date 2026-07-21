@@ -149,7 +149,10 @@ $pricelist_data = $global_data['pricelist_page'] ?? [];
             e.preventDefault();
             const formData = new FormData(this);
 
-            fetch('save_config.php', {
+            // استخدام مسار البادئة الصحيح للوصول إلى ملف الحفظ الرئيسي
+            const saveUrl = '<?php echo $path_prefix; ?>save_config.php';
+
+            fetch(saveUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -169,3 +172,4 @@ $pricelist_data = $global_data['pricelist_page'] ?? [];
         });
     });
 </script>
+

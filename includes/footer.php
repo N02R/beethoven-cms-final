@@ -22,57 +22,103 @@ if (!isset($path_prefix)) {
                     <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
                 </div>
                 
-                <form id="consultForm" class="consult-banner-form d-flex flex-column align-items-end" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
-                    <!-- حقل الإدخال وزر الإرسال الأصلي -->
-                    <div class="d-flex align-items-center w-100 bg-white rounded-pill overflow-hidden p-1 shadow-sm">
-                        <button type="submit" class="btn btn-dark rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; min-width: 45px;">
-                            <img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال" style="width: 20px;">
-                        </button>
-                        <input type="email" name="email" class="form-control border-0 px-3 shadow-none bg-transparent text-end" placeholder="ادخل إيميلك..." required style="box-shadow: none !important;" />
-                    </div>
-                    
-                    <!-- خانة الموافقة الألمانية بتصميم متناسق وناعم أسفل الحقل -->
-                    <div class="form-check mt-2 text-end w-100 px-2" style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.9);">
-                        <input class="form-check-input float-end ms-2" type="checkbox" name="privacy_consent" id="privacyConsent" required style="cursor: pointer;">
-                        <label class="form-check-label d-block text-end" for="privacyConsent" style="cursor: pointer;">
-                            أوافق على تخزين ومعالجة بياناتي وفقاً لـ <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" style="color: #fff; text-decoration: underline; font-weight: 600;">سياسة الخصوصية</a>.
-                        </label>
-                    </div>
+                <!-- تصميمك القديم تماماً بدون أي تعديل خارجي -->
+                <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
+                    <input type="email" id="consultEmailInput" name="email" placeholder="ادخل إيميلك..." required />
+                    <button type="button" id="openConsentModalBtn"><img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال"></button>
                 </form>
             </div>
         </div>
     </div>
 </section>
 
-<!-- سكريبت التحقق والإرسال -->
+<!-- نافذة منبثقة (Popup Modal) للموافقة على سياسة الخصوصية (DSGVO) -->
+<div class="modal fade custom-modal" id="privacyConsentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-end" dir="rtl">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-check text-primary"></i> الموافقة على سياسة الخصوصية</h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-3" style="font-size: 0.95rem; line-height: 1.6;">
+                    لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" class="text-primary text-decoration-underline">سياسة الخصوصية</a>.
+                </p>
+                <div class="form-check bg-light p-3 rounded border">
+                    <input class="form-check-input float-end ms-2" type="checkbox" id="modalPrivacyCheckbox">
+                    <label class="form-check-label text-dark fw-semibold" for="modalPrivacyCheckbox" style="font-size: 0.9rem; cursor: pointer;">
+                        أوافق على شروط تخزين ومعالجة بياناتي.
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" id="confirmAndSendBtn" class="btn btn-primary" style="background-color: #0d6efd; border: none;">موافق وإرسال الطلب</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- سكريبت إدارة الـ Popup والتحقق الذكي -->
 <script>
-document.getElementById('consultForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const consultForm = document.getElementById('consultForm');
+    const emailInput = document.getElementById('consultEmailInput');
+    const openBtn = document.getElementById('openConsentModalBtn');
     
-    const checkbox = document.getElementById('privacyConsent');
-    if (!checkbox.checked) {
-        alert('يجب الموافقة على سياسة الخصوصية أولاً وفقاً للمتطلبات القانونية.');
-        return;
-    }
+    // إنشاء كائن Bootstrap Modal
+    const consentModalElement = document.getElementById('privacyConsentModal');
+    const consentModal = new bootstrap.Modal(consentModalElement);
+    const confirmBtn = document.getElementById('confirmAndSendBtn');
+    const modalCheckbox = document.getElementById('modalPrivacyCheckbox');
 
-    const formData = new FormData(this);
-
-    fetch(this.action, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('تم إرسال طلبك بنجاح. شكراً لك!');
-            this.reset();
-        } else {
-            alert('خطأ: ' + (data.message || 'حدث خطأ ما'));
+    // عند الضغط على زر الإرسال في التصميم الأصلي
+    openBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // التحقق أولاً إذا كان حقل الإيميل صالحاً وممتلئاً
+        if (!emailInput.value || !emailInput.checkValidity()) {
+            emailInput.reportValidity(); // إظهار رسالة المتصفح الافتراضية للإيميل
+            return;
         }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-        alert('حدث خطأ في الاتصال بالخادم');
+
+        // إظهار النافذة المنبثقة العالمية
+        modalCheckbox.checked = false; // إعادة ضبط الـ Checkbox داخل البوب أب
+        consentModal.show();
+    });
+
+    // عند الضغط على "موافق وإرسال الطلب" من داخل الـ Popup
+    confirmBtn.addEventListener('click', function() {
+        if (!modalCheckbox.checked) {
+            alert('يجب الموافقة على شروط سياسة الخصوصية للمتابعة.');
+            return;
+        }
+
+        // إغلاق النافذة المنبثقة
+        consentModal.hide();
+
+        // تجهيز البيانات وإرسالها عبر AJAX
+        const formData = new FormData();
+        formData.append('email', emailInput.value);
+        formData.append('privacy_consent', 'on');
+
+        fetch('<?php echo $path_prefix; ?>send_consult.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('تم إرسال طلبك بنجاح. شكراً لك!');
+                consultForm.reset();
+            } else {
+                alert('خطأ: ' + (data.message || 'حدث خطأ ما'));
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('حدث خطأ في الاتصال بالخادم');
+        });
     });
 });
 </script>

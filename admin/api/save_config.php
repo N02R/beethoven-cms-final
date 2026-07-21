@@ -627,6 +627,54 @@ switch ($action) {
         $data['check_page']['conclusion_text']   = $_POST['conclusion_text'] ?? '';
         break;
 
+    // --- صفحة دورات اللغة الألمانية (Language Courses) ---
+    case 'update_lang_breadcrumb':
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['language_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_lang_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg12.png');
+        break;
+
+    case 'update_lang_main':
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['language_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_lang_goals':
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['goals_title'] = $_POST['goals_title'] ?? '';
+        $goals = $_POST['goals'] ?? [];
+        $data['language_page']['goals'] = array_values(array_filter(array_map('trim', $goals)));
+        break;
+
+    case 'update_lang_warning':
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['warning_text'] = $_POST['warning_text'] ?? '';
+        break;
+
+    case 'update_lang_cost':
+        if (!isset($data['language_page'])) { $data['language_page'] = []; }
+        $data['language_page']['cost_title'] = $_POST['cost_title'] ?? '';
+        
+        $titles = $_POST['cost_titles'] ?? [];
+        $descs  = $_POST['cost_descs'] ?? [];
+        $cost_items = [];
+        
+        for ($i = 0; $i < count($titles); $i++) {
+            $t = trim($titles[$i]);
+            $d = trim($descs[$i]);
+            if (!empty($t) || !empty($d)) {
+                $cost_items[] = ['title' => $t, 'desc' => $d];
+            }
+        }
+        $data['language_page']['cost_items'] = $cost_items;
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

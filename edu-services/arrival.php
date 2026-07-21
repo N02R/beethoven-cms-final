@@ -12,14 +12,14 @@ if (!defined('ALLOWED_ACCESS')) {
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً
+// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
 $page_css = [
-    'css/edu-services.css'
+    'edu-services/css/edu-services.css'
 ];
 
 $page_js = [];
 
-// 3. استدعاء الهيدر الأساسي المشترك
+// 3. استدعاء الهيدر المشترك (والذي سيقوم بجلب كل التصميم والروابط وملفات الـ CSS تلقائياً)
 include_once $path_prefix . 'includes/header.php'; 
 
 // 4. جلب البيانات الخاصة بالصفحة من المصفوفة العامة $data أو استخدام القيم الافتراضية
@@ -49,7 +49,7 @@ $arrival_data = $data['arrival_page'] ?? [
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item"><a href="#">الإستقبال في المطار، المواصلات، الإقامة والسكن</a></li>
+        <li class="breadcrumb-item active" aria-current="page">الإستقبال في المطار، المواصلات، الإقامة والسكن</li>
       </ol>
     </nav>
   </div>

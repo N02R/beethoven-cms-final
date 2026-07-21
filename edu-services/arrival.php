@@ -12,7 +12,25 @@ if (!defined('ALLOWED_ACCESS')) {
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
+// --- تحميل بيانات الـ JSON مباشرة وبشكل آمن لضمان عدم حدوث أخطاء ---
+$config_file = __DIR__ . '/../announcement_config.json';
+$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+// دمج البيانات العامة مع البيانات الخاصة بصفحة الاستقبال وتوفير قيم افتراضية لمنع أي تحذير
+$arrival_data = $global_data['arrival_page'] ?? [
+    'hero_img'            => 'assets/img/education/servicesimg9.png',
+    'main_title'          => 'الإستقبال في المطار والمواصلات',
+    'main_desc'           => '',
+    'advice_title'        => 'نصائح هامة',
+    'advice_desc'         => '',
+    'tips'                => [],
+    'notes'               => [],
+    'page_breadcrumb'     => 'الإستقبال في المطار',
+    'page_breadcrumb_url' => '#'
+];
+// -------------------------------------------------------------
+
+// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقره الهيدر تلقائياً
 $page_css = [
     'edu-services/css/edu-services.css'
 ];
@@ -21,19 +39,6 @@ $page_js = [];
 
 // 3. استدعاء الهيدر المشترك
 include_once $path_prefix . 'includes/header.php'; 
-
-// 4. جلب البيانات الخاصة بالصفحة من المصفوفة العامة $data أو استخدام القيم الافتراضية
-$arrival_data = $data['arrival_page'] ?? [
-    'hero_img'     => 'assets/img/education/servicesimg9.png',
-    'main_title'   => '',
-    'main_desc'    => '',
-    'advice_title' => '',
-    'advice_desc'  => '',
-    'tips'         => [],
-    'notes'        => [],
-    'page_breadcrumb'     => 'الإستقبال في المطار',
-    'page_breadcrumb_url' => '#'
-];
 
 ?>
 

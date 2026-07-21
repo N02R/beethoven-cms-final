@@ -12,11 +12,11 @@ if (!defined('ALLOWED_ACCESS')) {
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// --- تحميل بيانات الـ JSON مباشرة وبشكل آمن لضمان عدم حدوث أخطاء ---
+// --- التصحيح الجذري الآمن لقراءة البيانات وتهيئة arrival_page إن لمש تكن موجودة ---
 $config_file = __DIR__ . '/../announcement_config.json';
 $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
 
-// دمج البيانات العامة مع البيانات الخاصة بصفحة الاستقبال وتوفير قيم افتراضية لمنع أي تحذير
+// التأكد من وجود مفتاح arrival_page بداخل المصفوفة وجلب بياناته أو تعبئته بقيم افتراضية آمنة لمنع أي خطأ
 $arrival_data = $global_data['arrival_page'] ?? [
     'hero_img'            => 'assets/img/education/servicesimg9.png',
     'main_title'          => 'الإستقبال في المطار والمواصلات',
@@ -25,12 +25,13 @@ $arrival_data = $global_data['arrival_page'] ?? [
     'advice_desc'         => '',
     'tips'                => [],
     'notes'               => [],
+    'note_title'          => 'ملاحظات هامة',
     'page_breadcrumb'     => 'الإستقبال في المطار',
     'page_breadcrumb_url' => '#'
 ];
-// -------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقره الهيدر تلقائياً
+// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليقرأه الهيدر تلقائياً
 $page_css = [
     'edu-services/css/edu-services.css'
 ];
@@ -39,8 +40,8 @@ $page_js = [];
 
 // 3. استدعاء الهيدر المشترك
 include_once $path_prefix . 'includes/header.php'; 
-
 ?>
+
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">

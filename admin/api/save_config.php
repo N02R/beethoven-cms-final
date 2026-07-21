@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, etc.)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -151,6 +151,26 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
         'tips'         => [],
         'notes'        => []
     ],
+    
+    // --- صفحة التأمين الصحي (Health Insurance Page) ---
+    'health_insurance_page'  => [
+        'page_breadcrumb'     => 'التأمين الصحي',
+        'page_breadcrumb_url' => '#',
+        'hero_img'            => 'assets/img/education/servicesimg6.png',
+        'hero_position'       => 'center center',
+        'main_title'          => 'التأمين الصحي للطلاب، الزائرين، المتدربين، العاملين، وغيرهم.',
+        'main_desc'           => 'نوفر لك خيارات تأمين صحي حكومي وخاص تناسب حالتك وتعتمد من السفارات والجامعات الألمانية، لتبدأ رحلتك بثقة وبدون تعقيدات.',
+        'importance_section'  => [
+            'title' => 'لماذا التأمين الصحي مهم؟',
+            'items' => []
+        ],
+        'documents_section'   => [
+            'title' => 'الوثائق المكملة',
+            'items' => []
+        ],
+        'expert_note'         => '',
+        'insurance_links'     => []
+    ]
 ];
 
 // دالة رفع الملفات الآمنة
@@ -551,14 +571,12 @@ switch ($action) {
         $data['arrival_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg9.png');
         break;
 
-    // 1. تحديث العنوان والوصف الرئيسي فقط
     case 'update_arrival_main_title':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         $data['arrival_page']['main_title'] = $_POST['main_title'] ?? '';
         $data['arrival_page']['main_desc']  = $_POST['main_desc'] ?? '';
         break;
 
-    // 2. تحديث النصائح والإرشادات فقط
     case 'update_arrival_tips':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         $data['arrival_page']['advice_title'] = $_POST['advice_title'] ?? '';
@@ -568,7 +586,6 @@ switch ($action) {
         $data['arrival_page']['tips'] = array_values(array_filter(array_map('trim', $tips)));
         break;
 
-    // 3. تحديث الملاحظات الهامة فقط
     case 'update_arrival_notes':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         $data['arrival_page']['note_title'] = $_POST['note_title'] ?? '';
@@ -576,7 +593,8 @@ switch ($action) {
         $notes = $_POST['notes'] ?? [];
         $data['arrival_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;
-            // --- صفحة Bachelor Package ---
+
+    // --- صفحة Bachelor Package ---
     case 'update_bachelor_breadcrumb':
         if (!isset($data['bachelor_page'])) { $data['bachelor_page'] = []; }
         $data['bachelor_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
@@ -590,6 +608,7 @@ switch ($action) {
         $data['bachelor_page']['password_label'] = $_POST['password_label'] ?? '';
         $data['bachelor_page']['btn_text']       = $_POST['btn_text'] ?? '';
         break;
+
     // --- صفحة Check (التحقق من الشهادات) ---
     case 'update_check_breadcrumb':
         if (!isset($data['check_page'])) { $data['check_page'] = []; }
@@ -675,6 +694,7 @@ switch ($action) {
         }
         $data['language_page']['cost_items'] = $cost_items;
         break;
+
     // --- صفحة خطاب الطلب (Cover Letter) ---
     case 'update_cover_breadcrumb':
         if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
@@ -708,14 +728,10 @@ switch ($action) {
         $data['coverletter_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;
 
-        case 'update_cover_downloads':
+    case 'update_cover_downloads':
         if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
         
-        $types  = $_POST['download_types'] ?? [];
         $titles = $_POST['download_titles'] ?? [];
-        $subs   = $_POST['download_subs'] ?? [];
-        $files  = $_POST['download_files'] ?? [];
-        
         $download_items = [];
         for ($i = 0; $i < count($titles); $i++) {
             $t = trim($titles[$i]);
@@ -760,11 +776,7 @@ switch ($action) {
     case 'update_cv_downloads':
         if (!isset($data['cv_page'])) { $data['cv_page'] = []; }
         
-        $types  = $_POST['download_types'] ?? [];
         $titles = $_POST['download_titles'] ?? [];
-        $subs   = $_POST['download_subs'] ?? [];
-        $files  = $_POST['download_files'] ?? [];
-        
         $download_items = [];
         for ($i = 0; $i < count($titles); $i++) {
             $t = trim($titles[$i]);
@@ -779,7 +791,8 @@ switch ($action) {
         }
         $data['cv_page']['download_items'] = $download_items;
         break;
-            // --- صفحة برامج دراسية باللغة الإنجليزية (English Programs Page) ---
+
+    // --- صفحة برامج دراسية باللغة الإنجليزية (English Programs Page) ---
     case 'update_english_breadcrumb':
         if (!isset($data['english_programs_page'])) { $data['english_programs_page'] = []; }
         $data['english_programs_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
@@ -818,6 +831,7 @@ switch ($action) {
         $data['english_programs_page']['note_highlight'] = $_POST['note_highlight'] ?? 'ملاحظة:';
         $data['english_programs_page']['note_text']      = $_POST['note_text'] ?? '';
         break;
+
     // --- صفحة الضمانات المالية والحساب المغلق (Blocked Account Page) ---
     case 'update_blocked_breadcrumb':
         if (!isset($data['blocked_account_page'])) { $data['blocked_account_page'] = []; }
@@ -948,8 +962,9 @@ switch ($action) {
         $tips = $_POST['tips_items'] ?? [];
         $data['studienkolleg_page']['tips_items'] = array_values(array_filter(array_map('trim', $tips)));
         break;
+
     // --- صفحة متطلبات التأشيرة (Visa Requirements Page) ---
-        case 'update_visa_notes':
+    case 'update_visa_notes':
         if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
         $title = $_POST['note_title'] ?? 'ملاحظة !!';
         $raw_notes = $_POST['notes_list'] ?? [];
@@ -967,7 +982,7 @@ switch ($action) {
         ];
         break;
 
-        case 'update_visa_downloads':
+    case 'update_visa_downloads':
         if (!isset($data['visa_requirements_page'])) { $data['visa_requirements_page'] = []; }
         $types  = $_POST['download_types'] ?? [];
         $titles = $_POST['download_titles'] ?? [];
@@ -987,6 +1002,8 @@ switch ($action) {
         }
         $data['visa_requirements_page']['download_items'] = $download_items;
         break;
+
+    // --- صفحة دورات اللغة (German Language Courses) ---
     case 'update_german_hero':
         if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
         $data['germanlang_page']['hero_img'] = trim($_POST['hero_img'] ?? '');
@@ -1020,7 +1037,6 @@ switch ($action) {
     case 'update_german_features_tips':
         if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
         
-        // معالجة المميزات
         $feat_title = $_POST['features_title'] ?? 'مميزات دوراتنا';
         $raw_feats = $_POST['features_list'] ?? [];
         $clean_feats = [];
@@ -1032,7 +1048,6 @@ switch ($action) {
             'features_list' => $clean_feats
         ];
 
-        // معالجة النصائح
         $tips_title = $_POST['tips_title'] ?? 'نصائح للنجاح في الدراسة بالألمانية';
         $raw_tips = $_POST['tips_list'] ?? [];
         $clean_tips = [];
@@ -1045,6 +1060,96 @@ switch ($action) {
         ];
         break;
 
+    // --- صفحة التأمين الصحي (Health Insurance Page) ---
+    case 'update_health_breadcrumb':
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $data['health_insurance_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['health_insurance_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_health_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $data['health_insurance_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/education/servicesimg6.png');
+        $data['health_insurance_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_health_main':
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $data['health_insurance_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['health_insurance_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_health_importance':
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $importance_title = trim($_POST['importance_title'] ?? 'لماذا التأمين الصحي مهم؟');
+        $raw_items = $_POST['importance_items'] ?? [];
+        
+        $cleaned_items = [];
+        if (is_array($raw_items)) {
+            foreach ($raw_items as $item) {
+                $trimmed = trim($item);
+                if (!empty($trimmed)) {
+                    $cleaned_items[] = $trimmed;
+                }
+            }
+        }
+
+        $data['health_insurance_page']['importance_section'] = [
+            'title' => $importance_title,
+            'items' => $cleaned_items
+        ];
+        break;
+
+    case 'update_health_documents':
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $documents_title = trim($_POST['documents_title'] ?? 'الوثائق المكملة');
+        $raw_docs = $_POST['documents_items'] ?? [];
+        
+        $cleaned_docs = [];
+        if (is_array($raw_docs)) {
+            foreach ($raw_docs as $doc) {
+                $trimmed = trim($doc);
+                if (!empty($trimmed)) {
+                    $cleaned_docs[] = $trimmed;
+                }
+            }
+        }
+
+        $data['health_insurance_page']['documents_section'] = [
+            'title' => $documents_title,
+            'items' => $cleaned_docs
+        ];
+        break;
+
+    case 'update_health_links':
+        if (!isset($data['health_insurance_page'])) { $data['health_insurance_page'] = []; }
+        $expert_note = trim($_POST['expert_note'] ?? '');
+        $link_titles = $_POST['link_titles'] ?? [];
+        $link_urls   = $_POST['link_urls'] ?? [];
+        $raw_actives = $_POST['link_actives'] ?? [];
+
+        $insurance_links = [];
+        if (is_array($link_titles)) {
+            foreach ($link_titles as $index => $title) {
+                $title_trimmed = trim($title);
+                $url_trimmed   = format_service_url(trim($link_urls[$index] ?? '#'));
+
+                if (!empty($title_trimmed)) {
+                    $is_active = in_array((string)$index, array_map('strval', $raw_actives), true) || in_array($index, $raw_actives);
+
+                    $insurance_links[] = [
+                        'title'  => $title_trimmed,
+                        'url'    => $url_trimmed,
+                        'active' => (bool)$is_active
+                    ];
+                }
+            }
+        }
+
+        $data['health_insurance_page']['expert_note']     = $expert_note;
+        $data['health_insurance_page']['insurance_links'] = $insurance_links;
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

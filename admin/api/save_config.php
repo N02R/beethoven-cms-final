@@ -1564,6 +1564,55 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+    // --- صفحة اتفاقيات البحث عن عمل (Job Search Agreements Page) ---
+    case 'update_job_agreements_breadcrumb':
+        if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
+        $data['job_search_package_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['job_search_package_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_job_agreements_hero':
+        $job_upload_path = __DIR__ . '/../../assets/img/job/';
+        $img_path = handle_upload('hero_img', $job_upload_path);
+        
+        if ($img_path) {
+            $filename = basename($img_path);
+            $img_path = 'assets/img/job/' . $filename;
+        }
+
+        if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
+        $data['job_search_package_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/job/servicesimg4.png');
+        $data['job_search_package_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_job_agreements_main':
+        if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
+        $data['job_search_package_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['job_search_package_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_job_agreements_notes':
+        if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
+        $data['job_search_package_page']['note_text'] = trim($_POST['note_text'] ?? '');
+        break;
+
+    case 'update_job_agreements_card':
+        if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
+        
+        $item_title = trim($_POST['item_title'] ?? 'عرض واتفاقيات العمل');
+        $item_sub   = trim($_POST['item_sub'] ?? 'Example');
+        $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
+        
+        $new_file = handle_document_upload('item_file', $files_upload_path);
+        $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/job_search_agreement.pdf');
+
+        $data['job_search_package_page']['download_item'] = [
+            'type'  => ($item_type === 'word' || $item_type === 'docx') ? 'word' : 'pdf',
+            'title' => $item_title,
+            'sub'   => $item_sub,
+            'file'  => $final_file
+        ];
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

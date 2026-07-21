@@ -117,6 +117,18 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'whatsapp_text'          => 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات',
     'whatsapp_url'           => 'https://wa.me/4917671230666',
     'whatsapp_btn_txt'       => 'تواصل معنا عبر واتساب'
+    ,
+        // --- صفحة الاستقبال والخدمات الداخلية (arrival.php) ---
+    'arrival_page'           => [
+        'hero_img'     => 'assets/img/education/servicesimg9.png',
+        'main_title'   => '',
+        'main_desc'    => '',
+        'advice_title' => '',
+        'advice_desc'  => '',
+        'tips'         => [],
+        'notes'        => []
+    ],
+
 ];
 
 // دالة رفع الملفات الآمنة
@@ -498,6 +510,48 @@ switch ($action) {
         $data['whatsapp_url']     = $_POST['whatsapp_url'] ?? '';
         $data['whatsapp_btn_txt'] = $_POST['whatsapp_btn_txt'] ?? '';
         break;
+            // --- صفحة الاستقبال والخدمات (Arrival Service) ---
+    case 'update_arrival_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        // التحقق من تهيئة مصفوفة arrival_page إن لم تكن موجودة
+        if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
+        
+        $data['arrival_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg9.png');
+        break;
+
+    case 'update_arrival_content':
+        if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
+        
+        $data['arrival_page']['main_title']   = $_POST['main_title'] ?? '';
+        $data['arrival_page']['main_desc']    = $_POST['main_desc'] ?? '';
+        $data['arrival_page']['advice_title'] = $_POST['advice_title'] ?? '';
+        $data['arrival_page']['advice_desc']  = $_POST['advice_desc'] ?? '';
+        
+        // معالجة مصفوفة النصائح (Tips)
+        $new_tips = [];
+        if (isset($_POST['tips']) && is_array($_POST['tips'])) {
+            foreach ($_POST['tips'] as $tip) {
+                $trimmed = trim($tip);
+                if (!empty($trimmed)) {
+                    $new_tips[] = $trimmed;
+                }
+            }
+        }
+        $data['arrival_page']['tips'] = $new_tips;
+
+        // معالجة مصفوفة الملاحظات (Notes)
+        $new_notes = [];
+        if (isset($_POST['notes']) && is_array($_POST['notes'])) {
+            foreach ($_POST['notes'] as $note) {
+                $trimmed = trim($note);
+                if (!empty($trimmed)) {
+                    $new_notes[] = $trimmed;
+                }
+            }
+        }
+        $data['arrival_page']['notes'] = $new_notes;
+        break;
+
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

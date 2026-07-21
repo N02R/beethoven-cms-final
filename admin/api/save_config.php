@@ -590,6 +590,42 @@ switch ($action) {
         $data['bachelor_page']['password_label'] = $_POST['password_label'] ?? '';
         $data['bachelor_page']['btn_text']       = $_POST['btn_text'] ?? '';
         break;
+    // --- صفحة Check (التحقق من الشهادات) ---
+    case 'update_check_breadcrumb':
+        if (!isset($data['check_page'])) { $data['check_page'] = []; }
+        $data['check_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['check_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_check_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['check_page'])) { $data['check_page'] = []; }
+        $data['check_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg13.png');
+        break;
+
+    case 'update_check_main':
+        if (!isset($data['check_page'])) { $data['check_page'] = []; }
+        $data['check_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['check_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    case 'update_check_notes':
+        if (!isset($data['check_page'])) { $data['check_page'] = []; }
+        $data['check_page']['note_title'] = $_POST['note_title'] ?? '';
+        $notes = $_POST['notes'] ?? [];
+        $data['check_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
+        break;
+
+    case 'update_check_links':
+        if (!isset($data['check_page'])) { $data['check_page'] = []; }
+        $data['check_page']['links_intro']       = $_POST['links_intro'] ?? '';
+        $data['check_page']['anabin_url']        = format_service_url($_POST['anabin_url'] ?? '#');
+        $data['check_page']['uniassist_url']     = format_service_url($_POST['uniassist_url'] ?? '#');
+        $data['check_page']['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
+        $data['check_page']['condition_1']       = $_POST['condition_1'] ?? '';
+        $data['check_page']['condition_2']       = $_POST['condition_2'] ?? '';
+        $data['check_page']['conclusion_text']   = $_POST['conclusion_text'] ?? '';
+        break;
 
 
     default:

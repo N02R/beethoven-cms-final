@@ -1,39 +1,83 @@
 <?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+ob_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-?>
-<?php 
+
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
+}
+
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 
-// 2. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
-$page_css = [
-    'css/edu-services.css'
+// 2. تحميل البيانات من ملف الـ JSON المركزي
+$config_file = __DIR__ . '/../announcement_config.json';
+$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+$check_data = $global_data['check_page'] ?? [
+    'page_breadcrumb'   => 'تحقق من شهاداتك التعليمية',
+    'page_breadcrumb_url' => '#',
+    'hero_img'          => 'assets/img/education/servicesimg13.png',
+    'main_title'        => 'إفحص و تحقق من شهاداتك التعليمية السابقة',
+    'main_desc'         => '',
+    'note_title'        => 'ملاحظات هامة !!',
+    'notes'             => [],
+    'links_intro'       => '',
+    'anabin_url'        => 'https://anabin.kmk.org/anabin.html',
+    'uniassist_url'     => 'https://www.uni-assist.de',
+    'uni_contact_intro' => '',
+    'condition_1'       => '',
+    'condition_2'       => '',
+    'conclusion_text'   => ''
 ];
 
-// 3. استدعاء الهيدر المشترك
+$data['check_page'] = $check_data;
 
+// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
+$page_css = [
+    'edu-services/css/edu-services.css'
+];
+$page_js = [];
+
+// 4. استدعاء الهيدر المشترك
+include_once $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- Breadcrumb start-->
-  <div class="custom-container pt-5">
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item " aria-current="page">تحقق من شهاداتك التعليمية</li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($check_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($check_data['page_breadcrumb'] ?? 'تحقق من شهاداتك التعليمية'); ?>
+          </a>
+        </li>
       </ol>
     </nav>
   </div>
   <!-- Breadcrumb end-->
 
   <!-- custom-services start -->
-  <section class="custom-services py-5">
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (isset($is_admin) && $is_admin): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo $path_prefix; ?>assets/img/education/servicesimg13.png'); background-position: center -9rem;">
+        style="background-image: url('<?php echo $path_prefix . htmlspecialchars($check_data['hero_img'] ?? 'assets/img/education/servicesimg13.png'); ?>?v=<?php echo time(); ?>'); background-position: center -9rem;">
       </div>
     </div>
   </section>
@@ -42,49 +86,74 @@ $page_css = [
   <!-- custom-services-info start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
-      <div class="head-info">
-        <h2 class="main-text">
-          إفحص و تحقق من شهاداتك التعليمية السابقة
-        </h2>
-        <p class="par-text">
-          إذا كنت تخطط للتقديم إلى برنامج دراسي جامعي أو دراسات عليا في ألمانيا، فإن أول خطوة أساسية هي التحقق
-          من اعتراف ألمانيا بمؤهلك العلمي، سواء كانت: شهادة ثانوية عامة شهادة بكالوريوس أو ماجستير
-        </p>
+      
+      <!-- 1. قسم العنوان الرئيسي والوصف -->
+      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkMainContentModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($check_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($check_data['main_desc'] ?? '')); ?></p>
       </div>
-      <div class="advice-stars my-5">
-        <h5 class=" mb-4 note-text"> ملاحظات هامة !!</h5>
+
+      <!-- 2. قسم الملاحظات الهامة (النجوم) -->
+      <div class="advice-stars my-4 pb-4 border-bottom" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($check_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list">
-          <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"/>شهادات التعليم الثانوي من بعض الدول لا تؤهلك مباشرة للالتحاق بالجامعات الألمانية</p>
-          </li>
-          <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"/>يجب عليك إكمال السنة التحضيرية أو اجتياز شهادات لغة معترف بها مثل DSH أو TestDaF</p>
-          </li>
+          <?php foreach (($check_data['notes'] ?? []) as $note): ?>
+            <li class="mb-2">
+              <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"/><?php echo $note; ?></p>
+            </li>
+          <?php endforeach; ?>
         </ul>
       </div>
-      <div class="links">
-        <p class="mt-5">لفحص الإعتراف بشهادتك ومتطلبات القبول لدى الجامعات الألمانية، وهل ماتحمله من شهادة
-          علمية يؤهلك لدخول الجامعات الألمانية، يمكنك إستخدام الروابط التالية:</p>
-        <a href="https://anabin.kmk.org/anabin.html" target="_blank" rel="noopener">https://anabin.kmk.org/anabin.html</a>
-        <a href="https://www.uni-assist.de" target="_blank" rel="noopener">https://www.uni-assist.de</a>
-        <p class="mt-5">أو يمكنك التواصل مباشرةً مع الجامعة التي ترغب الدراسة بِها لمعرفة الشرطين الأساسيين
-          لقبول مؤهلك العلمي وإمكانِية تقديم طلب التسجيل في الجامعة وهما:</p>
-        <span class="span-list">1. الإعتراف بمؤهلاتك العلمية السابقة في ألمانيا.</span>
-        <span class="span-list">2. شروط القبول لدى الجامعات الألمانية أي: (ما يسبُق عليك إنجازه لبدء دراستك في
-          الجامعات الألمانية مثل الدورة التأسيسية (السنة التحضيرية) أم شهادات لغة ألمانية مثل DSH, TestDaf
-          وغيرها</span>
-        <p class="mt-5">في حال تم الإعتراف بمؤهلاتك العلمية السابقة في ألمانيا، فمن المرجح أنك (وفي معظم
-          الحالات) ستقوم بالإلتحاق إما <span style="color: #66aeee;"> بالدورة التأسيسية (السنة التحضيرية)
-            “Studienkolleg” </span>او <span style="color: #66aeee;">بالدورة التحضيرية لشهادة اللغة
-            الألمانية، مثل DSH ،TestD</span>، أو غيرها. مما يجعل شهادتك الدراسية مُؤهلة (مُحققة لشروط)
-          للإلتحاق في الجامعات الألمانية.
-        </p>
+
+      <!-- 3. قسم الروابط والتعليمات والنتيجة النهائية -->
+      <div class="links pt-2" style="position: relative;">
+        <?php if (isset($is_admin) && $is_admin): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkLinksModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الروابط والفقرات التوضيحية">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <p class="mt-3"><?php echo htmlspecialchars($check_data['links_intro'] ?? ''); ?></p>
+        
+        <?php if (!empty($check_data['anabin_url'])): ?>
+          <a href="<?php echo htmlspecialchars($check_data['anabin_url']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($check_data['anabin_url']); ?></a>
+        <?php endif; ?>
+        
+        <?php if (!empty($check_data['uniassist_url'])): ?>
+          <a href="<?php echo htmlspecialchars($check_data['uniassist_url']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($check_data['uniassist_url']); ?></a>
+        <?php endif; ?>
+
+        <p class="mt-5"><?php echo htmlspecialchars($check_data['uni_contact_intro'] ?? ''); ?></p>
+        
+        <span class="span-list"><?php echo htmlspecialchars($check_data['condition_1'] ?? ''); ?></span>
+        <span class="span-list"><?php echo htmlspecialchars($check_data['condition_2'] ?? ''); ?></span>
+        
+        <!-- استخدام echo طباعة مباشرة لدعم وسوم span والتلوين بأمان -->
+        <p class="mt-5"><?php echo $check_data['conclusion_text'] ?? ''; ?></p>
       </div>
+
     </div>
   </section>
   <!-- custom-services-info end -->
 
 <?php 
-// 4. استدعاء الفوتر المشترك
+// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
+if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_check_modals.php')) { 
+    include_once __DIR__ . '/includes/admin_check_modals.php'; 
+}
 
+// 6. استدعاء الفوتر المشترك
+include_once $path_prefix . 'includes/footer.php'; 
 ?>

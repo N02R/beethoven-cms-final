@@ -595,5 +595,21 @@
       "file": "assets/files/general_price_list.pdf"
     }
   }
+,
+  "medical_package_page": {
+    "page_breadcrumb": "باقة التدريب الطبي",
+    "page_breadcrumb_url": "#",
+    "hero_img": "assets/img/job/servicesimg3.png",
+    "hero_position": "center center",
+    "main_title": "عرض وإتفاقية التدريب المهني",
+    "main_desc": "كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).",
+    "note_text": "جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد بالتواصل معنا.",
+    "download_item": {
+      "type": "pdf",
+      "title": "عرض واتفاقية التدريب الطبي",
+      "sub": "Example",
+      "file": "assets/files/medical_training_agreement.pdf"
+    }
+  }
 
 }

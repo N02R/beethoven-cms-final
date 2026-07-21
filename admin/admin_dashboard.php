@@ -42,13 +42,14 @@ $consult_count = count($consult_emails);
       --sidebar-bg: #0f172a;
       --primary-color: #2563eb;
     }
-    body { background-color: var(--bs-body-bg); font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; color: #1e293b; }
+    body { background-color: var(--bs-body-bg); font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; color: #1e293b; text-align: right; }
     
-    /* تصميم الـ Sidebar الأوروبي العصري */
-    .sidebar { min-height: 100vh; background-color: var(--sidebar-bg); color: #94a3b8; border-left: 1px solid rgba(255,255,255,0.05); }
-    .sidebar .nav-link { color: #94a3b8; border-radius: 8px; margin-bottom: 6px; padding: 10px 15px; font-weight: 500; transition: all 0.25s ease; }
+    /* تصميم الـ Sidebar الأوروبي العصري متوافق مع RTL */
+    .sidebar { min-height: 100vh; background-color: var(--sidebar-bg); color: #94a3b8; border-right: 1px solid rgba(255,255,255,0.05); }
+    .sidebar .nav-link { color: #94a3b8; border-radius: 8px; margin-bottom: 6px; padding: 10px 15px; font-weight: 500; transition: all 0.25s ease; display: flex; align-items: center; }
     .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: rgba(37, 99, 235, 0.15); color: #ffffff; }
     .sidebar .nav-link.active { color: #60a5fa; }
+    .sidebar .nav-link i { margin-left: 10px; font-size: 1.1rem; }
     
     /* البطاقات والإحصائيات الحديثة */
     .card-stat { border: none; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; background: #ffffff; }
@@ -56,8 +57,8 @@ $consult_count = count($consult_emails);
     
     /* الجداول العصرية */
     .table-card { border: none; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); background: #ffffff; }
-    .table-custom th { font-weight: 600; color: #64748b; background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; }
-    .table-custom td { vertical-align: middle; color: #334155; }
+    .table-custom th { font-weight: 600; color: #64748b; background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: right; }
+    .table-custom td { vertical-align: middle; color: #334155; text-align: right; }
     
     .top-navbar { background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02); }
   </style>
@@ -73,22 +74,25 @@ $consult_count = count($consult_emails);
         <div class="bg-white p-3 rounded-3 mb-3 shadow-sm d-inline-block w-100">
           <img src="../<?php echo $current_logo; ?>" alt="شعار الموقع" class="img-fluid" style="max-height: 50px; object-fit: contain;">
         </div>
-        <h6 class="text-secondary small fw-bold mb-4 uppercase tracking-wider">نظام الإدارة الأوروبي</h6>
-        <ul class="nav flex-column text-end">
+        <h6 class="text-secondary small fw-bold mb-4">نظام الإدارة الأوروبي</h6>
+        <ul class="nav flex-column text-end p-0">
           <li class="nav-item">
-            <a class="nav-link active" href="#"><i class="bi bi-grid-1x2-fill ms-2"></i> رئيسية اللوحة</a>
+            <a class="nav-link active" href="#"><i class="bi bi-grid-1x2-fill"></i> رئيسية اللوحة</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#consultations-section"><i class="bi bi-people-fill ms-2"></i> طلبات الاستشارة <span class="badge bg-primary float-start"><?php echo $consult_count; ?></span></a>
+            <a class="nav-link" href="#consultations-section">
+              <i class="bi bi-people-fill"></i> طلبات الاستشارة 
+              <span class="badge bg-primary ms-auto"><?php echo $consult_count; ?></span>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../index.php" target="_blank"><i class="bi bi-globe ms-2"></i> استعراض الموقع</a>
+            <a class="nav-link" href="../index.php" target="_blank"><i class="bi bi-globe"></i> استعراض الموقع</a>
           </li>
           <li class="nav-item my-2">
             <hr class="border-secondary opacity-25">
           </li>
           <li class="nav-item">
-            <a class="nav-link text-danger" href="logout.php"><i class="bi bi-box-arrow-right ms-2"></i> تسجيل الخروج</a>
+            <a class="nav-link text-danger" href="logout.php"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
           </li>
         </ul>
       </div>
@@ -173,10 +177,10 @@ $consult_count = count($consult_emails);
         </div>
       </div>
 
-      <!-- قسم جدول طلبات الاستشارة الجديدة (أبرز الإضافات الاحترافية) -->
+      <!-- قسم جدول طلبات الاستشارة الجديدة -->
       <div id="consultations-section" class="card table-card mb-4 p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="fw-bold mb-0"><i class="bi bi-envelope-check text-primary ms-2"></i> سجل المتقدمين للاستشارة المجانية</h5>
+          <h5 class="fw-bold mb-0"><i class="bi bi-envelope-check text-primary me-2"></i> سجل المتقدمين للاستشارة المجانية</h5>
           <span class="text-muted small">محفوظة آمنة وفق متطلبات (DSGVO)</span>
         </div>
         
@@ -193,10 +197,10 @@ $consult_count = count($consult_emails);
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($consult_count_index = $consult_emails as $index => $item): ?>
+                <?php foreach ($consult_emails as $index => $item): ?>
                   <tr>
                     <td><?php echo $index + 1; ?></td>
-                    <td class="fw-semibold text-primary"><?php echo htmlspecialchars($item['email']); ?></td>
+                    <td class="fw-semibold text-primary" dir="ltr" style="text-align: right;"><?php echo htmlspecialchars($item['email']); ?></td>
                     <td class="text-muted small"><?php echo htmlspecialchars($item['date']); ?></td>
                     <td>
                       <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">
@@ -205,7 +209,7 @@ $consult_count = count($consult_emails);
                     </td>
                     <td>
                       <a href="mailto:<?php echo htmlspecialchars($item['email']); ?>" class="btn btn-sm btn-outline-primary py-1 px-2">
-                        <i class="bi bi-reply-fill"></i> مراسلة
+                        <i class="bi bi-reply-fill ms-1"></i> مراسلة
                       </a>
                     </td>
                   </tr>
@@ -225,11 +229,12 @@ $consult_count = count($consult_emails);
       <div class="row g-4">
         <div class="col-lg-6">
           <div class="card p-4 shadow-sm border-0 h-100 rounded-3">
-            <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-primary ms-2"></i> التعديل الفوري للموقع</h5>
+            <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-primary me-2"></i> التعديل الفوري للموقع</h5>
             <p class="text-muted small">يمكنك الانتقال للموقع كمسؤول، واستخدام أزرار التعديل العائمة والسريعة المرتبطة مباشرة بالنظام.</p>
             <div class="d-grid gap-2">
-              <a href="../index.php" target="_blank" class="btn btn-outline-primary text-end p-2 fw-semibold">
-                <i class="bi bi-pencil-square ms-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً
+              <a href="../index.php" target="_blank" class="btn btn-outline-primary text-start p-2 fw-semibold d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-pencil-square me-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً</span>
+                <i class="bi bi-arrow-left"></i>
               </a>
             </div>
           </div>
@@ -237,7 +242,7 @@ $consult_count = count($consult_emails);
         
         <div class="col-lg-6">
           <div class="card p-4 shadow-sm border-0 h-100 rounded-3">
-            <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock text-success ms-2"></i> أمان وحماية النظام</h5>
+            <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock text-success me-2"></i> أمان وحماية النظام</h5>
             <div class="alert alert-success d-flex align-items-center small mb-2" role="alert">
               <div>
                 كافة البيانات مشفرة وتعمل ببروتوكول الفحص والحماية الأوروبي ضد الثغرات.

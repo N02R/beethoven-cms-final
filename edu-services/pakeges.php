@@ -24,21 +24,26 @@ $offers_data = $global_data['offers_page'] ?? [
     'main_title'          => 'العروض والاتفاقيات',
     'main_desc'           => 'كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).',
     'note_title'          => 'ملاحظات هامة !!',
-    'note_text'           => 'جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد <a href="contact.php" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>.',
+    'notes_list'          => [
+        'جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد <a href="contact.php" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>.'
+    ],
     'download_cards'      => [
         [
+            'type'  => 'pdf',
             'title' => 'بكالوريوس',
             'file'  => 'assets/files/BCS-bachelor.pdf',
             'sub'   => 'حزمة واتفاقية البكالوريوس',
             'active'=> false
         ],
         [
+            'type'  => 'pdf',
             'title' => 'الماجستير',
             'file'  => 'assets/files/BCS-master.pdf',
             'sub'   => 'حزمة واتفاقية الماجستير',
             'active'=> true
         ],
         [
+            'type'  => 'pdf',
             'title' => 'الدكتوراه',
             'file'  => 'assets/files/BCS-phd.pdf',
             'sub'   => 'حزمة واتفاقية الدكتوراه',
@@ -123,16 +128,26 @@ include_once $path_prefix . 'includes/header.php';
 
         <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list list-unstyled p-0">
-          <li class="d-flex align-items-start">
-            <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2 mt-1" />
-            <p class="mb-0">
-              <?php 
-              // السماح بعرض الـ HTML داخل نص الملاحظة (مثل روابط التواصل) بأمان
-              $note_text_processed = str_replace('href="contact.php"', 'href="' . $path_prefix . 'contact.php"', $offers_data['note_text'] ?? '');
-              echo $note_text_processed; 
-              ?>
-            </p>
-          </li>
+          <?php 
+          // جلب مصفوفة الملاحظات الديناميكية (مع دعم الاحتياط في حال وجود النظام القديم)
+          $notes_list = $offers_data['notes_list'] ?? [];
+          if (empty($notes_list) && !empty($offers_data['note_text'])) {
+              $notes_list = [$offers_data['note_text']];
+          }
+          
+          if (!empty($notes_list) && is_array($notes_list)):
+              foreach ($notes_list as $note_item):
+                // تصحيح رابط صفحة الاتصال تلقائياً داخل أي ملاحظة إن وجد
+                $processed_note = str_replace('href="contact.php"', 'href="' . $path_prefix . 'contact.php"', $note_item);
+          ?>
+              <li class="d-flex align-items-start mb-2">
+                <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2 mt-1" />
+                <p class="mb-0"><?php echo $processed_note; ?></p>
+              </li>
+          <?php 
+              endforeach;
+          endif; 
+          ?>
         </ul>
       </div>
 
@@ -153,12 +168,22 @@ include_once $path_prefix . 'includes/header.php';
                 $title_class = $is_active ? 'text-bg text-center text-bg-active' : 'text-bg text-center';
                 $link_class = $is_active ? 'text-active' : '';
                 $p_class = $is_active ? 'text-active mb-0' : 'mb-0';
+                
+                // تحديد نوع الملف ديناميكياً وعرض الأيقونة المناسبة
+                $file_type = strtolower($card['type'] ?? 'pdf');
+                if ($file_type === 'word' || $file_type === 'docx') {
+                    $icon_img = 'assets/img/education/Groupword.png';
+                    $alt_text = 'ملف Word';
+                } else {
+                    $icon_img = 'assets/img/education/Grouppdf.png';
+                    $alt_text = 'ملف PDF';
+                }
               ?>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="<?php echo $card_class; ?>">
                   <h5 class="<?php echo $title_class; ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
                   <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo $path_prefix; ?>assets/img/education/Grouppdf.png" alt="ملف PDF" />
+                    <img src="<?php echo $path_prefix . $icon_img; ?>" alt="<?php echo $alt_text; ?>" />
                     <div class="card-body-info">
                       <a href="<?php echo $path_prefix . htmlspecialchars($card['file'] ?? '#'); ?>" class="<?php echo $link_class; ?>" download>Download</a>
                       <p class="<?php echo $p_class; ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>

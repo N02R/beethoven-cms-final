@@ -143,16 +143,13 @@ $pricelist_data = $global_data['pricelist_page'] ?? [];
 
 <!-- JavaScript Engine -->
 <script>
-    // ربط كافة النماذج عبر AJAX للإرسال الفوري وتحديث الصفحة
+    // ربط كافة النماذج الخاصة بصفحة قائمة الأسعار عبر AJAX للإرسال الفوري وتحديث الصفحة
     document.querySelectorAll('#priceListBreadcrumbForm, #priceListHeroForm, #priceListMainForm, #priceListCardForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
 
-            // استخدام مسار البادئة الصحيح للوصول إلى ملف الحفظ الرئيسي
-            const saveUrl = '<?php echo $path_prefix; ?>save_config.php';
-
-            fetch(saveUrl, {
+            fetch('../admin/api/save_config.php', {
                 method: 'POST',
                 body: formData
             })
@@ -172,4 +169,5 @@ $pricelist_data = $global_data['pricelist_page'] ?? [];
         });
     });
 </script>
+
 

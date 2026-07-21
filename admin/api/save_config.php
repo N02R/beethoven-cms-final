@@ -708,15 +708,29 @@ switch ($action) {
         $data['coverletter_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;
 
-    case 'update_cover_downloads':
+        case 'update_cover_downloads':
         if (!isset($data['coverletter_page'])) { $data['coverletter_page'] = []; }
-        $data['coverletter_page']['pdf_title'] = $_POST['pdf_title'] ?? '';
-        $data['coverletter_page']['pdf_sub']   = $_POST['pdf_sub'] ?? '';
-        $data['coverletter_page']['pdf_file']  = $_POST['pdf_file'] ?? '';
-        $data['coverletter_page']['word_title'] = $_POST['word_title'] ?? '';
-        $data['coverletter_page']['word_sub']   = $_POST['word_sub'] ?? '';
-        $data['coverletter_page']['word_file']  = $_POST['word_file'] ?? '';
+        
+        $types  = $_POST['download_types'] ?? [];
+        $titles = $_POST['download_titles'] ?? [];
+        $subs   = $_POST['download_subs'] ?? [];
+        $files  = $_POST['download_files'] ?? [];
+        
+        $download_items = [];
+        for ($i = 0; $i < count($titles); $i++) {
+            $t = trim($titles[$i]);
+            if (!empty($t)) {
+                $download_items[] = [
+                    'type'  => $_POST['download_types'][$i] ?? 'pdf',
+                    'title' => $t,
+                    'sub'   => trim($_POST['download_subs'][$i] ?? 'Example'),
+                    'file'  => trim($_POST['download_files'][$i] ?? '#')
+                ];
+            }
+        }
+        $data['coverletter_page']['download_items'] = $download_items;
         break;
+
     // --- صفحة السيرة الذاتية (CV Page) ---
     case 'update_cv_breadcrumb':
         if (!isset($data['cv_page'])) { $data['cv_page'] = []; }

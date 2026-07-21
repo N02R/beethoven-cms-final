@@ -26,12 +26,7 @@ $cover_data = $global_data['coverletter_page'] ?? [
     'advice_points'       => [],
     'note_title'          => 'ملاحظات هامة !!',
     'notes'               => [],
-    'pdf_title'           => 'رسالة التعريف/ خطاب الطلب',
-    'pdf_sub'             => 'Example',
-    'pdf_file'            => 'downloads/cover-letter.pdf',
-    'word_title'          => 'رسالة التعريف/ خطاب الطلب',
-    'word_sub'            => 'Example',
-    'word_file'           => 'downloads/cover-letter.docx'
+    'download_items'      => []
 ];
 
 $data['coverletter_page'] = $cover_data;
@@ -137,40 +132,33 @@ include_once $path_prefix . 'includes/header.php';
         </div>
       </div>
 
-      <!-- 4. روابط تحميل النماذج (PDF & Word) -->
+      <!-- 4. روابط تحميل النماذج (PDF & Word الديناميكية) -->
       <div class="row pt-2" style="position: relative;">
         <?php if (isset($is_admin) && $is_admin): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل روابط الملفات النماذج">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل النماذج وملفات التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <div class="col-lg-12 col-md-12 col-sm-12">
-          <div class="download-card mb-3">
-            <div class="download-row">
-              <img src="<?php echo $path_prefix; ?>assets/img/education/Grouppdf.png" alt="PDF Icon" />
-              <div class="dl-info">
-                <div class="dl-title"><?php echo htmlspecialchars($cover_data['pdf_title'] ?? ''); ?></div>
-                <div class="dl-sub"><?php echo htmlspecialchars($cover_data['pdf_sub'] ?? 'Example'); ?></div>
+        <?php foreach (($cover_data['download_items'] ?? []) as $item): 
+            $is_pdf = (strtolower($item['type']) === 'pdf');
+            $icon_img = $is_pdf ? 'Grouppdf.png' : 'Groupword.png';
+            $alt_text = $is_pdf ? 'PDF Icon' : 'Word Icon';
+        ?>
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="download-card mb-3">
+              <div class="download-row">
+                <img src="<?php echo $path_prefix; ?>assets/img/education/<?php echo $icon_img; ?>" alt="<?php echo $alt_text; ?>" />
+                <div class="dl-info">
+                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
+                  <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
+                </div>
+                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
+                <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
               </div>
-              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
-              <a class="download-link" href="<?php echo htmlspecialchars($cover_data['pdf_file'] ?? 'downloads/cover-letter.pdf'); ?>" download>Download</a>
             </div>
           </div>
-        </div>
-        <div class="col-lg-12 col-md-12 col-sm-12">
-          <div class="download-card">
-            <div class="download-row">
-              <img src="<?php echo $path_prefix; ?>assets/img/education/Groupword.png" alt="Word Icon" />
-              <div class="dl-info">
-                <div class="dl-title"><?php echo htmlspecialchars($cover_data['word_title'] ?? ''); ?></div>
-                <div class="dl-sub"><?php echo htmlspecialchars($cover_data['word_sub'] ?? 'Example'); ?></div>
-              </div>
-              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
-              <a class="download-link" href="<?php echo htmlspecialchars($cover_data['word_file'] ?? 'downloads/cover-letter.docx'); ?>" download>Download</a>
-            </div>
-          </div>
-        </div>
+        <?php endforeach; ?>
       </div>
 
     </div>

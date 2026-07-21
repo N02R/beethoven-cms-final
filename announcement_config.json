@@ -245,13 +245,22 @@
     "استخدم الألمانية أو الإنجليزية حسب الحاجة.",
     "تواصل معنا لمساعدتك في مراجعة خطابك."
   ],
-  "pdf_title": "رسالة التعريف/ خطاب الطلب",
-  "pdf_sub": "Example",
-  "pdf_file": "downloads/cover-letter.pdf",
-  "word_title": "رسالة التعريف/ خطاب الطلب",
-  "word_sub": "Example",
-  "word_file": "downloads/cover-letter.docx"
+  "download_items": [
+    {
+      "type": "pdf",
+      "title": "رسالة التعريف/ خطاب الطلب",
+      "sub": "Example",
+      "file": "downloads/cover-letter.pdf"
+    },
+    {
+      "type": "word",
+      "title": "رسالة التعريف/ خطاب الطلب",
+      "sub": "Example",
+      "file": "downloads/cover-letter.docx"
+    }
+  ]
 }
+
 ,
 "cv_page": {
   "page_breadcrumb": "السيرة الذاتية CV",

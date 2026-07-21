@@ -175,47 +175,49 @@ $cover_data = $data['coverletter_page'] ?? [];
 
 <!-- 6. Download Files Modal -->
 <div class="modal fade custom-modal" id="coverDownloadModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-down text-primary"></i> تعديل ملفات النماذج والروابط</h5>
+                <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-down text-primary"></i> إدارة نماذج وملفات خطاب الطلب المتاحة للتحميل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="coverDownloadForm" method="POST">
                     <input type="hidden" name="action" value="update_cover_downloads">
-                    
-                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-file-pdf"></i> نموذج ملف الـ PDF</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">عنوان البطاقة</label>
-                            <input type="text" class="form-control" name="pdf_title" value="<?php echo htmlspecialchars($cover_data['pdf_title'] ?? ''); ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">النوع الفرعي (Sub)</label>
-                            <input type="text" class="form-control" name="pdf_sub" value="<?php echo htmlspecialchars($cover_data['pdf_sub'] ?? 'Example'); ?>">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">مسار ملف الـ PDF</label>
-                            <input type="text" class="form-control" name="pdf_file" value="<?php echo htmlspecialchars($cover_data['pdf_file'] ?? 'downloads/cover-letter.pdf'); ?>">
-                        </div>
+                    <label class="form-label fw-bold">قائمة الملفات (تعديل / إضافة / حذف)</label>
+                    <div id="coverDownloadContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($cover_data['download_items'])): ?>
+                            <?php foreach ($cover_data['download_items'] as $index => $item): ?>
+                                <div class="p-3 border rounded bg-light position-relative download-item-box" id="cover_download_<?php echo $index; ?>">
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">نوع الملف</label>
+                                            <select class="form-select form-select-sm" name="download_types[]">
+                                                <option value="pdf" <?php echo (strtolower($item['type']) === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($item['type']) === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label small fw-bold">عنوان البطاقة</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_titles[]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_subs[]" value="<?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold">مسار الملف (URL)</label>
+                                            <input type="text" class="form-control form-control-sm" name="download_files[]" value="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>">
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeCoverRow('cover_download_<?php echo $index; ?>')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-
-                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-file-word"></i> نموذج ملف الـ Word</h6>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">عنوان البطاقة</label>
-                            <input type="text" class="form-control" name="word_title" value="<?php echo htmlspecialchars($cover_data['word_title'] ?? ''); ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">النوع الفرعي (Sub)</label>
-                            <input type="text" class="form-control" name="word_sub" value="<?php echo htmlspecialchars($cover_data['word_sub'] ?? 'Example'); ?>">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">مسار ملف الـ Word</label>
-                            <input type="text" class="form-control" name="word_file" value="<?php echo htmlspecialchars($cover_data['word_file'] ?? 'downloads/cover-letter.docx'); ?>">
-                        </div>
-                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addCoverDownloadRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة نموذج تحميل جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -226,13 +228,16 @@ $cover_data = $data['coverletter_page'] ?? [];
     </div>
 </div>
 
+<!-- JavaScript Engine Additions for Dynamic Downloads -->
 <!-- JavaScript Engine -->
 <script>
+    // دالة عامة لحذف أي صف أو عنصر ديناميكي
     function removeCoverRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
+    // إدارة صفوف نقاط النصائح
     let adviceIndex = <?php echo count($cover_data['advice_points'] ?? []); ?>;
     function addCoverAdviceRow() {
         const container = document.getElementById('coverAdviceContainer');
@@ -247,6 +252,7 @@ $cover_data = $data['coverletter_page'] ?? [];
         adviceIndex++;
     }
 
+    // إدارة صفوف الملاحظات الهامة
     let noteIndex = <?php echo count($cover_data['notes'] ?? []); ?>;
     function addCoverNoteRow() {
         const container = document.getElementById('coverNotesContainer');
@@ -261,7 +267,42 @@ $cover_data = $data['coverletter_page'] ?? [];
         noteIndex++;
     }
 
-    // ربط كافة النماذج عبر AJAX
+    // إدارة صفوف نماذج التحميل الديناميكية (PDF & Word)
+    let coverDownloadIndex = <?php echo count($cover_data['download_items'] ?? []); ?>;
+    function addCoverDownloadRow() {
+        const container = document.getElementById('coverDownloadContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 border rounded bg-light position-relative download-item-box';
+        div.id = 'cover_download_' + coverDownloadIndex;
+        div.innerHTML = `
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">نوع الملف</label>
+                    <select class="form-select form-select-sm" name="download_types[]">
+                        <option value="pdf">PDF</option>
+                        <option value="word" selected>Word</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label small fw-bold">عنوان البطاقة</label>
+                    <input type="text" class="form-control form-control-sm" name="download_titles[]" value="رسالة التعريف/ خطاب الطلب">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
+                    <input type="text" class="form-control form-control-sm" name="download_subs[]" value="Example">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-bold">مسار الملف (URL)</label>
+                    <input type="text" class="form-control form-control-sm" name="download_files[]" value="#">
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeCoverRow('cover_download_${coverDownloadIndex}')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+        `;
+        container.appendChild(div);
+        coverDownloadIndex++;
+    }
+
+    // ربط كافة النماذج عبر AJAX للإرسال الفوري وتحديث الصفحة
     document.querySelectorAll('#coverBreadcrumbForm, #coverHeroForm, #coverMainForm, #coverAdviceForm, #coverNotesForm, #coverDownloadForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();

@@ -58,14 +58,14 @@
   </div>
 </div>
 
-<!-- Modal 2: تعديل المحتوى والإرشادات والملاحظات -->
+<!-- Modal: تعديل محتوى وإرشادات الصفحة -->
 <div class="modal fade" id="arrivalContentModal" tabindex="-1" aria-labelledby="arrivalContentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <form id="arrivalContentForm">
         <input type="hidden" name="action" value="update_arrival_content">
         <div class="modal-header">
-          <h5 class="modal-title" id="arrivalContentModalLabel">تعديل محتوى وإرشادات الصفحة</h5>
+          <h5 class="modal-title" id="arrivalContentModalLabel">تعديل المحتوى، النصائح، والملاحظات</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
         </div>
         <div class="modal-body">
@@ -114,11 +114,17 @@
           <!-- الملاحظات الهامة -->
           <div class="card p-3 border-0 shadow-sm">
             <h6 class="fw-bold mb-3">الملاحظات الهامة</h6>
+            <div class="mb-3">
+              <label class="form-label">عنوان صندوق الملاحظات:</label>
+              <input type="text" name="note_title" class="form-control" value="<?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?>">
+            </div>
+            
             <label class="form-label fw-bold">قائمة الملاحظات:</label>
             <div id="notes-container">
               <?php if (!empty($arrival_data['notes'])): ?>
                 <?php foreach ($arrival_data['notes'] as $note): ?>
                   <div class="input-group mb-2 note-item">
+                    <!-- نستخدم textarea لأن الملاحظات قد تحتوي على وسم HTML مثل span -->
                     <textarea name="notes[]" class="form-control" rows="2"><?php echo htmlspecialchars($note); ?></textarea>
                     <button type="button" class="btn btn-outline-danger remove-note-btn"><i class="bi bi-trash"></i></button>
                   </div>
@@ -137,46 +143,55 @@
     </div>
   </div>
 </div>
-
 <script>
-// جافاسكريبت تفاعلي ديناميكي لإضافة/حذف النصائح والملاحظات داخل المودال برمجياً
+
+// جافاسكريبت تفاعلي ديناميكي متكامل لإدارة صفحة الاستقبال والخدمات (Arrival Page)
 document.addEventListener('DOMContentLoaded', function() {
-    // إضافة نصيحة جديدة
+    
+    // 1. إضافة نصيحة جديدة برمجياً
     const addTipBtn = document.getElementById('add-tip-btn');
     if (addTipBtn) {
         addTipBtn.addEventListener('click', function() {
             const container = document.getElementById('tips-container');
             const div = document.createElement('div');
             div.className = 'input-group mb-2 tip-item';
-            div.innerHTML = '<input type="text" name="tips[]" class="form-control" placeholder="اكتب النصيحة هنا..."><button type="button" class="btn btn-outline-danger remove-tip-btn"><i class="bi bi-trash"></i></button>';
+            div.innerHTML = `
+                <input type="text" name="tips[]" class="form-control" placeholder="اكتب النصيحة هنا...">
+                <button type="button" class="btn btn-outline-danger remove-tip-btn"><i class="bi bi-trash"></i></button>
+            `;
             container.appendChild(div);
         });
     }
 
-    // إضافة ملاحظة جديدة
+    // 2. إضافة ملاحظة جديدة برمجياً
     const addNoteBtn = document.getElementById('add-note-btn');
     if (addNoteBtn) {
         addNoteBtn.addEventListener('click', function() {
             const container = document.getElementById('notes-container');
             const div = document.createElement('div');
             div.className = 'input-group mb-2 note-item';
-            div.innerHTML = '<textarea name="notes[]" class="form-control" rows="2" placeholder="اكتب الملاحظة هنا..."></textarea><button type="button" class="btn btn-outline-danger remove-note-btn"><i class="bi bi-trash"></i></button>';
+            div.innerHTML = `
+                <textarea name="notes[]" class="form-control" rows="2" placeholder="اكتب الملاحظة هنا..."></textarea>
+                <button type="button" class="btn btn-outline-danger remove-note-btn"><i class="bi bi-trash"></i></button>
+            `;
             container.appendChild(div);
         });
     }
 
-    // الحذف المفوض (Event Delegation) لأي عنصر نصيحة أو ملاحظة مضاف حديثاً
+    // 3. الحذف المفوض (Event Delegation) لأي عنصر نصيحة أو ملاحظة يتم حذفه
     document.addEventListener('click', function(e) {
         if (e.target.closest('.remove-tip-btn')) {
-            e.target.closest('.tip-item').remove();
+            const item = e.target.closest('.tip-item');
+            if (item) item.remove();
         }
         if (e.target.closest('.remove-note-btn')) {
-            e.target.closest('.note-item').remove();
+            const item = e.target.closest('.note-item');
+            if (item) item.remove();
         }
     });
 
-    // معالجة الحفظ عبر AJAX وإرسال البيانات لملف save_config.php الرئيسي
-    const handleFormSubmit = (formId, modalId) => {
+    // 4. الدالة الموحدة لمعالجة وإرسال النماذج عبر AJAX
+    const handleFormSubmit = (formId) => {
         const form = document.getElementById(formId);
         if (form) {
             form.addEventListener('submit', function(e) {
@@ -190,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload();
+                        location.reload(); // إعادة تحميل الصفحة لتحديث البيانات فوراً
                     } else {
                         alert('حدث خطأ: ' + (data.message || 'يرجى المحاولة لاحقاً'));
                     }
@@ -203,7 +218,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    handleFormSubmit('arrivalHeroForm', 'arrivalHeroModal');
-    handleFormSubmit('arrivalContentForm', 'arrivalContentModal');
+    // تفعيل الإرسال الآلي لكل النماذج الموجودة في الصفحة
+    handleFormSubmit('arrivalHeroForm');
+    handleFormSubmit('arrivalContentForm');
+    handleFormSubmit('arrivalBreadcrumbForm');
 });
+
 </script>

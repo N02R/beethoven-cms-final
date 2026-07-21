@@ -116,6 +116,7 @@ $arrival_data = $data['arrival_page'] ?? [
         <ul class="star-list">
           <?php foreach ($arrival_data['notes'] as $note): ?>
             <li>
+              <!-- لاحظي أننا لم نستخدم htmlspecialchars هنا للملاحظات للسماح بوجود أكواد HTML مثل span لتلوين البريد الإلكتروني -->
               <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"><?php echo $note; ?></p>
             </li>
           <?php endforeach; ?>
@@ -124,6 +125,7 @@ $arrival_data = $data['arrival_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end-->
+
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة إذا كان مسجلاً للدخول كأدمن

@@ -557,37 +557,22 @@ switch ($action) {
         $data['arrival_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg9.png');
         break;
 
-    case 'update_arrival_content':
+        case 'update_arrival_content':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         
         $data['arrival_page']['main_title']   = $_POST['main_title'] ?? '';
         $data['arrival_page']['main_desc']    = $_POST['main_desc'] ?? '';
         $data['arrival_page']['advice_title'] = $_POST['advice_title'] ?? '';
         $data['arrival_page']['advice_desc']  = $_POST['advice_desc'] ?? '';
+        $data['arrival_page']['note_title']   = $_POST['note_title'] ?? '';
         
-        // معالجة مصفوفة النصائح (Tips)
-        $new_tips = [];
-        if (isset($_POST['tips']) && is_array($_POST['tips'])) {
-            foreach ($_POST['tips'] as $tip) {
-                $trimmed = trim($tip);
-                if (!empty($trimmed)) {
-                    $new_tips[] = $trimmed;
-                }
-            }
-        }
-        $data['arrival_page']['tips'] = $new_tips;
-
-        // معالجة مصفوفة الملاحظات (Notes)
-        $new_notes = [];
-        if (isset($_POST['notes']) && is_array($_POST['notes'])) {
-            foreach ($_POST['notes'] as $note) {
-                $trimmed = trim($note);
-                if (!empty($trimmed)) {
-                    $new_notes[] = $trimmed;
-                }
-            }
-        }
-        $data['arrival_page']['notes'] = $new_notes;
+        // معالجة مصفوفة النصائح وتنظيفها من الفراغات
+        $tips = $_POST['tips'] ?? [];
+        $data['arrival_page']['tips'] = array_values(array_filter(array_map('trim', $tips)));
+        
+        // معالجة مصفوفة الملاحظات
+        $notes = $_POST['notes'] ?? [];
+        $data['arrival_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;
 
     default:

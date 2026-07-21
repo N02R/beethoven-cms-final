@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, etc.)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, etc.)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -170,6 +170,33 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
         ],
         'expert_note'         => '',
         'insurance_links'     => []
+    ],
+
+    // --- صفحة تكلفة المعيشة (Living Cost Page) ---
+    'living_cost_page'       => [
+        'page_breadcrumb'     => 'تكلفة المعيشة في ألمانيا',
+        'page_breadcrumb_url' => '#',
+        'hero_img'            => 'assets/img/education/servicesimg8.png',
+        'hero_position'       => 'center center',
+        'main_title'          => 'تكلفة المعيشة في ألمانيا للطلاب الأجانب',
+        'main_desc'           => 'تُعد تكلفة المعيشة في ألمانيا معتدلة مقارنة بدول أوروبية أخرى، لكنها أعلى من الدول النامية. يحتاج الطالب الأجنبي عادةً بين 700 و900 يورو شهريًا لتغطية الإيجار، الطعام، المواصلات، التأمين وغيرها، وتختلف التكاليف حسب المدينة ونمط الحياة.',
+        'tips_section'        => [
+            'title' => 'نصائح لتقليل النفقات',
+            'items' => [
+                'اختيار السكن الجامعي أو مشاركة شقة مع طلاب آخرين.',
+                'استخدام بطاقة الطالب لخصومات في المواصلات والمتاجر.',
+                'فرز النفايات المنزلية إلزامي لتجنب الغرامات والإخلاء.',
+                'تجنّب المكتبات العقارية إلا عند الضرورة، لتوفير التكاليف.'
+            ]
+        ],
+        'notes_section'       => [
+            'title' => 'ملاحظات هامة !!',
+            'items' => [
+                'يتوجب دفع وديعة (Kaution) تعادل إيجار شهر أو شهرين عند توقيع العقد.',
+                'عند طلب سكن عن طريق مكتب عقاري، قد تُدفع عمولة تتراوح بين 600 إلى 1000 يورو.',
+                'خيار مشاركة شقة (WG) مع طلاب آخرين يساعد في تقليل التكاليف.'
+            ]
+        ]
     ]
 ];
 
@@ -1149,6 +1176,68 @@ switch ($action) {
 
         $data['health_insurance_page']['expert_note']     = $expert_note;
         $data['health_insurance_page']['insurance_links'] = $insurance_links;
+        break;
+
+    // --- صفحة تكلفة المعيشة (Living Cost Page) ---
+    case 'update_living_breadcrumb':
+        if (!isset($data['living_cost_page'])) { $data['living_cost_page'] = []; }
+        $data['living_cost_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['living_cost_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_living_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['living_cost_page'])) { $data['living_cost_page'] = []; }
+        $data['living_cost_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/education/servicesimg8.png');
+        $data['living_cost_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_living_main':
+        if (!isset($data['living_cost_page'])) { $data['living_cost_page'] = []; }
+        $data['living_cost_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['living_cost_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_living_tips':
+        if (!isset($data['living_cost_page'])) { $data['living_cost_page'] = []; }
+        $tips_title = trim($_POST['tips_title'] ?? 'نصائح لتقليل النفقات');
+        $raw_tips   = $_POST['tips_items'] ?? [];
+        
+        $cleaned_tips = [];
+        if (is_array($raw_tips)) {
+            foreach ($raw_tips as $tip) {
+                $trimmed = trim($tip);
+                if (!empty($trimmed)) {
+                    $cleaned_tips[] = $trimmed;
+                }
+            }
+        }
+
+        $data['living_cost_page']['tips_section'] = [
+            'title' => $tips_title,
+            'items' => $cleaned_tips
+        ];
+        break;
+
+    case 'update_living_notes':
+        if (!isset($data['living_cost_page'])) { $data['living_cost_page'] = []; }
+        $notes_title = trim($_POST['notes_title'] ?? 'ملاحظات هامة !!');
+        $raw_notes   = $_POST['notes_items'] ?? [];
+        
+        $cleaned_notes = [];
+        if (is_array($raw_notes)) {
+            foreach ($raw_notes as $note) {
+                $trimmed = trim($note);
+                if (!empty($trimmed)) {
+                    $cleaned_notes[] = $trimmed;
+                }
+            }
+        }
+
+        $data['living_cost_page']['notes_section'] = [
+            'title' => $notes_title,
+            'items' => $cleaned_notes
+        ];
         break;
 
     default:

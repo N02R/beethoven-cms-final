@@ -543,6 +543,13 @@ switch ($action) {
         break;
 
     // --- صفحة الاستقبال والخدمات (Arrival Service) ---
+      case 'update_arrival_breadcrumb':
+        if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
+        
+        $data['arrival_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['arrival_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
     case 'update_arrival_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }

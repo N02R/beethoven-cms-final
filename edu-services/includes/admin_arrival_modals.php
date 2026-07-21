@@ -1,3 +1,33 @@
+<!-- Modal: تعديل مسار التنقل (Breadcrumb) -->
+<div class="modal fade" id="arrivalBreadcrumbModal" tabindex="-1" aria-labelledby="arrivalBreadcrumbModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="arrivalBreadcrumbForm">
+        <input type="hidden" name="action" value="update_arrival_breadcrumb">
+        <div class="modal-header">
+          <h5 class="modal-title" id="arrivalBreadcrumbModalLabel">تعديل عنوان مسار التنقل (Breadcrumb)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">اسم الصفحة الحالي في المسار:</label>
+            <input type="text" name="page_breadcrumb" class="form-control" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb'] ?? ''); ?>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">رابط الصفحة (URL):</label>
+            <input type="text" name="page_breadcrumb_url" class="form-control" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <div class="form-text">اكتب `#` إذا كانت الصفحة الحالية ولا تتطلب رابطاً تفاعلياً.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Modal 1: تعديل الهيرو والصورة ومسار التنقل -->
 <div class="modal fade" id="arrivalHeroModal" tabindex="-1" aria-labelledby="arrivalHeroModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">

@@ -8,7 +8,6 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!defined('ALLOWED_ACCESS')) {
     define('ALLOWED_ACCESS', true);
 }
-
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
 $path_prefix = '../'; 
 

@@ -58,7 +58,7 @@ $arrival_data = $data['arrival_page'] ?? [
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item active" aria-current="page">
+        <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($arrival_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($arrival_data['page_breadcrumb'] ?? 'الإستقبال في المطار، المواصلات، الإقامة والسكن'); ?>
           </a>

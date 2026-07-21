@@ -8,7 +8,7 @@
     { "platform": "YouTube", "url": "https://youtube.com/@learning_german_language?si=Ulc8NPGJgLdMDyvY", "img": "assets/img/socialicons/youtube.png" }
   ],
   "menu_links": [
-    { "title": "الرئيسية", "url": "index.php", "class": "active" ,"order": 1 },
+    { "title": "الرئيسية", "url": "index.php", "class": "active", "order": 1 },
     { "title": "عن الشركة", "url": "about.php", "order": 2 },
     { "title": "التعليم العالي", "url": "education.php", "order": 3 },
     { "title": "التدريب المهني", "url": "job.php", "order": 4 },
@@ -19,57 +19,157 @@
     { "name": "العربية", "url": "index.php", "icon": "assets/img/ar.svg" },
     { "name": "English", "url": "index-en.php", "icon": "assets/img/en.svg" }
   ],
+  "announcement": {
+    "status": "Active",
+    "type": "text",
+    "announcement_text": "مرحباً بكم في بيتهوفن سيتي للخدمات التعليمية والمهنية في ألمانيا. احصل على استشارتك الأولى مجاناً!",
+    "link": "contact.php",
+    "start_date": "2026-01-01",
+    "end_date": "2026-12-31",
+    "bg_color": "#1e293b",
+    "text_color": "#ffffff",
+    "font_size": "16",
+    "image_path": ""
+  },
   "hero": {
-    "title": "ابدأ رحلتك الأكاديمية في ألمانيا مع BCS",
-    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى،حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى..",
+    "title": "ابدأ رحلتك الأكاديمية والمهنية في ألمانيا مع BCS",
+  "desc": "نحن نرافقك خطوة بخطوة من الوطن العربي وحتى استقرارك الكامل في ألمانيا، لنفتح لك أبواب المستقبل الواعد بأفضل المعايير المهنية والاستشارية.",
     "btn_text": "احجز استشارتك الآن",
-    "btn_url": "#contact",
+    "btn_url": "contact.php",
     "img": "assets/img/hero-bg.jpg"
   },
   "services_section_title": "خدماتنا المميزة",
+  "services_section_desc": "نقدم باقة متكاملة من الخدمات المصممة خصيصاً لتناسب طموحاتك الدراسية والمهنية في ألمانيا.",
   "services": [
     { "title": "التعليم العالي والجامعي", "url": "education.php", "img": "assets/img/home/education.jpg" },
-    { "title": "التأهيل المهني والعملي", "url": "job.php", "img": "assets/img/home/traning.jpg" }
+    { "title": "التأهيل المهني والعملي (Ausbildung)", "url": "job.php", "img": "assets/img/home/traning.jpg" }
   ],
-  "choose": {
-    "title": "ما الذي يميز بيتهوفن سيتي",
-    "items": [
-      { "title": "خدمة متعددة اللغات", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة، حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome1.svg", "url": "#" },
-      { "title": "خبرة في السوق الألماني", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome2.svg", "url": "#" },
-      { "title": "متابعة شاملة للعميل", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome3.svg", "url": "#" },
-      { "title": "أسعار تنافسية", "desc": "هذا النص هو مثال لنص يستبدل في نفس المساحة ،حيث يمكنك توليد النص", "img": "assets/img/home/Grouphome4.svg", "url": "#" }
-    ]
+  "choose_title": "ما الذي يميز بيتهوفن سيتي",
+  "choose_section_desc": "نتميز بفريق محترف وخبرة عميقة في متطلبات السوق والمؤسسات الألمانية.",
+  "choose_items": [
+    { "title": "خدمة متعددة اللغات", "desc": "فريقنا يتحدث العربية والألمانية بطلاقة لتسهيل كافة إجراءاتك وتواصلك.", "img": "assets/img/home/Grouphome1.svg" },
+    { "title": "خبرة في السوق الألماني", "desc": "معرفة تامة بكافة القوانين، الشروط الجامعية، وأنظمة التدريب المهني الحديثة.", "img": "assets/img/home/Grouphome2.svg" },
+    { "title": "متابعة شاملة للعميل", "desc": "نبقى معك من إعداد الأوراق وتأشيرة السفر وحتى الاستقبال والتسكين في ألمانيا.", "img": "assets/img/home/Grouphome3.svg" },
+    { "title": "أسعار تنافسية", "desc": "خدمات استشارية عالية الجودة وبأسعار مدروسة تناسب الطلاب والشباب الطموح.", "img": "assets/img/home/Grouphome4.svg" }
+  ],
+  "reviews_title": "شاهد ماذا يقول عملاؤنا عنا",
+  "reviews_items": [
+    { "url": "https://www.youtube.com/embed/tu51jzzZO9Q" },
+    { "url": "https://www.youtube.com/embed/xcgM1t5H6dU" },
+    { "url": "https://www.youtube.com/embed/jpaOEC2pVRc" }
+  ],
+  "guide_title": "دليل بيتهوفن الشامل",
+  "guide_desc": "مجموعة من المقالات الإرشادية المصممة لمساعدتك على فهم بيئة الحياة والدراسة في ألمانيا.",
+  "guide_items": [
+    { "title": "لماذا يختار الطلاب الدراسة في ألمانيا؟", "desc": "أكثر من 380 ألف طالب دولي يختارون ألمانيا لما توفره من جودة تعليمية ومجانية بالجامعات الحكومية.", "img": "assets/img/home/image(0).jpg", "url": "guide-blog1.php" },
+    { "title": "التعليم والعمل في ألمانيا", "desc": "اكتشف بيئة تعليمية متقدمة وفرص عمل واعدة أثناء وبعد التخرج.", "img": "assets/img/guide/image (1).jpg", "url": "guide-blog2.php" },
+    { "title": "معالجة طلبات العملاء لدى BCS", "desc": "نرافق عملاءنا خطوة بخطوة بكل شفافية واحترافية عالية.", "img": "assets/img/guide/image.jpg", "url": "guide-blog3.php" }
+  ],
+  "faq_title": "الأسئلة الشائعة",
+  "faq_items": [
+    { "question": "ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟", "answer": "تحتاج إلى شهادة الثانوية العامة المعترف بها، إتقان اللغة المطلوبة (ألمانية أو إنجليزية)، وتجهيز ملف التقديم عبر منصة Uni-Assist أو مباشرة للجامعة." },
+    { "question": "هل يمكنني الدراسة في ألمانيا بدون لغة ألمانية؟", "answer": "نعم، توفر العديد من الجامعات برامج ماجستير وبكالوريوس تدّرس بالكامل باللغة الإنجليزية، لكن تعلم الألمانية يظل ميزة كبرى للحياة اليومية." }
+  ],
+  "consult_title": "احصل على استشارة مجانية",
+  "consult_desc": "تواصل معنا اليوم ودع خبراءنا يوجهونك نحو المسار الأكاديمي أو المهني الأنسب لمستقبلك.",
+  "footer_desc": "بيتهوفن سيتي سرفيس (BCS) شريكك الموثوق لبناء مستقبل واعد في ألمانيا، استشارات دقيقة وخدمات متكاملة.",
+  "footer_col2_title": "روابط سريعة",
+  "footer_col3_title": "قنوات التواصل",
+  "footer_col3_links": [
+    { "title": "راسلنا على واتساب", "url": "https://wa.me/4917671230666", "img": "assets/img/socialicons/whatsapp.png" }
+  ],
+  "about": {
+    "title": "من نحن - بيتهوفن سيتي",
+    "desc": "نحن مؤسسة رائدة مقرها في مدينة بون الألمانية، نختص بتقديم الاستشارات التعليمية وتأمين فرص التدريب المهني للطلاب والشباب الساعين لتطوير مستقبلهم.",
+    "btn_text": "اقرأ المزيد عنا",
+    "btn_url": "about.php",
+    "main_img": "assets/img/about us icon, image/about1.jpg",
+    "sub_img": "assets/img/about us icon, image/about2.png",
+    "vision_title": "رؤية الشركة",
+    "vision_desc": "أن نكون البوابة الأكثر موثوقية واحترافية للشباب العربي نحو الاندماج والنجاح الأكاديمي والمهني في المجتمع الألماني.",
+    "vision_icon": "assets/img/About us Icon, image/Company vision.svg",
+    "message_title": "رسالة الشركة",
+    "message_desc": "تسهيل الإجراءات البوقراطية وتقديم خدمات استشارية واضحة ومباشرة دون عناء أو تعقيد.",
+    "message_icon": "assets/img/About us Icon, image/Company message.svg"
   },
-  "reviews": {
-    "title": "شاهد ماذا يقول عملاؤنا عنا",
-    "videos": [
-      { "url": "https://www.youtube.com/embed/tu51jzzZO9Q", "title": "مراجعة عميل 1" },
-      { "url": "https://www.youtube.com/embed/xcgM1t5H6dU", "title": "مراجعة عميل 2" },
-      { "url": "https://www.youtube.com/embed/jpaOEC2pVRc", "title": "مراجعة عميل 3" }
-    ]
+  "team_title": "فريق العمل",
+  "team_desc": "نخبة من الخبراء والمستشارين المتخصصين لمساعدتك في كل خطوة.",
+  "team_members": [],
+  "about_counts": [
+    { "number": "+500", "title": "طالب تم خدمتهم بنجاح", "img": "assets/img/home/Grouphome1.svg" },
+    { "number": "100%", "title": "متابعة ودعم مستمر", "img": "assets/img/home/Grouphome2.svg" }
+  ],
+  "partners_title": "شركاؤنا داخل وخارج ألمانيا",
+  "partners_items": [],
+  "edu_hero": {
+    "title": "التعليم العالي والجامعي في ألمانيا",
+    "desc": "اكتشف آلاف التخصصات المتاحة في أرقى الجامعات الألمانية الحكومية والخاصة.",
+    "btn_text": "ابدأ الآن",
+    "btn_url": "contact.php",
+    "img": "assets/img/education/hero.jpg"
   },
-  "guide": {
-    "title": "دليل بيتهوفن الشامل",
-    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص",
-    "items": [
-      { "title": "لماذا يختار الطلاب الدراسة في ألمانيا ؟", "desc": "أكثر من 380 ألف طالب دولي...", "img": "assets/img/home/image(0).jpg", "url": "guide-blog1.php" },
-      { "title": "التعليم والعمل في ألمانيا", "desc": "اكتشف بيئة تعليمية متقدمة...", "img": "assets/img/guide/image (1).jpg", "url": "guide-blog2.php" },
-      { "title": "معالجة طلبات العملاء لدى BCS", "desc": "نرافق عملاؤنا خطوة بخطوة...", "img": "assets/img/guide/image.jpg", "url": "guide-blog3.php" }
-    ]
+  "edu_why_title": "لماذا الدراسة في ألمانيا؟",
+  "edu_why_desc": "مزايا لا تعد ولا تحصى تنتظرك عند اختيارك للتعليم العالي الألماني.",
+  "edu_why_items": [
+    { "title": "تعليم مجاني أو رمزي", "desc": "معظم الجامعات الحكومية لا تفرض رسوماً دراسية باهظة.", "img": "assets/img/home/Grouphome1.svg" },
+    { "title": "شهادات معتمدة عالمياً", "desc": "تحظى الجامعات الألمانية بمكانة مرموقة في كافة التصنيفات العالمية.", "img": "assets/img/home/Grouphome2.svg" }
+  ],
+  "edu_timeline_title": "رحلتك إلى ألمانيا خطوة بخطوة مع BCS",
+  "edu_timeline_desc": "نضمن لك خطة عمل واضحة وشفافة طوال فترة التقديم.",
+  "edu_timeline_steps": [
+    { "title": "التقييم والاستشارة", "subtitle": "الخطوة الأولى", "desc": "دراسة ملفك الأكاديمي واختيار التخصص المناسب.", "order": 1, "icon": "assets/img/home/Grouphome1.svg" },
+    { "title": "تجهيز الأوراق والترجمة", "subtitle": "الخطوة الثانية", "desc": "مراجعة وتعديل المستندات المطلوبة بدقة.", "order": 2, "icon": "assets/img/home/Grouphome2.svg" }
+  ],
+  "edu_services_title": "ماذا نقدم في بيتهوفن سيتي؟",
+  "edu_services_desc": "خدمات مخصصة لضمان قبولك الجامعي.",
+  "edu_services_items": [
+    { "title": "تأمين القبول الجامعي", "url": "contact.php", "img": "assets/img/home/education.jpg" }
+  ],
+  "job_hero": {
+    "title": "التدريب المهني والعملي (Ausbildung)",
+    "desc": "ادرس واعمل في نفس الوقت واحصل على راتب شهري ومستقبل مهني مضمون في ألمانيا.",
+    "btn_text": "ابدأ التقديم",
+    "btn_url": "contact.php",
+    "img": "assets/img/job/hero.jpg"
   },
-  "faq": {
-    "title": "الأسئلة الشائعة",
-    "items": [
-      { "question": "ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟", "answer": "تحتاج إلى شهادة الثانوية العامة..." },
-      { "question": "هل يمكنني الدراسة في ألمانيا بدون لغة ألمانية؟", "answer": "نعم، بعض الجامعات..." }
+  "job_why_title": "لماذا التدريب معنا؟",
+  "job_why_desc": "فرصة حقيقية للاندماج السريع وبناء مسار مهني مستقر.",
+  "job_why_items": [
+    { "title": "راتب شهري أثناء الدراسة", "desc": "تتقاضى أجراً ماديّاً طوال فترة التدريب المهني.", "img": "assets/img/home/Grouphome1.svg" }
+  ],
+  "job_program_title": "أنواع التدريب المهني",
+  "job_program_desc": "تخصصات متعددة تلبي احتياجات سوق العمل الألماني.",
+  "job_program_types": [],
+  "job_timeline_title": "كيف نساعدك خطوة بخطوة؟",
+  "job_timeline_desc": "خطة عمل متكاملة للحصول على عقد التدريب المهني.",
+  "job_timeline_steps": [
+    { "title": "تحديد التخصص المناسب", "subtitle": "البداية", "desc": "اختيار قطاع التدريب المهني الملائم لميولك.", "order": 1, "icon": "assets/img/home/Grouphome1.svg" }
+  ],
+  "job_services_items": [],
+  "contact_hero_img": "assets/img/contact us/contacthero.png",
+  "contact_address": "Rheinweg 140 ,53129 Bonn,Germany",
+  "contact_address_icon": "assets/img/Location.svg",
+  "contact_email": "info@Beethoven-City-Services.com",
+  "contact_email_icon": "assets/img/Mail.svg",
+  "contact_phone": "+49 (0) 176 71230-666",
+  "contact_phone_icon": "assets/img/Call.svg",
+  "whatsapp_text": "نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات",
+  "whatsapp_url": "https://wa.me/4917671230666",
+  "whatsapp_btn_txt": "تواصل معنا عبر واتساب",
+  "arrival_page": {
+    "hero_img": "assets/img/education/servicesimg9.png",
+    "main_title": "إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!",
+    "main_desc": "دليلك الشامل لترتيب كافة تفاصيل السفر والاستقرار الأولي بمساعدة فريق بيتهوفن سيتي.",
+    "advice_title": "ما الذي يجب فعله قبل السفر؟",
+    "advice_desc": "نصائح وإرشادات هامة لتجاوز رحلة الطيران والساعات الأولى بسلام.",
+    "note_title": "ملاحظات هامة !!",
+    "tips": [
+      "تأكد من حمل الأوراق الأصلية في حقيبة اليد وليس في الأمتعة المشحونة.",
+      "احتفظ بنسخ رقمية من كافة عقود السكن والقبول على بريدك الإلكتروني."
+    ],
+    "notes": [
+      "فريقنا في بون مستعد لتقديم الدعم الإرشادي المستمر.",
+      "تأكد من تفعيل خط الاتصال فور وصولك للأراضي الألمانية."
     ]
-  },
-  "footer": {
-    "consult_title": "احصل على استشارة مجانية",
-    "consult_desc": "هذا النص هو مثال لنص يمكن أن يُستبدل في نفس المساحة",
-    "desc": "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة...",
-    "contact": {
-      "phone": { "text": "+49 (0) 176 71230-666", "url": "tel:+4917671230666", "icon": "img/contact us/call-calling.svg" }
-    }
   }
 }

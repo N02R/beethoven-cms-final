@@ -576,6 +576,21 @@ switch ($action) {
         $notes = $_POST['notes'] ?? [];
         $data['arrival_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;
+            // --- صفحة Bachelor Package ---
+    case 'update_bachelor_breadcrumb':
+        if (!isset($data['bachelor_page'])) { $data['bachelor_page'] = []; }
+        $data['bachelor_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
+        $data['bachelor_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_bachelor_content':
+        if (!isset($data['bachelor_page'])) { $data['bachelor_page'] = []; }
+        $data['bachelor_page']['main_title']     = $_POST['main_title'] ?? '';
+        $data['bachelor_page']['main_desc']      = $_POST['main_desc'] ?? '';
+        $data['bachelor_page']['password_label'] = $_POST['password_label'] ?? '';
+        $data['bachelor_page']['btn_text']       = $_POST['btn_text'] ?? '';
+        break;
+
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

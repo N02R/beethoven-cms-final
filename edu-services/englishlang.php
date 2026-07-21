@@ -6,8 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+    define('ALLOWED_ACCESS', true);
 }
 
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي

@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, etc.)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, etc.)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -195,6 +195,41 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
                 'يتوجب دفع وديعة (Kaution) تعادل إيجار شهر أو شهرين عند توقيع العقد.',
                 'عند طلب سكن عن طريق مكتب عقاري، قد تُدفع عمولة تتراوح بين 600 إلى 1000 يورو.',
                 'خيار مشاركة شقة (WG) مع طلاب آخرين يساعد في تقليل التكاليف.'
+            ]
+        ]
+    ],
+
+    // --- صفحة خطاب الدافع (Motivation Letter Page) ---
+    'motivation_page'        => [
+        'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
+        'page_breadcrumb_url' => '#',
+        'hero_img'            => 'assets/img/education/servicesimg3.png',
+        'hero_position'       => 'center center',
+        'main_title'          => 'خطاب دافع احترافي يعزز طلبك الأكاديمي أو المهني',
+        'main_desc'           => "خطاب الدافع/التحفيز هي وثيقة من صفحة واحدة كحد أقصى. تكتُب فيها عن نفسك وتُظهر إهتمامك بالطلب الذي تتقدم إليه و الهدف الذي تريد تحقيقه مثل: (دورة لغة ألمانية، سنة تحضيرية بهدف دخول الجامعة، درجة البكالوريوس أو الماجستير، التدريب أو الزمالة الطبية، إلخ).\nإضافة الى ذلك، يتركز الأمر أكثر على دراستك المستقبلية وخططك المهنية وكيف أن درجة البكالوريوس مثلا التي تتقدم إليها ستساعدك على تحقيق أهدافك المستقبلية. أيضا يمكنك أن تشرح بها الأسباب التي تجعل منك المرشح المثالي لهذا المنصب.",
+        'advice_section'      => [
+            'title' => 'نصائح سريعة لكتابة خطاب الدافع',
+            'items' => [
+                'ابدأ بمقدمة تلخّص دوافعك',
+                'اذكر أمثلة ملموسة (دراسة، تدريب، تجربة)',
+                'اربط خبراتك بأهدافك القادمة',
+                'استخدم لغة واضحة وشخصية',
+                'احصل على مراجعة من مختص أو ناطق أصلي.',
+                'راجع الأخطاء اللغوية جيدًا.'
+            ]
+        ],
+        'download_items'      => [
+            [
+                'type'  => 'pdf',
+                'title' => 'خطاب الدافع / التحفيز',
+                'sub'   => 'Example (PDF)',
+                'file'  => 'assets/files/motivation_letter.pdf'
+            ],
+            [
+                'type'  => 'word',
+                'title' => 'خطاب الدافع / التحفيز',
+                'sub'   => 'Example (Word)',
+                'file'  => 'assets/files/motivation_letter.docx'
             ]
         ]
     ]
@@ -1238,6 +1273,70 @@ switch ($action) {
             'title' => $notes_title,
             'items' => $cleaned_notes
         ];
+        break;
+
+    // --- صفحة خطاب الدافع (Motivation Letter Page) ---
+    case 'update_motivation_breadcrumb':
+        if (!isset($data['motivation_page'])) { $data['motivation_page'] = []; }
+        $data['motivation_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['motivation_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_motivation_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['motivation_page'])) { $data['motivation_page'] = []; }
+        $data['motivation_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/education/servicesimg3.png');
+        $data['motivation_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_motivation_main':
+        if (!isset($data['motivation_page'])) { $data['motivation_page'] = []; }
+        $data['motivation_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['motivation_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_motivation_advice':
+        if (!isset($data['motivation_page'])) { $data['motivation_page'] = []; }
+        $advice_title = trim($_POST['advice_title'] ?? 'نصائح سريعة لكتابة خطاب الدافع');
+        $raw_advice   = $_POST['advice_items'] ?? [];
+        
+        $cleaned_advice = [];
+        if (is_array($raw_advice)) {
+            foreach ($raw_advice as $item) {
+                $trimmed = trim($item);
+                if (!empty($trimmed)) {
+                    $cleaned_advice[] = $trimmed;
+                }
+            }
+        }
+
+        $data['motivation_page']['advice_section'] = [
+            'title' => $advice_title,
+            'items' => $cleaned_advice
+        ];
+        break;
+
+    case 'update_motivation_downloads':
+        if (!isset($data['motivation_page'])) { $data['motivation_page'] = []; }
+        
+        $types  = $_POST['download_types'] ?? [];
+        $titles = $_POST['download_titles'] ?? [];
+        $subs   = $_POST['download_subs'] ?? [];
+        $files  = $_POST['download_files'] ?? [];
+        
+        $download_items = [];
+        for ($i = 0; $i < count($titles); $i++) {
+            $t = trim($titles[$i]);
+            if (!empty($t)) {
+                $download_items[] = [
+                    'type'  => $types[$i] ?? 'pdf',
+                    'title' => $t,
+                    'sub'   => trim($subs[$i] ?? ''),
+                    'file'  => trim($files[$i] ?? '#')
+                ];
+            }
+        }
+        $data['motivation_page']['download_items'] = $download_items;
         break;
 
     default:

@@ -215,16 +215,18 @@ $edu_services_items = $data['edu_services_items'] ?? [
       <h2 class="sec-title mb-3"><?php echo htmlspecialchars($edu_services_title); ?></h2>
       <p class="mb-5 main-p"><?php echo htmlspecialchars($edu_services_desc); ?></p>
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
-        <?php foreach ($edu_services_items as $item): ?>
+        <?php foreach ($edu_services_items as $item): 
+            // معالجة الرابط لضمان عدم تكسر المسار وتأكيد عمله سواء كان نسبياً أو كاملاً
+            $raw_url = $item['url'] ?? '#';
+            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . $raw_url : $raw_url;
+        ?>
           <div class="col">
-            <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
+            <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
               <div class="card service-card text-white border-0 rounded-5"
-                style="background-image: url('<?php echo $path_prefix . ($item['img'] ?? '') . '?v=' . time(); ?>');">
+                style="background-image: url('<?php echo ($path_prefix ?? '') . htmlspecialchars($item['img'] ?? '') . '?v=' . time(); ?>');">
                 <div class="card-body d-flex align-items-end justify-content-center">
-                  <h6 class="card-title">
-                    <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
-                      <?php echo htmlspecialchars($item['title'] ?? ''); ?>
-                    </a>
+                  <h6 class="card-title m-0">
+                    <?php echo htmlspecialchars($item['title'] ?? ''); ?>
                   </h6>
                 </div>
               </div>
@@ -235,6 +237,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
     </div>
   </section>
   <!-- education services end -->
+
 
 <?php 
 // 4. استدعاء ملف مودالات التعليم العالي للأدمن

@@ -13,6 +13,30 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
 $file = __DIR__ . '/../../announcement_config.json';
 $upload_path = __DIR__ . '/../../assets/img/';
 
+// دالة ذكية لتصحيح الروابط تلقائياً وحمايتها من أخطاء الإدخال البشري
+function format_service_url($raw_url) {
+    $raw_url = trim($raw_url);
+    
+    // إذا كان الرابط فارغاً أو مجرد شباك، اتركه كما هو
+    if (empty($raw_url) || $raw_url === '#') {
+        return '#';
+    }
+    
+    // إذا كان رابطاً خارجيًّا كاملاً (يبدأ بـ http أو https أو mailto أو tel) لا تعدل عليه
+    if (preg_match('/^(http:\/\/|https:\/\/|mailto:|tel:)/i', $raw_url)) {
+        return $raw_url;
+    }
+    
+    // إذا كان الرابط هو اسم صفحة فقط (مثل arrival.php) ولم يكتب المدير المجلد الفرعي
+    // نقوم بتصحيحه تلقائياً وإلحاقه بمجلد edu-services/
+    if (!str_contains($raw_url, 'edu-services/') && !str_contains($raw_url, '/')) {
+        return 'edu-services/' . ltrim($raw_url, '/');
+    }
+    
+    // تنظيف الشرطة المائلة الأمامية الزائدة إن وجدت في البداية
+    return ltrim($raw_url, '/');
+}
+
 // 2. قراءة البيانات أو تهيئة مصفوفة افتراضية شاملة لكل الموقع
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     // إعدادات عامة
@@ -116,9 +140,9 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'contact_phone_icon'     => 'assets/img/Call.svg',
     'whatsapp_text'          => 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات',
     'whatsapp_url'           => 'https://wa.me/4917671230666',
-    'whatsapp_btn_txt'       => 'تواصل معنا عبر واتساب'
-    ,
-        // --- صفحة الاستقبال والخدمات الداخلية (arrival.php) ---
+    'whatsapp_btn_txt'       => 'تواصل معنا عبر واتساب',
+
+    // --- صفحة الاستقبال والخدمات الداخلية (arrival.php) ---
     'arrival_page'           => [
         'hero_img'     => 'assets/img/education/servicesimg9.png',
         'main_title'   => '',
@@ -128,7 +152,6 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
         'tips'         => [],
         'notes'        => []
     ],
-
 ];
 
 // دالة رفع الملفات الآمنة
@@ -158,7 +181,7 @@ switch ($action) {
             'status'            => $_POST['status'] ?? 'Draft',
             'type'              => $_POST['type'] ?? 'text',
             'announcement_text' => $_POST['announcement_text'] ?? '',
-            'link'              => $_POST['link'] ?? '',
+            'link'              => format_service_url($_POST['link'] ?? ''),
             'start_date'        => $_POST['start_date'] ?? '',
             'end_date'          => $_POST['end_date'] ?? '',
             'bg_color'          => $_POST['bg_color'] ?? '#f1f5f9',
@@ -180,7 +203,7 @@ switch ($action) {
             'title'    => $_POST['hero_title'] ?? '',
             'desc'     => $_POST['hero_desc'] ?? '',
             'btn_text' => $_POST['hero_btn_text'] ?? '',
-            'btn_url'  => $_POST['hero_btn_url'] ?? '',
+            'btn_url'  => format_service_url($_POST['hero_btn_url'] ?? ''),
             'img'      => $img_path ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg')
         ];
         break;
@@ -194,7 +217,7 @@ switch ($action) {
                 $img_path = handle_upload('service_img_' . $index, $upload_path);
                 $new_services[] = [
                     'title' => $s['title'] ?? '',
-                    'url'   => $s['url'] ?? '#',
+                    'url'   => format_service_url($s['url'] ?? '#'),
                     'img'   => $img_path ?? ($s['old_img'] ?? '')
                 ];
             }
@@ -224,7 +247,7 @@ switch ($action) {
         $reviews = [];
         if (isset($_POST['reviews']) && is_array($_POST['reviews'])) {
             foreach ($_POST['reviews'] as $r) {
-                if (!empty($r['url'])) $reviews[] = ['url' => $r['url']];
+                if (!empty($r['url'])) $reviews[] = ['url' => format_service_url($r['url'])];
             }
         }
         $data['reviews_items'] = $reviews;
@@ -240,7 +263,7 @@ switch ($action) {
                 $new_guides[] = [
                     'title' => $g['title'] ?? '',
                     'desc'  => $g['desc'] ?? '',
-                    'url'   => $g['url'] ?? '#',
+                    'url'   => format_service_url($g['url'] ?? '#'),
                     'img'   => $img_path ?? ($g['old_img'] ?? '')
                 ];
             }
@@ -271,7 +294,7 @@ switch ($action) {
                 $img_path = handle_upload('col3_img_' . $i, $upload_path);
                 $data['footer_col3_links'][] = [
                     'title' => $item['title'] ?? '',
-                    'url'   => $item['url'] ?? '#',
+                    'url'   => format_service_url($item['url'] ?? '#'),
                     'img'   => $img_path ?? ($item['old_img'] ?? '')
                 ];
             }
@@ -289,7 +312,7 @@ switch ($action) {
             'title'        => $_POST['about_title'] ?? '',
             'desc'         => $_POST['about_desc'] ?? '',
             'btn_text'     => $_POST['about_btn_text'] ?? '',
-            'btn_url'      => $_POST['about_btn_url'] ?? '#',
+            'btn_url'      => format_service_url($_POST['about_btn_url'] ?? '#'),
             'main_img'     => $main_img ?? ($_POST['old_about_main_img'] ?? ''),
             'sub_img'      => $sub_img ?? ($_POST['old_about_sub_img'] ?? ''),
             'vision_title' => $_POST['vision_title'] ?? '',
@@ -352,7 +375,7 @@ switch ($action) {
             'title'    => $_POST['title'] ?? '',
             'desc'     => $_POST['desc'] ?? '',
             'btn_text' => $_POST['btn_text'] ?? '',
-            'btn_url'  => $_POST['btn_url'] ?? '#',
+            'btn_url'  => format_service_url($_POST['btn_url'] ?? '#'),
             'img'      => $img_path ?? ($_POST['old_img'] ?? '')
         ];
         break;
@@ -397,7 +420,11 @@ switch ($action) {
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $srv) {
                 $img_path = handle_upload('srv_img_' . $index, $upload_path);
-                $new_edu_srv[] = ['title' => $srv['title'] ?? '', 'url' => $srv['url'] ?? '#', 'img' => $img_path ?? ($srv['old_img'] ?? '')];
+                $new_edu_srv[] = [
+                    'title' => $srv['title'] ?? '', 
+                    'url'   => format_service_url($srv['url'] ?? '#'), 
+                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
+                ];
             }
         }
         $data['edu_services_items'] = $new_edu_srv;
@@ -410,7 +437,7 @@ switch ($action) {
             'title'    => $_POST['title'] ?? '',
             'desc'     => $_POST['desc'] ?? '',
             'btn_text' => $_POST['btn_text'] ?? '',
-            'btn_url'  => $_POST['btn_url'] ?? '#',
+            'btn_url'  => format_service_url($_POST['btn_url'] ?? '#'),
             'img'      => $img_path ?? ($_POST['old_img'] ?? '')
         ];
         break;
@@ -439,7 +466,7 @@ switch ($action) {
                     'title'    => $prog['title'] ?? '',
                     'desc'     => $prog['desc'] ?? '',
                     'btn_text' => $prog['btn_text'] ?? '',
-                    'btn_url'  => $prog['btn_url'] ?? '#',
+                    'btn_url'  => format_service_url($prog['btn_url'] ?? '#'),
                     'img'      => $img_path ?? ($prog['old_img'] ?? ''),
                     'is_dark'  => isset($prog['is_dark']) && $prog['is_dark'] == '1'
                 ];
@@ -475,7 +502,11 @@ switch ($action) {
         if (isset($_POST['services']) && is_array($_POST['services'])) {
             foreach ($_POST['services'] as $index => $srv) {
                 $img_path = handle_upload('srv_img_' . $index, $upload_path);
-                $new_job_srv[] = ['title' => $srv['title'] ?? '', 'url' => $srv['url'] ?? '#', 'img' => $img_path ?? ($srv['old_img'] ?? '')];
+                $new_job_srv[] = [
+                    'title' => $srv['title'] ?? '', 
+                    'url'   => format_service_url($srv['url'] ?? '#'), 
+                    'img'   => $img_path ?? ($srv['old_img'] ?? '')
+                ];
             }
         }
         $data['job_services_items'] = $new_job_srv;
@@ -507,13 +538,13 @@ switch ($action) {
 
     case 'update_whatsapp_section':
         $data['whatsapp_text']    = $_POST['whatsapp_text'] ?? '';
-        $data['whatsapp_url']     = $_POST['whatsapp_url'] ?? '';
+        $data['whatsapp_url']     = format_service_url($_POST['whatsapp_url'] ?? '');
         $data['whatsapp_btn_txt'] = $_POST['whatsapp_btn_txt'] ?? '';
         break;
-            // --- صفحة الاستقبال والخدمات (Arrival Service) ---
+
+    // --- صفحة الاستقبال والخدمات (Arrival Service) ---
     case 'update_arrival_hero':
         $img_path = handle_upload('hero_img', $upload_path);
-        // التحقق من تهيئة مصفوفة arrival_page إن لم تكن موجودة
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         
         $data['arrival_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg9.png');
@@ -551,7 +582,6 @@ switch ($action) {
         }
         $data['arrival_page']['notes'] = $new_notes;
         break;
-
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

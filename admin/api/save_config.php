@@ -1613,6 +1613,50 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+    // --- صفحة التخصصات الطبية (Medical Specialties Page) ---
+    case 'update_medical_specialties_breadcrumb':
+        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
+        $data['medical_specialties_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['medical_specialties_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_medical_specialties_hero':
+        $job_upload_path = __DIR__ . '/../../assets/img/job/';
+        $img_path = handle_upload('hero_img', $job_upload_path);
+        
+        if ($img_path) {
+            $filename = basename($img_path);
+            $img_path = 'assets/img/job/' . $filename;
+        }
+
+        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
+        $data['medical_specialties_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/job/servicesimg1.png');
+        $data['medical_specialties_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_medical_specialties_main':
+        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
+        $data['medical_specialties_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['medical_specialties_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_medical_specialties_card':
+        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
+        
+        $item_title = trim($_POST['item_title'] ?? 'قائمة أكثر التخصصات الطبية انتشارا');
+        $item_sub   = trim($_POST['item_sub'] ?? 'اختر تخصصك الطبي');
+        $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
+        
+        $new_file = handle_document_upload('item_file', $files_upload_path);
+        $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/medical_specialties_list.pdf');
+
+        $data['medical_specialties_page']['download_item'] = [
+            'type'  => ($item_type === 'word' || $item_type === 'docx') ? 'word' : 'pdf',
+            'title' => $item_title,
+            'sub'   => $item_sub,
+            'file'  => $final_file
+        ];
+        break;
 
     default:
         die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));

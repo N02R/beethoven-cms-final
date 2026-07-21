@@ -611,5 +611,20 @@
       "file": "assets/files/medical_training_agreement.pdf"
     }
   }
+,
+  "medical_specialties_page": {
+    "page_breadcrumb": "التخصصات الطبية",
+    "page_breadcrumb_url": "#",
+    "hero_img": "assets/img/job/servicesimg1.png",
+    "hero_position": "center center",
+    "main_title": "قائمة أكثر التخصصات إنتشاراً",
+    "main_desc": "يوجد في ألمانيا أكثر من 50 تخصص طبي في مجالات طبية مختلفة وجميعها متوفرة لكلٍ من الأطباء الألمان والأجانب. تختلف مدة التخصصات الطبية من فرع لآخر ولكن بشكل عام، تستغرق أكثر من 5 سنوات في معظم التخصصات الطبية. فيما يلي أكثر التخصصات الطبية في ألمانيا انتشاراً",
+    "download_item": {
+      "type": "pdf",
+      "title": "قائمة أكثر التخصصات الطبية انتشارا",
+      "sub": "اختر تخصصك الطبي",
+      "file": "assets/files/medical_specialties_list.pdf"
+    }
+  }
 
 }

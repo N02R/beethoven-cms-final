@@ -1,11 +1,12 @@
-<?php
-// تعريف الثابت الأمني أولاً لكي لا تظهر رسالة Access Denied
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
+<?php 
+ob_start();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
 }
 
 // 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
@@ -18,10 +19,10 @@ $page_css = [
 
 $page_js = [];
 
-// 3. استدعاء الهيدر المشترك
+// 3. استدعاء الهيدر الأساسي المشترك
 include_once $path_prefix . 'includes/header.php'; 
 
-// 4. جلب البيانات الخاصة بالصفحة من قاعدة البيانات أو استخدام مصفوفة افتراضية متكاملة
+// 4. جلب البيانات الخاصة بالصفحة من المصفوفة العامة $data أو استخدام القيم الافتراضية
 $arrival_data = $data['arrival_page'] ?? [
     'hero_img'     => 'assets/img/education/servicesimg9.png',
     'main_title'   => 'إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!',
@@ -37,7 +38,7 @@ $arrival_data = $data['arrival_page'] ?? [
     'note_title'   => 'ملاحظات هامة !!',
     'notes'        => [
         'العثور على سكن خلال فترة قصيرة أمر صعب جدًا، لذا ننصح بحجز السكن مسبقًا.',
-        'وإذا كنت ترغب بحجز هذه الخدمات من خلال شركتنا، يرجى التواصل عبر البريد الإلكتروني الخاص بالشركة قبل أسبوعين على الأقل من موعد وصولك.'
+        'وإذا كنت ترغب بحجز هذه الخدمات من خلال شركتنا، يرجى التواصل عبر <span style="color: #66aeee; font-weight: 500;">البريد الإلكتروني</span> الخاص بالشركة قبل أسبوعين على الأقل من موعد وصولك.'
     ]
 ];
 ?>
@@ -48,7 +49,7 @@ $arrival_data = $data['arrival_page'] ?? [
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
-        <li class="breadcrumb-item active" aria-current="page">الإستقبال في المطار، المواصلات، الإقامة والسكن</li>
+        <li class="breadcrumb-item"><a href="#">الإستقبال في المطار، المواصلات، الإقامة والسكن</a></li>
       </ol>
     </nav>
   </div>
@@ -63,7 +64,7 @@ $arrival_data = $data['arrival_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="arrival-hero custom-hero shadow-sm" style="background-image: url('<?php echo $path_prefix . ($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png'); ?>?v=<?php echo time(); ?>'); border-radius: 16px;">
+      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo $path_prefix . ($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png'); ?>?v=<?php echo time(); ?>');">
       </div>
     </div>
   </section>
@@ -78,39 +79,29 @@ $arrival_data = $data['arrival_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="head-info text-end">
-        <h2 class="main-text fw-bold mb-3"><?php echo htmlspecialchars($arrival_data['main_title']); ?></h2>
-        <p class="par-text text-muted"><?php echo nl2br(htmlspecialchars($arrival_data['main_desc'])); ?></p>
+      <div class="head-info">
+        <h2 class="main-text"><?php echo htmlspecialchars($arrival_data['main_title']); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($arrival_data['main_desc'])); ?></p>
       </div>
 
-      <div class="advice-check py-5 text-end">
-        <h5 class="advice-text fw-bold mb-2"><?php echo htmlspecialchars($arrival_data['advice_title']); ?></h5>
-        <p class="text-muted mb-4"><?php echo htmlspecialchars($arrival_data['advice_desc']); ?></p>
-        <div class="row g-3">
+      <div class="advice-check py-5">
+        <h5 class="advice-text"><?php echo htmlspecialchars($arrival_data['advice_title']); ?></h5>
+        <p><?php echo htmlspecialchars($arrival_data['advice_desc']); ?></p>
+        <div class="row">
           <?php foreach ($arrival_data['tips'] as $tip): ?>
             <div class="col-lg-6 col-md-6 col-sm-12">
-              <div class="p-3 border rounded-3 bg-light shadow-sm h-100 d-flex align-items-center">
-                <p class="mb-0">✅ <?php echo htmlspecialchars($tip); ?></p>
-              </div>
+              <p>✅ <?php echo htmlspecialchars($tip); ?></p>
             </div>
           <?php endforeach; ?>
         </div>
       </div>
 
-      <div class="advice-stars my-5 text-end">
-        <h5 class="mb-4 note-text fw-bold"><?php echo htmlspecialchars($arrival_data['note_title']); ?></h5>
-        <ul class="star-list list-unstyled">
+      <div class="advice-stars my-5">
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($arrival_data['note_title']); ?></h5>
+        <ul class="star-list">
           <?php foreach ($arrival_data['notes'] as $note): ?>
-            <li class="mb-3 d-flex align-items-start gap-2">
-              <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="mt-1" style="max-height: 20px;">
-              <p class="mb-0 text-muted">
-                <?php 
-                // معالجة تلوين عبارة البريد الإلكتروني ديناميكياً إذا وجدت
-                $formatted_note = htmlspecialchars($note);
-                $formatted_note = str_replace('البريد الإلكتروني', '<span style="color: #66aeee; font-weight: 500;">البريد الإلكتروني</span>', $formatted_note);
-                echo $formatted_note;
-                ?>
-              </p>
+            <li>
+              <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"><?php echo $note; ?></p>
             </li>
           <?php endforeach; ?>
         </ul>
@@ -125,6 +116,6 @@ if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_arri
     include_once __DIR__ . '/includes/admin_arrival_modals.php'; 
 }
 
-// 6. استدعاء الفوتر المشترك
+// 6. استدعاء الفوتر الأساسي المشترك
 include_once $path_prefix . 'includes/footer.php'; 
 ?>

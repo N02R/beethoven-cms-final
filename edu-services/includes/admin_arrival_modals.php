@@ -3,11 +3,10 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 
-// التأكد من جلب البيانات بأمان تامة داخل المودال
 $arrival_data = $data['arrival_page'] ?? [];
 ?>
 
-<!-- 1. Breadcrumb Edit Modal (تعديل مسار التنقل) -->
+<!-- 1. Breadcrumb Edit Modal -->
 <div class="modal fade custom-modal" id="arrivalBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -16,17 +15,15 @@ $arrival_data = $data['arrival_page'] ?? [];
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="arrivalBreadcrumbForm" method="POST" enctype="multipart/form-data">
+                <form id="arrivalBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_arrival_breadcrumb">
-                    
                     <div class="mb-3">
-                        <label class="form-label fw-bold">اسم الصفحة الحالي في المسار</label>
+                        <label class="form-label fw-bold">اسم الصفحة الحالي</label>
                         <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb'] ?? ''); ?>" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">رابط الصفحة (URL)</label>
                         <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb_url'] ?? '#'); ?>">
-                        <div class="form-text small text-muted">اكتب # إذا كانت الصفحة الحالية ولا تتطلب رابطاً تفاعلياً.</div>
                     </div>
                 </form>
             </div>
@@ -38,33 +35,24 @@ $arrival_data = $data['arrival_page'] ?? [];
     </div>
 </div>
 
-<!-- 2. Hero Image Edit Modal (تعديل صورة الهيرو) -->
+<!-- 2. Hero Image Edit Modal -->
 <div class="modal fade custom-modal" id="arrivalHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تعديل قسم الهيرو (الصورة الرئيسية)</h5>
+                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تعديل صورة الهيرو الرئيسية</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="arrivalHeroForm" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_arrival_hero">
-                    
+                    <?php if (!empty($arrival_data['hero_img'])): ?>
+                        <div class="mb-3 p-2 border rounded bg-light text-center">
+                            <img src="<?php echo $path_prefix . htmlspecialchars($arrival_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                        </div>
+                    <?php endif; ?>
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($arrival_data['hero_img'] ?? ''); ?>">
                     <div class="mb-3">
-                        <label class="form-label fw-bold d-flex justify-content-between">
-                            <span>الصورة الرئيسية الحالية</span>
-                            <?php if (!empty($arrival_data['hero_img'])): ?>
-                                <span class="badge bg-light text-dark border">موجودة</span>
-                            <?php endif; ?>
-                        </label>
-                        <?php if (!empty($arrival_data['hero_img'])): ?>
-                            <div class="mb-3 p-2 border rounded bg-light text-center">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($arrival_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
-                                <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($arrival_data['hero_img']); ?></div>
-                            </div>
-                        <?php endif; ?>
-                        <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png'); ?>">
-                        
                         <label class="form-label fw-bold">رفع صورة جديدة</label>
                         <input type="file" class="form-control" name="hero_img" accept="image/*">
                     </div>
@@ -78,95 +66,120 @@ $arrival_data = $data['arrival_page'] ?? [];
     </div>
 </div>
 
-<!-- 3. Content, Tips & Notes Modal (تعديل المحتوى، النصائح، والملاحظات مع عرض البيانات القديمة) -->
-<div class="modal fade custom-modal" id="arrivalContentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+<!-- 3. Modal 1: تعديل العنوان والوصف الرئيسي فقط -->
+<div class="modal fade custom-modal" id="arrivalMainTitleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-file-text text-primary"></i> إدارة محتوى، نصائح، وملاحظات الصفحة</h5>
+                <h5 class="modal-title"><i class="bi bi-card-heading text-primary"></i> تعديل العنوان والوصف الرئيسي</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="arrivalContentForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_arrival_content">
-                    
-                    <!-- العنوان الرئيسي والوصف -->
-                    <div class="card p-3 mb-4 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
-                        <h6 class="text-primary fw-bold mb-3">العنوان الرئيسي والوصف التفصيلي</h6>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($arrival_data['main_title'] ?? ''); ?>" required>
-                        </div>
-                        <div class="mb-0">
-                            <label class="form-label fw-bold">الوصف التفصيلي</label>
-                            <textarea class="form-control" name="main_desc" rows="4" required><?php echo htmlspecialchars($arrival_data['main_desc'] ?? ''); ?></textarea>
-                        </div>
+                <form id="arrivalMainTitleForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_main_title">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">العنوان الرئيسي</label>
+                        <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($arrival_data['main_title'] ?? ''); ?>" required>
                     </div>
-
-                    <!-- قسم النصائح والإرشادات -->
-                    <div class="card p-3 mb-4 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
-                        <h6 class="text-primary fw-bold mb-3">قسم الإرشادات والتوصيات</h6>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">عنوان التوصيات</label>
-                                <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($arrival_data['advice_title'] ?? ''); ?>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">الوصف الفرعي للتوصيات</label>
-                                <input type="text" class="form-control" name="advice_desc" value="<?php echo htmlspecialchars($arrival_data['advice_desc'] ?? ''); ?>">
-                            </div>
-                        </div>
-
-                        <label class="form-label fw-bold">قائمة النصائح الحالية (تعديل / حذف / إضافة)</label>
-                        <div id="tipsRowsContainer" class="d-flex flex-column gap-2 mb-3">
-                            <?php if (!empty($arrival_data['tips'])): ?>
-                                <?php foreach ($arrival_data['tips'] as $index => $tip): ?>
-                                    <div class="input-group tip-item" id="tip_row_<?php echo $index; ?>">
-                                        <input type="text" class="form-control" name="tips[]" value="<?php echo htmlspecialchars($tip); ?>">
-                                        <button type="button" class="btn btn-outline-danger" onclick="removeRow('tip_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addTipRow()">
-                            <i class="bi bi-plus-circle me-1"></i> إضافة نصيحة جديدة
-                        </button>
-                    </div>
-
-                    <!-- الملاحظات الهامة -->
-                    <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
-                        <h6 class="text-primary fw-bold mb-3">الملاحظات الهامة</h6>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">عنوان صندوق الملاحظات</label>
-                            <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?>">
-                        </div>
-
-                        <label class="form-label fw-bold">قائمة الملاحظات الحالية</label>
-                        <div id="notesRowsContainer" class="d-flex flex-column gap-2 mb-3">
-                            <?php if (!empty($arrival_data['notes'])): ?>
-                                <?php foreach ($arrival_data['notes'] as $index => $note): ?>
-                                    <div class="input-group note-item" id="note_row_<?php echo $index; ?>">
-                                        <textarea class="form-control" name="notes[]" rows="2"><?php echo htmlspecialchars($note); ?></textarea>
-                                        <button type="button" class="btn btn-outline-danger" onclick="removeRow('note_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addNoteRow()">
-                            <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
-                        </button>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">الوصف التفصيلي</label>
+                        <textarea class="form-control" name="main_desc" rows="5" required><?php echo htmlspecialchars($arrival_data['main_desc'] ?? ''); ?></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="arrivalContentForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="arrivalMainTitleForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Dynamic Rows & AJAX Engine -->
+<!-- 4. Modal 2: تعديل النصائح والإرشادات (Tips) فقط -->
+<div class="modal fade custom-modal" id="arrivalTipsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-check2-square text-primary"></i> تعديل التوصيات والنصائح قبل السفر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="arrivalTipsForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_tips">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">عنوان القسم</label>
+                            <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($arrival_data['advice_title'] ?? ''); ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">الوصف الفرعي</label>
+                            <input type="text" class="form-control" name="advice_desc" value="<?php echo htmlspecialchars($arrival_data['advice_desc'] ?? ''); ?>">
+                        </div>
+                    </div>
+                    <label class="form-label fw-bold">قائمة النصائح (تعديل / حذف / إضافة)</label>
+                    <div id="tipsRowsContainer" class="d-flex flex-column gap-2 mb-3">
+                        <?php if (!empty($arrival_data['tips'])): ?>
+                            <?php foreach ($arrival_data['tips'] as $index => $tip): ?>
+                                <div class="input-group tip-item" id="tip_row_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="tips[]" value="<?php echo htmlspecialchars($tip); ?>">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeRow('tip_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addTipRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة نصيحة جديدة
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="arrivalTipsForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Modal 3: تعديل الملاحظات الهامة (Notes) فقط -->
+<div class="modal fade custom-modal" id="arrivalNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-star text-primary"></i> تعديل صندوق الملاحظات الهامة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="arrivalNotesForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_notes">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">عنوان صندوق الملاحظات</label>
+                        <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($arrival_data['note_title'] ?? ''); ?>">
+                    </div>
+                    <label class="form-label fw-bold">قائمة الملاحظات (تعديل / حذف / إضافة)</label>
+                    <div id="notesRowsContainer" class="d-flex flex-column gap-2 mb-3">
+                        <?php if (!empty($arrival_data['notes'])): ?>
+                            <?php foreach ($arrival_data['notes'] as $index => $note): ?>
+                                <div class="input-group note-item" id="note_row_<?php echo $index; ?>">
+                                    <textarea class="form-control" name="notes[]" rows="2"><?php echo htmlspecialchars($note); ?></textarea>
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeRow('note_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addNoteRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="arrivalNotesForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic JS Engine -->
 <script>
     function removeRow(id) {
         const el = document.getElementById(id);
@@ -201,8 +214,8 @@ $arrival_data = $data['arrival_page'] ?? [];
         noteIndex++;
     }
 
-    // معالجة وإرسال النماذج الثلاثة عبر AJAX بالمسار الدقيق الصحيح
-    document.querySelectorAll('#arrivalBreadcrumbForm, #arrivalHeroForm, #arrivalContentForm').forEach(form => {
+    // ربط كافة النماذج عبر AJAX بملف المعالجة المركزي
+    document.querySelectorAll('#arrivalBreadcrumbForm, #arrivalHeroForm, #arrivalMainTitleForm, #arrivalTipsForm, #arrivalNotesForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);

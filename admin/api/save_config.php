@@ -28,12 +28,10 @@ function format_service_url($raw_url) {
     }
     
     // إذا كان الرابط هو اسم صفحة فقط (مثل arrival.php) ولم يكتب المدير المجلد الفرعي
-    // نقوم بتصحيحه تلقائياً وإلحاقه بمجلد edu-services/
     if (!str_contains($raw_url, 'edu-services/') && !str_contains($raw_url, '/')) {
         return 'edu-services/' . ltrim($raw_url, '/');
     }
     
-    // تنظيف الشرطة المائلة الأمامية الزائدة إن وجدت في البداية
     return ltrim($raw_url, '/');
 }
 
@@ -145,10 +143,11 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     // --- صفحة الاستقبال والخدمات الداخلية (arrival.php) ---
     'arrival_page'           => [
         'hero_img'     => 'assets/img/education/servicesimg9.png',
-        'main_title'   => '',
+        'main_title'   => 'إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!',
         'main_desc'    => '',
-        'advice_title' => '',
+        'advice_title' => 'ما الذي يجب فعله قبل السفر؟',
         'advice_desc'  => '',
+        'note_title'   => 'ملاحظات هامة !!',
         'tips'         => [],
         'notes'        => []
     ],
@@ -523,15 +522,12 @@ switch ($action) {
         $data['contact_email']   = $_POST['contact_email'] ?? '';
         $data['contact_phone']   = $_POST['contact_phone'] ?? '';
 
-        // حفظ أيقونة العنوان
         $addr_icon = handle_upload('contact_address_icon', $upload_path);
         $data['contact_address_icon'] = $addr_icon ?: ($_POST['old_contact_address_icon'] ?? '');
 
-        // حفظ أيقونة البريد
         $email_icon = handle_upload('contact_email_icon', $upload_path);
         $data['contact_email_icon'] = $email_icon ?: ($_POST['old_contact_email_icon'] ?? '');
 
-        // حفظ أيقونة الهاتف
         $phone_icon = handle_upload('contact_phone_icon', $upload_path);
         $data['contact_phone_icon'] = $phone_icon ?: ($_POST['old_contact_phone_icon'] ?? '');
         break;
@@ -543,9 +539,8 @@ switch ($action) {
         break;
 
     // --- صفحة الاستقبال والخدمات (Arrival Service) ---
-      case 'update_arrival_breadcrumb':
+    case 'update_arrival_breadcrumb':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
-        
         $data['arrival_page']['page_breadcrumb']     = $_POST['page_breadcrumb'] ?? '';
         $data['arrival_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
         break;
@@ -553,24 +548,31 @@ switch ($action) {
     case 'update_arrival_hero':
         $img_path = handle_upload('hero_img', $upload_path);
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
-        
         $data['arrival_page']['hero_img'] = $img_path ?: ($_POST['old_img'] ?? 'assets/img/education/servicesimg9.png');
         break;
 
-        case 'update_arrival_content':
+    // 1. تحديث العنوان والوصف الرئيسي فقط
+    case 'update_arrival_main_title':
         if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
-        
-        $data['arrival_page']['main_title']   = $_POST['main_title'] ?? '';
-        $data['arrival_page']['main_desc']    = $_POST['main_desc'] ?? '';
+        $data['arrival_page']['main_title'] = $_POST['main_title'] ?? '';
+        $data['arrival_page']['main_desc']  = $_POST['main_desc'] ?? '';
+        break;
+
+    // 2. تحديث النصائح والإرشادات فقط
+    case 'update_arrival_tips':
+        if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
         $data['arrival_page']['advice_title'] = $_POST['advice_title'] ?? '';
         $data['arrival_page']['advice_desc']  = $_POST['advice_desc'] ?? '';
-        $data['arrival_page']['note_title']   = $_POST['note_title'] ?? '';
         
-        // معالجة مصفوفة النصائح وتنظيفها من الفراغات
         $tips = $_POST['tips'] ?? [];
         $data['arrival_page']['tips'] = array_values(array_filter(array_map('trim', $tips)));
+        break;
+
+    // 3. تحديث الملاحظات الهامة فقط
+    case 'update_arrival_notes':
+        if (!isset($data['arrival_page'])) { $data['arrival_page'] = []; }
+        $data['arrival_page']['note_title'] = $_POST['note_title'] ?? '';
         
-        // معالجة مصفوفة الملاحظات
         $notes = $_POST['notes'] ?? [];
         $data['arrival_page']['notes'] = array_values(array_filter(array_map('trim', $notes)));
         break;

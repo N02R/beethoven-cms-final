@@ -987,6 +987,63 @@ switch ($action) {
         }
         $data['visa_requirements_page']['download_items'] = $download_items;
         break;
+    case 'update_german_hero':
+        if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
+        $data['germanlang_page']['hero_img'] = trim($_POST['hero_img'] ?? '');
+        $data['germanlang_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_german_main':
+        if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
+        $data['germanlang_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['germanlang_page']['main_desc'] = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_german_levels':
+        if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
+        $levels_title = $_POST['levels_title'] ?? 'المستويات المتوفرة (طبقًا ل CEFR)';
+        $raw_levels = $_POST['levels_list'] ?? [];
+        
+        $clean_levels = [];
+        foreach ($raw_levels as $lvl) {
+            if (!empty(trim($lvl))) {
+                $clean_levels[] = trim($lvl);
+            }
+        }
+        
+        $data['germanlang_page']['levels_section'] = [
+            'title' => trim($levels_title),
+            'levels_list' => $clean_levels
+        ];
+        break;
+
+    case 'update_german_features_tips':
+        if (!isset($data['germanlang_page'])) { $data['germanlang_page'] = []; }
+        
+        // معالجة المميزات
+        $feat_title = $_POST['features_title'] ?? 'مميزات دوراتنا';
+        $raw_feats = $_POST['features_list'] ?? [];
+        $clean_feats = [];
+        foreach ($raw_feats as $f) {
+            if (!empty(trim($f))) { $clean_feats[] = trim($f); }
+        }
+        $data['germanlang_page']['features_section'] = [
+            'title' => trim($feat_title),
+            'features_list' => $clean_feats
+        ];
+
+        // معالجة النصائح
+        $tips_title = $_POST['tips_title'] ?? 'نصائح للنجاح في الدراسة بالألمانية';
+        $raw_tips = $_POST['tips_list'] ?? [];
+        $clean_tips = [];
+        foreach ($raw_tips as $t) {
+            if (!empty(trim($t))) { $clean_tips[] = trim($t); }
+        }
+        $data['germanlang_page']['tips_section'] = [
+            'title' => trim($tips_title),
+            'tips_list' => $clean_tips
+        ];
+        break;
 
 
     default:

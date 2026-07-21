@@ -99,9 +99,9 @@ $offers_data = $global_data['offers_page'] ?? [];
     </div>
 </div>
 
-<!-- 4. Important Notes Modal -->
+<!-- 4. Important Notes Modal (Updated to Dynamic List) -->
 <div class="modal fade custom-modal" id="offersNotesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-journal-text text-primary"></i> تعديل الملاحظات الهامة</h5>
@@ -114,10 +114,27 @@ $offers_data = $global_data['offers_page'] ?? [];
                         <label class="form-label fw-bold">عنوان الملاحظات</label>
                         <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($offers_data['note_title'] ?? ''); ?>" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">نص الملاحظة (يدعم أكواد HTML مثل الروابط)</label>
-                        <textarea class="form-control" name="note_text" rows="4" required><?php echo htmlspecialchars($offers_data['note_text'] ?? ''); ?></textarea>
+                    <label class="form-label fw-bold">قائمة الملاحظات (تعديل / إضافة / حذف)</label>
+                    <div id="offersNotesContainer" class="d-flex flex-column gap-2 mb-3">
+                        <?php 
+                        // دعم النظام القديم (نص عادي) أو الجديد (مصفوفة)
+                        $notes_list = $offers_data['notes_list'] ?? [];
+                        if (empty($notes_list) && !empty($offers_data['note_text'])) {
+                            $notes_list = [$offers_data['note_text']];
+                        }
+                        ?>
+                        <?php if (!empty($notes_list)): ?>
+                            <?php foreach ($notes_list as $index => $note): ?>
+                                <div class="input-group note-item" id="offer_note_<?php echo $index; ?>">
+                                    <textarea class="form-control" name="note_texts[]" rows="2" required><?php echo htmlspecialchars($note); ?></textarea>
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeOfferNoteRow('offer_note_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addOfferNoteRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -128,7 +145,7 @@ $offers_data = $global_data['offers_page'] ?? [];
     </div>
 </div>
 
-<!-- 5. Download Cards Modal -->
+<!-- 5. Download Cards Modal (Updated with File Type Selection) -->
 <div class="modal fade custom-modal" id="offersCardsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
@@ -145,15 +162,22 @@ $offers_data = $global_data['offers_page'] ?? [];
                             <?php foreach ($offers_data['download_cards'] as $index => $card): ?>
                                 <div class="p-3 border rounded bg-light position-relative card-item-box" id="offer_card_<?php echo $index; ?>">
                                     <div class="row g-2">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
+                                            <label class="form-label small fw-bold">نوع الملف</label>
+                                            <select class="form-select form-select-sm" name="card_types[]">
+                                                <option value="pdf" <?php echo (strtolower($card['type'] ?? 'pdf') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($card['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
                                             <label class="form-label small fw-bold">عنوان الكرت</label>
                                             <input type="text" class="form-control form-control-sm" name="card_titles[]" value="<?php echo htmlspecialchars($card['title'] ?? ''); ?>" required>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label small fw-bold">مسار ملف الـ PDF</label>
+                                        <div class="col-md-3">
+                                            <label class="form-label small fw-bold">مسار الملف</label>
                                             <input type="text" class="form-control form-control-sm" name="card_files[]" value="<?php echo htmlspecialchars($card['file'] ?? ''); ?>" required>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label class="form-label small fw-bold">الوصف الفرعي</label>
                                             <input type="text" class="form-control form-control-sm" name="card_subs[]" value="<?php echo htmlspecialchars($card['sub'] ?? ''); ?>" required>
                                         </div>
@@ -186,6 +210,27 @@ $offers_data = $global_data['offers_page'] ?? [];
 
 <!-- JavaScript Engine -->
 <script>
+    // حذف صف الملاحظة
+    function removeOfferNoteRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    let noteIndex = <?php echo count($notes_list ?? []); ?>;
+    function addOfferNoteRow() {
+        const container = document.getElementById('offersNotesContainer');
+        const div = document.createElement('div');
+        div.className = 'input-group note-item';
+        div.id = 'offer_note_' + noteIndex;
+        div.innerHTML = `
+            <textarea class="form-control" name="note_texts[]" rows="2" placeholder="اكتب الملاحظة هنا (تدعم HTML)..." required></textarea>
+            <button type="button" class="btn btn-outline-danger" onclick="removeOfferNoteRow('offer_note_${noteIndex}')"><i class="bi bi-trash"></i></button>
+        `;
+        container.appendChild(div);
+        noteIndex++;
+    }
+
+    // حذف صف كرت التحميل
     function removeOfferCardRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -199,15 +244,22 @@ $offers_data = $global_data['offers_page'] ?? [];
         div.id = 'offer_card_' + cardIndex;
         div.innerHTML = `
             <div class="row g-2">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">نوع الملف</label>
+                    <select class="form-select form-select-sm" name="card_types[]">
+                        <option value="pdf" selected>PDF</option>
+                        <option value="word">Word</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label class="form-label small fw-bold">عنوان الكرت</label>
                     <input type="text" class="form-control form-control-sm" name="card_titles[]" placeholder="مثال: البكالوريوس" required>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold">مسار ملف الـ PDF</label>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">مسار الملف</label>
                     <input type="text" class="form-control form-control-sm" name="card_files[]" placeholder="assets/files/..." required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small fw-bold">الوصف الفرعي</label>
                     <input type="text" class="form-control form-control-sm" name="card_subs[]" placeholder="حزمة واتفاقية..." required>
                 </div>

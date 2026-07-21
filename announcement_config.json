@@ -626,5 +626,21 @@
       "file": "assets/files/medical_specialties_list.pdf"
     }
   }
+,
+  "ausbildung_package_page": {
+    "page_breadcrumb": "باقة التدريب المهني",
+    "page_breadcrumb_url": "#",
+    "hero_img": "assets/img/job/servicesimg2.png",
+    "hero_position": "center center",
+    "main_title": "العروض والإتفاقيات/التدريب والتأهيل المهني \"Ausbildung\"",
+    "main_desc": "كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).",
+    "note_text": "جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد بالتواصل معنا.",
+    "download_item": {
+      "type": "pdf",
+      "title": "عرض واتفاقية التدريب والتأهيل المهني",
+      "sub": "Example",
+      "file": "assets/files/ausbildung_agreement.pdf"
+    }
+  }
 
 }

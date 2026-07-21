@@ -48,7 +48,7 @@ $visa_data = $data['visa_requirements_page'] ?? [];
                     <input type="hidden" name="action" value="update_visa_hero">
                     <?php if (!empty($visa_data['hero_img'])): ?>
                         <div class="mb-3 p-2 border rounded bg-light text-center">
-                            <img src="<?php echo $path_prefix . htmlspecialchars($visa_data['hero_img']); ?>" style="max-height: 100px; object-fit: contain;" alt="Hero">
+                            <img src="<?php echo $path_prefix . htmlspecialchars($visa_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
                         </div>
                     <?php endif; ?>
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($visa_data['hero_img'] ?? ''); ?>">

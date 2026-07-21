@@ -1,6 +1,6 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, etc.)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, Offers, etc.)
  */
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
@@ -230,6 +230,43 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
                 'title' => 'خطاب الدافع / التحفيز',
                 'sub'   => 'Example (Word)',
                 'file'  => 'assets/files/motivation_letter.docx'
+            ]
+        ]
+    ],
+
+    // --- صفحة العروض والاتفاقيات (Offers Page) ---
+    'offers_page'            => [
+        'page_breadcrumb'     => 'العروض والاتفاقيات',
+        'page_breadcrumb_url' => '#',
+        'hero_img'            => 'assets/img/education/servicesimg10.png',
+        'hero_position'       => 'center center',
+        'main_title'          => 'العروض والاتفاقيات',
+        'main_desc'           => 'كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).',
+        'note_title'          => 'ملاحظات هامة !!',
+        'notes_list'          => [
+            'جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد <a href="contact.php" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>.'
+        ],
+        'download_cards'      => [
+            [
+                'type'   => 'pdf',
+                'title'  => 'بكالوريوس',
+                'file'   => 'assets/files/BCS-bachelor.pdf',
+                'sub'    => 'حزمة واتفاقية البكالوريوس',
+                'active' => false
+            ],
+            [
+                'type'   => 'pdf',
+                'title'  => 'الماجستير',
+                'file'   => 'assets/files/BCS-master.pdf',
+                'sub'    => 'حزمة واتفاقية الماجستير',
+                'active' => true
+            ],
+            [
+                'type'   => 'pdf',
+                'title'  => 'الدكتوراه',
+                'file'   => 'assets/files/BCS-phd.pdf',
+                'sub'    => 'حزمة واتفاقية الدكتوراه',
+                'active' => false
             ]
         ]
     ]
@@ -1337,6 +1374,73 @@ switch ($action) {
             }
         }
         $data['motivation_page']['download_items'] = $download_items;
+        break;
+
+    // --- صفحة العروض والاتفاقيات (Offers Page) ---
+    case 'update_offers_breadcrumb':
+        if (!isset($data['offers_page'])) { $data['offers_page'] = []; }
+        $data['offers_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
+        $data['offers_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
+        break;
+
+    case 'update_offers_hero':
+        $img_path = handle_upload('hero_img', $upload_path);
+        if (!isset($data['offers_page'])) { $data['offers_page'] = []; }
+        $data['offers_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/education/servicesimg10.png');
+        $data['offers_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
+        break;
+
+    case 'update_offers_main':
+        if (!isset($data['offers_page'])) { $data['offers_page'] = []; }
+        $data['offers_page']['main_title'] = trim($_POST['main_title'] ?? '');
+        $data['offers_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
+        break;
+
+    case 'update_offers_notes':
+        if (!isset($data['offers_page'])) { $data['offers_page'] = []; }
+        $data['offers_page']['note_title'] = trim($_POST['note_title'] ?? 'ملاحظات هامة !!');
+        
+        $raw_notes = $_POST['note_texts'] ?? [];
+        $clean_notes = [];
+        if (is_array($raw_notes)) {
+            foreach ($raw_notes as $note) {
+                $trimmed = trim($note);
+                if (!empty($trimmed)) {
+                    $clean_notes[] = $trimmed;
+                }
+            }
+        }
+        $data['offers_page']['notes_list'] = $clean_notes;
+        break;
+
+    case 'update_offers_cards':
+        if (!isset($data['offers_page'])) { $data['offers_page'] = []; }
+        
+        $types   = $_POST['card_types'] ?? [];
+        $titles  = $_POST['card_titles'] ?? [];
+        $files   = $_POST['card_files'] ?? [];
+        $subs    = $_POST['card_subs'] ?? [];
+        $actives = $_POST['card_actives'] ?? [];
+
+        $download_cards = [];
+        if (is_array($titles)) {
+            foreach ($titles as $index => $title) {
+                $t = trim($title);
+                if (!empty($t)) {
+                    // التحقق مما إذا كان الكرت مفعلاً (يعتمد على معرفة ما إذا كان الـ index موجوداً في مصفوفة الـ checkboxes)
+                    $is_active = isset($actives[$index]) || in_array((string)$index, array_map('strval', array_keys($actives)), true);
+
+                    $download_cards[] = [
+                        'type'   => strtolower($types[$index] ?? 'pdf'),
+                        'title'  => $t,
+                        'file'   => trim($files[$index] ?? '#'),
+                        'sub'    => trim($subs[$index] ?? ''),
+                        'active' => (bool)$is_active
+                    ];
+                }
+            }
+        }
+        $data['offers_page']['download_cards'] = $download_cards;
         break;
 
     default:

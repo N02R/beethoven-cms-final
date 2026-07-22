@@ -40,6 +40,7 @@ $password = $_POST['password'] ?? '';
 
 // 4. قراءة بيانات المشرف الحقيقية من ملف الـ JSON المركزي
 $config_file = __DIR__ . '/../announcement_config.json';
+
 $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
 
 $stored_admin = $global_data['admin_credentials'] ?? null;

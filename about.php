@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -58,7 +74,7 @@ $partners = $data['partners_items'] ?? [];
 
   <!-- 1. about start -->
   <section class="about py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#aboutEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم من نحن">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -77,7 +93,7 @@ $partners = $data['partners_items'] ?? [];
                 <div class="card-body p-0">
                   <div class="title mb-2">
                     <span class="icon-wrap">
-                      <img src="<?php echo $path_prefix . ($ab['vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg') . '?v=' . time(); ?>" alt="رؤية الشركة">
+                      <img src="<?php echo htmlspecialchars($path_prefix . ($ab['vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg') . '?v=' . time()); ?>" alt="رؤية الشركة">
                     </span>
                     <span><?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?></span>
                   </div>
@@ -92,7 +108,7 @@ $partners = $data['partners_items'] ?? [];
                 <div class="card-body p-0">
                   <div class="title mb-2">
                     <span class="icon-wrap">
-                      <img src="<?php echo $path_prefix . ($ab['message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg') . '?v=' . time(); ?>" alt="رسالة الشركة">
+                      <img src="<?php echo htmlspecialchars($path_prefix . ($ab['message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg') . '?v=' . time()); ?>" alt="رسالة الشركة">
                     </span>
                     <span><?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?></span>
                   </div>
@@ -110,9 +126,9 @@ $partners = $data['partners_items'] ?? [];
         <!-- صور القسم -->
         <div class="col-lg-6 order-1 order-lg-2 position-relative">
           <div class="image-stack">
-            <img src="<?php echo $path_prefix . ($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg') . '?v=' . time(); ?>" alt="Main About Image" class="img-fluid main-img">
+            <img src="<?php echo htmlspecialchars($path_prefix . ($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg') . '?v=' . time()); ?>" alt="Main About Image" class="img-fluid main-img">
             <div class="sub-img-wrapper">
-              <img src="<?php echo $path_prefix . ($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png') . '?v=' . time(); ?>" alt="Sub About Image" class="img-fluid sub-img">
+              <img src="<?php echo htmlspecialchars($path_prefix . ($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png') . '?v=' . time()); ?>" alt="Sub About Image" class="img-fluid sub-img">
               <div class="dots-bg"></div>
             </div>
           </div>
@@ -124,7 +140,7 @@ $partners = $data['partners_items'] ?? [];
 
   <!-- 2. services start -->
   <section class="services py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -136,7 +152,7 @@ $partners = $data['partners_items'] ?? [];
         <?php foreach ($services as $service): ?>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none">
-              <div class="card" style="background: url('<?php echo $path_prefix . ($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time(); ?>') no-repeat center/cover;">
+              <div class="card" style="background: url('<?php echo htmlspecialchars($path_prefix . ($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
                 <div class="card-info">
                   <h3><?php echo htmlspecialchars($service['title'] ?? 'اسم الخدمة'); ?></h3>
                   <img src="assets/img/home/Arrow.svg" alt="Arrow">
@@ -152,7 +168,7 @@ $partners = $data['partners_items'] ?? [];
 
   <!-- 3. team start -->
   <section class="team py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#teamEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل فريق العمل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -170,7 +186,7 @@ $partners = $data['partners_items'] ?? [];
               <?php foreach ($team as $member): ?>
                 <div class="swiper-slide">
                   <div class="team-card">
-                    <img src="<?php echo $path_prefix . ($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time(); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
+                    <img src="<?php echo htmlspecialchars($path_prefix . ($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
                     <div class="info">
                       <h5><?php echo htmlspecialchars($member['name'] ?? ''); ?></h5>
                       <p><?php echo htmlspecialchars($member['role'] ?? ''); ?></p>
@@ -194,7 +210,7 @@ $partners = $data['partners_items'] ?? [];
 
   <!-- 4. count start -->
   <section class="count" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#countsEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الإحصائيات">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -206,7 +222,7 @@ $partners = $data['partners_items'] ?? [];
           <div class="col-lg-3 col-md-6">
             <div class="count-card">
               <div class="count-img">
-                <img src="<?php echo $path_prefix . ($c['img'] ?? '') . '?v=' . time(); ?>" alt="icon">
+                <img src="<?php echo htmlspecialchars($path_prefix . ($c['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
               </div>
               <div class="count-info">
                 <span><?php echo htmlspecialchars($c['number'] ?? ''); ?></span>
@@ -222,7 +238,7 @@ $partners = $data['partners_items'] ?? [];
 
   <!-- 5. partenar start -->
   <section class="partenar py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#partnersEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الشركاء">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -234,7 +250,7 @@ $partners = $data['partners_items'] ?? [];
         <?php foreach ($partners as $p): ?>
           <div class="col">
             <div class="partner-item">
-              <img src="<?php echo $path_prefix . ($p['img'] ?? '') . '?v=' . time(); ?>" alt="Partner" class="img-fluid" />
+              <img src="<?php echo htmlspecialchars($path_prefix . ($p['img'] ?? '') . '?v=' . time()); ?>" alt="Partner" class="img-fluid" />
             </div>
           </div>
         <?php endforeach; ?>
@@ -245,7 +261,7 @@ $partners = $data['partners_items'] ?? [];
 
 <?php 
 // 4. استدعاء ملف مودالات صفحة about للأدمن
-if ($is_admin) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_about_modals.php')) { 
     include_once __DIR__ . '/includes/admin_about_modals.php'; 
 }
 

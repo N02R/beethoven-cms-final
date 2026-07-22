@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -47,7 +63,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -55,8 +71,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($check_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($check_data['page_breadcrumb'] ?? 'تحقق من شهاداتك التعليمية'); ?>
@@ -69,7 +85,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -77,7 +93,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo $path_prefix . htmlspecialchars($check_data['hero_img'] ?? 'assets/img/education/servicesimg13.png'); ?>?v=<?php echo time(); ?>'); background-position: center -9rem;">
+        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($check_data['hero_img'] ?? 'assets/img/education/servicesimg13.png')) . '?v=' . time(); ?>'); background-position: center -9rem;">
       </div>
     </div>
   </section>
@@ -89,7 +105,7 @@ include_once $path_prefix . 'includes/header.php';
       
       <!-- 1. قسم العنوان الرئيسي والوصف -->
       <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkMainContentModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -101,7 +117,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 2. قسم الملاحظات الهامة (النجوم) -->
       <div class="advice-stars my-4 pb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -111,7 +127,7 @@ include_once $path_prefix . 'includes/header.php';
         <ul class="star-list">
           <?php foreach (($check_data['notes'] ?? []) as $note): ?>
             <li class="mb-2">
-              <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2"/><?php echo $note; ?></p>
+              <p><img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="" class="ms-2"/><?php echo $note; ?></p>
             </li>
           <?php endforeach; ?>
         </ul>
@@ -119,7 +135,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 3. قسم الروابط والتعليمات والنتيجة النهائية -->
       <div class="links pt-2" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkLinksModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الروابط والفقرات التوضيحية">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -140,7 +156,7 @@ include_once $path_prefix . 'includes/header.php';
         <span class="span-list"><?php echo htmlspecialchars($check_data['condition_1'] ?? ''); ?></span>
         <span class="span-list"><?php echo htmlspecialchars($check_data['condition_2'] ?? ''); ?></span>
         
-        <!-- استخدام echo طباعة مباشرة لدعم وسوم span والتلوين بأمان -->
+        <!-- طباعة مباشرة لدعم وسوم الـ HTML المخصصة والتلوين بأمان -->
         <p class="mt-5"><?php echo $check_data['conclusion_text'] ?? ''; ?></p>
       </div>
 
@@ -150,7 +166,7 @@ include_once $path_prefix . 'includes/header.php';
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_check_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_check_modals.php')) { 
     include_once __DIR__ . '/includes/admin_check_modals.php'; 
 }
 

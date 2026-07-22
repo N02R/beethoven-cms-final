@@ -1,13 +1,16 @@
 <?php
-// 1. بدء الجلسة للوصول إلى البيانات الحالية
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+/**
+ * logout.php - تسجيل الخروج الآمن وتدمير الجلسة والكوكيز
+ */
 
-// 2. إفراغ مصفوفة الجلسة بالكامل
-$_SESSION = array();
+// 1. السماح بالوصول وتضمين التهيئة المركزية (لتشغيل الجلسة الآمنة)
+define('ALLOWED_ACCESS', true);
+require_once __DIR__ . '/api/init.php';
 
-// 3. تدمير ملف تعريف الارتباط الخاص بالجلسة (Session Cookie) في متصفح المستخدم لأمان أعلى
+// 2. تفريغ كافة متغيرات الجلسة
+$_SESSION = [];
+
+// 3. تدمير كوكيز الجلسة من متصفح المستخدم إن وجدت
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -16,9 +19,9 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// 4. تدمير الجلسة نهائياً من السيرفر
+// 4. تدمير الجلسة نهائياً من على الخادم
 session_destroy();
 
-// 5. التوجيه الفوري إلى صفحة تسجيل الدخول الرئيسية للموقع
-header("Location: ../login.php");
-exit();
+// 5. التوجيه الفوري لصفحة تسجيل الدخول مع رسالة نجاح خفيفة
+header("Location: login.php?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+exit;

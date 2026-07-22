@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -87,7 +103,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
 
   <!-- 1. education start -->
   <section class="education py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#eduHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -96,7 +112,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
     <div class="custom-container">
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6">
-          <div class="img-hero" style="background-image: url('<?php echo $path_prefix . ($edu_hero['img'] ?? 'assets/img/education/hero.jpg') . '?v=' . time(); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($edu_hero['img'] ?? 'assets/img/education/hero.jpg') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
         <div class="col-lg-6">
           <div class="education-info pt-2">
@@ -114,7 +130,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
 
   <!-- 2. why study start -->
   <section class="study py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#eduWhyModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل لماذا الدراسة">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -130,7 +146,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
           <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div class="card choose-card h-100">
               <div class="card-body">
-                <a href="#"><img src="<?php echo $path_prefix . ($item['img'] ?? '') . '?v=' . time(); ?>" alt="" /></a>
+                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ($item['img'] ?? '') . '?v=' . time()); ?>" alt="" /></a>
                 <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
               </div>
@@ -144,7 +160,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
 
   <!-- 3. time line start -->
   <section class="timeline-section py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#eduTimelineModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخطوات">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -168,7 +184,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
           ?>
             <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
               <div class="step-img-num"><img src="assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
-              <div class="icon-main"><img src="<?php echo $path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time(); ?>" alt=""></div>
+              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                 <span class="dot <?php echo $dotClass; ?>"></span>
@@ -190,7 +206,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
             </div>
             <div class="m-content">
               <div class="m-header">
-                <div class="m-icon"><img src="<?php echo $path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time(); ?>" alt=""></div>
+                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
               </div>
               <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
@@ -205,7 +221,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
 
   <!-- 4. education services start -->
   <section class="edu-services py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#eduServicesModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل خدمات التعليم">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -223,7 +239,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
           <div class="col">
             <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
               <div class="card service-card text-white border-0 rounded-5"
-                style="background-image: url('<?php echo ($path_prefix ?? '') . htmlspecialchars($item['img'] ?? '') . '?v=' . time(); ?>');">
+                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '') . ($item['img'] ?? '') . '?v=' . time()); ?>');">
                 <div class="card-body d-flex align-items-end justify-content-center">
                   <h6 class="card-title m-0">
                     <?php echo htmlspecialchars($item['title'] ?? ''); ?>
@@ -238,10 +254,9 @@ $edu_services_items = $data['edu_services_items'] ?? [
   </section>
   <!-- education services end -->
 
-
 <?php 
 // 4. استدعاء ملف مودالات التعليم العالي للأدمن
-if ($is_admin && file_exists(__DIR__ . '/includes/admin_edu_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_edu_modals.php')) { 
     include_once __DIR__ . '/includes/admin_edu_modals.php'; 
 }
 

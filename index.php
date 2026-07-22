@@ -1,7 +1,25 @@
 <?php 
+// تطبيق قواعد أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    // ضبط SameSite عبر إعدادات الكوكيز إن لم تكن معرفة مسبقاً
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
+
 include 'includes/header.php'; 
 ?>
 
@@ -12,9 +30,8 @@ include 'includes/header.php';
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
 <!-- hero start -->
-<!-- hero start -->
 <section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
-  <?php if ($is_admin): ?>
+  <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
     </button>
@@ -25,7 +42,7 @@ include 'includes/header.php';
     $hero = $data['hero'] ?? [];
     $hero_bg = !empty($hero['img']) ? $hero['img'] . '?v=' . time() : 'assets/img/home/home1.png';
     ?>
-    <div class="hero-container" style="background: url('<?php echo $hero_bg; ?>') center/cover no-repeat;">
+    <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
       <div class="hero-content">
         <h1><?php echo htmlspecialchars($hero['title'] ?? 'عنوان افتراضي'); ?></h1>
         <p><?php echo htmlspecialchars($hero['desc'] ?? 'وصف افتراضي للقسم'); ?></p>
@@ -36,19 +53,18 @@ include 'includes/header.php';
     </div>
   </div>
 </section>
-
 <!-- hero end -->
 
 <!-- services start -->
 <section class="services py-5" style="position: relative;">
-  <?php if ($is_admin): ?>
+  <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
   <div class="custom-container">
-<h2 class="mb-3 sec-title">
+    <h2 class="mb-3 sec-title">
         <?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>
     </h2>
     
@@ -58,16 +74,14 @@ include 'includes/header.php';
         </p>
     <?php endif; ?>
 
-
     <div class="row g-4">
       <?php 
-      // نستخدم (array) للتحويل الاجباري لمنع الخطأ إذا كانت القيمة فارغة
       $services = $data['services'] ?? []; 
       foreach ($services as $service): 
       ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
           <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('<?php echo ($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time(); ?>') no-repeat center/cover;">
+            <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
                 <img src="assets/img/home/Arrow.svg" alt="Arrow">
@@ -80,9 +94,10 @@ include 'includes/header.php';
   </div>
 </section>
 <!-- services end -->
-  <!-- choose start -->
+
+<!-- choose start -->
 <section class="choose py-5" style="position: relative;">
-  <?php if ($is_admin): ?>
+  <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
         <i class="bi bi-pencil-fill"></i>
     </button>
@@ -100,9 +115,11 @@ include 'includes/header.php';
         <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
           <div class="card choose-card">
             <div class="card-body">
-              <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>"><img src="<?php echo $item['img'] . '?v=' . time(); ?>" alt="icon"></a>
-              <h5 class="card-title"><?php echo htmlspecialchars($item['title']); ?></h5>
-              <p class="card-text"><?php echo htmlspecialchars($item['desc']); ?></p>
+              <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
+                <img src="<?php echo htmlspecialchars(($item['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
+              </a>
+              <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
+              <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
             </div>
           </div>
         </div>
@@ -110,14 +127,11 @@ include 'includes/header.php';
     </div>
   </div>
 </section>
-
-  <!-- choose end -->
+<!-- choose end -->
   
 <!-- review start -->
 <section class="reviews py-5" style="position: relative;">
-    
-    <!-- زر التعديل الموحد -->
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
         <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات">
             <i class="bi bi-pencil-fill"></i>
         </button>
@@ -135,14 +149,13 @@ include 'includes/header.php';
         <div class="reviews-carousel-wrapper">
             <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="rtl">
                 
-                <!-- الفيديوهات الديناميكية -->
                 <div class="carousel-inner">
                     <?php if (!empty($data['reviews_items'])): ?>
                         <?php foreach ($data['reviews_items'] as $index => $item): ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($item['url']); ?>" allowfullscreen></iframe>
+                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" allowfullscreen></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +165,6 @@ include 'includes/header.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- النقاط (Dots) الديناميكية -->
                 <div class="dots mt-4">
                     <?php if (!empty($data['reviews_items'])): ?>
                         <?php foreach ($data['reviews_items'] as $index => $item): ?>
@@ -170,59 +182,57 @@ include 'includes/header.php';
 </section>
 <!-- review end -->
 
-  <!-- ===== GUIDE HOME SECTION START ===== -->
-  <section class="guide py-5" style="position: relative;">
-    <div class="custom-container">
-      <div class="text-center mb-5">
-        <?php 
-            $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
-            $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
-            $guide_items = $data['guide_items'] ?? [];
-        ?>
-        <h2 class="sec-title mb-3"><?php echo htmlspecialchars($guide_title); ?></h2>
-        <p class="main-p mx-auto" style="max-width: 700px;">
-          <?php echo nl2br(htmlspecialchars($guide_desc)); ?>
-        </p>
-      </div>
+<!-- ===== GUIDE HOME SECTION START ===== -->
+<section class="guide py-5" style="position: relative;">
+  <div class="custom-container">
+    <div class="text-center mb-5">
+      <?php 
+          $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
+          $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
+          $guide_items = $data['guide_items'] ?? [];
+      ?>
+      <h2 class="sec-title mb-3"><?php echo htmlspecialchars($guide_title); ?></h2>
+      <p class="main-p mx-auto" style="max-width: 700px;">
+        <?php echo nl2br(htmlspecialchars($guide_desc)); ?>
+      </p>
+    </div>
 
-      <div class="row g-4">
-        <?php if (!empty($guide_items)): ?>
-          <?php 
-            // عرض أول 6 مقالات فقط في الصفحة الرئيسية
-            $home_guide_items = array_slice($guide_items, 0, 6); 
-          ?>
-          <?php foreach ($home_guide_items as $item): ?>
-            <div class="col-lg-4 col-md-6">
-              <div class="card h-100 border-0 shadow-sm">
-                <?php if (!empty($item['img'])): ?>
-                  <div class="card-img-wrapper">
-                    <img src="<?php echo htmlspecialchars($path_prefix . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
-                  </div>
-                <?php endif; ?>
-                <div class="card-body d-flex flex-column">
-                  <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
-                  <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
-                  <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                    قراءة المزيد
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
-                  </a>
+    <div class="row g-4">
+      <?php if (!empty($guide_items)): ?>
+        <?php 
+          $home_guide_items = array_slice($guide_items, 0, 6); 
+        ?>
+        <?php foreach ($home_guide_items as $item): ?>
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+              <?php if (!empty($item['img'])): ?>
+                <div class="card-img-wrapper">
+                  <img src="<?php echo htmlspecialchars(($path_prefix ?? '') . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
                 </div>
+              <?php endif; ?>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
+                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
+                <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
+                  قراءة المزيد
+                  <img src="<?php echo htmlspecialchars(($path_prefix ?? '') . 'assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
+                </a>
               </div>
             </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <div class="col-12 text-center text-muted py-4">
-            <p>لا توجد مقالات مضافة في الدليل حالياً.</p>
           </div>
-        <?php endif; ?>
-      </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد مقالات مضافة في الدليل حالياً.</p>
+        </div>
+      <?php endif; ?>
     </div>
-  </section>
-  <!-- ===== GUIDE HOME SECTION END ===== -->
-
+  </div>
+</section>
+<!-- ===== GUIDE HOME SECTION END ===== -->
 
 <section class="popular py-5" style="position: relative;">
-  <?php if ($is_admin): ?>
+  <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
@@ -233,19 +243,17 @@ include 'includes/header.php';
         <div class="accordion-item">
           <h2 class="accordion-header" id="heading<?php echo $index; ?>">
             <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>">
-              <?php echo htmlspecialchars($item['question']); ?>
+              <?php echo htmlspecialchars($item['question'] ?? ''); ?>
             </button>
           </h2>
           <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-            <div class="accordion-body"><?php echo htmlspecialchars($item['answer']); ?></div>
+            <div class="accordion-body"><?php echo htmlspecialchars($item['answer'] ?? ''); ?></div>
           </div>
         </div>
       <?php endforeach; ?>
     </div>
-    <!-- Form يبقى كما هو -->
   </div>
 </section>
-
 
 <?php 
 include 'includes/footer.php'; 

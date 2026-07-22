@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -39,7 +55,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#bachelorBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -47,8 +63,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($bachelor_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($bachelor_data['page_breadcrumb'] ?? 'BCS Bachelor Package'); ?>
@@ -61,7 +77,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- custom-services-info start-->
   <section class="custom-services-info py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#bachelorContentModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل محتوى الصفحة وحماية كلمة المرور">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -70,7 +86,7 @@ include_once $path_prefix . 'includes/header.php';
     <div class="custom-container text-center">
       <h2 class="pt-5"><?php echo htmlspecialchars($bachelor_data['main_title'] ?? ''); ?></h2>
       
-      <!-- استخدام echo بدلاً من htmlspecialchars لدعم وسوم الـ HTML والـ span بأمان -->
+      <!-- استخدام المتغير المباشر لدعم وسوم الـ HTML والـ span بأمان -->
       <p class="text-center pas-text"><?php echo $bachelor_data['main_desc'] ?? ''; ?></p>
       
       <div class="pas-info mt-5">
@@ -83,7 +99,7 @@ include_once $path_prefix . 'includes/header.php';
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_bachelor_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_bachelor_modals.php')) { 
     include_once __DIR__ . '/includes/admin_bachelor_modals.php'; 
 }
 

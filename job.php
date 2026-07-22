@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -108,7 +124,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
   <!-- 1. job start -->
   <section class="job py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -126,7 +142,7 @@ $job_services_items = $data['job_services_items'] ?? [
           </div>
         </div>
         <div class="col-lg-6">
-          <div class="img-hero" style="background-image: url('<?php echo $path_prefix . ($job_hero['img'] ?? 'assets/img/job/hero.jpg') . '?v=' . time(); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($job_hero['img'] ?? 'assets/img/job/hero.jpg') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
       </div>
     </div>
@@ -135,7 +151,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
   <!-- 2. why study start -->
   <section class="study py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobWhyModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل لماذا التدريب">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -151,7 +167,7 @@ $job_services_items = $data['job_services_items'] ?? [
           <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div class="card choose-card h-100">
               <div class="card-body">
-                <a href="#"><img src="<?php echo $path_prefix . ($item['img'] ?? '') . '?v=' . time(); ?>" alt="" /></a>
+                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ($item['img'] ?? '') . '?v=' . time()); ?>" alt="" /></a>
                 <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
               </div>
@@ -165,7 +181,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
   <!-- 3. program start -->
   <section class="program py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobProgramModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل أنواع التدريب">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -181,7 +197,7 @@ $job_services_items = $data['job_services_items'] ?? [
           <div class="col-md-6">
             <div class="program-info h-100 <?php echo !empty($p['is_dark']) ? 'highlight-box' : ''; ?>">
               <div class="program-content">
-                <img src="<?php echo $path_prefix . ($p['img'] ?? '') . '?v=' . time(); ?>" alt="<?php echo htmlspecialchars($p['title'] ?? ''); ?>" class="mb-3">
+                <img src="<?php echo htmlspecialchars($path_prefix . ($p['img'] ?? '') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($p['title'] ?? ''); ?>" class="mb-3">
                 <h4 class="fw-bold mb-4 <?php echo !empty($p['is_dark']) ? 'text-white' : ''; ?>"><?php echo htmlspecialchars($p['title'] ?? ''); ?></h4>
                 <p class="<?php echo !empty($p['is_dark']) ? 'text-white' : ''; ?>">
                   <?php echo nl2br(htmlspecialchars($p['desc'] ?? '')); ?>
@@ -204,7 +220,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
   <!-- 4. time line start -->
   <section class="timeline-section py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobTimelineModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخطوات">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -228,7 +244,7 @@ $job_services_items = $data['job_services_items'] ?? [
           ?>
             <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
               <div class="step-img-num"><img src="assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
-              <div class="icon-main"><img src="<?php echo $path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time(); ?>" alt=""></div>
+              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                 <span class="dot <?php echo $dotClass; ?>"></span>
@@ -250,7 +266,7 @@ $job_services_items = $data['job_services_items'] ?? [
             </div>
             <div class="m-content">
               <div class="m-header">
-                <div class="m-icon"><img src="<?php echo $path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time(); ?>" alt=""></div>
+                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
               </div>
               <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
@@ -265,7 +281,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
   <!-- 5. education services start -->
   <section class="edu-services py-5" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobServicesModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -275,16 +291,17 @@ $job_services_items = $data['job_services_items'] ?? [
       <h2 class="sec-title mb-3"><?php echo htmlspecialchars($job_services_title); ?></h2>
       <p class="mb-5 main-p"><?php echo htmlspecialchars($job_services_desc); ?></p>
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
-        <?php foreach ($job_services_items as $item): ?>
+        <?php foreach ($job_services_items as $item): 
+            $raw_url = $item['url'] ?? '#';
+            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . $raw_url : $raw_url;
+        ?>
           <div class="col">
-            <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
+            <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
               <div class="card service-card text-white border-0 rounded-5"
-                style="background-image: url('<?php echo $path_prefix . ($item['img'] ?? '') . '?v=' . time(); ?>');">
+                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '') . ($item['img'] ?? '') . '?v=' . time()); ?>');">
                 <div class="card-body d-flex align-items-end justify-content-center">
-                  <h6 class="card-title">
-                    <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
-                      <?php echo htmlspecialchars($item['title'] ?? ''); ?>
-                    </a>
+                  <h6 class="card-title m-0">
+                    <?php echo htmlspecialchars($item['title'] ?? ''); ?>
                   </h6>
                 </div>
               </div>
@@ -298,7 +315,7 @@ $job_services_items = $data['job_services_items'] ?? [
 
 <?php 
 // 6. استدعاء ملف مودالات التوظيف للأدمن
-if ($is_admin && file_exists(__DIR__ . '/includes/admin_job_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_job_modals.php')) { 
     include_once __DIR__ . '/includes/admin_job_modals.php'; 
 }
 

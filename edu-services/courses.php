@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -43,7 +59,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -51,8 +67,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($lang_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($lang_data['page_breadcrumb'] ?? 'الدورة التحضيرية لشهادات اللغة الألمانية'); ?>
@@ -65,7 +81,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -73,7 +89,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo $path_prefix . htmlspecialchars($lang_data['hero_img'] ?? 'assets/img/education/servicesimg12.png'); ?>?v=<?php echo time(); ?>');">
+        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($lang_data['hero_img'] ?? 'assets/img/education/servicesimg12.png')) . '?v=' . time(); ?>');">
       </div>
     </div>
   </section>
@@ -85,7 +101,7 @@ include_once $path_prefix . 'includes/header.php';
       
       <!-- 1. العنوان والوصف الرئيسي (مع قلم تعديل مستقل) -->
       <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -97,7 +113,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 2. أهداف الدورة التحضيرية (مع قلم تعديل مستقل) -->
       <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langGoalsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أهداف الدورة">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -115,7 +131,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 3. ملاحظة شروط القبول (تعديل ضمن محتوى النص التحذيري) -->
       <div class="my-4" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langWarningModal" style="position: absolute; top: -5px; right: 0; z-index: 10;" title="تعديل نص التنبيه والشروط">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -126,7 +142,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 4. أماكن الالتحاق والتكلفة (مع قلم تعديل مستقل) -->
       <div class="advice-list py-4 mt-4" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langCostModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أماكن الالتحاق والتكاليف">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -150,7 +166,7 @@ include_once $path_prefix . 'includes/header.php';
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_language_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_language_modals.php')) { 
     include_once __DIR__ . '/includes/admin_language_modals.php'; 
 }
 

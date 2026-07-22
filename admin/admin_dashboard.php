@@ -1,32 +1,38 @@
 <?php
-// 1. بدء الجلسة بأمان للتحقق من الهوية
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+/**
+ * admin_dashboard.php - لوحة التحكم الرئيسية المؤمّنة
+ */
 
-// 2. جدار حماية صارم: منع أي شخص غير المسؤول من رؤية اللوحة
+// 1. السماح بالوصول وتفعيل الحماية المركزية
+define('ALLOWED_ACCESS', true);
+
+// 2. استدعاء ملف التهيئة المركزي (يقوم بتفعيل الجلسة الآمنة، الكوكيز، والاتصال بقاعدة البيانات عبر init.php)
+require_once __DIR__ . '/api/init.php';
+
+// 3. جدار حماية صارم: التحقق من أن المشرف مسجل دخوله وصلاحيته admin
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
 if (!$is_admin) {
-    header("Location: ../login.php");
+    header("Location: login.php?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
     exit();
 }
 
-// 3. قراءة البيانات الحالية من ملف الـ JSON
-$config_file_path = __DIR__ . '/../announcement_config.json';
+// 4. قراءة البيانات الحالية من ملف الـ JSON (مع تصحيح المسار النسبي بدقة بناءً على وجود الملف في مجلد admin)
+$config_file_path = __DIR__ . '/announcement_config.json';
 $config_data = [];
 if (file_exists($config_file_path)) {
     $config_data = json_decode(file_get_contents($config_file_path), true);
 }
 
 // إعداد القيم الافتراضية والإحصائيات
-$current_logo = $config_data['site_logo_path'] ?? 'assets/img/logo.png';
-$ad_status = $config_data['status'] ?? 'Draft';
-$ad_type = $config_data['type'] ?? 'text';
-$menu_count = isset($config_data['menu_links']) ? count($config_data['menu_links']) : 6;
+$current_logo   = $config_data['site_logo_path'] ?? '../assets/img/logo.png';
+$ad_status      = $config_data['status'] ?? 'Draft';
+$ad_type        = $config_data['type'] ?? 'text';
+$menu_count     = isset($config_data['menu_links']) ? count($config_data['menu_links']) : 6;
 $consult_emails = $config_data['consultation_emails'] ?? [];
-$consult_count = count($consult_emails);
+$consult_count  = count($consult_emails);
 ?>
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>

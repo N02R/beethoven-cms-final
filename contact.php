@@ -1,5 +1,21 @@
 <?php 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -39,7 +55,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
 
   <!-- ===== HERO IMAGE ===== -->
   <section class="contact-hero py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#contactHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -55,7 +71,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
 
   <!-- ===== CONTACT INFO BAR ===== -->
   <section class="contact-info-section py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#contactInfoModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل معلومات التواصل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -67,27 +83,27 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
         <!-- 1. العنوان -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_address_icon ?? 'assets/img/Location.svg')); ?>" alt="Location" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_address_icon ?? 'assets/img/Location.svg') . '?v=' . time()); ?>" alt="Location" />
           </div>
-          <img src="<?php echo $path_prefix; ?>assets/img/contact us/Line 16.png" alt="" />
+          <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_address); ?></a>
         </div>
         
         <!-- 2. البريد الإلكتروني -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_email_icon ?? 'assets/img/Mail.svg')); ?>" alt="Mail" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_email_icon ?? 'assets/img/Mail.svg') . '?v=' . time()); ?>" alt="Mail" />
           </div>
-          <img src="<?php echo $path_prefix; ?>assets/img/contact us/Line 16.png" alt="" />
+          <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_email); ?></a>
         </div>
         
         <!-- 3. الهاتف -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_phone_icon ?? 'assets/img/Call.svg')); ?>" alt="Call" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_phone_icon ?? 'assets/img/Call.svg') . '?v=' . time()); ?>" alt="Call" />
           </div>
-          <img src="<?php echo $path_prefix; ?>assets/img/contact us/Line 16.png" alt="" />
+          <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_phone); ?></a>
         </div>
       </div>
@@ -98,7 +114,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
 
   <!-- ===== WHATSAPP SECTION ===== -->
   <section class="whatsapp-section py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#whatsappSectionModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم الواتساب">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -117,7 +133,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
   </section>
   <!-- ===== WHATSAPP SECTION END ===== -->
 <?php 
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_contact_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_contact_modals.php')) { 
     include_once __DIR__ . '/includes/admin_contact_modals.php'; 
 }
 

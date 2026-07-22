@@ -1,14 +1,32 @@
 <?php
 /**
- * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة (Home, About, Education, Job, Contact, Health Insurance, Living Cost, Motivation, Offers, Price List, etc.)
+ * save_config.php - ملف إدارة وتحديث إعدادات الموقع كاملة مع حماية أمنية كاملة (CSRF & Session Security)
  */
-session_start();
+
+// 1. السماح بالوصول وتضمين التهيئة المركزية (الجلسة الآمنة + الحماية)
+define('ALLOWED_ACCESS', true);
+require_once __DIR__ . '/init.php';
+
+// تعيين رأس الاستجابة ليكون JSON
 header('Content-Type: application/json; charset=UTF-8');
 
-// 1. التحقق من الصلاحيات
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['role'] !== 'admin') {
-    die(json_encode(['success' => false, 'message' => 'Unauthorized Access']));
+// 2. التحقق من أن الطلب تم عبر طريقة POST حصراً
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'طريقة الطلب غير مسموح بها (Method Not Allowed).']);
+    exit;
 }
+
+// 3. التحقق من الصلاحيات وتسجيل الدخول عبر الجلسة الآمنة
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || $_SESSION['role'] !== 'admin') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized Access: يرجى تسجيل الدخول بصلاحيات المسؤول.']);
+    exit;
+}
+
+// 4. التحقق من توكن حماية النماذج (CSRF Token) لضمان أمان الطلب
+$client_csrf_token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+verify_csrf_token($client_csrf_token);
 
 $file = __DIR__ . '/../../announcement_config.json';
 $upload_path = __DIR__ . '/../../assets/img/';
@@ -36,7 +54,7 @@ function format_service_url($raw_url) {
     return ltrim($raw_url, '/');
 }
 
-// 2. قراءة البيانات أو تهيئة مصفوفة افتراضية شاملة لكل الموقع
+// 5. قراءة البيانات أو تهيئة مصفوفة افتراضية شاملة لكل الموقع
 $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     // إعدادات عامة
     'announcement'           => [],
@@ -54,7 +72,6 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
     'choose_title'           => 'ما الذي يميز بيتهوفن سيتي',
     'choose_section_desc'    => '',
     'reviews_items'          => [],
-    'reviews_title'          => 'شاهد ماذا يقول عملاؤنا عنا',
     'guide_items'            => [],
     'guide_title'            => 'دليل بيتهوفن الشامل',
     'guide_desc'             => '',
@@ -279,7 +296,7 @@ $data = file_exists($file) ? json_decode(file_get_contents($file), true) : [
         'hero_img'            => 'assets/img/education/servicesimg15.png',
         'hero_position'       => 'center center',
         'main_title'          => 'قائمة الأسعار العامة',
-        'main_desc'           => 'يسعى فريق عمل بيتهوفن سيتي جاهداً لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.',
+        'main_desc'           => 'يسعى فريق عمل بيتهوفن سيتي جاهدين لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.',
         'download_item'       => [
             'type'  => 'pdf',
             'title' => 'قائمة الأسعار العامة',
@@ -1501,7 +1518,6 @@ switch ($action) {
         $item_title = trim($_POST['item_title'] ?? 'قائمة الأسعار العامة');
         $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
         
-        // معالجة رفع الملف الجديد إن وجد، وإلا الحفاظ على القديم
         $new_file = handle_document_upload('item_file', $files_upload_path);
         $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/general_price_list.pdf');
 
@@ -1511,6 +1527,7 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+
     // --- صفحة باقة التدريب الطبي (Medical Package Page) ---
     case 'update_medical_breadcrumb':
         if (!isset($data['medical_package_page'])) { $data['medical_package_page'] = []; }
@@ -1519,13 +1536,10 @@ switch ($action) {
         break;
 
     case 'update_medical_hero':
-        // بما أن الصورة خاصة بمجلد job، سنحدد مسار الرفع الصحيح
         $job_upload_path = __DIR__ . '/../../assets/img/job/';
         $img_path = handle_upload('hero_img', $job_upload_path);
         
-        // تعديل المسار المخزن في الـ JSON ليتوافق مع مجلد job
         if ($img_path) {
-            // handle_upload ترجع دائماً 'assets/img/' لذا سنحولها لـ 'assets/img/job/'
             $filename = basename($img_path);
             $img_path = 'assets/img/job/' . $filename;
         }
@@ -1553,7 +1567,6 @@ switch ($action) {
         $item_sub   = trim($_POST['item_sub'] ?? 'Example');
         $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
         
-        // استخدام دالة رفع المستندات الموجودة لديك في الملف (handle_document_upload)
         $new_file = handle_document_upload('item_file', $files_upload_path);
         $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/medical_training_agreement.pdf');
 
@@ -1564,6 +1577,7 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+
     // --- صفحة اتفاقيات البحث عن عمل (Job Search Agreements Page) ---
     case 'update_job_agreements_breadcrumb':
         if (!isset($data['job_search_package_page'])) { $data['job_search_package_page'] = []; }
@@ -1613,6 +1627,7 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+
     // --- صفحة التخصصات الطبية (Medical Specialties Page) ---
     case 'update_medical_specialties_breadcrumb':
         if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
@@ -1657,6 +1672,7 @@ switch ($action) {
             'file'  => $final_file
         ];
         break;
+
     // --- صفحة باقة التدريب المهني Ausbildung Page ---
     case 'update_ausbildung_breadcrumb':
         if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
@@ -1708,13 +1724,22 @@ switch ($action) {
         break;
 
     default:
-        die(json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]));
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]);
+        exit;
 }
 
-// حفظ النتيجة النهائية
-if (file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-    echo json_encode(['success' => true, 'message' => 'تم الحفظ بنجاح']);
+// 6. الحفظ الآمن في ملف الـ JSON مع تفعيل قفل الملفات (File Locking) لمنع أي تضارب أو فساد للبيانات
+$file_handle = fopen($file, 'w');
+if ($file_handle) {
+    if (flock($file_handle, LOCK_EX)) {
+        fwrite($file_handle, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        flock($file_handle, LOCK_UN);
+    }
+    fclose($file_handle);
+    echo json_encode(['success' => true, 'message' => 'تم الحفظ وتحديث الإعدادات بنجاح وأمان.']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'خطأ أثناء الكتابة في الملف']);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'خطأ أثناء الكتابة وحفظ الملف على الخادم.']);
 }
-?>
+exit;

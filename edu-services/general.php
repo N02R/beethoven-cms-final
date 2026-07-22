@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -42,7 +58,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -50,8 +66,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($visa_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($visa_data['page_breadcrumb'] ?? 'متطلبات التأشيرة'); ?>
@@ -64,7 +80,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -72,7 +88,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo $path_prefix . htmlspecialchars($visa_data['hero_img'] ?? 'assets/img/education/servicesimg14.png'); ?>?v=<?php echo time(); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($visa_data['hero_img'] ?? 'assets/img/education/servicesimg14.png')) . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -84,7 +100,7 @@ include_once $path_prefix . 'includes/header.php';
       
       <!-- العنوان الرئيسي والوصف -->
       <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -96,7 +112,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- الملاحظات (ديناميكية) -->
       <div class="advice-stars py-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -114,7 +130,7 @@ include_once $path_prefix . 'includes/header.php';
             <?php foreach ($notes_list as $note_text): ?>
               <li class="mb-2">
                 <p class="mb-0">
-                  <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" />
+                  <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
                   <?php echo htmlspecialchars($note_text); ?>
                 </p>
               </li>
@@ -126,7 +142,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
       <div class="py-4" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaDownloadModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -135,19 +151,20 @@ include_once $path_prefix . 'includes/header.php';
         <div class="row">
           <?php if (!empty($visa_data['download_items'])): ?>
             <?php foreach ($visa_data['download_items'] as $item): ?>
+              <?>
               <?php 
                 $file_type = strtolower($item['type'] ?? 'pdf');
-                $icon_img = ($file_type === 'word') ? 'Grouppdf.png' : 'Grouppdf.png'; // يمكنك تخصيص الأيقونة حسب النوع إذا رغبتِ
+                $icon_img = ($file_type === 'word') ? 'Grouppdf.png' : 'Grouppdf.png'; 
               ?>
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card mb-3">
                   <div class="download-row">
-                    <img src="<?php echo $path_prefix; ?>assets/img/education/<?php echo $icon_img; ?>" alt="ملف التحميل" />
+                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/' . $icon_img); ?>" alt="ملف التحميل" />
                     <div class="dl-info">
                       <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                     </div>
                     <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
-                    <a class="download-link" href="<?php echo $path_prefix . htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
+                    <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ($item['file'] ?? '#')); ?>" download>Download</a>
                   </div>
                 </div>
               </div>
@@ -162,7 +179,7 @@ include_once $path_prefix . 'includes/header.php';
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_visa_modals.php')) { 
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_visa_modals.php')) { 
     include_once __DIR__ . '/includes/admin_visa_modals.php'; 
 }
 

@@ -1,7 +1,21 @@
-<?php
-ob_start();
-
+<?php 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -26,7 +40,7 @@ include_once $path_prefix . 'includes/header.php';
   <div class="custom-container pt-5">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
         <li class="breadcrumb-item" aria-current="page">سياسة الخصوصية</li>
       </ol>
     </nav>
@@ -65,7 +79,7 @@ include_once $path_prefix . 'includes/header.php';
           <li><strong>حق التصحيح أو الحذف:</strong> لك الحق في تصحيح أي بيانات غير دقيقة أو طلب حذفها متى ما زال الغرض من الاحتفاظ بها منتفياً.</li>
           <li><strong>حق الاعتراض:</strong> لك الحق في الاعتراض على معالجة بياناتك في حالات محددة.</li>
         </ul>
-        <p>ل ممارسة أي من هذه الحقوق، يُرجى التواصل معنا مباشرة عبر البريد الإلكتروني الرسمي للشركة.</p>
+        <p>لممارسة أي من هذه الحقوق، يُرجى التواصل معنا مباشرة عبر البريد الإلكتروني الرسمي للشركة.</p>
 
         <h4 class="fw-bold text-dark mt-4 mb-3">5. أمان وحماية البيانات</h4>
         <p>نطبق أحدث المعايير التقنية والتنظيمية وأعلى بروتوكولات التشفير (HTTPS / SSL) لضمان حماية بياناتك من الوصول غير المصرح به، أو التعديل، أو الفقدان، أو الإفشاء.</p>

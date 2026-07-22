@@ -1,7 +1,23 @@
 <?php 
 ob_start();
 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
     session_start();
 }
 
@@ -43,7 +59,7 @@ $living_data = $global_data['living_cost_page'] ?? [
 ];
 
 $data['living_cost_page'] = $living_data;
-$is_admin = $is_admin ?? ($_SESSION['is_admin'] ?? false);
+$is_admin = !empty($is_admin) || !empty($_SESSION['is_admin']);
 
 // 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
 $page_css = [
@@ -57,7 +73,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -65,8 +81,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>index.php">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education.php">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($living_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($living_data['page_breadcrumb'] ?? 'تكلفة المعيشة في ألمانيا'); ?>
@@ -79,7 +95,7 @@ include_once $path_prefix . 'includes/header.php';
 
   <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">
-    <?php if (isset($is_admin) && $is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
       </button>
@@ -87,7 +103,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="living-hero custom-hero" 
-           style="background-image: url('<?php echo $path_prefix . htmlspecialchars($living_data['hero_img'] ?? 'assets/img/education/servicesimg8.png'); ?>?v=<?php echo time(); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($living_data['hero_img'] ?? 'assets/img/education/servicesimg8.png')) . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -99,7 +115,7 @@ include_once $path_prefix . 'includes/header.php';
       
       <!-- القسم الرئيسي (العنوان والوصف) -->
       <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -110,7 +126,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 1. نصائح لتقليل النفقات -->
       <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingTipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل نصائح تقليل النفقات">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -135,7 +151,7 @@ include_once $path_prefix . 'includes/header.php';
 
       <!-- 2. ملاحظات هامة -->
       <div class="advice-stars my-5 py-4" style="position: relative;">
-        <?php if (isset($is_admin) && $is_admin): ?>
+        <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
               <i class="bi bi-pencil-fill"></i>
           </button>
@@ -151,7 +167,7 @@ include_once $path_prefix . 'includes/header.php';
           <?php if (!empty($notes_items)): ?>
             <?php foreach ($notes_items as $note): ?>
               <li class="d-flex align-items-start mb-3">
-                <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
                 <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
               </li>
             <?php endforeach; ?>
@@ -165,7 +181,7 @@ include_once $path_prefix . 'includes/header.php';
 
 <?php 
 // 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة إن وجدت
-if (isset($is_admin) && $is_admin && file_exists(__DIR__ . '/includes/admin_living_modals.php')) {
+if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_living_modals.php')) {
     include_once __DIR__ . '/includes/admin_living_modals.php';
 }
 

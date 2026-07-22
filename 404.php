@@ -1,18 +1,43 @@
 <?php 
+// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+    session_start();
+}
+
 if (!defined('ALLOWED_ACCESS')) {
     header("HTTP/1.1 403 Forbidden");
     exit('Access Denied');
 }
-?>
-<?php 
+
+$path_prefix = ''; 
+
 // تعريف ملفات الـ CSS الخاصة بصفحة 404
 $page_css = [
     'assets/css/style.css',
     'assets/css/responsive-index.css'
 ];
 
-// استدعاء الهيدر المشترك
+$page_js = [];
 
+// استدعاء الهيدر المشترك (مع الحفاظ على مسار آمن)
+if (file_exists(__DIR__ . '/includes/header.php')) {
+    include_once __DIR__ . '/includes/header.php';
+}
 ?>
 
 <style>
@@ -185,10 +210,15 @@ $page_css = [
     </p>
 
     <!-- زر الرجوع للرئيسية -->
-    <a href="index.php" class="btn-go-home">العودة الى الرئيسية</a>
+    <a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>" class="btn-go-home">العودة الى الرئيسية</a>
 
   </div>
 </section>
 <!-- ========== /نهاية القسم ========== -->
 
-
+<?php 
+// استدعاء الفوتر المشترك بأمان
+if (file_exists(__DIR__ . '/includes/footer.php')) {
+    include_once __DIR__ . '/includes/footer.php';
+}
+?>

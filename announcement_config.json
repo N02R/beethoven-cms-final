@@ -1,7 +1,7 @@
 {
     "admin_credentials": {
         "username": "Beethoven_city@admin&2026",
-        "password_hash": "ضعي_الرمز_المشفر_الطويل_الذي_نسختيه_هنا"
+        "password_hash": "$2y$12$f7fqiEwSDCpAHS3rcMcTc.qsqV6czasdZwPNegSyQVpILuyO373Sq"
     }
 ,
   "site_logo_path": "assets/img/logo.png",

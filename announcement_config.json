@@ -1,4 +1,9 @@
 {
+    "admin_credentials": {
+        "username": "Beethoven_city@admin&2026",
+        "password_hash": "ضعي_الرمز_المشفر_الطويل_الذي_نسختيه_هنا"
+    }
+,
   "site_logo_path": "assets/img/logo.png",
   "social_links": [
     { "platform": "Facebook", "url": "https://www.facebook.com/BeethovenCityService", "img": "assets/img/socialicons/Facebook.png" },

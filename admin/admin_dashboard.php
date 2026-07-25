@@ -1,6 +1,6 @@
 <?php
 /**
- * admin_dashboard.php - لوحة التحكم الرئيسية المؤمّنة
+ * admin_dashboard.php - لوحة التحكم الرئيسية المؤمّنة (متوافقة مع كافة الصلاحيات)
  */
 
 // 1. السماح بالوصول وتفعيل الحماية المركزية
@@ -9,8 +9,8 @@ define('ALLOWED_ACCESS', true);
 // 2. استدعاء ملف التهيئة المركزي (يقوم بتفعيل الجلسة الآمنة، الكوكيز، والاتصال بقاعدة البيانات عبر init.php)
 require_once __DIR__ . '/api/init.php';
 
-// 3. جدار حماية صارم: التحقق من أن المشرف مسجل دخوله وصلاحيته admin
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+// 3. جدار حماية صارم: السماح للمشرفين بصلاحية 'admin' أو 'super_admin' بالدخول فقط
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
 if (!$is_admin) {
     header("Location: login.php?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
@@ -31,6 +31,9 @@ $ad_type        = $config_data['type'] ?? 'text';
 $menu_count     = isset($config_data['menu_links']) ? count($config_data['menu_links']) : 6;
 $consult_emails = $config_data['consultation_emails'] ?? [];
 $consult_count  = count($consult_emails);
+
+// تحديد المسمى الوظيفي بناءً على صلاحية المشرف الحالي لعرضه بشكل دقيق
+$role_badge_text = ($_SESSION['role'] === 'super_admin') ? 'مشرف عام (Super Admin)' : 'مسؤول النظام (Admin)';
 ?>
 
 <!DOCTYPE html>
@@ -111,11 +114,11 @@ $consult_count  = count($consult_emails);
       <div class="top-navbar d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center p-3 mb-4 rounded-3">
         <div>
           <h1 class="h4 fw-bold mb-0">لوحة التحكم الإدارية</h1>
-          <p class="text-muted small mb-0">مرحباً بك مجدداً، نظرة عامة على أداء ومراسلات المنصة.</p>
+          <p class="text-muted small mb-0">مرحباً بك مجدداً، <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?>. نظرة عامة على أداء ومراسلات المنصة.</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
           <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
-            <i class="bi bi-shield-check ms-1"></i> مسجل كمدير عام (Admin)
+            <i class="bi bi-shield-check ms-1"></i> <?php echo $role_badge_text; ?>
           </span>
         </div>
       </div>
@@ -206,15 +209,15 @@ $consult_count  = count($consult_emails);
                 <?php foreach ($consult_emails as $index => $item): ?>
                   <tr>
                     <td><?php echo $index + 1; ?></td>
-                    <td class="fw-semibold text-primary" dir="ltr" style="text-align: right;"><?php echo htmlspecialchars($item['email']); ?></td>
-                    <td class="text-muted small"><?php echo htmlspecialchars($item['date']); ?></td>
+                    <td class="fw-semibold text-primary" dir="ltr" style="text-align: right;"><?php echo htmlspecialchars($item['email'], ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td class="text-muted small"><?php echo htmlspecialchars($item['date'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
                       <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">
                         <i class="bi bi-check-circle-fill"></i> موافقة موثقة
                       </span>
                     </td>
                     <td>
-                      <a href="mailto:<?php echo htmlspecialchars($item['email']); ?>" class="btn btn-sm btn-outline-primary py-1 px-2">
+                      <a href="mailto:<?php echo htmlspecialchars($item['email'], ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-sm btn-outline-primary py-1 px-2">
                         <i class="bi bi-reply-fill ms-1"></i> مراسلة
                       </a>
                     </td>

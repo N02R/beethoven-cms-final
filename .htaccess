@@ -1,4 +1,5 @@
-<Files "announcement_config.json">
+# منع الوصول المباشر لملفات الـ JSON الحساسة
+<FilesMatch "\.(json)$">
     Order allow,deny
     Deny from all
-</Files>
+</FilesMatch>

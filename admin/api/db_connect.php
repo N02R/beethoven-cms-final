@@ -1,38 +1,32 @@
 <?php
 /**
- * db_connect.php - طبقة الاتصال الآمنة بقاعدة البيانات باستخدام PDO
- * تضمن حماية تامة ضد SQL Injection عبر استخدام Prepared Statements حصرياً.
+ * Beethoven CMS - Secure Database Connection
+ * Production-Ready PDO Configuration
  */
 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
+// بيانات الاتصال (في الشركات الكبرى، توضع غالباً في متغيرات بيئية Environment Variables / .env)
+$host = '127.0.0.1';
+$db   = 'beethoven_cms';
+$user = 'root';      // في السيرفر الحقيقي، لا تستخدم root أبداً، بل مستخدم مخصص بصلاحيات محدودة
+$pass = '';          // ضع كلمة المرور الخاصة بك إن وجدت
+$charset = 'utf8mb4';
 
-// إعدادات الاتصال (يتم جلبها عادة من متغيرات البيئة Environment Variables على السيرفر الأوروبي)
-$host     = '127.0.0.1';
-$db_name  = 'bcs_commercial_cms';
-$username = 'bcs_db_user';
-$password = 'Your_Extremely_Secure_Database_Password_Here';
-$charset  = 'utf8mb4';
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-$dsn = "mysql:host=$host;dbname=$db_name;charset=$charset";
-
-// خيارات الأمان المتقدمة لـ PDO
+// خيارات أمان وعمليات PDO المتقدمة
 $options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // رمي استثناءات عند الأخطاء بدلاً من كشف مسارات النظام
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // جلب البيانات كـ Associative Array نظيفة
-    PDO::ATTR_EMULATE_PREPARES   => false,                  // [مهم جداً للحماية]: إيقاف محاكاة الـ Prepared Statements وإجبار السيرفر على استخدام النظام الحقيقي لنوع البيانات
-    PDO::ATTR_PERSISTENT         => false                   // إيقاف الاتصالات المستمرة لمنع استنزاف موارد السيرفر
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // رمي استثناءات عند حدوث خطأ في الاستعلام
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // جلب البيانات على شكل مصفوفة ترابطية (Associative Array)
+    PDO::ATTR_EMULATE_PREPARES   => false,                  // تعطيل محاكاة السترنج والاستفادة القصوى من Prepared Statements الحقيقية (حماية من SQL Injection)
 ];
 
 try {
-    $pdo = new PDO($dsn, $username, $password, $options);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    // في البيئة الحقيقية (Production)، لا نُظهر تفاصيل خطأ قاعدة البيانات للمستخدم أبداً
+    // في بيئة الإنتاج Production: لا تعرض أبداً رسالة الخطأ التقنية للمستخدم نهائياً لتفادي كشف بنية قاعدة البيانات
+    // قم بتسجيل الخطأ في ملف سجلات السيرفر (Error Log) واعرض رسالة عامة لطيفة
     error_log("Database Connection Error: " . $e->getMessage());
-    header('Content-Type: application/json; charset=utf-8');
+    
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'عذراً، حدث خطأ في الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.']);
-    exit;
+    exit("عذراً، حدث خطأ في الاتصال بالنظام. يرجى المحاولة لاحقاً.");
 }

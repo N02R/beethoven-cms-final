@@ -5,7 +5,8 @@
  */
 
 // استدعاء ملف الاتصال بقاعدة البيانات
-require_once __DIR__ . '/admin/api/db_connect.php';
+require_once __DIR__ . '/api/db_connect.php';
+
 
 // بيانات المشرف الأساسية (يمكنك تغييرها حسب رغبتك)
 $fullName = "Nour Admin";

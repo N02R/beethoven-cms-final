@@ -1,66 +1,40 @@
 <?php
+// منع الوصول المباشر للملف إذا لم يتم تعريف الثابت مسبقاً
+if (!defined('ALLOWED_ACCESS')) {
+    http_response_code(403);
+    exit('Direct access not permitted.');
+}
 
-declare(strict_types=1);
+// منع إعادة تعريف الثابت إذا تم تعريفه في مكان آخر
+if (!defined('ALLOWED_ACCESS')) {
+    define('ALLOWED_ACCESS', true);
+}
 
-// تعريف الثابت المسموح به للوصول لملفات الحماية في مشروعك
-define('ALLOWED_ACCESS', true);
-
-// 1. استدعاء ملفات التهيئة، الحماية، والاتصال
-require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/secure_session.php';
-require_once __DIR__ . '/form_protection.php';
-require_once __DIR__ . '/db_connect.php';
-require_once __DIR__ . '/ImageUploader.php';
-
-use App\Services\ImageUploader;
-
-// ضبط ترويسة الاستجابة لتكون بصيغة JSON حصراً
-header('Content-Type: application/json; charset=utf-8');
-
-try {
-    // التأكد من أن الطلب تم عبر طريقة POST فقط
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
-        exit;
+/**
+ * التحقق من توكن الحماية ضد الهجمات عبر الموقع (CSRF Token)
+ * 
+ * @param string|null $token
+ * @return bool
+ * @throws Exception إذا كان التوكن غير صالح أو غير موجود
+ */
+if (!function_exists('verify_csrf_token')) {
+    function verify_csrf_token(?string $token): bool {
+        // التحقق مما إذا كان الجلسة تحتوي على التوكن ومطابقته للـ token المرسل
+        if (empty($token) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+            throw new InvalidArgumentException('Invalid security token (CSRF verification failed).');
+        }
+        return true;
     }
+}
 
-    // التحقق من رمز حماية الـ CSRF باستخدام الدالة الموجودة في form_protection.php
-    $csrfToken = $_POST['csrf_token'] ?? '';
-    verify_csrf_token($csrfToken);
-
-    // التأكد من وجود ملف مرفق ضمن الطلب
-    if (!isset($_FILES['image'])) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'error' => 'No image file provided.']);
-        exit;
+/**
+ * دالة توليد توكن حماية جديد إذا لزم الأمر
+ */
+if (!function_exists('generate_csrf_token')) {
+    function generate_csrf_token(): string {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
     }
-
-    // تحديد مسار التخزين الآمن (خارج المجلد العام أو في مجلد التخزين المخصص بالمشروع)
-    $uploadDir = dirname(__DIR__, 2) . '/storage/uploads/';
-
-    // تهيئة كلاس الرفع والمعالجة وتنفيذ العملية
-    $uploader = new ImageUploader($uploadDir);
-    $filename = $uploader->upload($_FILES['image'], $pdo);
-
-    // إرجاع استجابة نجاح مهيكلة
-    http_response_code(200);
-    echo json_encode([
-        'success' => true,
-        'message' => 'Image uploaded, validated, and converted to WebP successfully.',
-        'data' => [
-            'filename' => $filename
-        ]
-    ]);
-
-} catch (InvalidArgumentException $e) {
-    // أخطاء التحقق المدخلة أو فشل شروط الأمان
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-} catch (\Exception $e) {
-    // تسجيل الأخطاء النظامية داخلياً وإخفاء التفاصيل عن المستخدم لأسباب أمنية
-    error_log("Image Upload Exception: " . $e->getMessage());
-    
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'An internal server error occurred.']);
 }

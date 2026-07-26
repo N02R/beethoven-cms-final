@@ -141,10 +141,17 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         <div class="modal-content">
             <div class="modal-header"><h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm">
-                    <input type="hidden" name="action" value="update_logo">
-                    <!-- حقل مخفي لتخزين مسار الشعار الجديد بعد الرفع -->
-                    <input type="hidden" name="site_logo_path" id="logoUrlInput" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">
+                <!-- أضفنا id لتمييز الفورم وإرساله بالشكل الصحيح -->
+                <form id="logoEditForm" enctype="multipart/form-data">
+                    <!-- تعديل الإجراء ليتطابق مع الـ API لديكِ -->
+                    <input type="hidden" name="action" value="update_general_settings">
+                    
+                    <!-- حقل الـ CSRF Token مهم جداً لكي لا يعود الـ API بخطأ 400 -->
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
+
+                    <!-- حقول إضافية مطلوبة في الـ API لتجنب فراغ القيم إذا كان الـ API يعتمد عليها -->
+                    <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_title', 'BCS')); ?>">
+                    <input type="hidden" name="site_email" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_email', '')); ?>">
                     
                     <div class="mb-4">
                         <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع (أو المعاينة):</label>
@@ -155,7 +162,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                     
                     <label class="form-label fw-bold text-start w-100 mb-1">رفع شعار جديد:</label>
-                    <input type="file" class="form-control w-100" id="logoFileInput" accept="image/*">
+                    <!-- تم تغيير name إلى site_logo ليتطابق مع ما ينتظره الـ API: $_FILES['site_logo'] -->
+                    <input type="file" class="form-control w-100" name="site_logo" id="logoFileInput" accept="image/*">
                     <div id="logoUploadStatus" class="small text-primary mt-1 text-start" style="display: none;">جاري رفع وتحويل الشعار...</div>
                 </form>
             </div>
@@ -166,6 +174,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 
 <!-- 3. المودل الكامل للإعلان مع الحفاظ على التصميم وكل الحقول -->

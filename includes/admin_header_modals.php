@@ -135,7 +135,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 </div>
 
 
-<!-- 2. Logo Modal -->
+<!-- 2. Logo Modal (تم تحديثه ليتوافق مع الـ API) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -145,17 +145,21 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             </div>
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
+                    <!-- إجراء الـ API المطلوب -->
                     <input type="hidden" name="action" value="update_general_settings">
                     
-                    <!-- 1. إرسال الـ CSRF Token المعتمد في الـ API -->
+                    <!-- 1. إرسال الـ CSRF Token لمنع خطأ 400 -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 
-                    <!-- 2. إرسال القيم الحالية للعنوان والإيميل لكي لا تصل فارغة إلى الـ API ويحدث خطأ -->
+                    <!-- 2. إرسال القيم الحالية للعنوان والإيميل لكي لا تصل فارغة إلى الـ API -->
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_title', 'BCS')); ?>">
                     <input type="hidden" name="site_email" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_email', 'info@example.com')); ?>">
 
+                    <!-- 3. مسار الشعار الجديد المخزن بعد الرفع الفوري عبر ImageUploader -->
+                    <input type="hidden" name="site_logo_path" id="logoUrlInput" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">
+
                     <div class="mb-4">
-                        <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع:</label>
+                        <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع (أو المعاينة):</label>
                         <div class="p-3 bg-light rounded border d-inline-block w-100">
                             <img src="<?php echo $path_prefix . ($site_logo_path ?? '') . '?' . time(); ?>" id="logoPreviewImg" style="max-height: 90px; object-fit: contain;">
                             <div class="small text-muted mt-2 dir-ltr" id="logoPathText"><?php echo htmlspecialchars($site_logo_path ?? ''); ?></div>
@@ -163,7 +167,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     </div>
                     
                     <label class="form-label fw-bold text-start w-100 mb-1">رفع شعار جديد:</label>
-                    <!-- اسم الحقل يجب أن يكون مطابَقاً تماماً لما ينتظره الـ API: $_FILES['site_logo'] -->
+                    <!-- اسم الحقل يجب أن يكون site_logo ليتطابق مع $_FILES['site_logo'] في الـ API -->
                     <input type="file" class="form-control w-100" name="site_logo" id="logoFileInput" accept="image/*">
                     <div id="logoUploadStatus" class="small text-primary mt-1 text-start" style="display: none;">جاري رفع وتحويل الشعار...</div>
                 </form>
@@ -175,6 +179,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 
 <!-- 3. المودل الكامل للإعلان مع الحفاظ على التصميم وكل الحقول -->

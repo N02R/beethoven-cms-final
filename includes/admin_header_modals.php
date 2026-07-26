@@ -87,12 +87,12 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="row_<?php echo $index; ?>">
                             <div class="d-flex align-items-start gap-3">
+                                <!-- صندوق معاينة الأيقونة الحالية -->
                                 <div class="rounded-2 border bg-white d-flex align-items-center justify-content-center p-1" style="width: 50px; height: 50px; flex-shrink: 0;">
-                                    <?php if (!empty($link['img'])): ?>
-                                        <img src="<?php echo $path_prefix . htmlspecialchars($link['img']) . '?' . time(); ?>" style="width: 32px; height: 32px; object-fit: contain;">
-                                    <?php else: ?>
-                                        <i class="bi bi-image text-muted"></i>
-                                    <?php endif; ?>
+                                    <img src="<?php echo !empty($link['img']) ? $path_prefix . htmlspecialchars($link['img']) . '?' . time() : ''; ?>" 
+                                         id="preview_img_<?php echo $index; ?>" 
+                                         style="width: 32px; height: 32px; object-fit: contain; <?php echo empty($link['img']) ? 'display:none;' : ''; ?>">
+                                    <i class="bi bi-image text-muted <?php echo !empty($link['img']) ? 'd-none' : ''; ?>" id="placeholder_icon_<?php echo $index; ?>"></i>
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="row g-2 mb-2">
@@ -108,7 +108,9 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     <div class="row g-2 align-items-center">
                                         <div class="col">
                                             <label class="small text-muted mb-1">تغيير صورة الأيقونة</label>
-                                            <input type="file" class="form-control form-control-sm" name="social_img_<?php echo $index; ?>" accept="image/*">
+                                            <!-- تم ربط حقل الرفع بدالة الرفع الفوري -->
+                                            <input type="file" class="form-control form-control-sm" accept="image/*" onchange="uploadSocialImage(this, <?php echo $index; ?>)">
+                                            <div id="status_<?php echo $index; ?>" class="small text-primary mt-1" style="display: none;">جاري الرفع...</div>
                                         </div>
                                         <div class="col-auto pt-3">
                                             <button type="button" class="btn-icon-trash" onclick="removeRow('row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
@@ -116,7 +118,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? ''); ?>">
+                            <!-- الحقل المخفي الذي سيحمل مسار الصورة النهائي ليتم حفظه في قاعدة البيانات -->
+                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" id="social_img_val_<?php echo $index; ?>" value="<?php echo htmlspecialchars($link['img'] ?? ''); ?>">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -131,23 +134,29 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
     </div>
 </div>
 
+
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header"><h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" enctype="multipart/form-data">
+                <form id="logoEditForm">
                     <input type="hidden" name="action" value="update_logo">
+                    <!-- حقل مخفي لتخزين مسار الشعار الجديد بعد الرفع -->
+                    <input type="hidden" name="site_logo_path" id="logoUrlInput" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">
+                    
                     <div class="mb-4">
-                        <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع:</label>
+                        <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع (أو المعاينة):</label>
                         <div class="p-3 bg-light rounded border d-inline-block w-100">
-                            <img src="<?php echo $path_prefix . ($site_logo_path ?? '') . '?' . time(); ?>" style="max-height: 90px; object-fit: contain;">
-                            <div class="small text-muted mt-2 dir-ltr"><?php echo htmlspecialchars($site_logo_path ?? ''); ?></div>
+                            <img src="<?php echo $path_prefix . ($site_logo_path ?? '') . '?' . time(); ?>" id="logoPreviewImg" style="max-height: 90px; object-fit: contain;">
+                            <div class="small text-muted mt-2 dir-ltr" id="logoPathText"><?php echo htmlspecialchars($site_logo_path ?? ''); ?></div>
                         </div>
                     </div>
+                    
                     <label class="form-label fw-bold text-start w-100 mb-1">رفع شعار جديد:</label>
-                    <input type="file" class="form-control w-100" name="logo_img" accept="image/*" required>
+                    <input type="file" class="form-control w-100" id="logoFileInput" accept="image/*">
+                    <div id="logoUploadStatus" class="small text-primary mt-1 text-start" style="display: none;">جاري رفع وتحويل الشعار...</div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -157,6 +166,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 
 <!-- 3. المودل الكامل للإعلان مع الحفاظ على التصميم وكل الحقول -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
@@ -181,8 +191,10 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     $ad_color = $ad_data['text_color'] ?? '#1e293b';
                     $ad_size = $ad_data['font_size'] ?? '16';
                 ?>
-                <form id="announcementEditForm" enctype="multipart/form-data">
+                <form id="announcementEditForm">
                     <input type="hidden" name="action" value="update_announcement">
+                    <!-- حقل مخفي لتخزين مسار صورة الإعلان النهائية بعد الرفع الفوري -->
+                    <input type="hidden" name="image_path" id="adImageUrl" value="<?php echo htmlspecialchars($ad_img); ?>">
                     
                     <!-- صندوق معاينة الإعلان الحالي -->
                     <div class="card p-3 mb-4 border" style="background: #f8fafc; border-color: var(--border-color);">
@@ -196,9 +208,6 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                                     <p class="mb-1 text-muted small"><strong>النص:</strong> <?php echo htmlspecialchars($ad_text ?: 'لا يوجد نص'); ?></p>
                                 <?php else: ?>
                                     <p class="mb-1 text-muted small"><strong>النوع:</strong> بانر صورة</p>
-                                    <?php if(!empty($ad_img)): ?>
-                                        <img src="<?php echo htmlspecialchars('../../' . $ad_img); ?>" class="thumb-preview mt-1" style="width: 80px; height: 40px;">
-                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                             <div class="text-end small text-muted">
@@ -259,15 +268,14 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                         </div>
 
                         <div id="imageEditor" class="<?php echo ($ad_type == 'image' ? '' : 'd-none'); ?>">
-                            <?php if (!empty($ad_img)): ?>
-                                <label class="small mb-1 fw-bold">بانر الإعلان الحالي:</label>
-                                <div class="mb-2 p-2 border rounded text-center bg-light d-flex align-items-center justify-content-center gap-2">
-                                    <img src="<?php echo htmlspecialchars('../../' . $ad_img); ?>" class="thumb-preview" style="width: 60px; height: 60px;">
-                                    <span class="small text-muted dir-ltr"><?php echo htmlspecialchars($ad_img); ?></span>
-                                </div>
-                            <?php endif; ?>
+                            <label class="small mb-1 fw-bold">بانر الإعلان الحالي (أو المعاينة):</label>
+                            <div class="mb-2 p-2 border rounded text-center bg-light d-flex align-items-center justify-content-center gap-2">
+                                <img src="<?php echo !empty($ad_img) ? htmlspecialchars('../../' . $ad_img) : ''; ?>" id="adImagePreview" class="thumb-preview" style="width: 80px; height: 40px; object-fit: contain; <?php echo empty($ad_img) ? 'display:none;' : ''; ?>">
+                                <span class="small text-muted dir-ltr" id="adImagePathText"><?php echo htmlspecialchars($ad_img); ?></span>
+                            </div>
                             <label class="small mb-1 fw-bold">ارفع صورة جديدة للإعلان:</label>
-                            <input type="file" class="form-control" name="ad_image" accept="image/*">
+                            <input type="file" class="form-control" id="adImageFileInput" accept="image/*">
+                            <div id="adUploadStatus" class="small text-primary mt-1" style="display: none;">جاري رفع صورة الإعلان...</div>
                         </div>
                     </div>
 
@@ -283,6 +291,7 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         </div>
     </div>
 </div>
+
 <!-- 4. مودل إدارة القائمة الرئيسية (Menu Edit Modal) -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -816,6 +825,154 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
 </div>
 
 <script>
+    // ==========================================
+    // 1. إدارة ملفات الرفع الفورية (الإعلان والشعار)
+    // ==========================================
+
+    // دالة رفع صورة الإعلان الفورية
+    const adImageFileInput = document.getElementById('adImageFileInput');
+    if (adImageFileInput) {
+        adImageFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const statusDiv = document.getElementById('adUploadStatus');
+            const previewImg = document.getElementById('adImagePreview');
+            const pathText = document.getElementById('adImagePathText');
+            const urlInput = document.getElementById('adImageUrl');
+
+            if (statusDiv) statusDiv.style.display = 'block';
+
+            fetch('admin/api/ImageUploader.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (statusDiv) statusDiv.style.display = 'none';
+                
+                if (data.success || data.status === 'success' || data.url) {
+                    const imagePath = data.url || data.path;
+                    
+                    if (urlInput) urlInput.value = imagePath;
+                    if (previewImg) {
+                        previewImg.src = imagePath + '?' + new Date().getTime();
+                        previewImg.style.display = 'block';
+                    }
+                    if (pathText) {
+                        pathText.textContent = imagePath;
+                    }
+                } else {
+                    alert('فشل رفع صورة الإعلان: ' + (data.message || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                if (statusDiv) statusDiv.style.display = 'none';
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء الاتصال بالخادم.');
+            });
+        });
+    }
+
+    // دالة رفع شعار الموقع الفورية (Logo Upload)
+    const logoFileInput = document.getElementById('logoFileInput');
+    if (logoFileInput) {
+        logoFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const statusDiv = document.getElementById('logoUploadStatus');
+            const previewImg = document.getElementById('logoPreviewImg');
+            const pathText = document.getElementById('logoPathText');
+            const urlInput = document.getElementById('logoUrlInput');
+
+            if (statusDiv) statusDiv.style.display = 'block';
+
+            fetch('admin/api/ImageUploader.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (statusDiv) statusDiv.style.display = 'none';
+                
+                if (data.success || data.status === 'success' || data.url) {
+                    const imagePath = data.url || data.path;
+                    
+                    if (urlInput) urlInput.value = imagePath;
+                    if (previewImg) {
+                        previewImg.src = imagePath + '?' + new Date().getTime();
+                    }
+                    if (pathText) {
+                        pathText.textContent = imagePath;
+                    }
+                } else {
+                    alert('فشل رفع الشعار: ' + (data.message || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                if (statusDiv) statusDiv.style.display = 'none';
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء الاتصال بالخادم.');
+            });
+        });
+    }
+
+    // دالة رفع صور منصات التواصل الفورية
+    function uploadSocialImage(inputElement, index) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const statusDiv = document.getElementById('status_' + index);
+        const previewImg = document.getElementById('preview_img_' + index);
+        const placeholderIcon = document.getElementById('placeholder_icon_' + index);
+        const hiddenInput = document.getElementById('social_img_val_' + index);
+
+        if (statusDiv) statusDiv.style.display = 'block';
+
+        fetch('admin/api/ImageUploader.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (statusDiv) statusDiv.style.display = 'none';
+            
+            if (data.success || data.status === 'success' || data.url) {
+                const imagePath = data.url || data.path;
+                
+                if (hiddenInput) hiddenInput.value = imagePath;
+                
+                if (previewImg) {
+                    previewImg.src = imagePath + '?' + new Date().getTime();
+                    previewImg.style.display = 'block';
+                }
+                if (placeholderIcon) placeholderIcon.classList.add('d-none');
+            } else {
+                alert('فشل رفع الصورة: ' + (data.message || 'خطأ غير معروف'));
+            }
+        })
+        .catch(error => {
+            if (statusDiv) statusDiv.style.display = 'none';
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء الاتصال بالخادم.');
+        });
+    }
+
+
+    // ==========================================
+    // 2. إدارة الصفوف الديناميكية (Add / Remove Rows)
+    // ==========================================
+
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -835,11 +992,13 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
                     <div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div>
                 </div>
                 <div class="row g-2 align-items-center">
-                    <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}" accept="image/*"></div>
+                    <div class="col"><input type="file" class="form-control form-control-sm" accept="image/*" onchange="uploadSocialImage(this, ${socialCount})"></div>
                     <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div>
                 </div>
+                <div id="status_${socialCount}" class="small text-primary mt-1" style="display: none;">جاري الرفع...</div>
             </div>
-        </div>`;
+        </div>
+        <input type="hidden" name="social[${socialCount}][old_img]" id="social_img_val_${socialCount}" value="">`;
         container.appendChild(div);
         socialCount++;
     }
@@ -982,11 +1141,23 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         col3Count++;
     }
 
+
+    // ==========================================
+    // 3. معالجة إرسال النماذج وتغيير محتوى الإعلانات
+    // ==========================================
+
+    function toggleAdContent(val) { 
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
+        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
+    }
+
+    // معالجة إرسال النماذج بشكل عام
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // إضافة مؤشر تحميل مؤقت على الزر المُستخدم
             const submitBtn = this.querySelector('button[type="submit"]');
             let originalText = '';
             if (submitBtn) {
@@ -1023,12 +1194,5 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
             });
         });
     });
-
-    function toggleAdContent(val) { 
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
-        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
-    }
 </script>
 

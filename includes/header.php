@@ -4,6 +4,22 @@ date_default_timezone_set('Europe/Berlin');
 // 0. تضمين ملف الاتصال بقاعدة البيانات
 require_once __DIR__ . '/db.php'; // تأكد أن ملف الاتصال موجود في نفس المجلد أو قم بتعديل المسار إن لزم
 
+// دالة مساعدة لجلب قيمة إعداد معين من قاعدة البيانات بسرعة
+if (!function_exists('get_setting')) {
+    function get_setting(PDO $pdo, string $key, string $default = ''): string {
+        static $settings = null;
+        if ($settings === null) {
+            try {
+                $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+                $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            } catch (\Exception $e) {
+                $settings = [];
+            }
+        }
+        return $settings[$key] ?? $default;
+    }
+}
+
 // 1. بدء الجلسة بأمان
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -19,7 +35,8 @@ if (!function_exists('isUserAdmin')) {
 $is_admin = isUserAdmin(); 
 
 // 4. تحميل البيانات مباشرة من قاعدة البيانات (MySQL) بدلاً من ملف الـ JSON
-$site_logo_path = 'assets/img/logo.png'; 
+// جلب شعار الموقع باستخدام الدالة المساعدة من جدول site_settings مع الاعتماد على القيمة الافتراضية القديمة
+$site_logo_path = get_setting($pdo, 'site_logo_path', 'assets/img/logo.png'); 
 
 // تهيئة افتراضية للمصفوفة لضمان عمل باقي الصفحات دون أخطاء
 $data = [
@@ -32,13 +49,12 @@ $data = [
 ];
 
 try {
-    // أ. جلب إعدادات الموقع العامة (مثل الشعار)
+    // أ. جلب إعدادات الموقع العامة الأخرى إن وجدت في الجدول
     $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
     while ($row = $stmtSettings->fetch()) {
         if ($row['setting_key'] === 'site_logo_path') {
             $site_logo_path = $row['setting_value'];
         }
-        // يمكن تخزين إعدادات أخرى عامة هنا إذا وجدت
     }
 
     // ب. جلب القائمة الرئيسية من جدول menu_links

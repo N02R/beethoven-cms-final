@@ -1,5 +1,9 @@
 <?php
 date_default_timezone_set('Europe/Berlin'); 
+
+// 0. تضمين ملف الاتصال بقاعدة البيانات
+require_once __DIR__ . '/db.php'; // تأكد أن ملف الاتصال موجود في نفس المجلد أو قم بتعديل المسار إن لزم
+
 // 1. بدء الجلسة بأمان
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
@@ -14,10 +18,10 @@ if (!function_exists('isUserAdmin')) {
 }
 $is_admin = isUserAdmin(); 
 
-// 4. تحميل البيانات (تم تعريف $data هنا لتكون متاحة لكل الصفحات)
+// 4. تحميل البيانات مباشرة من قاعدة البيانات (MySQL) بدلاً من ملف الـ JSON
 $site_logo_path = 'assets/img/logo.png'; 
-$config_file_path = __DIR__ . '/../announcement_config.json';
-// تهيئة افتراضية للمصفوفة لتجنب أي خطأ في الصفحات الأخرى
+
+// تهيئة افتراضية للمصفوفة لضمان عمل باقي الصفحات دون أخطاء
 $data = [
     'announcement' => [], 
     'menu_links' => [], 
@@ -27,14 +31,62 @@ $data = [
     'hero' => []
 ];
 
-if (file_exists($config_file_path)) {
-    $decoded_data = json_decode(file_get_contents($config_file_path), true);
-    if (is_array($decoded_data)) {
-        $data = array_merge($data, $decoded_data);
+try {
+    // أ. جلب إعدادات الموقع العامة (مثل الشعار)
+    $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+    while ($row = $stmtSettings->fetch()) {
+        if ($row['setting_key'] === 'site_logo_path') {
+            $site_logo_path = $row['setting_value'];
+        }
+        // يمكن تخزين إعدادات أخرى عامة هنا إذا وجدت
     }
+
+    // ب. جلب القائمة الرئيسية من جدول menu_links
+    $stmtMenu = $pdo->query("SELECT * FROM menu_links ORDER BY `order` ASC");
+    $db_menu = $stmtMenu->fetchAll();
+    if (!empty($db_menu)) {
+        $data['menu_links'] = $db_menu;
+    }
+
+    // ج. جلب روابط التواصل الاجتماعي من جدول social_links
+    $stmtSocial = $pdo->query("SELECT * FROM social_links");
+    $db_social = $stmtSocial->fetchAll();
+    if (!empty($db_social)) {
+        $data['social_links'] = $db_social;
+    }
+
+    // د. جلب اللغات من جدول languages
+    $stmtLang = $pdo->query("SELECT * FROM languages");
+    $db_lang = $stmtLang->fetchAll();
+    if (!empty($db_lang)) {
+        $data['languages'] = $db_lang;
+    }
+
+    // هـ. جلب تفاصيل الإعلان من جدول announcements (أحدث إعلان نشط أو أول سجل)
+    $stmtAd = $pdo->query("SELECT * FROM announcements ORDER BY id DESC LIMIT 1");
+    $db_ad = $stmtAd->fetch();
+    if ($db_ad) {
+        $data['announcement'] = [
+            'status' => $db_ad['status'] ?? 'Draft',
+            'type' => $db_ad['type'] ?? 'text',
+            'announcement_text' => $db_ad['announcement_text'] ?? '',
+            'image_path' => $db_ad['image_path'] ?? '',
+            'link' => $db_ad['link'] ?? '',
+            'open_new_tab' => $db_ad['open_new_tab'] ?? 0,
+            'start_date' => $db_ad['start_date'] ?? '',
+            'end_date' => $db_ad['end_date'] ?? '',
+            'bg_color' => $db_ad['bg_color'] ?? '#f1f5f9',
+            'text_color' => $db_ad['text_color'] ?? '#1e293b',
+            'font_size' => $db_ad['font_size'] ?? 16
+        ];
+    }
+
+} catch (\PDOException $e) {
+    // في حال حدوث خطأ في الاتصال، يتم الاعتماد على القيم الافتراضية لمنع توقف الموقع
 }
 
-$site_logo_path = $data['site_logo_path'] ?? $site_logo_path;
+// تحديث المتغيرات لتطابق المنطق القديم تماماً
+$data['site_logo_path'] = $site_logo_path;
 $menu_links = $data['menu_links'] ?? [
     ["title" => "الرئيسية", "url" => "index.php", "active" => true],
     ["title" => "عن الشركة", "url" => "about.php", "active" => false],
@@ -43,6 +95,8 @@ $menu_links = $data['menu_links'] ?? [
     ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],
     ["title" => "تواصل معنا", "url" => "contact.php", "active" => false]
 ];
+
+// التأكد من ترتيب القائمة بناءً على حقل order إن وجد
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
 // 5. تجهيز منطق الإعلان الموحد
@@ -90,11 +144,11 @@ $is_visible = ($is_published && $is_in_time);
         
         <!-- اللوجو الرئيسي -->
         <div class="editable-wrapper">
-<?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-<?php endif; ?>
+          <?php if ($is_admin): ?>
+              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
+                  <i class="bi bi-pencil-fill"></i>
+              </button>
+          <?php endif; ?>
 
           <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
             <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
@@ -105,11 +159,11 @@ $is_visible = ($is_published && $is_in_time);
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
             <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
-<?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-<?php endif; ?>
+              <?php if ($is_admin): ?>
+                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
 
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
@@ -126,14 +180,16 @@ $is_visible = ($is_published && $is_in_time);
 
         <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
-<?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-<?php endif; ?>
+          <?php if ($is_admin): ?>
+              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
+                  <i class="bi bi-pencil-fill"></i>
+              </button>
+          <?php endif; ?>
 
           <div class="social-icons d-flex gap-3">
-            <?php foreach (($data['social_links'] ?? []) as $s): ?><a href="<?php echo $s['url']; ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a><?php endforeach; ?>
+            <?php foreach (($data['social_links'] ?? []) as $s): ?>
+                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
+            <?php endforeach; ?>
           </div>
         </div>
       </div>
@@ -152,16 +208,16 @@ $is_visible = ($is_published && $is_in_time);
 
         <!-- Desktop Menu -->
         <div class="collapse navbar-collapse editable-wrapper">
-<?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-<?php endif; ?>
+          <?php if ($is_admin): ?>
+              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
+                  <i class="bi bi-pencil-fill"></i>
+              </button>
+          <?php endif; ?>
 
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo ($link['active'] ?? false) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
+                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
                     <?php echo htmlspecialchars($link['title']); ?>
                   </a>
                 </li>
@@ -174,12 +230,11 @@ $is_visible = ($is_published && $is_in_time);
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
           
           <div class="dropdown editable-wrapper">
-<?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-<?php endif; ?>
-
+              <?php if ($is_admin): ?>
+                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
@@ -188,7 +243,7 @@ $is_visible = ($is_published && $is_in_time);
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php']]) as $lang): ?>
-                      <li><a class="dropdown-item" href="<?php echo $path_prefix . $lang['url']; ?>"><?php echo $lang['name']; ?></a></li>
+                      <li><a class="dropdown-item" href="<?php echo $path_prefix . htmlspecialchars($lang['url']); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>

@@ -15,7 +15,8 @@ $root_path = dirname(__DIR__) . '/'; // تعديل حسب مسار المجلد�
 require_once __DIR__ . '/secure_session.php';
 
 // 4. استدعاء ملف الاتصال بقاعدة البيانات عبر PDO
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../../includes/db.php';
+
 
 // 5. استدعاء مكتبة حماية النماذج وتنقية المدخلات (اختياري حسب الحاجة)
 if (file_exists(__DIR__ . '/form_protection.php')) {

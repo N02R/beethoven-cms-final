@@ -5,7 +5,8 @@
 
 define('ALLOWED_ACCESS', true);
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/db_connect.php'; // التأكد من جلب اتصال قاعدة البيانات $pdo
+require_once __DIR__ . '/../../includes/db.php';
+
 
 // تعيين رأس الاستجابة
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

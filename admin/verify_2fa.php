@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         session_regenerate_id(true);
 
         // التوجيه للوحة التحكم الرئيسية
-        header("Location: dashboard.php");
+        header("Location: admin_dashboard.php");
         exit;
     } else {
         $error_message = 'رمز التحقق الثنائي غير صحيح. يرجى المحاولة مرة أخرى.';

@@ -3,12 +3,9 @@
  * save_settings.php - معالج حفظ الإعدادات مع الحماية الأمنية الكاملة (CSRF + Session Security + PDO)
  */
 
-session_start();
-
-// 1. السماح بالوصول وتضمين أدوات الحماية والاتصال
+// 1. السماح بالوصول وتضمين التهيئة المركزية (الجلسة + الحماية + الاتصال بقاعدة البيانات)
 define('ALLOWED_ACCESS', true);
-require_once 'form_protection.php';
-require_once 'db_connect.php'; // الاتصال الآمن بـ PDO
+require_once __DIR__ . '/init.php';
 
 // تعيين رأس الاستجابة ليكون JSON
 header('Content-Type: application/json; charset=UTF-8');

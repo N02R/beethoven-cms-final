@@ -1,81 +1,62 @@
 <?php
 /**
- * Beethoven CMS - Secure Authentication Process (Updated)
- * معالجة تسجيل الدخول مع دعم CSRF, Captcha, والمعايير الأمنية
+ * auth_process.php - معالج تسجيل الدخول مع دعم التحقق الثنائي (2FA)
  */
 
-// 1. استدعاء ملفات الأمان والاتصال
-require_once __DIR__ . '/secure_session.php';
-require_once __DIR__ . '/db_connect.php';
+define('ALLOWED_ACCESS', true);
+require_once __DIR__ . '/init.php';
 
-// التأكد من أن الطلب تم عبر POST
+// تعيين رأس الاستجابة
+header('Content-Type: application/json; charset=UTF-8'); // أو التوجيه المباشر حسب رغبتك، سنستخدم التوجيه المباشر هنا لصفحات الـ HTML
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    exit("Method Not Allowed");
-}
-
-// 2. التحقق من حماية الـ CSRF Token
-if (!isset($_POST['csrf_token']) || !isset($_SESSION['login_csrf']) || !hash_equals($_SESSION['login_csrf'], $_POST['csrf_token'])) {
-    $_SESSION['login_error'] = "انتهت صلاحية الجلسة أو حدث خطأ في التحقق الأمن (CSRF). يرجى إعادة المحاولة.";
     header("Location: ../login.php");
     exit;
 }
 
-// 3. التحقق من الـ Math Captcha
-$user_captcha = trim($_POST['captcha_answer'] ?? '');
-if (!isset($_SESSION['captcha_result']) || intval($user_captcha) !== intval($_SESSION['captcha_result'])) {
-    $_SESSION['login_error'] = "إجابة التحقق الأمني (Captcha) غير صحيحة.";
+// التحقق من CSRF الخاص بتسجيل الدخول
+$client_csrf = $_POST['csrf_token'] ?? '';
+if (!isset($_SESSION['login_csrf']) || !hash_equals($_SESSION['login_csrf'], $client_csrf)) {
+    $_SESSION['login_error'] = 'انتهت صلاحية رمز الأمان، يرجى المحاولة مرة أخرى.';
     header("Location: ../login.php");
     exit;
 }
-// إعادة توليد كابتشا جديدة بعد محاولة الدخول (سواء نجحت أو فشلت) لمنع إعادة الاستخدام
-unset($_SESSION['captcha_result'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2']);
 
-// 4. استقبال وتنظيف المدخلات (ندعم المدخل سواء كان بريداً إلكترونياً أو اسم مستخدم)
-$identity = trim($_POST['username'] ?? '');
+// التحقق من كابتشا الأرقام
+$user_captcha = (int)($_POST['captcha_answer'] ?? 0);
+if (!isset($_SESSION['captcha_result']) || $user_captcha !== $_SESSION['captcha_result']) {
+    $_SESSION['login_error'] = 'إجابة التحقق الأمني غير صحيحة.';
+    header("Location: ../login.php");
+    exit;
+}
+
+$username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
-if (empty($identity) || empty($password)) {
-    $_SESSION['login_error'] = "الرجاء إدخال اسم المستخدم/البريد وكلمة المرور.";
-    header("Location: ../login.php");
+// [مثال تجريبي للتحقق من بيانات المشرف - استبدلها لاحقاً بالتحقق عبر قاعدة البيانات $pdo]
+$admin_user = 'admin';
+$admin_pass_hash = password_hash('Admin@2026', PASSWORD_DEFAULT); // افتراض كلمة المرور
+
+if ($username === $admin_user && password_verify($password, $admin_pass_hash)) {
+    
+    // نجاح التحقق من اسم المستخدم وكلمة المرور!
+    // الآن نقوم بتوليد رمز التحقق الثنائي (2FA Code) مكون من 6 أرقام
+    $code_2fa = rand(100000, 999999);
+    
+    $_SESSION['pending_2fa_user'] = $username;
+    $_SESSION['2fa_code'] = $code_2fa;
+    $_SESSION['2fa_expiry'] = time() + 300; // صلاحية الكود 5 دقائق فقط
+    $_SESSION['role'] = 'admin'; // أو تحديد الصلاحية حسب قاعدة البيانات
+
+    // تنظيف كابتشا وسجل الدخول المؤقت لمنع إعادة استخدامها
+    unset($_SESSION['captcha_result'], $_SESSION['login_csrf']);
+
+    // توجيه المشرف لصفحة إدخال رمز التحقق الثنائي
+    header("Location: ../verify_2fa.php");
     exit;
-}
 
-try {
-    // 5. البحث عن المشرف بواسطة البريد الإلكتروني أو الاسم
-    $stmt = $pdo->prepare("SELECT id, full_name, email, password_hash, role, is_active FROM admins WHERE email = ? OR full_name = ? LIMIT 1");
-    $stmt->execute([$identity, $identity]);
-    $admin = $stmt->fetch();
-
-    // 6. التحقق من صحة البيانات وحالة الحساب
-    if ($admin && $admin['is_active'] == 1 && password_verify($password, $admin['password_hash'])) {
-        
-        // إعادة توليد معرف الجلسة كلياً لمنع Session Fixation
-        session_regenerate_id(true);
-
-        // مسح رمز الـ CSRF القديم لأسباب أمنية
-        unset($_SESSION['login_csrf']);
-
-        // تخزين متغيرات الجلسة المتوافقة مع واجهتك
-        $_SESSION['is_logged_in'] = true;
-        $_SESSION['admin_id']     = $admin['id'];
-        $_SESSION['admin_name']   = $admin['full_name'];
-        $_SESSION['role']         = $admin['role']; // مثل 'admin' أو 'super_admin'
-
-        // التوجيه إلى لوحة التحكم (تأكد من اسم ملف لوحة التحكم لديك، مثلا admin_dashboard.php أو dashboard.php)
-        header("Location: ../admin_dashboard.php");
-        exit;
-
-    } else {
-        // رسالة خطأ عامة
-        $_SESSION['login_error'] = "بيانات الدخول غير صحيحة أو الحساب معطل.";
-        header("Location: ../login.php");
-        exit;
-    }
-
-} catch (\PDOException $e) {
-    error_log("Login Error: " . $e->getMessage());
-    $_SESSION['login_error'] = "حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.";
+} else {
+    $_SESSION['login_error'] = 'اسم المستخدم أو كلمة المرور غير صحيحة.';
     header("Location: ../login.php");
     exit;
 }

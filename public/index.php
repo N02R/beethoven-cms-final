@@ -45,6 +45,7 @@ use App\Controllers\Services\CoursesController;
 use App\Controllers\Services\CoverLetterController;
 use App\Controllers\Services\CvController;
 use App\Controllers\Services\EnglishLangController;
+use App\Controllers\Services\FinancialController;
 
 $router = new Router();
 
@@ -64,6 +65,7 @@ $router->add('GET', 'edu-services/courses', [CoursesController::class, 'index'])
 $router->add('GET', 'edu-services/coverletter', [CoverLetterController::class, 'index']);
 $router->add('GET', 'edu-services/cv', [CvController::class, 'index']);
 $router->add('GET', 'edu-services/englishlang', [EnglishLangController::class, 'index']);
+$router->add('GET', 'edu-services/financial', [FinancialController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

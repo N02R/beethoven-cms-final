@@ -1,26 +1,40 @@
-<?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
-?>
-<?php 
-// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي (بما أن الملف داخل مجلد فرعي)
-$path_prefix = '../'; 
+<?php
+// تأمين المتغيرات الافتراضية
+$path_prefix = '/';
 
-// 2. تمرير ملفات الـ CSS الخاصة بالصفحة ديناميكياً ليتم حقنها داخل الهيدر المشترك
-$page_css = [
-    'assets/css/education.css',
-    'edu-services/css/edu-services.css'
+$guide_blog3_data = $data['guide_blog3_page'] ?? [
+    'hero_img'           => 'assets/img/guide/image.jpg',
+    'hero_position'      => 'center center',
+    'main_title'         => 'معالجة طلبات العملاء في بيتهوفن سيتي للخدمات (BCS)',
+    'main_desc'          => 'في عالم الهجرة والدراسة والعمل في ألمانيا، لا يكفي تقديم معلومات عامة، بل تحتاج إلى من يرافقك خطوة بخطوة حتى تصل إلى هدفك بثقة وسلاسة. في بيتهوفن سيتي للخدمات (BCS)، نعالج طلبات العملاء بأسلوب احترافي ومنظّم، يضمن لك متابعة طلبك في كل مرحلة، وتسهيل رحلتك من لحظة تواصلك معنا وحتى وصولك إلى ألمانيا.',
+    'diff_title'         => 'الذي يجعل معالجة طلبات العملاء لدينا مختلفة',
+    'diff_1_bold'        => 'وضوح الخطوات: ',
+    'diff_1_text'        => 'نخبرك دائمًا بما يلي بعد كل مرحلة.',
+    'diff_2_bold'        => 'التواصل المستمر: ',
+    'diff_2_text'        => 'فريقنا معك للإجابة على استفساراتك عبر الواتساب والبريد الإلكتروني.',
+    'diff_3_bold'        => 'أسعار تنافسية وشفافية: ',
+    'diff_3_text'        => 'خدماتنا بأسعار مناسبة، ونشرح لك كل رسوم المعاهد والخدمات مقدمًا.',
+    'diff_4_bold'        => 'خبرة: ',
+    'diff_4_text'        => 'نعرف متطلبات المعاهد الألمانية والقنصليات جيدًا',
+    'timeline_title'     => 'مراحل معالجة طلبك لدينا',
+    'timeline_subtitle'  => 'في بيتهوفن سيتي للخدمات، نقسم معالجة طلبك إلى خطوات واضحة:',
+    'contact_title'      => 'جاهز لبدء رحلتك?',
+    'contact_text_prefix'=> 'احجز استشارتك المجانية الآن مع فريق BCS وابدأ خطواتك نحو ألمانيا بثقة: ',
+    'contact_link_text'  => 'تواصل معنا',
+    'contact_url'        => 'contact'
 ];
-
-
 ?>
 
   <!-- custom-guide start-->
-  <section class="custom-services custom-guide py-5">
+  <section class="custom-services custom-guide py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog3HeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/guide/image.jpg');">
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($guide_blog3_data['hero_img'] ?? 'assets/img/guide/image.jpg', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($guide_blog3_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -29,32 +43,43 @@ $page_css = [
   <!-- custom-services-info start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
-      <div class="head-info">
-        <h2 class="main-text">معالجة طلبات العملاء في بيتهوفن سيتي للخدمات (BCS)</h2>
+      <div class="head-info" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog3MainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($guide_blog3_data['main_title'] ?? ''); ?></h2>
         <p class="par-text">
-          في عالم الهجرة والدراسة والعمل في ألمانيا، لا يكفي تقديم معلومات عامة، بل تحتاج إلى من يرافقك خطوة بخطوة حتى
-          تصل إلى هدفك بثقة وسلاسة. في بيتهوفن سيتي للخدمات (BCS)، نعالج طلبات العملاء بأسلوب احترافي ومنظّم، يضمن لك
-          متابعة طلبك في كل مرحلة، وتسهيل رحلتك من لحظة تواصلك معنا وحتى وصولك إلى ألمانيا.
+          <?php echo nl2br(htmlspecialchars($guide_blog3_data['main_desc'] ?? '')); ?>
         </p>
       </div>
-      <div class="advice-stars">
-        <h5 class="mb-4 advice-text">الذي يجعل معالجة طلبات العملاء لدينا مختلفة</h5>
+
+      <div class="advice-stars" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog3DiffModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل مميزات المعالجة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 advice-text"><?php echo htmlspecialchars($guide_blog3_data['diff_title'] ?? ''); ?></h5>
         <ul class="star-list">
           <li>
-            <p><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold">وضوح الخطوات: </span>
-              نخبرك دائمًا بما يلي بعد كل مرحلة.</p>
+            <p><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_1_bold'] ?? ''); ?></span>
+              <?php echo htmlspecialchars($guide_blog3_data['diff_1_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold">التواصل المستمر:</span>
-               فريقنا معك للإجابة على استفساراتك عبر الواتساب والبريد الإلكتروني.</p>
+            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_2_bold'] ?? ''); ?></span>
+               <?php echo htmlspecialchars($guide_blog3_data['diff_2_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"> أسعار تنافسية وشفافية:</span>
-              خدماتنا بأسعار مناسبة، ونشرح لك كل رسوم المعاهد والخدمات مقدمًا.</p>
+            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_3_bold'] ?? ''); ?></span>
+              <?php echo htmlspecialchars($guide_blog3_data['diff_3_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"> خبرة:</span>
-              نعرف متطلبات المعاهد الألمانية والقنصليات جيدًا</p>
+            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_4_bold'] ?? ''); ?></span>
+              <?php echo htmlspecialchars($guide_blog3_data['diff_4_text'] ?? ''); ?></p>
           </li>
         </ul>
       </div>
@@ -66,8 +91,8 @@ $page_css = [
   <section class="timeline-section py-5">
     <div class="custom-container">
       <div class="mb-5">
-        <h2 class="sec-title">مراحل معالجة طلبك لدينا</h2>
-        <p class="main-p">في بيتهوفن سيتي للخدمات، نقسم معالجة طلبك إلى خطوات واضحة:</p>
+        <h2 class="sec-title"><?php echo htmlspecialchars($guide_blog3_data['timeline_title'] ?? ''); ?></h2>
+        <p class="main-p"><?php echo htmlspecialchars($guide_blog3_data['timeline_subtitle'] ?? ''); ?></p>
       </div>
       <div class="mobile-timeline">
 
@@ -127,16 +152,23 @@ $page_css = [
   <!-- time line end -->
 
   <!-- contact-guide start -->
-  <section class="contact-guide py-5">
+  <section class="contact-guide py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog3ContactModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم التواصل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <div class="head-info">
-        <h2 class="main-text">جاهز لبدء رحلتك?</h2>
+        <h2 class="main-text"><?php echo htmlspecialchars($guide_blog3_data['contact_title'] ?? ''); ?></h2>
         <p class="par-text">
-          احجز استشارتك المجانية الآن مع فريق BCS وابدأ خطواتك نحو ألمانيا بثقة: <span style="color: #66aaee;" class="fw-bold">تواصل معنا</span>
+          <?php echo htmlspecialchars($guide_blog3_data['contact_text_prefix'] ?? ''); ?>
+          <a href="<?php echo htmlspecialchars($path_prefix . ltrim($guide_blog3_data['contact_url'] ?? 'contact', '/')); ?>" style="color: #66aaee;" class="fw-bold">
+            <?php echo htmlspecialchars($guide_blog3_data['contact_link_text'] ?? 'تواصل معنا'); ?>
+          </a>
         </p>
       </div>
     </div>
   </section>
   <!-- contact-guide end -->
-
-

@@ -6,20 +6,58 @@ namespace App\Controllers;
 class EducationController {
     
     public function index(string $lang = 'de'): void {
-        // يمكنكِ لاحقاً جلب البيانات من القاعدة أو ملفات الكونفجريشن بحسب اللغة ($lang)
-        $data = []; 
+        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+
+        if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_httponly', '1');
+            ini_set('session.use_strict_mode', '1');
+            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+                ini_set('session.cookie_secure', '1');
+            }
+            session_start();
+        }
+
+        $root_path = realpath(__DIR__ . '/../../');
+        $config_file = $root_path . '/announcement_config.json';
+        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
         
-        // المتغيرات الخاصة بلوحة التحكم (يمكن ربطها بنظام الجلسات لاحقاً)
-        $is_admin = $_SESSION['is_admin'] ?? false;
+        $data = $global_data;
+        $is_admin = !empty($_SESSION['is_admin']);
+        $path_prefix = '/';
 
-        // تحديد مسار الـ View الخاص بصفحة التعليم العالي
-        $viewFile = __DIR__ . '/../Views/education.php';
+        // تعريف ملفات الـ CSS والـ JS الخاصة بصفحة التعليم العالي
+        $page_css = [
+            '/assets/css/education.css',
+            '/assets/css/responsive-education.css'
+        ]; 
 
-        if (file_exists($viewFile)) {
-            require_once $viewFile;
+        $page_js = [];
+        $custom_script = '';
+
+        // 1. استدعاء الهيدر المشترك
+        $header_file = $root_path . '/includes/header.php';
+        if (file_exists($header_file)) {
+            include_once $header_file;
+        }
+
+        // 2. استدعاء الـ View الخاص بـ Education
+        $view_file = __DIR__ . '/../Views/education.php';
+        if (file_exists($view_file)) {
+            require_once $view_file;
         } else {
-            http_response_code(404);
-            echo "<h1>404 - View Not Found</h1>";
+            echo "<div class='container py-5 text-center'><h3>Education View file not found.</h3></div>";
+        }
+
+        // 3. استدعاء مودالات الأدمن الخاصة بصفحة التعليم العالي إن وجدت
+        $admin_modals = $root_path . '/includes/admin_edu_modals.php';
+        if (!empty($is_admin) && file_exists($admin_modals)) {
+            include_once $admin_modals;
+        }
+
+        // 4. استدعاء الفوتر المشترك
+        $footer_file = $root_path . '/includes/footer.php';
+        if (file_exists($footer_file)) {
+            include_once $footer_file;
         }
     }
 }

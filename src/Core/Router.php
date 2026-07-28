@@ -7,7 +7,8 @@ class Router {
     private array $routes = [];
 
     public function add(string $method, string $path, array $controllerAction): void {
-        $this->routes[strtoupper($method)][trim($path, '/')] = $controllerAction;
+        $path = trim($path, '/');
+        $this->routes[strtoupper($method)][$path] = $controllerAction;
     }
 
     public function dispatch(string $uri, string $method): void {
@@ -19,7 +20,7 @@ class Router {
         $segments = explode('/', $uri);
         $lang = 'de'; // اللغة الافتراضية للشركة الألمانية
         
-        if (in_array($segments[0], ['de', 'en', 'ar'], true)) {
+        if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
             $lang = array_shift($segments);
             $uri = implode('/', $segments);
         }

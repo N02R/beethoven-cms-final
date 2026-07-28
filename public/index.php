@@ -33,7 +33,7 @@ require_once __DIR__ . '/../src/Core/Router.php';
 use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\ServiceController;
-use App\Controllers\AboutController; // <-- أضفنا استدعاء AboutController هنا
+use App\Controllers\AboutController;
 
 $router = new Router();
 
@@ -43,8 +43,12 @@ $router->add('GET', 'home', [HomeController::class, 'index']);      // لمسا�
 $router->add('GET', 'about', [AboutController::class, 'index']);    // لمسار صفحة من نحن
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 
-
+// معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
+if ($uri === '/' ) {
+    $uri = '';
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 $router->dispatch($uri, $method);

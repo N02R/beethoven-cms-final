@@ -1,44 +1,7 @@
-<?php 
-ob_start();
+<?php
+// تأمين المتغيرات الافتراضية إن لم تكن معرفة
+$path_prefix = '/';
 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-$path_prefix = ''; 
-
-// 1. تعريف ملفات الـ CSS والـ JS الخاصة بصفحة التدريب المهني
-$page_css = [
-    'assets/css/education.css', 
-    'assets/css/responsive-education.css'
-];
-
-$page_js = [];
-
-// 2. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// 3. تجهيز متغيرات بيانات "التدريب المهني والتوظيف" من $data مع القيم الافتراضية (Fallbacks)
 $job_hero = $data['job_hero'] ?? [
     'title'    => 'ابدأ طريقك المهني في ألمانيا - تدريب عملي حقيقي، خبرة معترف بها، وفرص عمل تليق بطموحك!',
     'desc'     => 'نساعدك على ربط تعليمك الأكاديمي بالحياة العملية في ألمانيا من خلال برامج تدريب احترافية، بشراكة مع شركات ألمانية حقيقية. فرصة ذهبية لاكتساب خبرة أوروبية تُعزز سيرتك الذاتية وتفتح لك أبواب سوق العمل الدولي',
@@ -96,7 +59,6 @@ $job_timeline_steps = $data['job_timeline_steps'] ?? [
     ['title' => 'المرافقة خلال التدريب', 'subtitle' => 'متابعة مستمرة حتى إنهاء التدريب بنجاح', 'desc' => 'متابعة مستمرة حتى نهاية البرنامج وإصدار شهادة رسمية.', 'order' => 5, 'icon' => 'assets/img/vector/Grouptime6.png']
 ];
 
-// فرز مصفوفة الـ timeline بحسب حقل order
 usort($job_timeline_steps, function($a, $b) {
     return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
 });
@@ -142,7 +104,7 @@ $job_services_items = $data['job_services_items'] ?? [
           </div>
         </div>
         <div class="col-lg-6">
-          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($job_hero['img'] ?? 'assets/img/job/hero.jpg') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($job_hero['img'] ?? 'assets/img/job/hero.jpg', '/') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
       </div>
     </div>
@@ -167,7 +129,7 @@ $job_services_items = $data['job_services_items'] ?? [
           <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div class="card choose-card h-100">
               <div class="card-body">
-                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ($item['img'] ?? '') . '?v=' . time()); ?>" alt="" /></a>
+                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>" alt="" /></a>
                 <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
               </div>
@@ -197,7 +159,7 @@ $job_services_items = $data['job_services_items'] ?? [
           <div class="col-md-6">
             <div class="program-info h-100 <?php echo !empty($p['is_dark']) ? 'highlight-box' : ''; ?>">
               <div class="program-content">
-                <img src="<?php echo htmlspecialchars($path_prefix . ($p['img'] ?? '') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($p['title'] ?? ''); ?>" class="mb-3">
+                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($p['img'] ?? '', '/') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($p['title'] ?? ''); ?>" class="mb-3">
                 <h4 class="fw-bold mb-4 <?php echo !empty($p['is_dark']) ? 'text-white' : ''; ?>"><?php echo htmlspecialchars($p['title'] ?? ''); ?></h4>
                 <p class="<?php echo !empty($p['is_dark']) ? 'text-white' : ''; ?>">
                   <?php echo nl2br(htmlspecialchars($p['desc'] ?? '')); ?>
@@ -207,7 +169,7 @@ $job_services_items = $data['job_services_items'] ?? [
               <a href="<?php echo htmlspecialchars($p['btn_url'] ?? '#'); ?>" class="btn-info-wrapper mt-4 <?php echo !empty($p['is_dark']) ? 'is-light' : ''; ?>">
                 <h3 class="mb-0"><?php echo htmlspecialchars($p['btn_text'] ?? 'اطلب الآن'); ?></h3>
                 <div class="arrow-icon">
-                  <img src="assets/img/home/Arrow.svg" alt="سهم">
+                  <img src="<?php echo $path_prefix; ?>assets/img/home/Arrow.svg" alt="سهم">
                 </div>
               </a>
             </div>
@@ -233,8 +195,8 @@ $job_services_items = $data['job_services_items'] ?? [
       </div>
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
-          <img src="assets/img/vector/Vector.png" alt="base" class="line-base">
-          <img src="assets/img/vector/Vector-1.png" alt="active" class="line-active">
+          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector.png" alt="base" class="line-base">
+          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
           
           <?php 
           $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
@@ -243,8 +205,8 @@ $job_services_items = $data['job_services_items'] ?? [
               $dotClass = $dots[$idx % count($dots)];
           ?>
             <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
-              <div class="step-img-num"><img src="assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
-              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
+              <div class="step-img-num"><img src="<?php echo $path_prefix; ?>assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
+              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png", '/') . '?v=' . time()); ?>" alt=""></div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                 <span class="dot <?php echo $dotClass; ?>"></span>
@@ -266,7 +228,7 @@ $job_services_items = $data['job_services_items'] ?? [
             </div>
             <div class="m-content">
               <div class="m-header">
-                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
+                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png", '/') . '?v=' . time()); ?>" alt=""></div>
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
               </div>
               <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
@@ -293,12 +255,12 @@ $job_services_items = $data['job_services_items'] ?? [
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php foreach ($job_services_items as $item): 
             $raw_url = $item['url'] ?? '#';
-            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . $raw_url : $raw_url;
+            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '/') . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col">
             <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
               <div class="card service-card text-white border-0 rounded-5"
-                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '') . ($item['img'] ?? '') . '?v=' . time()); ?>');">
+                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>');">
                 <div class="card-body d-flex align-items-end justify-content-center">
                   <h6 class="card-title m-0">
                     <?php echo htmlspecialchars($item['title'] ?? ''); ?>
@@ -312,13 +274,3 @@ $job_services_items = $data['job_services_items'] ?? [
     </div>
   </section>
   <!-- education services end -->
-
-<?php 
-// 6. استدعاء ملف مودالات التوظيف للأدمن
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_job_modals.php')) { 
-    include_once __DIR__ . '/includes/admin_job_modals.php'; 
-}
-
-// 7. استدعاء الفوتر الأساسي
-include_once 'includes/footer.php'; 
-?>

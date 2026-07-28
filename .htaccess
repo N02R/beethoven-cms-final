@@ -1,12 +1,10 @@
 <IfModule mod_rewrite.h>
     RewriteEngine On
     
-    # فرض استخدام HTTPS وحذف www (أو توحيد النطاق للأمان الأوروبي)
-    RewriteCond %{HTTPS} off [OR]
-    RewriteCond %{HTTP_HOST} ^www\.(.+) [NC]
-    RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+    # منع تصفح المجلدات
+    Options -Indexes
 
-    # توجيه كافة الطلبات الواردة مباشرة إلى مجلد public
-    RewriteRule ^$ public/ [L]
-    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+    # توجيه جميع الطلبات إلى مجلد public وملف index.php داخله
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>

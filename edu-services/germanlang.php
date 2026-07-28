@@ -55,6 +55,11 @@ $german_data = $global_data['germanlang_page'] ?? [
 ];
 
 $is_admin = !empty($is_admin) || !empty($_SESSION['is_admin']);
+$page_css = [
+    'edu-services/css/edu-services.css'
+];
+$page_js = [];
+
 
 // 2. استدعاء الهيدر المشترك عبر مسار مطلق صحيح من جذر المشروع
 $header_file = $root_path . '/includes/header.php';

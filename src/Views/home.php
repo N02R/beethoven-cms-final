@@ -1,31 +1,5 @@
-<?php 
-// تطبيق قواعد أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    // ضبط SameSite عبر إعدادات الكوكيز إن لم تكن معرفة مسبقاً
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-include 'includes/header.php'; 
-?>
-
 <!-- بداية قسم الهيرو -->
 <?php 
-  // تتبع البيانات
   $hero_exists = isset($data['hero']);
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
@@ -84,7 +58,7 @@ include 'includes/header.php';
             <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
-                <img src="assets/img/home/Arrow.svg" alt="Arrow">
+                <img src="/assets/img/home/Arrow.svg" alt="Arrow">
               </div>
             </div>
           </a>
@@ -215,7 +189,7 @@ include 'includes/header.php';
                 <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
                 <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
                   قراءة المزيد
-                  <img src="<?php echo htmlspecialchars(($path_prefix ?? '') . 'assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
+                  <img src="/assets/img/home/Arrow..svg" alt="arrow" width="18">
                 </a>
               </div>
             </div>
@@ -254,7 +228,3 @@ include 'includes/header.php';
     </div>
   </div>
 </section>
-
-<?php 
-include 'includes/footer.php'; 
-?>

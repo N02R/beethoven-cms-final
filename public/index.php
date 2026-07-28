@@ -50,6 +50,7 @@ use App\Controllers\Services\FoundationController;
 use App\Controllers\Services\GeneralVisaController;
 use App\Controllers\Services\GermanLangController;
 use App\Controllers\Services\OffersServiceController;
+use App\Controllers\Services\LivingCostController;
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
@@ -73,6 +74,7 @@ $router->add('GET', 'edu-services/foundation', [FoundationController::class, 'in
 $router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'index']);
 $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'index']);
 $router->add('GET', 'edu-services/health', [OffersServiceController::class, 'index']);
+$router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

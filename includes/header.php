@@ -1,12 +1,17 @@
 <?php
+declare(strict_types=1);
 date_default_timezone_set('Europe/Berlin'); 
 
-// 0. تضمين ملف الاتصال بقاعدة البيانات
-require_once __DIR__ . '/db.php'; // تأكد أن ملف الاتصال موجود في نفس المجلد أو قم بتعديل المسار إن لزم
+// 0. تضمين ملف الاتصال بقاعدة البيانات من النظام الجديد (config/database.php)
+$db_file = __DIR__ . '/../config/database.php';
+if (file_exists($db_file)) {
+    require_once $db_file;
+}
 
 // دالة مساعدة لجلب قيمة إعداد معين من قاعدة البيانات بسرعة
 if (!function_exists('get_setting')) {
-    function get_setting(PDO $pdo, string $key, string $default = ''): string {
+    function get_setting(?PDO $pdo, string $key, string $default = ''): string {
+        if (!$pdo) return $default;
         static $settings = null;
         if ($settings === null) {
             try {
@@ -23,8 +28,8 @@ if (!function_exists('get_setting')) {
 // 1. بدء الجلسة بأمان
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
-// 2. تعريف المسار الأساسي
-if (!isset($path_prefix)) { $path_prefix = ''; }
+// 2. تعريف المسار الأساسي (في المعمارية النظيفة يبدأ من الجذر العام '/')
+if (!isset($path_prefix)) { $path_prefix = '/'; }
 
 // 3. دالة التحقق من صلاحيات المسؤول
 if (!function_exists('isUserAdmin')) {
@@ -34,11 +39,14 @@ if (!function_exists('isUserAdmin')) {
 }
 $is_admin = isUserAdmin(); 
 
-// 4. تحميل البيانات مباشرة من قاعدة البيانات (MySQL) بدلاً من ملف الـ JSON
-// جلب شعار الموقع باستخدام الدالة المساعدة من جدول site_settings مع الاعتماد على القيمة الافتراضية القديمة
+// التأكد من توفر متغير الـ PDO لمنع حدوث أخطاء
+if (!isset($pdo)) {
+    $pdo = null;
+}
+
+// 4. تحميل البيانات مباشرة من قاعدة البيانات (MariaDB)
 $site_logo_path = get_setting($pdo, 'site_logo_path', 'assets/img/logo.png'); 
 
-// تهيئة افتراضية للمصفوفة لضمان عمل باقي الصفحات دون أخطاء
 $data = [
     'announcement' => [], 
     'menu_links' => [], 
@@ -48,74 +56,67 @@ $data = [
     'hero' => []
 ];
 
-try {
-    // أ. جلب إعدادات الموقع العامة الأخرى إن وجدت في الجدول
-    $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
-    while ($row = $stmtSettings->fetch()) {
-        if ($row['setting_key'] === 'site_logo_path') {
-            $site_logo_path = $row['setting_value'];
+if ($pdo) {
+    try {
+        $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+        while ($row = $stmtSettings->fetch()) {
+            if ($row['setting_key'] === 'site_logo_path') {
+                $site_logo_path = $row['setting_value'];
+            }
         }
-    }
 
-    // ب. جلب القائمة الرئيسية من جدول menu_links
-    $stmtMenu = $pdo->query("SELECT * FROM menu_links ORDER BY `order` ASC");
-    $db_menu = $stmtMenu->fetchAll();
-    if (!empty($db_menu)) {
-        $data['menu_links'] = $db_menu;
-    }
+        $stmtMenu = $pdo->query("SELECT * FROM menu_links ORDER BY `order` ASC");
+        $db_menu = $stmtMenu->fetchAll();
+        if (!empty($db_menu)) {
+            $data['menu_links'] = $db_menu;
+        }
 
-    // ج. جلب روابط التواصل الاجتماعي من جدول social_links
-    $stmtSocial = $pdo->query("SELECT * FROM social_links");
-    $db_social = $stmtSocial->fetchAll();
-    if (!empty($db_social)) {
-        $data['social_links'] = $db_social;
-    }
+        $stmtSocial = $pdo->query("SELECT * FROM social_links");
+        $db_social = $stmtSocial->fetchAll();
+        if (!empty($db_social)) {
+            $data['social_links'] = $db_social;
+        }
 
-    // د. جلب اللغات من جدول languages
-    $stmtLang = $pdo->query("SELECT * FROM languages");
-    $db_lang = $stmtLang->fetchAll();
-    if (!empty($db_lang)) {
-        $data['languages'] = $db_lang;
-    }
+        $stmtLang = $pdo->query("SELECT * FROM languages");
+        $db_lang = $stmtLang->fetchAll();
+        if (!empty($db_lang)) {
+            $data['languages'] = $db_lang;
+        }
 
-    // هـ. جلب تفاصيل الإعلان من جدول announcements (أحدث إعلان نشط أو أول سجل)
-    $stmtAd = $pdo->query("SELECT * FROM announcements ORDER BY id DESC LIMIT 1");
-    $db_ad = $stmtAd->fetch();
-    if ($db_ad) {
-        $data['announcement'] = [
-            'status' => $db_ad['status'] ?? 'Draft',
-            'type' => $db_ad['type'] ?? 'text',
-            'announcement_text' => $db_ad['announcement_text'] ?? '',
-            'image_path' => $db_ad['image_path'] ?? '',
-            'link' => $db_ad['link'] ?? '',
-            'open_new_tab' => $db_ad['open_new_tab'] ?? 0,
-            'start_date' => $db_ad['start_date'] ?? '',
-            'end_date' => $db_ad['end_date'] ?? '',
-            'bg_color' => $db_ad['bg_color'] ?? '#f1f5f9',
-            'text_color' => $db_ad['text_color'] ?? '#1e293b',
-            'font_size' => $db_ad['font_size'] ?? 16
-        ];
+        $stmtAd = $pdo->query("SELECT * FROM announcements ORDER BY id DESC LIMIT 1");
+        $db_ad = $stmtAd->fetch();
+        if ($db_ad) {
+            $data['announcement'] = [
+                'status' => $db_ad['status'] ?? 'Draft',
+                'type' => $db_ad['type'] ?? 'text',
+                'announcement_text' => $db_ad['announcement_text'] ?? '',
+                'image_path' => $db_ad['image_path'] ?? '',
+                'link' => $db_ad['link'] ?? '',
+                'open_new_tab' => $db_ad['open_new_tab'] ?? 0,
+                'start_date' => $db_ad['start_date'] ?? '',
+                'end_date' => $db_ad['end_date'] ?? '',
+                'bg_color' => $db_ad['bg_color'] ?? '#f1f5f9',
+                'text_color' => $db_ad['text_color'] ?? '#1e293b',
+                'font_size' => $db_ad['font_size'] ?? 16
+            ];
+        }
+    } catch (\PDOException $e) {
+        // الاستمرار بالقيم الافتراضية لمنع توقف الصفحة
     }
-
-} catch (\PDOException $e) {
-    // في حال حدوث خطأ في الاتصال، يتم الاعتماد على القيم الافتراضية لمنع توقف الموقع
 }
 
-// تحديث المتغيرات لتطابق المنطق القديم تماماً
 $data['site_logo_path'] = $site_logo_path;
 $menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "index.php", "active" => true],
-    ["title" => "عن الشركة", "url" => "about.php", "active" => false],
-    ["title" => "التعليم العالي", "url" => "education.php", "active" => false],
-    ["title" => "التدريب المهني", "url" => "job.php", "active" => false],
-    ["title" => "دليل بيتهوفن", "url" => "guide.php", "active" => false],
-    ["title" => "تواصل معنا", "url" => "contact.php", "active" => false]
+    ["title" => "الرئيسية", "url" => "", "active" => true],
+    ["title" => "عن الشركة", "url" => "about", "active" => false],
+    ["title" => "التعليم العالي", "url" => "education", "active" => false],
+    ["title" => "التدريب المهني", "url" => "job", "active" => false],
+    ["title" => "دليل بيتهوفن", "url" => "guide", "active" => false],
+    ["title" => "تواصل معنا", "url" => "contact", "active" => false]
 ];
 
-// التأكد من ترتيب القائمة بناءً على حقل order إن وجد
 usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
 
-// 5. تجهيز منطق الإعلان الموحد
 $ad = $data['announcement'] ?? [];
 $is_published = ($ad['status'] ?? 'Draft') === 'Published';
 $current_time = date('Y-m-d\TH:i');
@@ -133,19 +134,19 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- الملفات الأساسية لكل الصفحات -->
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/bootstrap.min.css"> 
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/all.min.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/main.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/style.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/header.css">
-  <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/footer.css">
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
+  <link rel="stylesheet" href="/assets/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/header.css">
+  <link rel="stylesheet" href="/assets/css/footer.css">
 
-  <!-- حقن ملفات الـ CSS الديناميكية الخاصة بكل صفحة (مثل about.css) -->
+  <!-- حقن ملفات الـ CSS الديناميكية الخاصة بكل صفحة -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {
       foreach ($page_css as $css_file) {
           $clean_css = ltrim($css_file, '/');
-          echo '<link rel="stylesheet" href="' . $path_prefix . $clean_css . '?v=' . time() . '">' . PHP_EOL;
+          echo '<link rel="stylesheet" href="/' . $clean_css . '?v=' . time() . '">' . PHP_EOL;
       }
   }
   ?>
@@ -166,8 +167,8 @@ $is_visible = ($is_published && $is_in_time);
               </button>
           <?php endif; ?>
 
-          <a class="navbar-brand m-0" href="<?php echo $path_prefix; ?>index.php">
-            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" width="178" height="72" loading="lazy">
+          <a class="navbar-brand m-0" href="/">
+            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" width="178" height="72" loading="lazy">
           </a>
         </div>
 
@@ -187,7 +188,7 @@ $is_visible = ($is_published && $is_in_time);
                     <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً بكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="<?php echo $path_prefix . ($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;"></div>
+                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="/<?php echo htmlspecialchars($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;"></div>
                 <?php endif; ?>
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
@@ -204,7 +205,7 @@ $is_visible = ($is_published && $is_in_time);
 
           <div class="social-icons d-flex gap-3">
             <?php foreach (($data['social_links'] ?? []) as $s): ?>
-                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="<?php echo $path_prefix . $s['img'] . '?' . time(); ?>" width="28"></a>
+                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="/<?php echo htmlspecialchars($s['img']) . '?' . time(); ?>" width="28"></a>
             <?php endforeach; ?>
           </div>
         </div>
@@ -217,8 +218,8 @@ $is_visible = ($is_published && $is_in_time);
         
         <!-- اللوجو (Mobile Only) -->
         <div class="d-lg-none">
-          <a class="navbar-brand" href="<?php echo $path_prefix; ?>index.php">
-            <img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" alt="Logo" height="50">
+          <a class="navbar-brand" href="/">
+            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" alt="Logo" height="50">
           </a>
         </div>
 
@@ -233,7 +234,7 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>">
+                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo ltrim(htmlspecialchars($link['url']), '/'); ?>">
                     <?php echo htmlspecialchars($link['title']); ?>
                   </a>
                 </li>
@@ -253,13 +254,13 @@ $is_visible = ($is_published && $is_in_time);
               <?php endif; ?>
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="<?php echo $path_prefix; ?>assets/img/home/global.svg">
+                  <img src="/assets/img/home/global.svg">
                   <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
-                  <img src="<?php echo $path_prefix; ?>assets/img/home/arowwdown.svg">
+                  <img src="/assets/img/home/arowwdown.svg">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => 'index.php']]) as $lang): ?>
-                      <li><a class="dropdown-item" href="<?php echo $path_prefix . htmlspecialchars($lang['url']); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
+                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => '']]) as $lang): ?>
+                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url']), '/'); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -269,15 +270,20 @@ $is_visible = ($is_published && $is_in_time);
     
     <!-- Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): ?>
-                <li class="nav-item"><a class="nav-link" href="<?php echo $path_prefix . htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+                <li class="nav-item"><a class="nav-link" href="/<?php echo ltrim(htmlspecialchars($link['url']), '/'); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
             <?php endforeach; ?>
         </ul>
       </div>
     </div>
 </header>
 
-<?php if ($is_admin) { include __DIR__ . '/admin_header_modals.php'; } ?>
+<?php 
+$admin_modals_file = __DIR__ . '/admin_header_modals.php';
+if ($is_admin && file_exists($admin_modals_file)) { 
+    include_once $admin_modals_file; 
+} 
+?>

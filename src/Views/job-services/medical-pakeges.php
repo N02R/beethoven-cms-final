@@ -1,38 +1,8 @@
-<?php 
-ob_start();
+<?php
+// تأمين المتغيرات الافتراضية
+$path_prefix = '/';
 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
-$path_prefix = '../'; 
-
-// 2. تحميل البيانات من ملف الـ JSON المركزي
-$config_file = __DIR__ . '/../announcement_config.json';
-$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
-
-$medical_data = $global_data['medical_package_page'] ?? [
+$medical_data = $data['medical_package_page'] ?? [
     'page_breadcrumb'     => 'باقة التدريب الطبي',
     'page_breadcrumb_url' => '#',
     'hero_img'            => 'assets/img/job/servicesimg3.png',
@@ -47,18 +17,6 @@ $medical_data = $global_data['medical_package_page'] ?? [
         'file'  => 'assets/files/medical_training_agreement.pdf'
     ]
 ];
-
-$global_data['medical_package_page'] = $medical_data;
-$is_admin = !empty($is_admin) || !empty($_SESSION['is_admin']) || !empty($_SESSION['is_logged_in']);
-
-// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً
-$page_css = [
-    'edu-services/css/edu-services.css'
-];
-$page_js = [];
-
-// 4. استدعاء الهيدر المشترك
-include_once $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- Breadcrumb start-->
@@ -71,8 +29,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'job.php'); ?>">التدريب المهني</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>job">التدريب المهني</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($medical_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($medical_data['page_breadcrumb'] ?? 'باقة التدريب الطبي'); ?>
@@ -93,7 +51,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($medical_data['hero_img'] ?? 'assets/img/job/servicesimg3.png')) . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($medical_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($medical_data['hero_img'] ?? 'assets/img/job/servicesimg3.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($medical_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -129,7 +87,7 @@ include_once $path_prefix . 'includes/header.php';
               <?php 
                 $note_text = $medical_data['note_text'] ?? '';
                 $safe_note = htmlspecialchars($note_text);
-                $note_text_formatted = str_replace('بالتواصل معنا', '<a href="' . htmlspecialchars($path_prefix) . 'contact.php" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>', $safe_note);
+                $note_text_formatted = str_replace('بالتواصل معنا', '<a href="' . $path_prefix . 'contact" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>', $safe_note);
                 echo $note_text_formatted;
               ?>
             </p>
@@ -155,13 +113,13 @@ include_once $path_prefix . 'includes/header.php';
                   $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
                 ?>
-                <img src="<?php echo htmlspecialchars($path_prefix . $icon_img); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($icon_img, '/')); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقية التدريب الطبي'); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
                 </div>
                 <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">...........................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ($item['file'] ?? 'assets/files/medical_training_agreement.pdf')); ?>" download>Download</a>
+                <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? 'assets/files/medical_training_agreement.pdf', '/')); ?>" download>Download</a>
               </div>
             </div>
           </div>
@@ -171,13 +129,3 @@ include_once $path_prefix . 'includes/header.php';
     </div>
   </section>
   <!-- custom-services-info end -->
-
-<?php 
-// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة إن وجدت
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_medical_modals.php')) {
-    include_once __DIR__ . '/includes/admin_medical_modals.php';
-}
-
-// 6. استدعاء الفوتر المشترك
-include_once $path_prefix . 'includes/footer.php'; 
-?>

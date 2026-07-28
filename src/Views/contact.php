@@ -1,56 +1,17 @@
-<?php 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
+<?php
+// تأمين المتغيرات الافتراضية إن لم تكن معرفة
+$path_prefix = '/';
 
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-$path_prefix = ''; 
-
-// 1. تعريف ملفات الـ CSS الخاصة بصفحة اتصل بنا
-$page_css = [
-    'assets/css/contact.css'
-];
-
-$page_js = [];
-
-// 2. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// 3. جلب بيانات التواصل من ملف الـ JSON مع قيم افتراضية متكاملة
-$contact_hero_img       = $data['contact_hero_img'] ?? 'assets/img/contact us/contacthero.png';
-
-$contact_address        = $data['contact_address'] ?? 'Rheinweg 140 ,53129 Bonn,Germany';
-$contact_address_icon   = $data['contact_address_icon'] ?? 'assets/img/Location.svg';
-
-$contact_email          = $data['contact_email'] ?? 'info@Beethoven-City-Services.com';
-$contact_email_icon     = $data['contact_email_icon'] ?? 'assets/img/Mail.svg';
-
-$contact_phone          = $data['contact_phone'] ?? '666-230-71 176 (0) 49+';
-$contact_phone_icon     = $data['contact_phone_icon'] ?? 'assets/img/Call.svg';
-
-$whatsapp_text          = $data['whatsapp_text'] ?? 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات';
-$whatsapp_url           = $data['whatsapp_url'] ?? 'https://wa.me/4917671230666';
-$whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عبر واتساب';
-
+$contact_hero_img     = $data['contact_hero_img'] ?? 'assets/img/contact us/contacthero.png';
+$contact_address      = $data['contact_address'] ?? 'Rheinweg 140 ,53129 Bonn,Germany';
+$contact_address_icon = $data['contact_address_icon'] ?? 'assets/img/Location.svg';
+$contact_email        = $data['contact_email'] ?? 'info@Beethoven-City-Services.com';
+$contact_email_icon   = $data['contact_email_icon'] ?? 'assets/img/Mail.svg';
+$contact_phone        = $data['contact_phone'] ?? '666-230-71 176 (0) 49+';
+$contact_phone_icon   = $data['contact_phone_icon'] ?? 'assets/img/Call.svg';
+$whatsapp_text        = $data['whatsapp_text'] ?? 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات';
+$whatsapp_url         = $data['whatsapp_url'] ?? 'https://wa.me/4917671230666';
+$whatsapp_btn_txt     = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عبر واتساب';
 ?>
 
   <!-- ===== HERO IMAGE ===== -->
@@ -63,7 +24,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
 
     <div class="custom-container">
       <div class="contact-hero-img">
-        <img src="<?php echo htmlspecialchars($path_prefix . $contact_hero_img . '?v=' . time()); ?>" alt="تواصل معنا" class="img-fluid w-100">
+        <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_hero_img, '/') . '?v=' . time()); ?>" alt="تواصل معنا" class="img-fluid w-100">
       </div>
     </div>
   </section>
@@ -83,7 +44,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
         <!-- 1. العنوان -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_address_icon ?? 'assets/img/Location.svg') . '?v=' . time()); ?>" alt="Location" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_address_icon ?? 'assets/img/Location.svg', '/') . '?v=' . time()); ?>" alt="Location" />
           </div>
           <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_address); ?></a>
@@ -92,7 +53,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
         <!-- 2. البريد الإلكتروني -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_email_icon ?? 'assets/img/Mail.svg') . '?v=' . time()); ?>" alt="Mail" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_email_icon ?? 'assets/img/Mail.svg', '/') . '?v=' . time()); ?>" alt="Mail" />
           </div>
           <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_email); ?></a>
@@ -101,7 +62,7 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
         <!-- 3. الهاتف -->
         <div class="contact-info-item">
           <div class="contact-info-icon">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($contact_phone_icon ?? 'assets/img/Call.svg') . '?v=' . time()); ?>" alt="Call" />
+            <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_phone_icon ?? 'assets/img/Call.svg', '/') . '?v=' . time()); ?>" alt="Call" />
           </div>
           <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
           <a><?php echo htmlspecialchars($contact_phone); ?></a>
@@ -110,7 +71,6 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
     </div>
   </section>
   <!-- ===== CONTACT INFO BAR END ===== -->
-
 
   <!-- ===== WHATSAPP SECTION ===== -->
   <section class="whatsapp-section py-5" style="position: relative;">
@@ -132,11 +92,3 @@ $whatsapp_btn_txt       = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عب
     </div>
   </section>
   <!-- ===== WHATSAPP SECTION END ===== -->
-<?php 
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_contact_modals.php')) { 
-    include_once __DIR__ . '/includes/admin_contact_modals.php'; 
-}
-
-// 4. استدعاء الفوتر الأساسي
-include_once 'includes/footer.php'; 
-?>

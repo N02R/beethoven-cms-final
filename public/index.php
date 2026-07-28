@@ -40,6 +40,7 @@ use App\Controllers\GuideController;
 use App\Controllers\ContactController;
 use App\Controllers\Services\ArrivalController; // أضفنا متحكم خدمة الاستقبال في المطار
 use App\Controllers\Services\BachelorPackageController;
+use App\Controllers\Services\CheckController;
 
 $router = new Router();
 
@@ -54,6 +55,7 @@ $router->add('GET', 'contact', [ContactController::class, 'index']);         // 
 $router->add('GET', 'edu-services/arrival', [ArrivalController::class, 'index']); // لمسار صفحة الاستقبال في المطار
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 $router->add('GET', 'edu-services/bachelor-package', [BachelorPackageController::class, 'index']);
+$router->add('GET', 'edu-services/check', [CheckController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

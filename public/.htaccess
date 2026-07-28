@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.h>
+    RewriteEngine On
+    RewriteBase /
+
+    # منع تصفح المجلدات (Directory Listing Protection)
+    Options -Indexes
+
+    # إذا لم يكن الملف أو المجلد موجوداً مادياً، قم بتمرير الطلب إلى Front Controller (index.php)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>

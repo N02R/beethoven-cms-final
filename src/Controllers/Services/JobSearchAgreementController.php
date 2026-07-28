@@ -6,7 +6,7 @@ namespace App\Controllers\Services;
 class JobSearchAgreementController {
     
     public function index(string $lang = 'de'): void {
-        // تعريف الثابت الأمني لمنع خطأ Access Denied
+        // تعريف الثابت الأمني في بداية الدالة وقبل أي شيء لمنع ظهور Access Denied
         if (!defined('ALLOWED_ACCESS')) {
             define('ALLOWED_ACCESS', true);
         }
@@ -48,11 +48,7 @@ class JobSearchAgreementController {
         $is_admin = !empty($_SESSION['is_admin']) || !empty($_SESSION['is_logged_in']) || (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin');
         $path_prefix = '/';
 
-        // ملفات الـ CSS الخاصة بالخدمة
-        $page_css = [
-            '/edu-services/css/edu-services.css'
-        ]; 
-
+        $page_css = ['/edu-services/css/edu-services.css']; 
         $page_js = [];
         $custom_script = '';
 

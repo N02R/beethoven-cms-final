@@ -1,47 +1,10 @@
-<?php 
-ob_start();
+<?php
+// تأمين المتغيرات الافتراضية إن لم تكن معرفة
+$path_prefix = '/';
 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-$path_prefix = ''; 
-
-// 1. تعريف ملفات الـ CSS والـ JS الخاصة بصفحة التعليم العالي
-$page_css = [
-    'assets/css/education.css',
-    'assets/css/responsive-education.css'
-];
-
-$page_js = [];
-
-// 2. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// 3. تجهيز متغيرات بيانات "التعليم العالي" من $data مع القيم الافتراضية
 $edu_hero = $data['edu_hero'] ?? [
-    'title' => 'ابدأ رحلتك التعليمية في ألمانيا – مع خدماتنا، التعليم العالي أقرب إليك من أي وقت مضى!',
-    'desc'  => 'نوفر لك دعمًا شاملًا في كل خطوة.. من اختيار التخصص والجامعة، إلى التقديم والحصول على القبول، وحتى تأمين السكن والتأشيرة، و بفضل خبرتنا ووجودنا داخل ألمانيا، نضمن لك تجربة سلسة وموثوقة، بلغتك، وبأسعار تنافسية',
+    'title'    => 'ابدأ رحلتك التعليمية في ألمانيا – مع خدماتنا، التعليم العالي أقرب إليك من أي وقت مضى!',
+    'desc'     => 'نوفر لك دعمًا شاملًا في كل خطوة.. من اختيار التخصص والجامعة، إلى التقديم والحصول على القبول، وحتى تأمين السكن والتأشيرة، و بفضل خبرتنا ووجودنا داخل ألمانيا، نضمن لك تجربة سلسة وموثوقة، بلغتك، وبأسعار تنافسية',
     'btn_text' => 'ابدأ الآن',
     'btn_url'  => '#',
     'img'      => 'assets/img/education/hero.jpg'
@@ -112,7 +75,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
     <div class="custom-container">
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6">
-          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($edu_hero['img'] ?? 'assets/img/education/hero.jpg') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($edu_hero['img'] ?? 'assets/img/education/hero.jpg', '/') . '?v=' . time()); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
         <div class="col-lg-6">
           <div class="education-info pt-2">
@@ -146,7 +109,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
           <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
             <div class="card choose-card h-100">
               <div class="card-body">
-                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ($item['img'] ?? '') . '?v=' . time()); ?>" alt="" /></a>
+                <a href="#"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>" alt="" /></a>
                 <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
               </div>
@@ -173,8 +136,8 @@ $edu_services_items = $data['edu_services_items'] ?? [
       </div>
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
-          <img src="assets/img/vector/Vector.png" alt="base" class="line-base">
-          <img src="assets/img/vector/Vector-1.png" alt="active" class="line-active">
+          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector.png" alt="base" class="line-base">
+          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
           
           <?php 
           $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
@@ -183,8 +146,8 @@ $edu_services_items = $data['edu_services_items'] ?? [
               $dotClass = $dots[$idx % count($dots)];
           ?>
             <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
-              <div class="step-img-num"><img src="assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
-              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
+              <div class="step-img-num"><img src="<?php echo $path_prefix; ?>assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
+              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime" . ($idx+1) . ".png", '/') . '?v=' . time()); ?>" alt=""></div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                 <span class="dot <?php echo $dotClass; ?>"></span>
@@ -206,7 +169,7 @@ $edu_services_items = $data['edu_services_items'] ?? [
             </div>
             <div class="m-content">
               <div class="m-header">
-                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png") . '?v=' . time()); ?>" alt=""></div>
+                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime" . ($idx+1) . ".png", '/') . '?v=' . time()); ?>" alt=""></div>
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
               </div>
               <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
@@ -232,14 +195,13 @@ $edu_services_items = $data['edu_services_items'] ?? [
       <p class="mb-5 main-p"><?php echo htmlspecialchars($edu_services_desc); ?></p>
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php foreach ($edu_services_items as $item): 
-            // معالجة الرابط لضمان عدم تكسر المسار وتأكيد عمله سواء كان نسبياً أو كاملاً
             $raw_url = $item['url'] ?? '#';
-            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . $raw_url : $raw_url;
+            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '/') . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col">
             <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
               <div class="card service-card text-white border-0 rounded-5"
-                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '') . ($item['img'] ?? '') . '?v=' . time()); ?>');">
+                style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>');">
                 <div class="card-body d-flex align-items-end justify-content-center">
                   <h6 class="card-title m-0">
                     <?php echo htmlspecialchars($item['title'] ?? ''); ?>
@@ -255,11 +217,8 @@ $edu_services_items = $data['edu_services_items'] ?? [
   <!-- education services end -->
 
 <?php 
-// 4. استدعاء ملف مودالات التعليم العالي للأدمن
+// تضمين مودالات الأدمن إن وجدت ضمن نفس النمط الحديث
 if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_edu_modals.php')) { 
     include_once __DIR__ . '/includes/admin_edu_modals.php'; 
 }
-
-// 5. استدعاء الفوتر الأساسي
-include_once 'includes/footer.php'; 
 ?>

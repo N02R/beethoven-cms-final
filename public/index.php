@@ -34,13 +34,15 @@ use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\ServiceController;
 use App\Controllers\AboutController;
+use App\Controllers\EducationController; // أضفنا متحكم التعليم العالي
 
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
-$router->add('GET', '', [HomeController::class, 'index']);        // للمسار الجذر (الصفحة الرئيسية)
-$router->add('GET', 'home', [HomeController::class, 'index']);      // لمسار home
-$router->add('GET', 'about', [AboutController::class, 'index']);    // لمسار صفحة من نحن
+$router->add('GET', '', [HomeController::class, 'index']);             // للمسار الجذر (الصفحة الرئيسية)
+$router->add('GET', 'home', [HomeController::class, 'index']);           // لمسار home
+$router->add('GET', 'about', [AboutController::class, 'index']);         // لمسار صفحة من نحن
+$router->add('GET', 'education', [EducationController::class, 'index']); // لمسار صفحة التعليم العالي
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 
 // معالجة الـ URI الوارد بدقة تامة

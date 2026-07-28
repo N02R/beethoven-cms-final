@@ -1,38 +1,8 @@
-<?php 
-ob_start();
+<?php
+// تأمين المتغيرات الافتراضية
+$path_prefix = '/';
 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
-$path_prefix = '../'; 
-
-// 2. تحميل البيانات من ملف الـ JSON المركزي
-$config_file = __DIR__ . '/../announcement_config.json';
-$global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
-
-$visa_data = $global_data['visa_requirements_page'] ?? [
+$visa_data = $data['visa_requirements_page'] ?? [
     'page_breadcrumb'     => 'متطلبات التأشيرة',
     'page_breadcrumb_url' => '#',
     'hero_img'            => 'assets/img/education/servicesimg14.png',
@@ -43,17 +13,6 @@ $visa_data = $global_data['visa_requirements_page'] ?? [
     'note_text'           => '',
     'download_items'      => []
 ];
-
-$data['visa_requirements_page'] = $visa_data;
-
-// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً
-$page_css = [
-    'edu-services/css/edu-services.css'
-];
-$page_js = [];
-
-// 4. استدعاء الهيدر المشترك
-include_once $path_prefix . 'includes/header.php'; 
 ?>
 
   <!-- Breadcrumb start-->
@@ -66,8 +25,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($visa_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($visa_data['page_breadcrumb'] ?? 'متطلبات التأشيرة'); ?>
@@ -88,7 +47,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($visa_data['hero_img'] ?? 'assets/img/education/servicesimg14.png')) . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($visa_data['hero_img'] ?? 'assets/img/education/servicesimg14.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -139,7 +98,6 @@ include_once $path_prefix . 'includes/header.php';
         </ul>
       </div>
 
-
       <!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
       <div class="py-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
@@ -151,7 +109,6 @@ include_once $path_prefix . 'includes/header.php';
         <div class="row">
           <?php if (!empty($visa_data['download_items'])): ?>
             <?php foreach ($visa_data['download_items'] as $item): ?>
-              <?>
               <?php 
                 $file_type = strtolower($item['type'] ?? 'pdf');
                 $icon_img = ($file_type === 'word') ? 'Grouppdf.png' : 'Grouppdf.png'; 
@@ -164,7 +121,7 @@ include_once $path_prefix . 'includes/header.php';
                       <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                     </div>
                     <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
-                    <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ($item['file'] ?? '#')); ?>" download>Download</a>
+                    <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
                   </div>
                 </div>
               </div>
@@ -176,13 +133,3 @@ include_once $path_prefix . 'includes/header.php';
     </div>
   </section>
   <!-- custom-services-info end -->
-
-<?php 
-// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_visa_modals.php')) { 
-    include_once __DIR__ . '/includes/admin_visa_modals.php'; 
-}
-
-// 6. استدعاء الفوتر المشترك
-include_once $path_prefix . 'includes/footer.php'; 
-?>

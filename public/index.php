@@ -39,7 +39,7 @@ $router = new Router();
 // تسجيل المسارات (Routes) النظيفة والإنتاجية
 $router->add('GET', '', [HomeController::class, 'index']);
 $router->add('GET', 'home', [HomeController::class, 'index']);
-$router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
+$router->add('GET', 'edu-services/germanlang.php', [ServiceController::class, 'germanCourses']);
 
 $uri = $_GET['url'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];

@@ -42,6 +42,7 @@ use App\Controllers\Services\ArrivalController; // أضفنا متحكم خدم�
 use App\Controllers\Services\BachelorPackageController;
 use App\Controllers\Services\CheckController;
 use App\Controllers\Services\CoursesController;
+use App\Controllers\Services\CoverLetterController;
 
 $router = new Router();
 
@@ -58,6 +59,7 @@ $router->add('GET', 'services/german-language-courses', [ServiceController::clas
 $router->add('GET', 'edu-services/bachelor-package', [BachelorPackageController::class, 'index']);
 $router->add('GET', 'edu-services/check', [CheckController::class, 'index']);
 $router->add('GET', 'edu-services/courses', [CoursesController::class, 'index']);
+$router->add('GET', 'edu-services/coverletter', [CoverLetterController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

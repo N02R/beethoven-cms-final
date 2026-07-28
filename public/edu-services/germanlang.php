@@ -1,18 +1,18 @@
 <?php 
 declare(strict_types=1);
 
-// حماية الوصول المباشر للملف إذا لزم الأمر، أو السماح عبر Front Controller
+// حماية الوصول المباشر للجلساّت بأمان تام
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_httponly', '1');
     ini_set('session.use_strict_mode', '1');
     session_start();
 }
 
-// تحديد المسار الجذري الصحيح بناءً على مكان المشروع الحقيقي
-$root_path = realpath(__DIR__ . '/../');
-$path_prefix = ''; // نظراً لأن العرض يتم عبر نقطة الدخول المركزية، فالروابط تبدأ من الجذر العام
+// بما أن الملف أصبح في /public/edu-services/germanlang.php، فالصعود مستويين (__DIR__ . '/../../') يصل بنا إلى جذر المشروع الرئيسي
+$root_path = realpath(__DIR__ . '/../../');
+$path_prefix = '/'; 
 
-// 1. تحميل البيانات من ملف الـ JSON المركزي بمسار مطلق آمن
+// 1. تحميل البيانات من ملف الـ JSON المركزي بمسار مطلق آمن من الجذر
 $config_file = $root_path . '/announcement_config.json';
 $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
 
@@ -55,13 +55,14 @@ $german_data = $global_data['germanlang_page'] ?? [
 ];
 
 $is_admin = !empty($is_admin) || !empty($_SESSION['is_admin']);
+
+// مسار الـ CSS الخاص بالصفحة مع الـ Leading Slash ليقرأه الهيدر من الجذر مباشرة
 $page_css = [
-    'edu-services/css/edu-services.css'
+    '/edu-services/css/edu-services.css'
 ];
 $page_js = [];
 
-
-// 2. استدعاء الهيدر المشترك عبر مسار مطلق صحيح من جذر المشروع
+// 2. استدعاء الهيدر المشترك عبر مسار جذر المشروع الصحيح
 $header_file = $root_path . '/includes/header.php';
 if (file_exists($header_file)) {
     include_once $header_file;
@@ -208,8 +209,8 @@ if (file_exists($header_file)) {
   <!-- custom-services-info end -->
 
 <?php 
-// 3. استدعاء مودالات الأدمن والفوتر المشترك بمسارات مطلقة آمنة
-$modals_file = __DIR__ . '/includes/admin_german_modals.php';
+// 3. استدعاء مودالات الأدمن والفوتر المشترك من المجلدات الرئيسية بأمان
+$modals_file = $root_path . '/includes/admin_german_modals.php';
 if (!empty($is_admin) && file_exists($modals_file)) {
     include_once $modals_file;
 }

@@ -53,7 +53,7 @@ use App\Controllers\Services\OffersServiceController;
 use App\Controllers\Services\LivingCostController;
 use App\Controllers\Services\MotivationLetterController; // المتحكم المحدث
 use App\Controllers\Services\OffersPageController;
-
+use App\Controllers\Services\ServiceCostController;
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
@@ -80,6 +80,7 @@ $router->add('GET', 'edu-services/health', [OffersServiceController::class, 'ind
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']); // مسار صفحة خطاب الدافع
 $router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);
+$router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

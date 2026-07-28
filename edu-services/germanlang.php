@@ -1,35 +1,19 @@
 <?php 
-ob_start();
+declare(strict_types=1);
 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
+// حماية الوصول المباشر للملف إذا لزم الأمر، أو السماح عبر Front Controller
 if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.use_strict_mode', '1');
     session_start();
 }
 
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
+// تحديد المسار الجذري الصحيح بناءً على مكان المشروع الحقيقي
+$root_path = realpath(__DIR__ . '/../');
+$path_prefix = ''; // نظراً لأن العرض يتم عبر نقطة الدخول المركزية، فالروابط تبدأ من الجذر العام
 
-// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي
-$path_prefix = '../'; 
-
-// 2. تحميل البيانات من ملف الـ JSON المركزي
-$config_file = __DIR__ . '/../announcement_config.json';
+// 1. تحميل البيانات من ملف الـ JSON المركزي بمسار مطلق آمن
+$config_file = $root_path . '/announcement_config.json';
 $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
 
 $german_data = $global_data['germanlang_page'] ?? [
@@ -70,17 +54,13 @@ $german_data = $global_data['germanlang_page'] ?? [
     ]
 ];
 
-$data['germanlang_page'] = $german_data;
 $is_admin = !empty($is_admin) || !empty($_SESSION['is_admin']);
 
-// 3. تمرير ملف الـ CSS الخاص بالمجلد الفرعي ديناميكياً ليتم حَقنه في الهيدر
-$page_css = [
-    'edu-services/css/edu-services.css'
-];
-$page_js = [];
-
-// 4. استدعاء الهيدر المشترك
-include_once $path_prefix . 'includes/header.php'; 
+// 2. استدعاء الهيدر المشترك عبر مسار مطلق صحيح من جذر المشروع
+$header_file = $root_path . '/includes/header.php';
+if (file_exists($header_file)) {
+    include_once $header_file;
+}
 ?>
 
   <!-- Breadcrumb start-->
@@ -93,8 +73,8 @@ include_once $path_prefix . 'includes/header.php';
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix . 'education.php'); ?>">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="/">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="/education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($german_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($german_data['page_breadcrumb'] ?? 'دورات اللغة الألمانية'); ?>
@@ -115,7 +95,7 @@ include_once $path_prefix . 'includes/header.php';
 
     <div class="custom-container">
       <div class="germanlang-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ($german_data['hero_img'] ?? 'assets/img/education/servicesimg4.png')) . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('/<?php echo htmlspecialchars($german_data['hero_img'] ?? 'assets/img/education/servicesimg4.png') . '?v=' . time(); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -157,7 +137,7 @@ include_once $path_prefix . 'includes/header.php';
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                   <li>
                     <p class="mb-0">
-                      <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                      <img src="/assets/img/education/starList.svg" alt="نجمة" class="ms-2"/>
                       <?php echo htmlspecialchars($level); ?>
                     </p>
                   </li>
@@ -223,11 +203,14 @@ include_once $path_prefix . 'includes/header.php';
   <!-- custom-services-info end -->
 
 <?php 
-// 5. استدعاء مودالات الأدمن الخاصة بهذه الصفحة
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_german_modals.php')) {
-    include_once __DIR__ . '/includes/admin_german_modals.php';
+// 3. استدعاء مودالات الأدمن والفوتر المشترك بمسارات مطلقة آمنة
+$modals_file = __DIR__ . '/includes/admin_german_modals.php';
+if (!empty($is_admin) && file_exists($modals_file)) {
+    include_once $modals_file;
 }
 
-// 6. استدعاء الفوتر المشترك
-include_once $path_prefix . 'includes/footer.php'; 
+$footer_file = $root_path . '/includes/footer.php';
+if (file_exists($footer_file)) {
+    include_once $footer_file;
+}
 ?>

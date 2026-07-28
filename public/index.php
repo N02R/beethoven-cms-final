@@ -55,6 +55,7 @@ use App\Controllers\Services\MotivationLetterController; // المتحكم ال�
 use App\Controllers\Services\OffersPageController;
 use App\Controllers\Services\ServiceCostController;
 use App\Controllers\Services\MedicalPackageController;
+use App\Controllers\Services\JobSearchAgreementController;
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
@@ -83,6 +84,7 @@ $router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController
 $router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'job-services/medical-pakeges', [MedicalPackageController::class, 'index']);
+$router->add('GET', 'job-services/medical-traning', [JobSearchAgreementController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

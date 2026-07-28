@@ -58,6 +58,7 @@ use App\Controllers\Services\MedicalPackageController;
 use App\Controllers\Services\JobSearchAgreementController;
 use App\Controllers\Services\MedicalSpecialtiesController;
 use App\Controllers\Services\AusbildungPackageController;
+use App\Controllers\Guide\GuideBlog1Controller;
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
@@ -89,6 +90,7 @@ $router->add('GET', 'job-services/medical-pakeges', [MedicalPackageController::c
 $router->add('GET', 'job-services/medical-traning', [JobSearchAgreementController::class, 'index']);
 $router->add('GET', 'job-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'job-services/vocational', [AusbildungPackageController::class, 'index']);
+$router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

@@ -1,27 +1,36 @@
-<?php 
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
-?>
-<?php 
-// 1. تحديد بادئة المسار للعودة خطوة للمجلد الرئيسي (بما أن الملف داخل مجلد guide)
-$path_prefix = '../'; 
+<?php
+// تأمين المتغيرات الافتراضية
+$path_prefix = '/';
 
-// 2. تمرير ملفات الـ CSS الخاصة بالصفحة ديناميكياً ليتم حقنها داخل الهيدر المشترك
-$page_css = [
-    'assets/css/education.css',
-    'edu-services/css/edu-services.css',
-    'assets/css/responsive-education.css' // تم تصحيح خطأ الفاصلة ,, إلى مسار صحيح
+$guide_data = $data['guide_blog1_page'] ?? [
+    'hero_img'           => 'assets/img/home/image(0).jpg',
+    'hero_position'      => 'center center',
+    'main_title'         => 'تعتبر ألمانيا من أفضل الوجهات المفضلة للدراسة لكثير من الطلبة الأجانب',
+    'main_desc'          => 'في الوقت الراهن، من بين 2.7 مليون طالب يدرسون في الجامعات الألمانية هنالك أكثر من 380 ألف طالب أجنبي -من بينهم الكثير من الطلبه العرب-. وبالإعتماد على أحدث التقارير، فإن هذا العدد يزداد بإستمرار سنوياً.',
+    'notes_title'        => 'ملاحظات هامة جداً',
+    'note_1_bold'        => 'لدى الجامعات الألمانية مواعيد مختلفة لتقديم طلبات التسجيل، ويوجد غالباً مواعيد لفصول الشتاء و الصيف:',
+    'note_winter'        => 'تبدأ عملية التقديم في مارس، يكون الموعد النهائي للتقديم هو 15 يوليو ويبدأ الفصل الدراسي في أكتوبر.',
+    'note_summer'        => 'تبدأ عملية التقديم في سبتمبر، يكون الموعد النهائي للتقديم هو 15 يناير ويبدأ الفصل الدراسي في مارس / أبريل',
+    'note_2_text'        => 'الأخذ بعين الإعتبار أن عملية التسجيل لدى الجامعة و تجهيز الوثائق اللازمة للتأشيرة الدخول إلى ألمانيا تستغرق من شهرين على الأقل لغاية أكثر من أربعة أشهر بحسب الحالة، لذلك ننصح بشدة البدء باكراً بإجراءات التسجيل.',
+    'note_3_title'       => 'للإجابة على أكثر الأسئلة التي يطرحُها أغلب الطلاب، نقول:',
+    'faq_1'              => '1. الأوراق المطلوبة للحصول على قبول جامعي يَعتمِد كثيراً على الدرجة الجامِعية التي تريد أن تَحصل عليها و كذلك المستوى العلمي الذي حصلت عليه سابقاً، مثلاً لِدرجة البكالوريوس تحتاج إلى: شهادة ثانوية عامة مُصدقة من السفارة الألمانية، سيرة ذاتية، رسالة الدافع/التحفيز، صورة عن جواز السفر، شهادة إتمام سنة تحضيرية أو شهادة لغة ألمانية تُؤهلك لدخول الجامعة، أو أحياناً إثبات إتمام سنة جامعية في بلدك و شهادة لغة ألمانية تُؤهلك لدخول الجامعة معاً، تأمين صحي. أما لِدرجة الماجستير فتحتاج إلى درجة بكالوريوس مُعترف بها في ألمانيا مُصدقة من السفارة، شهادة لغة ألمانية تُؤهلك لدخول الجامعة أو شهادة لغة إنجليزية مُعترف بها إذا أردت الدراسة باللغة الإنجليزية، سيرة ذاتية، رسالة الدافع/التحفيز، صورة عن جواز السفر، تأمين صحي.',
+    'faq_2_prefix'       => '2. لمعرفة',
+    'faq_2_link_text'    => 'متطلبات تأشيرة الدراسة',
+    'faq_2_url'          => 'contact',
+    'faq_2_suffix'       => 'لدى السفارة أو القنصلية الألمانية، أيضاً قمنا بجمع معلومات قيِّمة تجدونها في أسفل الصفحة. علماً بأن هذه المُتطلبات تختلف بحسب نوع التأشيرة و الدولة.'
 ];
-
-
 ?>
 
   <!-- custom-guide start-->
-  <section class="custom-services custom-guide py-5">
+  <section class="custom-services custom-guide py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo $path_prefix; ?>assets/img/home/image(0).jpg');">
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -30,37 +39,63 @@ $page_css = [
   <!-- custom-services-info start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
-      <div class="head-info">
-        <h2 class="main-text">تعتبر ألمانيا من أفضل الوجهات المفضلة للدراسة لكثير من الطلبة الأجانب</h2>
-        <p class="par-text">
-          في الوقت الراهن، من بين 2.7 مليون طالب يدرسون في الجامعات الألمانية هنالك أكثر من 380 ألف طالب أجنبي -من بينهم
-          الكثير من الطلبه العرب-. وبالإعتماد على أحدث التقارير، فإن هذا العدد يزداد بإستمرار سنوياً.
-        </p>
+      
+      <!-- العنوان والوصف -->
+      <div class="head-info" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+        <h2 class="main-text"><?php echo htmlspecialchars($guide_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($guide_data['main_desc'] ?? '')); ?></p>
       </div>
-      <div class="advice-stars my-5">
-        <h5 class="mb-4 note-text">ملاحظات هامة جداً</h5>
+
+      <!-- الملاحظات الهامة -->
+      <div class="advice-stars my-5" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($guide_data['notes_title'] ?? 'ملاحظات هامة جداً'); ?></h5>
         <ul class="star-list">
           <li>
-            <p class="fw-bold"><img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" />لدى الجامعات الألمانية مواعيد مختلفة لتقديم طلبات التسجيل، ويوجد غالباً مواعيد لفصول الشتاء و الصيف: </p>
-            <p><span class="fw-bold">فصل الشتاء: </span>تبدأ عملية التقديم في مارس، يكون الموعد النهائي للتقديم هو 15 يوليو ويبدأ الفصل الدراسي في أكتوبر.</p>
-            <p><span class="fw-bold">فصل الصيف:</span>تبدأ عملية التقديم في سبتمبر، يكون الموعد النهائي للتقديم هو 15 يناير ويبدأ الفصل الدراسي في مارس / أبريل</p>
+            <p class="fw-bold">
+              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+              <?php echo htmlspecialchars($guide_data['note_1_bold'] ?? ''); ?>
+            </p>
+            <p><span class="fw-bold">فصل الشتاء: </span><?php echo htmlspecialchars($guide_data['note_winter'] ?? ''); ?></p>
+            <p><span class="fw-bold">فصل الصيف:</span><?php echo htmlspecialchars($guide_data['note_summer'] ?? ''); ?></p>
           </li>
           <li>
-            <p class="fw-bold"> <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" /> الأخذ بعين الإعتبار أن عملية التسجيل لدى الجامعة و تجهيز الوثائق اللازمة للتأشيرة الدخول إلى ألمانيا تستغرق من شهرين على الأقل لغاية أكثر من أربعة أشهر بحسب الحالة، لذلك ننصح بشدة البدء باكراً بإجراءات التسجيل.</p>
+            <p class="fw-bold"> 
+              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" /> 
+              <?php echo htmlspecialchars($guide_data['note_2_text'] ?? ''); ?>
+            </p>
           </li>
           <li>
-            <p class="fw-bold"> <img src="<?php echo $path_prefix; ?>assets/img/education/starList.svg" alt="نجمة" class="ms-2" />للإجابة  على أكثر الأسئلة التي يطرحُها أغلب الطلاب، نقول:</p>
+            <p class="fw-bold"> 
+              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+              <?php echo htmlspecialchars($guide_data['note_3_title'] ?? ''); ?>
+            </p>
             <ul>
               <li>
-                <p> 1. الأوراق المطلوبة للحصول على قبول جامعي يَعتمِد كثيراً على الدرجة الجامِعية التي تريد أن تَحصل عليها و كذلك المستوى العلمي الذي حصلت عليه سابقاً، مثلاً لِدرجة البكالوريوس تحتاج إلى: شهادة ثانوية عامة مُصدقة من السفارة الألمانية، سيرة ذاتية، رسالة الدافع/التحفيز، صورة عن جواز السفر، شهادة إتمام سنة تحضيرية أو شهادة لغة ألمانية تُؤهلك لدخول الجامعة، أو أحياناً إثبات إتمام سنة جامعية في بلدك و شهادة لغة ألمانية تُؤهلك لدخول الجامعة معاً، تأمين صحي. أما لِدرجة الماجستير فتحتاج إلى درجة بكالوريوس مُعترف بها في ألمانيا مُصدقة من السفارة، شهادة لغة ألمانية تُؤهلك لدخول الجامعة أو شهادة لغة إنجليزية مُعترف بها إذا أردت الدراسة باللغة الإنجليزية، سيرة ذاتية، رسالة الدافع/التحفيز، صورة عن جواز السفر، تأمين صحي.</p>
+                <p><?php echo htmlspecialchars($guide_data['faq_1'] ?? ''); ?></p>
               </li>
               <li>
-                <p> 2. لمعرفة <span style="text-decoration: underline; color: #66aaee;">متطلبات تأشيرة الدراسة </span> لدى السفارة أو القنصلية الألمانية، أيضاً  قمنا بجمع معلومات قيِّمة تجدونها في أسفل الصفحة. علماً بأن هذه المُتطلبات تختلف بحسب نوع التأشيرة و الدولة.</p>
+                <p> 
+                  <?php echo htmlspecialchars($guide_data['faq_2_prefix'] ?? '2. لمعرفة'); ?> 
+                  <a href="<?php echo htmlspecialchars($path_prefix . ltrim($guide_data['faq_2_url'] ?? 'contact', '/')); ?>" style="text-decoration: underline; color: #66aaee;"><?php echo htmlspecialchars($guide_data['faq_2_link_text'] ?? 'متطلبات تأشيرة الدراسة'); ?></a> 
+                  <?php echo htmlspecialchars($guide_data['faq_2_suffix'] ?? ''); ?>
+                </p>
               </li>
             </ul>
           </li>
         </ul>
       </div>
+
     </div>
   </section>
   <!-- custom-services-info end -->
@@ -76,7 +111,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services1.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services1.png" alt="" /></a>
               <h5 class="card-title">جودة التعليم العالمي</h5>
               <p class="card-text">جامعات ألمانية مرموقة وبرامج أكاديمية معترف بها دوليًا.</p>
             </div>
@@ -85,7 +120,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services2.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services2.png" alt=""></a>
               <h5 class="card-title">شهادات معترف بها دوليًا</h5>
               <p class="card-text">الدراسة في ألمانيا تضمن لك شهادة معترف بها وفرص عمل ومستقبل مهني ناجح.</p>
             </div>
@@ -94,7 +129,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services3.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services3.png" alt=""></a>
               <h5 class="card-title">تدريب عملي إلى جانب الدراسة</h5>
               <p class="card-text">الدراسة في ألمانيا تجمع بين التعلم النظري والتدريب العملي مع شركات حقيقية.</p>
             </div>
@@ -103,7 +138,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services4.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services4.png" alt=""></a>
               <h5 class="card-title">تخصصات متنوعة</h5>
               <p class="card-text">معاهد ألمانيا تقدم آلاف البرامج والشهادات لتناسب جميع اهتمامات الطلاب.</p>
             </div>
@@ -112,7 +147,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services5.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services5.png" alt="" /></a>
               <h5 class="card-title">رسوم دراسية منخفضة</h5>
               <p class="card-text">تعليم برسوم رمزية في الجامعات الحكومية، حتى للطلاب الخليجيين.</p>
             </div>
@@ -121,7 +156,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services6.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services6.png" alt=""></a>
               <h5 class="card-title">فرصة لاكتشاف أوروبا</h5>
               <p class="card-text">تأشيرة الطالب تتيح لك الإقامة في ألمانيا والسفر بحرية داخل أوروبا بدون تأشيرة.</p>
             </div>
@@ -130,7 +165,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services7.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services7.png" alt=""></a>
               <h5 class="card-title">الدراسة بالإنجليزية أو الألمانية</h5>
               <p class="card-text">ألمانيا تقدم آلاف البرامج الدراسية باللغة الإنجليزية لجميع الطلاب.</p>
             </div>
@@ -139,7 +174,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services8.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services8.png" alt=""></a>
               <h5 class="card-title">إمكانية العمل أثناء الدراسة</h5>
               <p class="card-text">تكلفة المعيشة في ألمانيا معقولة، ويمكنك العمل أثناء الدراسة لتساعد نفسك.</p>
             </div>
@@ -148,7 +183,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services9.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services9.png" alt="" /></a>
               <h5 class="card-title">فرص توظيف بعد التخرج</h5>
               <p class="card-text">بعد التخرج، يمكنك البقاء في ألمانيا لفترة للبحث عن وظيفة.</p>
             </div>
@@ -157,7 +192,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services8.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services8.png" alt=""></a>
               <h5 class="card-title">بلد آمن ومستقر</h5>
               <p class="card-text">ألمانيا بلد آمن جدًا، يمكنك التنقل بحرية بدون خوف من الجريمة أو العنصرية.</p>
             </div>
@@ -166,7 +201,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services11.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services11.png" alt=""></a>
               <h5 class="card-title">تعلم الألمانية = فرص أكبر</h5>
               <p class="card-text">الألمانية قريبة من الإنجليزية وتزيد فرصك في الدراسة والشغل.</p>
             </div>
@@ -175,7 +210,7 @@ $page_css = [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo $path_prefix; ?>assets/img/education/edu-services12.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services12.png" alt=""></a>
               <h5 class="card-title">ثقافة غنية وتجربة حياتية مميزة</h5>
               <p class="card-text">مجتمع متنوع، صداقات دولية، وانفتاح ثقافي.</p>
             </div>
@@ -195,11 +230,11 @@ $page_css = [
       </div>
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
-          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector.png" alt="base" class="line-base">
-          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
+          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector.png" alt="base" class="line-base">
+          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
           <div class="step-wrapper step-1">
-            <div class="step-img-num"><img src="<?php echo $path_prefix; ?>assets/img/vector/Group1.png" alt="01"></div>
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime1.png" alt=""></div>
+            <div class="step-img-num"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group1.png" alt="01"></div>
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime1.png" alt=""></div>
             <div class="info-content">
               <h3>استشارة أولية </h3>
               <span class="dot bg-blue"></span>
@@ -208,8 +243,8 @@ $page_css = [
             </div>
           </div>
           <div class="step-wrapper step-2">
-            <img src="<?php echo $path_prefix; ?>assets/img/vector/Group2.png" class="step-img-num" alt="02">
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime2.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group2.png" class="step-img-num" alt="02">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime2.png" alt=""></div>
             <div class="info-content">
               <h3>تجهيز المستندات</h3>
               <span class="dot bg-green"></span>
@@ -218,8 +253,8 @@ $page_css = [
             </div>
           </div>
           <div class="step-wrapper step-3">
-            <img src="<?php echo $path_prefix; ?>assets/img/vector/Group3.png" class="step-img-num" alt="03">
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime3.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group3.png" class="step-img-num" alt="03">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime3.png" alt=""></div>
             <div class="info-content">
               <h3>تقديم الطلبات</h3>
               <span class="dot bg-yellow"></span>
@@ -228,8 +263,8 @@ $page_css = [
             </div>
           </div>
           <div class="step-wrapper step-4">
-            <img src="<?php echo $path_prefix; ?>assets/img/vector/Group4.png" class="step-img-num" alt="04">
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime4.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group4.png" class="step-img-num" alt="04">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime4.png" alt=""></div>
             <div class="info-content">
               <h3>دعم التأشيرة</h3>
               <span class="dot bg-orange"></span>
@@ -238,8 +273,8 @@ $page_css = [
             </div>
           </div>
           <div class="step-wrapper step-5">
-            <img src="<?php echo $path_prefix; ?>assets/img/vector/Group5.png" class="step-img-num" alt="05">
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime5.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group5.png" class="step-img-num" alt="05">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime5.png" alt=""></div>
             <div class="info-content">
               <h3>الوصول والاستقرار</h3>
               <span class="dot bg-orange"></span>
@@ -248,8 +283,8 @@ $page_css = [
             </div>
           </div>
           <div class="step-wrapper step-6">
-            <img src="<?php echo $path_prefix; ?>assets/img/vector/Group6.png" class="step-img-num" alt="06">
-            <div class="icon-main"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime6.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group6.png" class="step-img-num" alt="06">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime6.png" alt=""></div>
             <div class="info-content">
               <h3>دعم بعد الوصول</h3>
               <span class="dot bg-red"></span>
@@ -261,82 +296,65 @@ $page_css = [
       </div>
       <div class="mobile-timeline d-lg-none">
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">01</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">01</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime1.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime1.png" alt=""></div>
                     <h3>استشارة أولية</h3>
                 </div>
                 <h4>نرسم معك طريقك الدراسي في ألمانيا</h4>
                 <p>نساعدك على تحديد التخصص والجامعة المناسبة حسب أهدافك الأكاديمية والمهنية.</p>
             </div>
         </div>
-
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">02</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">02</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime2.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime2.png" alt=""></div>
                     <h3>تجهيز المستندات</h3>
                 </div>
                 <h4>نجهز ملفك بالشكل المثالي</h4>
                 <p>ترجمة، تصديق، تنسيق السيرة الذاتية، كتابة خطاب الدافع وكل ما تحتاجه لتقديم قوي.</p>
             </div>
         </div>
-
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">03</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">03</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime3.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime3.png" alt=""></div>
                     <h3>تقديم الطلبات</h3>
                 </div>
                 <h4>نقدم لك على أفضل الجامعات</h4>
                 <p>نختار أفضل الجامعات ونرسل طلباتك ونتابع الردود معك خطوة بخطوة.</p>
             </div>
         </div>
-
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">04</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">04</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime4.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime4.png" alt=""></div>
                     <h3>دعم التأشيرة</h3>
                 </div>
                 <h4>نضمن جهوزيتك الكاملة للمقابلة</h4>
                 <p>نعد معك ملف الفيزا بالكامل ونرشدك خلال الإجراءات الرسمية لضمان القبول.</p>
             </div>
         </div>
-
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">05</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">05</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime5.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime5.png" alt=""></div>
                     <h3>الوصول والاستقرار</h3>
                 </div>
                 <h4>نستقبلك ونرتب تفاصيل حياتك</h4>
                 <p>من الاستقبال في المطار إلى السكن، التسجيل في المدينة وفتح الحساب البنكي.</p>
             </div>
         </div>
-
         <div class="m-step">
-            <div class="m-number-box">
-                <span class="m-num">06</span>
-            </div>
+            <div class="m-number-box"><span class="m-num">06</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo $path_prefix; ?>assets/img/vector/Grouptime6.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime6.png" alt=""></div>
                     <h3>دعم بعد الوصول</h3>
                 </div>
                 <h4>نبقى معك حتى تستقر تمامًا</h4>
@@ -347,5 +365,3 @@ $page_css = [
     </div>
   </section>
   <!-- time line end -->
-
-

@@ -35,7 +35,8 @@ use App\Controllers\HomeController;
 use App\Controllers\ServiceController;
 use App\Controllers\AboutController;
 use App\Controllers\EducationController;
-use App\Controllers\JobController; // أضفنا متحكم التدريب المهني
+use App\Controllers\JobController;
+use App\Controllers\GuideController; // أضفنا متحكم الدليل الشامل
 
 $router = new Router();
 
@@ -45,6 +46,7 @@ $router->add('GET', 'home', [HomeController::class, 'index']);           // لم
 $router->add('GET', 'about', [AboutController::class, 'index']);         // لمسار صفحة من نحن
 $router->add('GET', 'education', [EducationController::class, 'index']); // لمسار صفحة التعليم العالي
 $router->add('GET', 'job', [JobController::class, 'index']);             // لمسار صفحة التدريب المهني
+$router->add('GET', 'guide', [GuideController::class, 'index']);         // لمسار صفحة الدليل الشامل
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 
 // معالجة الـ URI الوارد بدقة تامة

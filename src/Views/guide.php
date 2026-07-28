@@ -1,41 +1,7 @@
-<?php 
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
+<?php
+// تأمين المتغيرات الافتراضية إن لم تكن معرفة
+$path_prefix = '/';
 
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-$path_prefix = ''; 
-
-// 1. تعريف ملفات الـ CSS الخاصة بصفحة الدليل
-$page_css = [
-    'assets/css/style.css'
-];
-
-$page_js = [];
-
-// 2. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// 3. جلب بيانات الدليل من ملف التكوين (JSON) مع القيم الافتراضية المطابقة لتصميمك
 $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
 $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
 $guide_items = $data['guide_items'] ?? [];
@@ -43,7 +9,7 @@ $guide_items = $data['guide_items'] ?? [];
 
   <!-- ===== GUIDE PAGE START ===== -->
   <section class="guide py-5" style="position: relative;">
-    <!-- زر التعديل الخاص بالأدمن بنفس ستايل صفحة job -->
+    <!-- زر التعديل الخاص بالأدمن -->
     <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
           <i class="bi bi-pencil-fill"></i>
@@ -65,15 +31,19 @@ $guide_items = $data['guide_items'] ?? [];
               <div class="card h-100 border-0 shadow-sm">
                 <?php if (!empty($item['img'])): ?>
                   <div class="card-img-wrapper">
-                    <img src="<?php echo htmlspecialchars($path_prefix . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
+                    <img src="<?php echo htmlspecialchars($path_prefix . ltrim($item['img'], '/') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
                   </div>
                 <?php endif; ?>
                 <div class="card-body d-flex flex-column">
                   <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
                   <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
-                  <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
+                  <?php 
+                    $raw_url = $item['url'] ?? '#';
+                    $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? $path_prefix . ltrim($raw_url, '/') : $raw_url;
+                  ?>
+                  <a href="<?php echo htmlspecialchars($final_url); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
                     قراءة المزيد
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
+                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/home/Arrow.svg'); ?>" alt="arrow" width="18">
                   </a>
                 </div>
               </div>
@@ -88,8 +58,3 @@ $guide_items = $data['guide_items'] ?? [];
     </div>
   </section>
   <!-- ===== GUIDE PAGE END ===== -->
-
-<?php 
-// 4. استدعاء الفوتر الأساسي
-include_once 'includes/footer.php'; 
-?>

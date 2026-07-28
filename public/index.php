@@ -38,10 +38,11 @@ use App\Controllers\AboutController; // <-- أضفنا استدعاء AboutContr
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
-$router->add('GET', '', [HomeController::class, 'index']);
-$router->add('GET', 'home', [HomeController::class, 'index']);
+$router->add('GET', '', [HomeController::class, 'index']);        // للمسار الجذر (الصفحة الرئيسية)
+$router->add('GET', 'home', [HomeController::class, 'index']);      // لمسار home
+$router->add('GET', 'about', [AboutController::class, 'index']);    // لمسار صفحة من نحن
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
-$router->add('GET', 'about', [AboutController::class, 'index']); // <-- أضفنا مسار صفحة من نحن هنا
+
 
 $uri = $_GET['url'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];

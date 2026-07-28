@@ -16,7 +16,6 @@ spl_autoload_register(function (string $class) {
     if (strncmp($prefix, $class, strlen($prefix)) === 0) {
         $relativeClass = substr($class, strlen($prefix));
         
-        // التحقق إن كان الكلاس تابعاً لإعدادات التكوين أو النواة والمتحكمات
         if (strpos($relativeClass, 'Config\\') === 0) {
             $file = $configDir . str_replace(['Config\\', '\\'], ['', '/'], $relativeClass) . '.php';
         } else {
@@ -33,12 +32,14 @@ require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;
 use App\Controllers\HomeController;
+use App\Controllers\ServiceController;
 
 $router = new Router();
 
-// تعريف المسارات الأساسية مع دعم اللغات
+// تسجيل المسارات (Routes) النظيفة والإنتاجية
 $router->add('GET', '', [HomeController::class, 'index']);
 $router->add('GET', 'home', [HomeController::class, 'index']);
+$router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 
 $uri = $_GET['url'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];

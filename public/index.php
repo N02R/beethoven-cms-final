@@ -47,7 +47,7 @@ use App\Controllers\Services\CvController;
 use App\Controllers\Services\EnglishLangController;
 use App\Controllers\Services\FinancialController;
 use App\Controllers\Services\FoundationController;
-
+use App\Controllers\Services\GeneralVisaController;
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
@@ -68,6 +68,7 @@ $router->add('GET', 'edu-services/cv', [CvController::class, 'index']);
 $router->add('GET', 'edu-services/englishlang', [EnglishLangController::class, 'index']);
 $router->add('GET', 'edu-services/financial', [FinancialController::class, 'index']);
 $router->add('GET', 'edu-services/foundation', [FoundationController::class, 'index']);
+$router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

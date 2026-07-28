@@ -52,6 +52,7 @@ use App\Controllers\Services\GermanLangController;
 use App\Controllers\Services\OffersServiceController;
 use App\Controllers\Services\LivingCostController;
 use App\Controllers\Services\MotivationLetterController; // المتحكم المحدث
+use App\Controllers\Services\OffersPageController;
 
 $router = new Router();
 
@@ -78,7 +79,7 @@ $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'in
 $router->add('GET', 'edu-services/health', [OffersServiceController::class, 'index']);
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']); // مسار صفحة خطاب الدافع
-
+$router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

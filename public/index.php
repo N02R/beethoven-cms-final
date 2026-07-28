@@ -38,7 +38,7 @@ use App\Controllers\EducationController;
 use App\Controllers\JobController;
 use App\Controllers\GuideController;
 use App\Controllers\ContactController;
-use App\Controllers\Services\ArrivalController; // أضفنا متحكم خدمة الاستقبال في المطار
+use App\Controllers\Services\ArrivalController;
 use App\Controllers\Services\BachelorPackageController;
 use App\Controllers\Services\CheckController;
 use App\Controllers\Services\CoursesController;
@@ -51,18 +51,19 @@ use App\Controllers\Services\GeneralVisaController;
 use App\Controllers\Services\GermanLangController;
 use App\Controllers\Services\OffersServiceController;
 use App\Controllers\Services\LivingCostController;
-use App\Controllers\Services\MotivationLetterController;
+use App\Controllers\Services\MotivationLetterController; // المتحكم المحدث
+
 $router = new Router();
 
 // تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
-$router->add('GET', '', [HomeController::class, 'index']);                 // للمسار الجذر (الصفحة الرئيسية)
-$router->add('GET', 'home', [HomeController::class, 'index']);               // لمسار home
-$router->add('GET', 'about', [AboutController::class, 'index']);             // لمسار صفحة من نحن
-$router->add('GET', 'education', [EducationController::class, 'index']);     // لمسار صفحة التعليم العالي
-$router->add('GET', 'job', [JobController::class, 'index']);                 // لمسار صفحة التدريب المهني
-$router->add('GET', 'guide', [GuideController::class, 'index']);             // لمسار صفحة الدليل الشامل
-$router->add('GET', 'contact', [ContactController::class, 'index']);         // لمسار صفحة اتصل بنا
-$router->add('GET', 'edu-services/arrival', [ArrivalController::class, 'index']); // لمسار صفحة الاستقبال في المطار
+$router->add('GET', '', [HomeController::class, 'index']);                 
+$router->add('GET', 'home', [HomeController::class, 'index']);               
+$router->add('GET', 'about', [AboutController::class, 'index']);             
+$router->add('GET', 'education', [EducationController::class, 'index']);     
+$router->add('GET', 'job', [JobController::class, 'index']);                 
+$router->add('GET', 'guide', [GuideController::class, 'index']);             
+$router->add('GET', 'contact', [ContactController::class, 'index']);         
+$router->add('GET', 'edu-services/arrival', [ArrivalController::class, 'index']); 
 $router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
 $router->add('GET', 'edu-services/bachelor-package', [BachelorPackageController::class, 'index']);
 $router->add('GET', 'edu-services/check', [CheckController::class, 'index']);
@@ -76,7 +77,8 @@ $router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'inde
 $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'index']);
 $router->add('GET', 'edu-services/health', [OffersServiceController::class, 'index']);
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
-$router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']);
+$router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']); // مسار صفحة خطاب الدافع
+
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

@@ -1,70 +1,6 @@
-<?php 
-ob_start();
-
-// تطبيق إعدادات أمان الجلسات والكوكيز الحديثة
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_strict_mode', 1);
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
-    }
-    if (PHP_VERSION_ID >= 70300) {
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
-    }
-    session_start();
-}
-
-if (!defined('ALLOWED_ACCESS')) {
-    define('ALLOWED_ACCESS', true);
-}
-
-$path_prefix = ''; 
-
-// 1. تعريف ملفات الـ CSS والـ JS الخاصة بهذه الصفحة
-$page_css = [
-    'assets/css/swiper-bundle.min.css',
-    'assets/css/about.css',
-    'assets/css/responsive-about.css'
-]; 
-
-$page_js = [
-    'assets/js/swiper-bundle.min.js'
-];
-
-$custom_script = '
-<script>
-  var swiper = new Swiper(".mySwiper", {
-    slidesPerView: 1,
-    spaceBetween: 20,
-    rtl: true,
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    breakpoints: {
-      576: { slidesPerView: 2 },
-      992: { slidesPerView: 3 },
-      1400: { slidesPerView: 4 },
-      1800: { slidesPerView: 5 }
-    },
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
-    }
-  });
-</script>';
-
-// 2. استدعاء الهيدر الأساسي
-include_once 'includes/header.php'; 
-
-// 3. تجهيز متغيرات بيانات "عن الشركة" من $data
+<?php
+// تأمين المتغيرات الافتراضية إن لم تكن معرفة
+$path_prefix = '/';
 $ab       = $data['about'] ?? [];
 $services = $data['services'] ?? [];
 $counts   = $data['about_counts'] ?? [];
@@ -93,7 +29,7 @@ $partners = $data['partners_items'] ?? [];
                 <div class="card-body p-0">
                   <div class="title mb-2">
                     <span class="icon-wrap">
-                      <img src="<?php echo htmlspecialchars($path_prefix . ($ab['vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg') . '?v=' . time()); ?>" alt="رؤية الشركة">
+                      <img src="<?php echo htmlspecialchars($path_prefix . ltrim($ab['vision_icon'] ?? 'assets/img/About us Icon, image/Company vision.svg', '/') . '?v=' . time()); ?>" alt="رؤية الشركة">
                     </span>
                     <span><?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?></span>
                   </div>
@@ -108,7 +44,7 @@ $partners = $data['partners_items'] ?? [];
                 <div class="card-body p-0">
                   <div class="title mb-2">
                     <span class="icon-wrap">
-                      <img src="<?php echo htmlspecialchars($path_prefix . ($ab['message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg') . '?v=' . time()); ?>" alt="رسالة الشركة">
+                      <img src="<?php echo htmlspecialchars($path_prefix . ltrim($ab['message_icon'] ?? 'assets/img/About us Icon, image/Company message.svg', '/') . '?v=' . time()); ?>" alt="رسالة الشركة">
                     </span>
                     <span><?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?></span>
                   </div>
@@ -126,9 +62,9 @@ $partners = $data['partners_items'] ?? [];
         <!-- صور القسم -->
         <div class="col-lg-6 order-1 order-lg-2 position-relative">
           <div class="image-stack">
-            <img src="<?php echo htmlspecialchars($path_prefix . ($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg') . '?v=' . time()); ?>" alt="Main About Image" class="img-fluid main-img">
+            <img src="<?php echo htmlspecialchars($path_prefix . ltrim($ab['main_img'] ?? 'assets/img/about us icon, image/about1.jpg', '/') . '?v=' . time()); ?>" alt="Main About Image" class="img-fluid main-img">
             <div class="sub-img-wrapper">
-              <img src="<?php echo htmlspecialchars($path_prefix . ($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png') . '?v=' . time()); ?>" alt="Sub About Image" class="img-fluid sub-img">
+              <img src="<?php echo htmlspecialchars($path_prefix . ltrim($ab['sub_img'] ?? 'assets/img/about us icon, image/about2.png', '/') . '?v=' . time()); ?>" alt="Sub About Image" class="img-fluid sub-img">
               <div class="dots-bg"></div>
             </div>
           </div>
@@ -152,10 +88,10 @@ $partners = $data['partners_items'] ?? [];
         <?php foreach ($services as $service): ?>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none">
-              <div class="card" style="background: url('<?php echo htmlspecialchars($path_prefix . ($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
+              <div class="card" style="background: url('<?php echo htmlspecialchars($path_prefix . ltrim($service['img'] ?? 'assets/img/home/education.jpg', '/') . '?t=' . time()); ?>') no-repeat center/cover;">
                 <div class="card-info">
                   <h3><?php echo htmlspecialchars($service['title'] ?? 'اسم الخدمة'); ?></h3>
-                  <img src="assets/img/home/Arrow.svg" alt="Arrow">
+                  <img src="/assets/img/home/Arrow.svg" alt="Arrow">
                 </div>
               </div>
             </a>
@@ -186,7 +122,7 @@ $partners = $data['partners_items'] ?? [];
               <?php foreach ($team as $member): ?>
                 <div class="swiper-slide">
                   <div class="team-card">
-                    <img src="<?php echo htmlspecialchars($path_prefix . ($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
+                    <img src="<?php echo htmlspecialchars($path_prefix . ltrim($member['img'] ?? 'assets/img/team/member1.jpg', '/') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
                     <div class="info">
                       <h5><?php echo htmlspecialchars($member['name'] ?? ''); ?></h5>
                       <p><?php echo htmlspecialchars($member['role'] ?? ''); ?></p>
@@ -222,7 +158,7 @@ $partners = $data['partners_items'] ?? [];
           <div class="col-lg-3 col-md-6">
             <div class="count-card">
               <div class="count-img">
-                <img src="<?php echo htmlspecialchars($path_prefix . ($c['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
+                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($c['img'] ?? '', '/') . '?v=' . time()); ?>" alt="icon">
               </div>
               <div class="count-info">
                 <span><?php echo htmlspecialchars($c['number'] ?? ''); ?></span>
@@ -250,7 +186,7 @@ $partners = $data['partners_items'] ?? [];
         <?php foreach ($partners as $p): ?>
           <div class="col">
             <div class="partner-item">
-              <img src="<?php echo htmlspecialchars($path_prefix . ($p['img'] ?? '') . '?v=' . time()); ?>" alt="Partner" class="img-fluid" />
+              <img src="<?php echo htmlspecialchars($path_prefix . ltrim($p['img'] ?? '', '/') . '?v=' . time()); ?>" alt="Partner" class="img-fluid" />
             </div>
           </div>
         <?php endforeach; ?>
@@ -258,13 +194,3 @@ $partners = $data['partners_items'] ?? [];
     </div>
   </section>
   <!-- partenar end -->
-
-<?php 
-// 4. استدعاء ملف مودالات صفحة about للأدمن
-if (!empty($is_admin) && file_exists(__DIR__ . '/includes/admin_about_modals.php')) { 
-    include_once __DIR__ . '/includes/admin_about_modals.php'; 
-}
-
-// 5. استدعاء الفوتر الأساسي
-include_once 'includes/footer.php'; 
-?>

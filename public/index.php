@@ -43,6 +43,7 @@ use App\Controllers\Services\BachelorPackageController;
 use App\Controllers\Services\CheckController;
 use App\Controllers\Services\CoursesController;
 use App\Controllers\Services\CoverLetterController;
+use App\Controllers\Services\CvController;
 
 $router = new Router();
 
@@ -60,6 +61,7 @@ $router->add('GET', 'edu-services/bachelor-package', [BachelorPackageController:
 $router->add('GET', 'edu-services/check', [CheckController::class, 'index']);
 $router->add('GET', 'edu-services/courses', [CoursesController::class, 'index']);
 $router->add('GET', 'edu-services/coverletter', [CoverLetterController::class, 'index']);
+$router->add('GET', 'edu-services/cv', [CvController::class, 'index']);
 // معالجة الـ URI الوارد بدقة تامة
 $uri = $_GET['url'] ?? '';
 if ($uri === '/' ) {

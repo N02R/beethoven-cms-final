@@ -34,7 +34,10 @@ if (!isset($path_prefix)) { $path_prefix = '/'; }
 // 3. دالة التحقق من صلاحيات المسؤول
 if (!function_exists('isUserAdmin')) {
     function isUserAdmin() {
-        return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+        return (
+            (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) || 
+            (isset($_SESSION['user_id']))
+        ) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     }
 }
 $is_admin = isUserAdmin(); 
@@ -130,16 +133,48 @@ $is_visible = ($is_published && $is_in_time);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo $page_title ?? 'BCS || Beethoven City Services'; ?></title>
+  <title><?php echo htmlspecialchars($page_title ?? 'BCS || Beethoven City Services'); ?></title>
+  
+  <!-- مكتبة الأيقونات Bootstrap Icons من الـ CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Font Awesome CDN لتجنب خطأ 404 لملف all.min.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- الملفات الأساسية لكل الصفحات -->
   <link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
-  <link rel="stylesheet" href="/assets/css/all.min.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/header.css">
-  <link rel="stylesheet" href="/assets/css/footer.css">
+
+  <!-- تنسيق إضافي لضمان محاذاة أزرار تعديل الأدمين بشكل عائم وأنبيق -->
+  <style>
+    .editable-wrapper {
+        position: relative;
+    }
+    .edit-pen {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        z-index: 1050;
+        background-color: #ffc107;
+        color: #000;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    .edit-pen:hover {
+        transform: scale(1.15);
+        background-color: #e0a800;
+    }
+  </style>
 
   <!-- حقن ملفات الـ CSS الديناميكية الخاصة بكل صفحة -->
   <?php 
@@ -168,7 +203,7 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
 
           <a class="navbar-brand m-0" href="/">
-            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" width="178" height="72" loading="lazy">
+            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" width="178" height="72" loading="lazy" alt="Logo">
           </a>
         </div>
 
@@ -188,7 +223,7 @@ $is_visible = ($is_published && $is_in_time);
                     <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً بكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="/<?php echo htmlspecialchars($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;"></div>
+                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="/<?php echo htmlspecialchars($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement"></div>
                 <?php endif; ?>
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
@@ -205,7 +240,7 @@ $is_visible = ($is_published && $is_in_time);
 
           <div class="social-icons d-flex gap-3">
             <?php foreach (($data['social_links'] ?? []) as $s): ?>
-                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="/<?php echo htmlspecialchars($s['img']) . '?' . time(); ?>" width="28"></a>
+                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="/<?php echo htmlspecialchars($s['img']) . '?' . time(); ?>" width="28" alt="social"></a>
             <?php endforeach; ?>
           </div>
         </div>
@@ -254,9 +289,9 @@ $is_visible = ($is_published && $is_in_time);
               <?php endif; ?>
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="/assets/img/home/global.svg">
+                  <img src="/assets/img/home/global.svg" alt="lang">
                   <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
-                  <img src="/assets/img/home/arowwdown.svg">
+                  <img src="/assets/img/home/arowwdown.svg" alt="arrow">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => '']]) as $lang): ?>
@@ -270,7 +305,7 @@ $is_visible = ($is_published && $is_in_time);
     
     <!-- Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" height="50"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" height="50" alt="Logo"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): ?>

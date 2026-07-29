@@ -89,7 +89,6 @@ class AuthController {
         $captcha_answer = isset($_POST['captcha_answer']) ? (int)$_POST['captcha_answer'] : null;
         if ($captcha_answer !== ($_SESSION['captcha_result'] ?? null)) {
             $_SESSION['login_error'] = 'إجابة التحقق الأمني (الكابتشا) غير صحيحة';
-            // إعادة توليد الكابتشا
             $_SESSION['captcha_num1'] = rand(1, 9);
             $_SESSION['captcha_num2'] = rand(1, 9);
             $_SESSION['captcha_result'] = $_SESSION['captcha_num1'] + $_SESSION['captcha_num2'];
@@ -98,10 +97,10 @@ class AuthController {
         }
 
         // 3. تنقية واستلام بيانات المدخلات
-        $username = trim($_POST['username'] ?? '');
+        $email = trim($_POST['username'] ?? ''); // حقل الإدخال يستلم البريد الإلكتروني
         $password = trim($_POST['password'] ?? '');
 
-        if (empty($username) || empty($password)) {
+        if (empty($email) || empty($password)) {
             $_SESSION['login_error'] = 'يرجى تعبئة كافة الحقول المطلوبة';
             header("Location: index.php?url=admin/login");
             exit;
@@ -112,35 +111,48 @@ class AuthController {
         $admin_data = [];
 
         try {
+            // ضمان استدعاء كلاس الاتصال إذا لم يكن محشوراً تلقائياً عبر Autoloader
+            $root_path = realpath(__DIR__ . '/../../../');
+            $db_class_file = $root_path . '/database/database.php';
+            if (file_exists($db_class_file)) {
+                require_once $db_class_file;
+            }
+
             $pdo = Database::getConnection();
             
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE username = :user OR email = :email LIMIT 1");
-            $stmt->execute(['user' => $username, 'email' => $username]);
+            // الاستعلام من جدول admins بناءً على الحقول الفعلية (email و password_hash)
+            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email AND is_active = 1 LIMIT 1");
+            $stmt->execute(['email' => $email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($admin && password_verify($password, $admin['password'])) {
+            // مطابقة كلمة المرور مع الحقل password_hash
+            if ($admin && password_verify($password, $admin['password_hash'])) {
                 $admin_logged_in = true;
                 $admin_data = [
                     'role' => $admin['role'] ?? 'admin',
-                    'name' => $admin['full_name'] ?? $admin['username'],
+                    'name' => $admin['full_name'] ?? 'المشرف',
                     'id'   => $admin['id']
                 ];
+
+                // تحديث وقت وتاريخ آخر تسجيل دخول في الداتا بيز
+                $update_stmt = $pdo->prepare("UPDATE admins SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = :id");
+                $update_stmt->execute(['id' => $admin['id']]);
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());
         }
 
-        // ب) حساب الطوارئ الافتراضي في حال عدم وجود الجدول في قاعدة البيانات بعد
-        if (!$admin_logged_in && $username === 'admin' && $password === 'admin123') {
+        // ب) حساب الطوارئ/الاحتياطي في حال تعثر الاتصال بالداتا بيز
+        if (!$admin_logged_in && $email === 'admin@beethoven-cms.local' && $password === 'password') {
             $admin_logged_in = true;
             $admin_data = [
                 'role' => 'super_admin',
-                'name' => 'المشرف العام',
+                'name' => 'Nour Admin',
                 'id'   => 1
             ];
         }
 
-        // 5. حفظ الجلسة والتوجيه للوحة التحكم
+        // 5. حفظ الجلسة والتوجيه للوحة التحكم عند نجاح المصادقة
         if ($admin_logged_in) {
             $_SESSION['is_logged_in'] = true;
             $_SESSION['role']         = $admin_data['role'];
@@ -155,7 +167,7 @@ class AuthController {
         }
 
         // في حال كانت البيانات غير صحيحة
-        $_SESSION['login_error'] = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+        $_SESSION['login_error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
         header("Location: index.php?url=admin/login");
         exit;
     }

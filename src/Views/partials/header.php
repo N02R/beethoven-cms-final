@@ -1,126 +1,17 @@
 <?php
 declare(strict_types=1);
-date_default_timezone_set('Europe/Berlin'); 
 
-// 0. تضمين ملف الاتصال بقاعدة البيانات من النظام الجديد (config/database.php)
-$db_file = __DIR__ . '/../config/database.php';
-if (file_exists($db_file)) {
-    require_once $db_file;
-}
+// التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
-// دالة مساعدة لجلب قيمة إعداد معين من قاعدة البيانات بسرعة
-if (!function_exists('get_setting')) {
-    function get_setting(?PDO $pdo, string $key, string $default = ''): string {
-        if (!$pdo) return $default;
-        static $settings = null;
-        if ($settings === null) {
-            try {
-                $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
-                $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-            } catch (\Exception $e) {
-                $settings = [];
-            }
-        }
-        return $settings[$key] ?? $default;
-    }
-}
+// جلب المتغيرات الممررة من الـ Controller (مع توفير قيم افتراضية لمنع الأخطاء)
+$site_logo_path  = $data['site_logo_path'] ?? 'assets/img/logo.png';
+$menu_links      = $data['menu_links'] ?? [];
+$social_links    = $data['social_links'] ?? [];
+$languages       = $data['languages'] ?? [];
+$ad              = $data['announcement'] ?? [];
 
-// 1. بدء الجلسة بأمان
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-
-// 2. تعريف المسار الأساسي (في المعمارية النظيفة يبدأ من الجذر العام '/')
-if (!isset($path_prefix)) { $path_prefix = '/'; }
-
-// 3. دالة التحقق من صلاحيات المسؤول
-if (!function_exists('isUserAdmin')) {
-    function isUserAdmin() {
-        return (
-            (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) || 
-            (isset($_SESSION['user_id']))
-        ) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-    }
-}
-$is_admin = isUserAdmin(); 
-
-// التأكد من توفر متغير الـ PDO لمنع حدوث أخطاء
-if (!isset($pdo)) {
-    $pdo = null;
-}
-
-// 4. تحميل البيانات مباشرة من قاعدة البيانات (MariaDB)
-$site_logo_path = get_setting($pdo, 'site_logo_path', 'assets/img/logo.png'); 
-
-$data = [
-    'announcement' => [], 
-    'menu_links' => [], 
-    'social_links' => [], 
-    'languages' => [], 
-    'site_logo_path' => $site_logo_path,
-    'hero' => []
-];
-
-if ($pdo) {
-    try {
-        $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
-        while ($row = $stmtSettings->fetch()) {
-            if ($row['setting_key'] === 'site_logo_path') {
-                $site_logo_path = $row['setting_value'];
-            }
-        }
-
-        $stmtMenu = $pdo->query("SELECT * FROM menu_links ORDER BY `order` ASC");
-        $db_menu = $stmtMenu->fetchAll();
-        if (!empty($db_menu)) {
-            $data['menu_links'] = $db_menu;
-        }
-
-        $stmtSocial = $pdo->query("SELECT * FROM social_links");
-        $db_social = $stmtSocial->fetchAll();
-        if (!empty($db_social)) {
-            $data['social_links'] = $db_social;
-        }
-
-        $stmtLang = $pdo->query("SELECT * FROM languages");
-        $db_lang = $stmtLang->fetchAll();
-        if (!empty($db_lang)) {
-            $data['languages'] = $db_lang;
-        }
-
-        $stmtAd = $pdo->query("SELECT * FROM announcements ORDER BY id DESC LIMIT 1");
-        $db_ad = $stmtAd->fetch();
-        if ($db_ad) {
-            $data['announcement'] = [
-                'status' => $db_ad['status'] ?? 'Draft',
-                'type' => $db_ad['type'] ?? 'text',
-                'announcement_text' => $db_ad['announcement_text'] ?? '',
-                'image_path' => $db_ad['image_path'] ?? '',
-                'link' => $db_ad['link'] ?? '',
-                'open_new_tab' => $db_ad['open_new_tab'] ?? 0,
-                'start_date' => $db_ad['start_date'] ?? '',
-                'end_date' => $db_ad['end_date'] ?? '',
-                'bg_color' => $db_ad['bg_color'] ?? '#f1f5f9',
-                'text_color' => $db_ad['text_color'] ?? '#1e293b',
-                'font_size' => $db_ad['font_size'] ?? 16
-            ];
-        }
-    } catch (\PDOException $e) {
-        // الاستمرار بالقيم الافتراضية لمنع توقف الصفحة
-    }
-}
-
-$data['site_logo_path'] = $site_logo_path;
-$menu_links = $data['menu_links'] ?? [
-    ["title" => "الرئيسية", "url" => "", "active" => true],
-    ["title" => "عن الشركة", "url" => "about", "active" => false],
-    ["title" => "التعليم العالي", "url" => "education", "active" => false],
-    ["title" => "التدريب المهني", "url" => "job", "active" => false],
-    ["title" => "دليل بيتهوفن", "url" => "guide", "active" => false],
-    ["title" => "تواصل معنا", "url" => "contact", "active" => false]
-];
-
-usort($menu_links, function($a, $b) { return ($a['order'] ?? 0) <=> ($b['order'] ?? 0); });
-
-$ad = $data['announcement'] ?? [];
+// حساب حالة ظهور الإعلان
 $is_published = ($ad['status'] ?? 'Draft') === 'Published';
 $current_time = date('Y-m-d\TH:i');
 $is_in_time = true;
@@ -135,53 +26,30 @@ $is_visible = ($is_published && $is_in_time);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars($page_title ?? 'BCS || Beethoven City Services'); ?></title>
   
-  <!-- مكتبة الأيقونات Bootstrap Icons من الـ CDN -->
+  <!-- مكتبات الأيقونات والـ Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  
-  <!-- Font Awesome CDN لتجنب خطأ 404 لملف all.min.css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- الملفات الأساسية لكل الصفحات -->
   <link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/header.css">
 
-  <!-- تنسيق إضافي لضمان محاذاة أزرار تعديل الأدمين بشكل عائم وأنبيق -->
   <style>
-    .editable-wrapper {
-        position: relative;
-    }
+    .editable-wrapper { position: relative; }
     .edit-pen {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        z-index: 1050;
-        background-color: #ffc107;
-        color: #000;
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        cursor: pointer;
-        transition: transform 0.2s ease;
+        position: absolute; top: -8px; right: -8px; z-index: 1050;
+        background-color: #ffc107; color: #000; border: none; border-radius: 50%;
+        width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s ease;
     }
-    .edit-pen:hover {
-        transform: scale(1.15);
-        background-color: #e0a800;
-    }
+    .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
   </style>
 
-  <!-- حقن ملفات الـ CSS الديناميكية الخاصة بكل صفحة -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {
       foreach ($page_css as $css_file) {
-          $clean_css = ltrim($css_file, '/');
-          echo '<link rel="stylesheet" href="/' . $clean_css . '?v=' . time() . '">' . PHP_EOL;
+          echo '<link rel="stylesheet" href="/' . ltrim($css_file, '/') . '?v=' . time() . '">' . PHP_EOL;
       }
   }
   ?>
@@ -239,7 +107,7 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
 
           <div class="social-icons d-flex gap-3">
-            <?php foreach (($data['social_links'] ?? []) as $s): ?>
+            <?php foreach ($social_links as $s): ?>
                 <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="/<?php echo htmlspecialchars($s['img']) . '?' . time(); ?>" width="28" alt="social"></a>
             <?php endforeach; ?>
           </div>
@@ -294,8 +162,8 @@ $is_visible = ($is_published && $is_in_time);
                   <img src="/assets/img/home/arowwdown.svg" alt="arrow">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach (($data['languages'] ?? [['name' => 'العربية', 'url' => '']]) as $lang): ?>
-                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url']), '/'); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
+                  <?php foreach ($languages as $lang): ?>
+                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url'] ?? ''), '/'); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -317,7 +185,8 @@ $is_visible = ($is_published && $is_in_time);
 </header>
 
 <?php 
-$admin_modals_file = __DIR__ . '/admin_header_modals.php';
+// تضمين نوافذ المودال الخاصة بالتعديل للمشرف إن وجد الملف
+$admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
 if ($is_admin && file_exists($admin_modals_file)) { 
     include_once $admin_modals_file; 
 } 

@@ -11,7 +11,7 @@ if (!defined('ALLOWED_ACCESS')) {
             <h5 class="cookie-title">حماية خصوصيتك ومعلوماتك الشخصية</h5>
             <p class="cookie-desc">
                 نحن نستخدم ملفات تعريف الارتباط (Cookies) الضرورية لضمان عمل الموقع بكفاءة وتأمين الجلسات (Sessions) وفقاً لقوانين حماية البيانات الأوروبية (GDPR). يمكنك قبول الكوكيز الأساسية أو مراجعة التفاصيل.
-                <a href="<?php echo $path_prefix; ?>privacy.php" class="privacy-link">سياسة الخصوصية</a>.
+                <a href="/privacy" class="privacy-link">سياسة الخصوصية</a>.
             </p>
         </div>
         <div class="cookie-actions">

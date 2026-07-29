@@ -97,6 +97,7 @@ use App\Controllers\Guide\GuideBlog2Controller;
 use App\Controllers\Guide\GuideBlog3Controller;
 
 // Controllers الخاصة بلوحة التحكم (Admin)
+use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\SettingsController;
 use App\Controllers\Admin\ConfigController;
 use App\Controllers\Admin\UploadController;
@@ -141,12 +142,12 @@ $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index'])
 // ==========================================
 // 2. مسارات لوحة التحكم (Admin Routes)
 // ==========================================
+$router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
 $router->add('GET', 'admin/settings', [SettingsController::class, 'index']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
 $router->add('POST', 'admin/config/save', [ConfigController::class, 'save']);
-
-// مسار رفع الصور الجديد
 $router->add('POST', 'admin/upload-image', [UploadController::class, 'uploadImage']);
+$router->add('GET', 'admin/logout', [DashboardController::class, 'logout']);
 
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch

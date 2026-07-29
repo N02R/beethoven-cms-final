@@ -19,7 +19,7 @@ class DashboardController {
         $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
         if (!$is_admin) {
-            header("Location: login.php?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
+            header("Location: /login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
             exit();
         }
 
@@ -58,5 +58,33 @@ class DashboardController {
         } else {
             echo "Dashboard View file not found.";
         }
+    }
+
+    /**
+     * تسجيل الخروج الآمن وتدمير الجلسة والكوكيز
+     */
+    public function logout(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // تفريغ كافة متغيرات الجلسة
+        $_SESSION = [];
+
+        // تدمير كوكيز الجلسة من متصفح المستخدم إن وجدت
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        // تدمير الجلسة نهائياً من على الخادم
+        session_destroy();
+
+        // التوجيه الفوري لصفحة تسجيل الدخول مع رسالة نجاح
+        header("Location: /login?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+        exit();
     }
 }

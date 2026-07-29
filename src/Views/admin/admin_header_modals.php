@@ -127,8 +127,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- 2. Logo Modal (تم تحديثه ليتوافق مع الـ API) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
@@ -174,9 +172,6 @@
         </div>
     </div>
 </div>
-
-
-
 <!-- 3. المودل الكامل للإعلان مع الحفاظ على التصميم وكل الحقول -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -300,7 +295,6 @@
         </div>
     </div>
 </div>
-
 <!-- 4. مودل إدارة القائمة الرئيسية (Menu Edit Modal) -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -353,7 +347,6 @@
         </div>
     </div>
 </div>
-
 <!-- مودل إدارة اللغات (Lang Edit Modal) -->
 <div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -402,7 +395,6 @@
         </div>
     </div>
 </div>
-
 <!-- Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -456,7 +448,6 @@
         </div>
     </div>
 </div>
-
 <!-- Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

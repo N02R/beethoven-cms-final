@@ -36,9 +36,6 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/header.css">
 
-
-
-
   <style>
     .editable-wrapper { position: relative; }
     .edit-pen {
@@ -187,4 +184,3 @@ $is_visible = ($is_published && $is_in_time);
       </div>
     </div>
 </header>
-

@@ -101,6 +101,7 @@ use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\SettingsController;
 use App\Controllers\Admin\ConfigController;
 use App\Controllers\Admin\UploadController;
+use App\Controllers\Admin\AuthController;
 
 $router = new Router();
 
@@ -148,6 +149,8 @@ $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save'])
 $router->add('POST', 'admin/config/save', [ConfigController::class, 'save']);
 $router->add('POST', 'admin/upload-image', [UploadController::class, 'uploadImage']);
 $router->add('GET', 'admin/logout', [DashboardController::class, 'logout']);
+$router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
+$router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
 
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch

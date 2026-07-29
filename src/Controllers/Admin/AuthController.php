@@ -173,6 +173,70 @@ class AuthController {
     }
 
     /**
+     * عرض صفحة إدخال رمز التحقق الثنائي (2FA)
+     */
+    public function show2fa(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['pending_2fa_user']) || !isset($_SESSION['2fa_code'])) {
+            header("Location: index.php?url=admin/login");
+            exit;
+        }
+
+        $error_message = $_GET['error'] ?? '';
+        
+        $root_path = realpath(__DIR__ . '/../../../');
+        $view_file = $root_path . '/src/Views/admin/verify_2fa.php';
+        
+        if (file_exists($view_file)) {
+            require_once $view_file;
+        } else {
+            echo "2FA View file not found.";
+        }
+    }
+
+    /**
+     * معالجة التحقق من رمز 2FA المدخل
+     */
+    public function verify2fa(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['pending_2fa_user']) || !isset($_SESSION['2fa_code'])) {
+            header("Location: index.php?url=admin/login");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $entered_code = trim($_POST['verification_code'] ?? '');
+            
+            if (time() > ($_SESSION['2fa_expiry'] ?? 0)) {
+                unset($_SESSION['pending_2fa_user'], $_SESSION['2fa_code'], $_SESSION['2fa_expiry']);
+                header("Location: index.php?url=admin/login&error=" . urlencode('انتهت صلاحية رمز التحقق الثنائي. يرجى تسجيل الدخول مرة أخرى.'));
+                exit;
+            }
+
+            if (hash_equals((string)$_SESSION['2fa_code'], (string)$entered_code)) {
+                $_SESSION['is_logged_in'] = true;
+                $_SESSION['role'] = 'admin';
+                $_SESSION['admin_username'] = $_SESSION['pending_2fa_user'];
+
+                unset($_SESSION['pending_2fa_user'], $_SESSION['2fa_code'], $_SESSION['2fa_expiry']);
+                session_regenerate_id(true);
+
+                header("Location: index.php?url=admin/dashboard");
+                exit;
+            } else {
+                header("Location: index.php?url=admin/verify-2fa&error=" . urlencode('رمز التحقق الثنائي غير صحيح. يرجى المحاولة مرة أخرى.'));
+                exit;
+            }
+        }
+    }
+
+    /**
      * تسجيل الخروج
      */
     public function logout(): void {

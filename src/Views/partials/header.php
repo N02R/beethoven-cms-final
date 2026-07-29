@@ -188,10 +188,3 @@ $is_visible = ($is_published && $is_in_time);
     </div>
 </header>
 
-<?php 
-// تضمين نوافذ المودال الخاصة بالتعديل للمشرف إن وجد الملف
-$admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
-if ($is_admin && file_exists($admin_modals_file)) { 
-    include_once $admin_modals_file; 
-} 
-?>

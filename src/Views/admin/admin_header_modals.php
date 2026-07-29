@@ -1,3 +1,8 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
+?>
 
 <style>
     :root {
@@ -147,8 +152,9 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
 
                     <!-- 2. إرسال القيم الحالية للعنوان والإيميل لكي لا تصل فارغة إلى الـ API -->
-                    <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_title', 'BCS')); ?>">
-                    <input type="hidden" name="site_email" value="<?php echo htmlspecialchars(get_setting($pdo, 'site_email', 'info@example.com')); ?>">
+<input type="hidden" name="site_title" value="<?php echo htmlspecialchars(get_setting('site_title', 'BCS')); ?>">
+<input type="hidden" name="site_email" value="<?php echo htmlspecialchars(get_setting('site_email', 'info@example.com')); ?>">
+
 
                     <!-- 3. مسار الشعار الجديد المخزن بعد الرفع الفوري عبر ImageUploader -->
                     <input type="hidden" name="site_logo_path" id="logoUrlInput" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">

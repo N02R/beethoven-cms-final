@@ -31,10 +31,10 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- ملفات التنسيق المحلية -->
-  <link rel="stylesheet" href="/public/assets/css/bootstrap.min.css"> 
-  <link rel="stylesheet" href="/public/assets/css/main.css">
-  <link rel="stylesheet" href="/public/assets/css/style.css">
-  <link rel="stylesheet" href="/public/assets/css/header.css">
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/header.css">
 
 
 

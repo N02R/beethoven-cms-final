@@ -170,12 +170,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </footer>
 <!-- footer end -->
 <?php 
-// تضمين نوافذ المودال الخاصة بالتعديل للمشرف إن وجد الملف
-$admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
+// التصحيح: المسار الصحيح لوقوع ملف مودلات الهيدر داخل src/Views/admin/
+$admin_modals_file = __DIR__ . '/../src/Views/admin/admin_header_modals.php';
 if ($is_admin && file_exists($admin_modals_file)) { 
     include_once $admin_modals_file; 
 } 
 ?>
+
 
 <?php 
 // 1. حقن ملفات الـ JS الديناميكية الخاصة بكل صفحة (مثل Swiper JS)

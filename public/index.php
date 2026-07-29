@@ -1,13 +1,25 @@
 <?php
 declare(strict_types=1);
 
-// تفعيل رؤوس الأمان الأوروبية (Security Headers)
+// 1. السماح بالوصول وتفعيل رؤوس الأمان الأوروبية (Security Headers)
+define('ALLOWED_ACCESS', true);
+
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// تسجيل Autoloader الشامل
+// 2. تفعيل رؤوس حماية الجلسة والكوكي المركزية
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.use_strict_mode', '1');
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', '1');
+    }
+    session_start();
+}
+
+// 3. تسجيل Autoloader الشامل
 spl_autoload_register(function (string $class) {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
@@ -61,9 +73,24 @@ use App\Controllers\Services\AusbildungPackageController;
 use App\Controllers\Guide\GuideBlog1Controller;
 use App\Controllers\Guide\GuideBlog2Controller;
 use App\Controllers\Guide\GuideBlog3Controller;
+
+// استدعاء متحكمات لوحة التحكم والإدارة (Admin Controllers)
+use App\Controllers\Admin\AuthController;
+use App\Controllers\Admin\DashboardController;
+
 $router = new Router();
 
-// تسجيل المسارات النظيفة والإنتاجية (Clean URLs)
+// ===============================================
+//           مسارات واجهات الإدارة (ADMIN)
+// ===============================================
+$router->add('GET', 'admin/login', [AuthController::class, 'login']);
+$router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
+$router->add('GET', 'admin/logout', [AuthController::class, 'logout']);
+$router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
+
+// ===============================================
+//         تسجيل المسارات النظيفة (Clean URLs)
+// ===============================================
 $router->add('GET', '', [HomeController::class, 'index']);                 
 $router->add('GET', 'home', [HomeController::class, 'index']);               
 $router->add('GET', 'about', [AboutController::class, 'index']);             
@@ -95,9 +122,12 @@ $router->add('GET', 'job-services/vocational', [AusbildungPackageController::cla
 $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);
-// معالجة الـ URI الوارد بدقة تامة
+
+// ===============================================
+//          معالجة الـ URI الوارد وتنفيذه
+// ===============================================
 $uri = $_GET['url'] ?? '';
-if ($uri === '/' ) {
+if ($uri === '/') {
     $uri = '';
 }
 

@@ -143,6 +143,8 @@ $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index'])
 // ==========================================
 // 2. مسارات لوحة التحكم (Admin Routes)
 // ==========================================
+$router->add('GET', 'admin/login', [AuthController::class, 'showLogin']);
+$router->add('POST', 'admin/login/process', [AuthController::class, 'processLogin']);
 $router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
 $router->add('GET', 'admin/settings', [SettingsController::class, 'index']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);

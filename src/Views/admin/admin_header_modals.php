@@ -846,7 +846,7 @@
 
             if (statusDiv) statusDiv.style.display = 'block';
 
-            fetch('admin/api/ImageUploader.php', {
+            fetch('src/Services/ImageUploader.php', {
                 method: 'POST',
                 body: formData
             })
@@ -894,7 +894,7 @@
 
             if (statusDiv) statusDiv.style.display = 'block';
 
-            fetch('admin/api/ImageUploader.php', {
+            fetch('src/Services/ImageUploader.php', {
                 method: 'POST',
                 body: formData
             })
@@ -939,7 +939,7 @@
 
         if (statusDiv) statusDiv.style.display = 'block';
 
-        fetch('admin/api/ImageUploader.php', {
+        fetch('src/Services/ImageUploader.php', {
             method: 'POST',
             body: formData
         })
@@ -1143,7 +1143,7 @@
 
 
     // ==========================================
-    // 3. معالجة إرسال النماذج وتغيير محتوى الإعلانات
+    // 3. إدارة تبديل محتوى الإعلانات
     // ==========================================
 
     function toggleAdContent(val) { 
@@ -1152,47 +1152,6 @@
         if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
-
-    // معالجة إرسال النماذج بشكل عام
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            let originalText = '';
-            if (submitBtn) {
-                originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> جاري الحفظ...';
-                submitBtn.disabled = true;
-            }
-
-            const formData = new FormData(this);
-            fetch('admin/api/save_config.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('تم الحفظ بنجاح');
-                    location.reload();
-                } else {
-                    alert('خطأ: ' + (data.message || 'حدث خطأ غير معروف'));
-                    if (submitBtn) {
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
-                if (submitBtn) {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
-            });
-        });
-    });
 </script>
+
 

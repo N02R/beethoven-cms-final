@@ -63,13 +63,17 @@ if (!defined('ALLOWED_ACCESS')) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../index.php" target="_blank"><i class="bi bi-globe"></i> استعراض الموقع</a>
+<!-- القديم: href="../index.php" -->
+<a class="nav-link" href="index.php" target="_blank"><i class="bi bi-globe"></i> استعراض الموقع</a>
+
           </li>
           <li class="nav-item my-2">
             <hr class="border-secondary opacity-25">
           </li>
           <li class="nav-item">
-            <a class="nav-link text-danger" href="logout.php"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
+<!-- القديم: href="logout.php" -->
+<a class="nav-link text-danger" href="index.php?url=admin/logout"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
+
           </li>
         </ul>
       </div>
@@ -209,10 +213,12 @@ if (!defined('ALLOWED_ACCESS')) {
             <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-primary me-2"></i> التعديل الفوري للموقع</h5>
             <p class="text-muted small">يمكنك الانتقال للموقع كمسؤول، واستخدام أزرار التعديل العائمة والسريعة المرتبطة مباشرة بالنظام.</p>
             <div class="d-grid gap-2">
-              <a href="../index.php" target="_blank" class="btn btn-outline-primary text-start p-2 fw-semibold d-flex align-items-center justify-content-between">
-                <span><i class="bi bi-pencil-square me-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً</span>
-                <i class="bi bi-arrow-left"></i>
-              </a>
+<!-- القديم: href="../index.php" -->
+<a href="index.php" target="_blank" class="btn btn-outline-primary text-start p-2 fw-semibold d-flex align-items-center justify-content-between">
+  <span><i class="bi bi-pencil-square me-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً</span>
+  <i class="bi bi-arrow-left"></i>
+</a>
+
             </div>
           </div>
         </div>

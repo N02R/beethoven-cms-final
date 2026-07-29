@@ -24,7 +24,16 @@ class HomeController {
         $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
         
         $data = $global_data;
-        $is_admin = !empty($_SESSION['is_admin']);
+
+        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في AuthController
+        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+        $user_role = $_SESSION['role'] ?? '';
+        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+
+        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
         // متغيرات إضافية قد تحتاجها الـ View
         $path_prefix = '/';

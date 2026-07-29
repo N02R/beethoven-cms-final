@@ -6,7 +6,6 @@ if (!isset($path_prefix)) {
 ?>
 
 <!--footer start -->
-
 <section class="consult-banner-section" style="position: relative;">
     <?php if ($is_admin): ?>
         <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" style="top: 10px; right: 10px;">
@@ -22,7 +21,6 @@ if (!isset($path_prefix)) {
                     <p><?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?></p>
                 </div>
                 
-                <!-- تصميمك القديم تماماً بدون أي تعديل خارجي -->
                 <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
                     <input type="email" id="consultEmailInput" name="email" placeholder="ادخل إيميلك..." required />
                     <button type="button" id="openConsentModalBtn"><img src="<?php echo $path_prefix; ?>assets/img/home/send-2.svg" alt="إرسال"></button>
@@ -66,38 +64,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('consultEmailInput');
     const openBtn = document.getElementById('openConsentModalBtn');
     
-    // إنشاء كائن Bootstrap Modal
     const consentModalElement = document.getElementById('privacyConsentModal');
     const consentModal = new bootstrap.Modal(consentModalElement);
     const confirmBtn = document.getElementById('confirmAndSendBtn');
     const modalCheckbox = document.getElementById('modalPrivacyCheckbox');
 
-    // عند الضغط على زر الإرسال في التصميم الأصلي
     openBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        
-        // التحقق أولاً إذا كان حقل الإيميل صالحاً وممتلئاً
         if (!emailInput.value || !emailInput.checkValidity()) {
-            emailInput.reportValidity(); // إظهار رسالة المتصفح الافتراضية للإيميل
+            emailInput.reportValidity();
             return;
         }
-
-        // إظهار النافذة المنبثقة العالمية
-        modalCheckbox.checked = false; // إعادة ضبط الـ Checkbox داخل البوب أب
+        modalCheckbox.checked = false;
         consentModal.show();
     });
 
-    // عند الضغط على "موافق وإرسال الطلب" من داخل الـ Popup
     confirmBtn.addEventListener('click', function() {
         if (!modalCheckbox.checked) {
             alert('يجب الموافقة على شروط سياسة الخصوصية للمتابعة.');
             return;
         }
-
-        // إغلاق النافذة المنبثقة
         consentModal.hide();
 
-        // تجهيز البيانات وإرسالها عبر AJAX
         const formData = new FormData();
         formData.append('email', emailInput.value);
         formData.append('privacy_consent', 'on');
@@ -123,17 +111,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">
         <div class="row gy-5">
-            <!-- 1. اللوجو والوصف -->
             <div class="col-12 col-lg-5">
                 <img src="<?php echo $path_prefix . ($data['site_logo_path'] ?? 'assets/img/logo.png'); ?>" alt="BCS Logo" class="mb-4">
                 <p class="footer-desc"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></p>
             </div>
 
-            <!-- 2. العمود الثاني (مربوط بالـ Menu) -->
             <div class="col-12 col-md-6 col-lg-3">
                 <h5><?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?></h5>
                 <div class="quick-link">
@@ -143,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
-            <!-- 3. العمود الثالث (تواصل معنا - ديناميكي) -->
             <div class="col-12 col-md-6 col-lg-4">
                 <h5><?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?></h5>
                 <div class="contact-link">
@@ -169,32 +153,28 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </footer>
 <!-- footer end -->
+
 <?php 
-// التصحيح: المسار الصحيح لوقوع ملف مودلات الهيدر داخل src/Views/admin/
-$admin_modals_file = __DIR__ . '/../src/Views/admin/admin_header_modals.php';
+// تضمين نوافذ المودال الخاصة بالتعديل للمشرف بالمسار الصحيح داخل الـ Views
+$admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
 if ($is_admin && file_exists($admin_modals_file)) { 
     include_once $admin_modals_file; 
 } 
 ?>
 
-
 <?php 
-// 1. حقن ملفات الـ JS الديناميكية الخاصة بكل صفحة (مثل Swiper JS)
 if (isset($page_js) && is_array($page_js)) {
     echo "<!-- Dynamic JS Injector -->" . PHP_EOL;
     foreach ($page_js as $js_file) {
-        // تنظيف المسار لضمان عدم تكرار الشرطة المائلة /
         $clean_js = ltrim($js_file, '/');
         echo '<script src="' . $path_prefix . $clean_js . '?v=' . time() . '"></script>' . PHP_EOL;
     }
 }
 ?>
 
-<!-- المكتبات والملفات الأساسية للموقع -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo $path_prefix; ?>assets/js/main.js?v=<?php echo time(); ?>"></script>
 
-<!-- 2. تشغيل السكربت المخصص الممرّر من الصفحة (مثل تهيئة Swiper) -->
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
 </body>
 </html>

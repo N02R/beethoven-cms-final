@@ -55,10 +55,12 @@ class HomeController {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/includes/footer.php';
+        // 3. استدعاء الفوتر المشترك (تم تصحيح المسار هنا)
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
+        } else {
+            echo "<div class='container py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

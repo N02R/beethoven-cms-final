@@ -39,10 +39,12 @@ class HomeController {
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css'];
 
-        // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/includes/header.php';
+        // 1. استدعاء الهيدر المشترك من مكانه الصحيح في الـ Views
+        $header_file = __DIR__ . '/../Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
+        } else {
+            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
         // 2. استدعاء ملف الـ View الرئيسي (home.php)

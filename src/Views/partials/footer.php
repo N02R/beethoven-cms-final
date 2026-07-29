@@ -176,5 +176,27 @@ if (isset($page_js) && is_array($page_js)) {
 <script src="<?php echo $path_prefix; ?>assets/js/main.js?v=<?php echo time(); ?>"></script>
 
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تفعيل جميع أزرار التعديل يدوياً لضمان العمل على Termux
+    const editButtons = document.querySelectorAll('.edit-pen');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetModalId = this.getAttribute('data-bs-target');
+            if (targetModalId) {
+                const modalElement = document.querySelector(targetModalId);
+                if (modalElement) {
+                    const modalInstance = new bootstrap.Modal(modalElement);
+                    modalInstance.show();
+                } else {
+                    console.error('Modal not found: ' + targetModalId);
+                }
+            }
+        });
+    });
+});
+</script>
+
 </body>
 </html>

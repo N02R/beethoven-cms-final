@@ -1,18 +1,42 @@
 <?php
 declare(strict_types=1);
 
-// بدء الجلسة في أول الملف كعنصر أساسي للنظام
+/**
+ * Beethoven CMS - Entry Point (public/index.php)
+ * إدارة الجلسات الآمنة ورؤوس الأمان والتوجيه المركزي للمشروع
+ */
+
+// 1. تطبيق معايير الأمان لإعدادات الجلسة (Secure Session Cookie Setup)
 if (session_status() === PHP_SESSION_NONE) {
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    
+    session_set_cookie_params([
+        'lifetime' => 0,                    // تنتهي الجلسة بإغلاق المتصفح
+        'path'     => '/',
+        'domain'   => '',                   
+        'secure'   => $isSecure,            // HTTPS حصرياً عند توفره
+        'httponly' => true,                 // حماية من هجمات XSS
+        'samesite' => 'Strict'              // حماية صارمة ضد هجمات CSRF
+    ]);
+
     session_start();
+
+    // حماية من تثبيت الجلسة (Session Fixation): تجديد ID الجلسة كل 30 دقيقة
+    if (!isset($_SESSION['CREATED'])) {
+        $_SESSION['CREATED'] = time();
+    } else if (time() - $_SESSION['CREATED'] > 1800) {
+        session_regenerate_id(true);
+        $_SESSION['CREATED'] = time();
+    }
 }
 
-// تفعيل رؤوس الأمان (Security Headers)
+// 2. تفعيل رؤوس الأمان الشاملة (Security Headers)
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// تسجيل Autoloader الشامل بالنظام
+// 3. تسجيل Autoloader الشامل للنظام
 spl_autoload_register(function (string $class) {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
@@ -20,7 +44,7 @@ spl_autoload_register(function (string $class) {
     if (strncmp($prefix, $class, strlen($prefix)) === 0) {
         $relativeClass = substr($class, strlen($prefix));
 
-        // إذا كان الاستدعاء لكلاس ينتمي إلى App\Config
+        // معالجة كلاسات التهيئة وقواعد البيانات (Config & Database)
         if (strpos($relativeClass, 'Config\\') === 0) {
             $file = __DIR__ . '/../' . str_replace(['Config\\', '\\'], ['database/', '/'], $relativeClass) . '.php';
             if (!file_exists($file)) {
@@ -39,6 +63,7 @@ spl_autoload_register(function (string $class) {
 require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;
+
 // Controllers الخاصة بالواجهة الأمامية
 use App\Controllers\HomeController;
 use App\Controllers\ServiceController;
@@ -73,6 +98,8 @@ use App\Controllers\Guide\GuideBlog3Controller;
 
 // Controllers الخاصة بلوحة التحكم (Admin)
 use App\Controllers\Admin\SettingsController;
+use App\Controllers\Admin\ConfigController;
+use App\Controllers\Admin\UploadController;
 
 $router = new Router();
 
@@ -116,6 +143,10 @@ $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index'])
 // ==========================================
 $router->add('GET', 'admin/settings', [SettingsController::class, 'index']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
+$router->add('POST', 'admin/config/save', [ConfigController::class, 'save']);
+
+// مسار رفع الصور الجديد
+$router->add('POST', 'admin/upload-image', [UploadController::class, 'uploadImage']);
 
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch

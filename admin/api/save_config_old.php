@@ -1628,118 +1628,39 @@ switch ($action) {
         ];
         break;
 
-    // --- صفحة التخصصات الطبية (Medical Specialties Page) ---
-    case 'update_medical_specialties_breadcrumb':
-        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
-        $data['medical_specialties_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
-        $data['medical_specialties_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
-        break;
-
-    case 'update_medical_specialties_hero':
-        $job_upload_path = __DIR__ . '/../../assets/img/job/';
-        $img_path = handle_upload('hero_img', $job_upload_path);
-        
-        if ($img_path) {
-            $filename = basename($img_path);
-            $img_path = 'assets/img/job/' . $filename;
-        }
-
-        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
-        $data['medical_specialties_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/job/servicesimg1.png');
-        $data['medical_specialties_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
-        break;
-
-    case 'update_medical_specialties_main':
-        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
-        $data['medical_specialties_page']['main_title'] = trim($_POST['main_title'] ?? '');
-        $data['medical_specialties_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
-        break;
-
-    case 'update_medical_specialties_card':
-        if (!isset($data['medical_specialties_page'])) { $data['medical_specialties_page'] = []; }
-        
-        $item_title = trim($_POST['item_title'] ?? 'قائمة أكثر التخصصات الطبية انتشارا');
-        $item_sub   = trim($_POST['item_sub'] ?? 'اختر تخصصك الطبي');
-        $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
-        
-        $new_file = handle_document_upload('item_file', $files_upload_path);
-        $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/medical_specialties_list.pdf');
-
-        $data['medical_specialties_page']['download_item'] = [
-            'type'  => ($item_type === 'word' || $item_type === 'docx') ? 'word' : 'pdf',
-            'title' => $item_title,
-            'sub'   => $item_sub,
-            'file'  => $final_file
-        ];
-        break;
-
-    // --- صفحة باقة التدريب المهني Ausbildung Page ---
-    case 'update_ausbildung_breadcrumb':
-        if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
-        $data['ausbildung_package_page']['page_breadcrumb']     = trim($_POST['page_breadcrumb'] ?? '');
-        $data['ausbildung_package_page']['page_breadcrumb_url'] = format_service_url($_POST['page_breadcrumb_url'] ?? '#');
-        break;
-
-    case 'update_ausbildung_hero':
-        $job_upload_path = __DIR__ . '/../../assets/img/job/';
-        $img_path = handle_upload('hero_img', $job_upload_path);
-        
-        if ($img_path) {
-            $filename = basename($img_path);
-            $img_path = 'assets/img/job/' . $filename;
-        }
-
-        if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
-        $data['ausbildung_package_page']['hero_img']      = $img_path ?: trim($_POST['old_img'] ?? 'assets/img/job/servicesimg2.png');
-        $data['ausbildung_package_page']['hero_position'] = trim($_POST['hero_position'] ?? 'center center');
-        break;
-
-    case 'update_ausbildung_main':
-        if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
-        $data['ausbildung_package_page']['main_title'] = trim($_POST['main_title'] ?? '');
-        $data['ausbildung_package_page']['main_desc']  = trim($_POST['main_desc'] ?? '');
-        break;
-
-    case 'update_ausbildung_notes':
-        if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
-        $data['ausbildung_package_page']['note_text'] = trim($_POST['note_text'] ?? '');
-        break;
-
-    case 'update_ausbildung_card':
-        if (!isset($data['ausbildung_package_page'])) { $data['ausbildung_package_page'] = []; }
-        
-        $item_title = trim($_POST['item_title'] ?? 'عرض واتفاقية التدريب والتأهيل المهني');
-        $item_sub   = trim($_POST['item_sub'] ?? 'Example');
-        $item_type  = strtolower($_POST['item_type'] ?? 'pdf');
-        
-        $new_file = handle_document_upload('item_file', $files_upload_path);
-        $final_file = $new_file ?: trim($_POST['old_file'] ?? 'assets/files/ausbildung_agreement.pdf');
-
-        $data['ausbildung_package_page']['download_item'] = [
-            'type'  => ($item_type === 'word' || $item_type === 'docx') ? 'word' : 'pdf',
-            'title' => $item_title,
-            'sub'   => $item_sub,
-            'file'  => $final_file
-        ];
-        break;
-
     default:
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Action invalid: ' . $action]);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'إجراء غير معروف أو مفقود (Invalid Action).'
+        ]);
         exit;
 }
 
-// 6. الحفظ الآمن في ملف الـ JSON مع تفعيل قفل الملفات (File Locking) لمنع أي تضارب أو فساد للبيانات
-$file_handle = fopen($file, 'w');
-if ($file_handle) {
-    if (flock($file_handle, LOCK_EX)) {
-        fwrite($file_handle, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        flock($file_handle, LOCK_UN);
-    }
-    fclose($file_handle);
-    echo json_encode(['success' => true, 'message' => 'تم الحفظ وتحديث الإعدادات بنجاح وأمان.']);
+// 6. حفظ البيانات المحدثة في ملف JSON بأسلوب آمن ومنسق
+$json_flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+$encoded_data = json_encode($data, $json_flags);
+
+if ($encoded_data === false) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'حدث خطأ أثناء ترميز البيانات إلى JSON: ' . json_last_error_msg()
+    ]);
+    exit;
+}
+
+// استخدام LOCK_EX لضمان عدم تضارب الكتابة عند وجود طلبات متزامنة
+if (file_put_contents($file, $encoded_data, LOCK_EX) !== false) {
+    echo json_encode([
+        'success' => true, 
+        'message' => 'تم حفظ وتحديث الإعدادات بنجاح!'
+    ]);
 } else {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'خطأ أثناء الكتابة وحفظ الملف على الخادم.']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'تعذر كتابة البيانات في ملف JSON. يرجى التحقق من أذونات المجلد (Permissions).'
+    ]);
 }
 exit;

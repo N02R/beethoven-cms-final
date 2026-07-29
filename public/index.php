@@ -1,35 +1,31 @@
 <?php
 declare(strict_types=1);
 
-// 1. السماح بالوصول وتفعيل رؤوس الأمان الأوروبية (Security Headers)
-define('ALLOWED_ACCESS', true);
+// بدء الجلسة في أول الملف كعنصر أساسي للنظام
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// تفعيل رؤوس الأمان (Security Headers)
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
 header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
-// 2. تفعيل رؤوس حماية الجلسة والكوكي المركزية
-if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', '1');
-    ini_set('session.use_strict_mode', '1');
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', '1');
-    }
-    session_start();
-}
-
-// 3. تسجيل Autoloader الشامل
+// تسجيل Autoloader الشامل بالنظام
 spl_autoload_register(function (string $class) {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
-    $configDir = __DIR__ . '/../config/';
 
     if (strncmp($prefix, $class, strlen($prefix)) === 0) {
         $relativeClass = substr($class, strlen($prefix));
-        
+
+        // إذا كان الاستدعاء لكلاس ينتمي إلى App\Config
         if (strpos($relativeClass, 'Config\\') === 0) {
-            $file = $configDir . str_replace(['Config\\', '\\'], ['', '/'], $relativeClass) . '.php';
+            $file = __DIR__ . '/../' . str_replace(['Config\\', '\\'], ['database/', '/'], $relativeClass) . '.php';
+            if (!file_exists($file)) {
+                $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+            }
         } else {
             $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
         }
@@ -43,6 +39,7 @@ spl_autoload_register(function (string $class) {
 require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;
+// Controllers الخاصة بالواجهة الأمامية
 use App\Controllers\HomeController;
 use App\Controllers\ServiceController;
 use App\Controllers\AboutController;
@@ -63,7 +60,7 @@ use App\Controllers\Services\GeneralVisaController;
 use App\Controllers\Services\GermanLangController;
 use App\Controllers\Services\OffersServiceController;
 use App\Controllers\Services\LivingCostController;
-use App\Controllers\Services\MotivationLetterController; // المتحكم المحدث
+use App\Controllers\Services\MotivationLetterController;
 use App\Controllers\Services\OffersPageController;
 use App\Controllers\Services\ServiceCostController;
 use App\Controllers\Services\MedicalPackageController;
@@ -74,23 +71,14 @@ use App\Controllers\Guide\GuideBlog1Controller;
 use App\Controllers\Guide\GuideBlog2Controller;
 use App\Controllers\Guide\GuideBlog3Controller;
 
-// استدعاء متحكمات لوحة التحكم والإدارة (Admin Controllers)
-use App\Controllers\Admin\AuthController;
-use App\Controllers\Admin\DashboardController;
+// Controllers الخاصة بلوحة التحكم (Admin)
+use App\Controllers\Admin\SettingsController;
 
 $router = new Router();
 
-// ===============================================
-//           مسارات واجهات الإدارة (ADMIN)
-// ===============================================
-$router->add('GET', 'admin/login', [AuthController::class, 'login']);
-$router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
-$router->add('GET', 'admin/logout', [AuthController::class, 'logout']);
-$router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
-
-// ===============================================
-//         تسجيل المسارات النظيفة (Clean URLs)
-// ===============================================
+// ==========================================
+// 1. مسارات الواجهة الأمامية (Public Routes)
+// ==========================================
 $router->add('GET', '', [HomeController::class, 'index']);                 
 $router->add('GET', 'home', [HomeController::class, 'index']);               
 $router->add('GET', 'about', [AboutController::class, 'index']);             
@@ -112,7 +100,7 @@ $router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'inde
 $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'index']);
 $router->add('GET', 'edu-services/health', [OffersServiceController::class, 'index']);
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
-$router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']); // مسار صفحة خطاب الدافع
+$router->add('GET', 'edu-services/motivitionletter', [MotivationLetterController::class, 'index']);
 $router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'job-services/medical-pakeges', [MedicalPackageController::class, 'index']);
@@ -123,9 +111,15 @@ $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index'])
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);
 
-// ===============================================
-//          معالجة الـ URI الوارد وتنفيذه
-// ===============================================
+// ==========================================
+// 2. مسارات لوحة التحكم (Admin Routes)
+// ==========================================
+$router->add('GET', 'admin/settings', [SettingsController::class, 'index']);
+$router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
+
+// ==========================================
+// 3. معالجة الـ URI والـ Dispatch
+// ==========================================
 $uri = $_GET['url'] ?? '';
 if ($uri === '/') {
     $uri = '';

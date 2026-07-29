@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Config\Database;
 use Exception;
 use PDO;
 use RuntimeException;
@@ -23,13 +24,17 @@ class ImageUploader
     ];
 
     public function __construct(
-        string $uploadDir,
-        int $maxFileSize = 5 * 1024 * 1024, // 5 ميجابايت كحد أقصى
+        ?string $uploadDir = null,
+        int $maxFileSize = 5 * 1024 * 1024, // 5 ميجابايت
         int $maxWidth = 1920,
         int $maxHeight = 1920,
         int $webpQuality = 85
     ) {
-        $this->uploadDir = rtrim($uploadDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        // إذا لم يُحدد مسار، يتم الاعتماد على مجلد public/uploads الخاص بالنظام الجديد
+        $defaultDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads';
+        $targetDir = $uploadDir ?? $defaultDir;
+
+        $this->uploadDir = rtrim($targetDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $this->maxFileSize = $maxFileSize;
         $this->maxWidth = $maxWidth;
         $this->maxHeight = $maxHeight;
@@ -37,32 +42,39 @@ class ImageUploader
 
         if (!is_dir($this->uploadDir)) {
             if (!mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
-                throw new RuntimeException('Failed to create upload directory.');
+                throw new RuntimeException('فشل في إنشاء مجلد رفع الصور.');
             }
         }
     }
 
-    public function upload(array $file, PDO $pdo): string
+    /**
+     * رفع ومعالجة الصورة وتخزينها في النظام
+     */
+    public function upload(array $file): string
     {
-        $this->validateUploadError($file['error']);
-        $this->validateFileSize($file['size']);
-        $this->validateFileExtension($file['name']);
-        $this->validateMimeAndContent($file['tmp_name']);
+        $this->validateUploadError($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        $this->validateFileSize($file['size'] ?? 0);
+        $this->validateFileExtension($file['name'] ?? '');
+        
+        // جلب الـ Mime Type الحقيقي والأمن للملف
+        $detectedMime = $this->detectAndValidateMime($file['tmp_name'] ?? '');
 
         $finalFilename = $this->generateSecureFilename();
         $destinationPath = $this->uploadDir . $finalFilename;
 
-        // منع الكتابة الفوقية للملفات
         if (file_exists($destinationPath)) {
             $finalFilename = $this->generateSecureFilename();
             $destinationPath = $this->uploadDir . $finalFilename;
         }
 
         try {
-            $this->processAndConvertToWebP($file['tmp_name'], $destinationPath, $file['type']);
-            $this->saveToDatabase($pdo, $finalFilename);
+            // المعالجة باستخدام الـ MIME الحقيقي المفحوص
+            $this->processAndConvertToWebP($file['tmp_name'], $destinationPath, $detectedMime);
             
-            if (is_uploaded_file($file['tmp_name'])) {
+            // التخزين عبر كلاس الاتصال الموحد للنظام الجديد
+            $this->saveToDatabase($finalFilename);
+            
+            if (isset($file['tmp_name']) && is_uploaded_file($file['tmp_name'])) {
                 @unlink($file['tmp_name']);
             }
 
@@ -71,7 +83,7 @@ class ImageUploader
             if (file_exists($destinationPath)) {
                 @unlink($destinationPath);
             }
-            throw new RuntimeException('Image processing failed: ' . $e->getMessage());
+            throw new RuntimeException('فشلت معالجة الصورة: ' . $e->getMessage());
         }
     }
 
@@ -82,13 +94,13 @@ class ImageUploader
         }
 
         $message = match ($error) {
-            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the maximum allowed size.',
-            UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
-            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
-            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
-            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
-            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.',
-            default => 'Unknown upload error.',
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'حجم الملف المرفوع يتجاوز الحد المسموح به.',
+            UPLOAD_ERR_PARTIAL => 'تم رفع جزء من الملف فقط.',
+            UPLOAD_ERR_NO_FILE => 'لم يتم إرفاق أي ملف.',
+            UPLOAD_ERR_NO_TMP_DIR => 'المجلد المؤقت للسيرفر مفقود.',
+            UPLOAD_ERR_CANT_WRITE => 'فشل في كتابة الملف على القرص.',
+            UPLOAD_ERR_EXTENSION => 'تم إيقاف رفع الملف بواسطة إضافة PHP.',
+            default => 'حدث خطأ غير معروف أثناء رفع الملف.',
         };
 
         throw new InvalidArgumentException($message);
@@ -97,7 +109,7 @@ class ImageUploader
     private function validateFileSize(int $size): void
     {
         if ($size <= 0 || $size > $this->maxFileSize) {
-            throw new InvalidArgumentException('File size is invalid or exceeds the allowed limit.');
+            throw new InvalidArgumentException('حجم الملف غير صالح أو يتجاوز الحد المسموح.');
         }
     }
 
@@ -105,23 +117,29 @@ class ImageUploader
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-            throw new InvalidArgumentException('Invalid file extension.');
+            throw new InvalidArgumentException('امتداد الملف غير مسموح به.');
         }
     }
 
-    private function validateMimeAndContent(string $tmpPath): void
+    private function detectAndValidateMime(string $tmpPath): string
     {
+        if (empty($tmpPath) || !file_exists($tmpPath)) {
+            throw new InvalidArgumentException('الملف المؤقت غير موجود.');
+        }
+
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->file($tmpPath);
 
         if (!array_key_exists($mimeType, $this->allowedMimeTypes)) {
-            throw new InvalidArgumentException('Invalid file type or malicious content detected.');
+            throw new InvalidArgumentException('نوع الملف غير مدعوم أو تم اكتشاف محتوى غير آمن.');
         }
 
         $imageInfo = @getimagesize($tmpPath);
         if ($imageInfo === false) {
-            throw new InvalidArgumentException('The uploaded file is not a valid image or is corrupted.');
+            throw new InvalidArgumentException('الملف المرفوع ليس صورة صالحة أو تالف.');
         }
+
+        return $mimeType;
     }
 
     private function generateSecureFilename(): string
@@ -137,11 +155,11 @@ class ImageUploader
             'image/jpeg' => imagecreatefromjpeg($sourcePath),
             'image/png'  => imagecreatefrompng($sourcePath),
             'image/webp' => imagecreatefromwebp($sourcePath),
-            default      => throw new InvalidArgumentException('Unsupported image type for conversion.'),
+            default      => throw new InvalidArgumentException('نوع الصورة غير مدعوم للتحويل.'),
         };
 
         if (!$image) {
-            throw new RuntimeException('Failed to load image resource.');
+            throw new RuntimeException('فشل في تحميل مورد الصورة.');
         }
 
         if ($mimeType === 'image/png' || $mimeType === 'image/webp') {
@@ -170,15 +188,21 @@ class ImageUploader
 
         if (!imagewebp($image, $destinationPath, $this->webpQuality)) {
             imagedestroy($image);
-            throw new RuntimeException('Failed to save WebP image.');
+            throw new RuntimeException('فشل في حفظ صورة WebP.');
         }
 
         imagedestroy($image);
     }
 
-    private function saveToDatabase(PDO $pdo, string $filename): void
+    private function saveToDatabase(string $filename): void
     {
-        $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, created_at) VALUES (:filename, NOW())');
-        $stmt->execute(['filename' => $filename]);
+        try {
+            $pdo = Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, created_at) VALUES (:filename, NOW())');
+            $stmt->execute(['filename' => $filename]);
+        } catch (Exception $e) {
+            // تسجيل الخطأ دون إيقاف عملية الرفع إذا كان تسجيل القاعدة اختيارياً
+            error_log('Failed to log uploaded image to database: ' . $e->getMessage());
+        }
     }
 }

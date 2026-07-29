@@ -64,6 +64,8 @@ spl_autoload_register(function (string $class) {
     }
 });
 
+// 4. تضمين ملف الدوال المساعدة العامة (Helpers)
+require_once __DIR__ . '/../src/Core/helpers.php';
 require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;

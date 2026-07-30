@@ -84,7 +84,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="socialLinksForm" enctype="multipart/form-data">
+                <form id="socialLinksForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
@@ -143,7 +143,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" enctype="multipart/form-data">
+                <form id="logoEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_general_settings">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(function_exists('get_setting') ? get_setting('site_title', 'BCS') : 'BCS'); ?>">
@@ -194,7 +194,7 @@
                     $ad_color = $ad_data['text_color'] ?? '#1e293b';
                     $ad_size = $ad_data['font_size'] ?? '16';
                 ?>
-                <form id="announcementEditForm">
+                <form id="announcementEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
                     <input type="hidden" name="image_path" id="adImageUrl" value="<?php echo htmlspecialchars($ad_img); ?>">
                     
@@ -297,7 +297,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="menuLinksForm">
+                <form id="menuLinksForm" action="/save_config.php" method="POST">
                     <input type="hidden" name="action" value="update_menu">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
@@ -346,7 +346,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="langEditForm">
+                <form id="langEditForm" action="/save_config.php" method="POST">
                     <input type="hidden" name="action" value="update_languages">
                     <div id="langRowsContainer" class="d-flex flex-column gap-2">
                         <?php if (!empty($data['languages'])): ?>
@@ -389,7 +389,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="heroEditForm" enctype="multipart/form-data">
+                <form id="heroEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
                     <?php $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; ?>
                     <div class="row g-3">
@@ -618,4 +618,3 @@
         });
     });
 </script>
-

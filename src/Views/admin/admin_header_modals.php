@@ -849,7 +849,7 @@
                 statusDiv.innerText = 'جاري رفع صورة الإعلان...';
             }
 
-            fetch('index.php?url=admin/upload-image', {
+            fetch('upload_handler.php', {
                 method: 'POST',
                 body: formData
             })
@@ -900,7 +900,7 @@
                 statusDiv.innerText = 'جاري رفع الشعار...';
             }
 
-            fetch('index.php?url=admin/upload-image', {
+            fetch('upload_handler.php', {
                 method: 'POST',
                 body: formData
             })
@@ -949,7 +949,7 @@
             statusDiv.innerText = 'جاري الرفع...';
         }
 
-        fetch('index.php?url=admin/upload-image', {
+        fetch('upload_handler.php', {
             method: 'POST',
             body: formData
         })
@@ -1163,6 +1163,7 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+
 
 
 

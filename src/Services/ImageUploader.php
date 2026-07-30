@@ -116,7 +116,7 @@ class ImageUploader
     private function validateFileExtension(string $filename): void
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp','svg'], true)) {
             throw new InvalidArgumentException('امتداد الملف غير مسموح به.');
         }
     }

@@ -149,16 +149,19 @@ $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index'])
 // ==========================================
 // 2. مسارات لوحة التحكم (Admin Routes)
 // ==========================================
+// ==========================================
+// 2. مسارات لوحة التحكم (Admin Routes)
+// ==========================================
 $router->add('GET', 'admin/login', [AuthController::class, 'login']);
 $router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
 $router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
 $router->add('GET', 'admin/settings', [SettingsController::class, 'index']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
-$router->add('POST', 'admin/config/save', [ConfigController::class, 'save']);
 $router->add('POST', 'admin/upload-image', [UploadController::class, 'uploadImage']);
 $router->add('GET', 'admin/logout', [DashboardController::class, 'logout']);
 $router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
 $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
+
 
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch

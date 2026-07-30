@@ -84,8 +84,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="socialLinksForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
+                <form id="socialLinksForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="row_<?php echo $index; ?>">
@@ -143,18 +144,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
+                <form id="logoEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_general_settings">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
-                    <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(function_exists('get_setting') ? get_setting('site_title', 'BCS') : 'BCS'); ?>">
-                    <input type="hidden" name="site_email" value="<?php echo htmlspecialchars(function_exists('get_setting') ? get_setting('site_email', 'info@example.com') : 'info@example.com'); ?>">
-                    <input type="hidden" name="site_logo_path" id="logoUrlInput" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="site_title" value="<?php echo htmlspecialchars($settings['site_title'] ?? 'Beethoven Services'); ?>">
+                    <input type="hidden" name="site_email" value="<?php echo htmlspecialchars($settings['site_email'] ?? 'info@beethoven.de'); ?>">
+                    <input type="hidden" name="site_logo" id="logoUrlInput" value="<?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?>">
 
                     <div class="mb-4">
                         <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع:</label>
                         <div class="p-3 bg-light rounded border d-inline-block w-100">
-                            <img src="<?php echo $path_prefix . ($site_logo_path ?? '') . '?' . time(); ?>" id="logoPreviewImg" style="max-height: 90px; object-fit: contain;">
-                            <div class="small text-muted mt-2 dir-ltr" id="logoPathText"><?php echo htmlspecialchars($site_logo_path ?? ''); ?></div>
+                            <img src="<?php echo !empty($settings['site_logo']) ? $path_prefix . htmlspecialchars($settings['site_logo']) . '?' . time() : ''; ?>" id="logoPreviewImg" style="max-height: 90px; object-fit: contain; <?php echo empty($settings['site_logo']) ? 'display:none;' : ''; ?>">
+                            <div class="small text-muted mt-2 dir-ltr" id="logoPathText"><?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?></div>
                         </div>
                     </div>
                     
@@ -194,8 +195,9 @@
                     $ad_color = $ad_data['text_color'] ?? '#1e293b';
                     $ad_size = $ad_data['font_size'] ?? '16';
                 ?>
-                <form id="announcementEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
+                <form id="announcementEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
                     <input type="hidden" name="image_path" id="adImageUrl" value="<?php echo htmlspecialchars($ad_img); ?>">
                     
                     <div class="card p-3 mb-4 border" style="background: #f8fafc; border-color: var(--border-color);">
@@ -265,7 +267,7 @@
                         <div id="imageEditor" class="<?php echo ($ad_type == 'image' ? '' : 'd-none'); ?>">
                             <label class="small mb-1 fw-bold">صورة الإعلان الحالية:</label>
                             <div class="mb-2 p-2 border rounded text-center bg-light d-flex align-items-center justify-content-center gap-2">
-                                <img src="<?php echo !empty($ad_img) ? htmlspecialchars('../../' . $ad_img) : ''; ?>" id="adImagePreview" class="thumb-preview" style="width: 80px; height: 40px; object-fit: contain; <?php echo empty($ad_img) ? 'display:none;' : ''; ?>">
+                                <img src="<?php echo !empty($ad_img) ? htmlspecialchars($path_prefix . $ad_img) : ''; ?>" id="adImagePreview" class="thumb-preview" style="width: 80px; height: 40px; object-fit: contain; <?php echo empty($ad_img) ? 'display:none;' : ''; ?>">
                                 <span class="small text-muted dir-ltr" id="adImagePathText"><?php echo htmlspecialchars($ad_img); ?></span>
                             </div>
                             <label class="small mb-1 fw-bold">ارفع صورة جديدة:</label>
@@ -297,8 +299,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="menuLinksForm" action="/admin/config/save" method="POST">
+                <form id="menuLinksForm" action="index.php?url=admin/settings/save" method="POST">
                     <input type="hidden" name="action" value="update_menu">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="menu_row_<?php echo $index; ?>">
@@ -346,8 +349,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="langEditForm" action="/admin/config/save" method="POST">
+                <form id="langEditForm" action="index.php?url=admin/settings/save" method="POST">
                     <input type="hidden" name="action" value="update_languages">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="langRowsContainer" class="d-flex flex-column gap-2">
                         <?php if (!empty($data['languages'])): ?>
                             <?php foreach ($data['languages'] as $index => $lang): ?>
@@ -389,8 +393,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="heroEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
+                <form id="heroEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
                     <?php $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; ?>
                     <div class="row g-3">
                         <div class="col-12">
@@ -454,6 +459,7 @@
 
         const formData = new FormData();
         formData.append('image', file);
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
 
         const statusDiv = document.getElementById('status_' + index);
         const previewImg = document.getElementById('preview_img_' + index);
@@ -462,17 +468,17 @@
 
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري الرفع...'; }
 
-        fetch('/admin/upload-image', { method: 'POST', body: formData })
+        fetch('index.php?url=admin/upload-image', { method: 'POST', body: formData })
         .then(response => response.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';
             if (data.success || data.status === 'success' || data.url) {
-                const imagePath = data.url || data.path || data.image_path;
+                const imagePath = data.url || data.path || (data.data ? data.data.filename : '');
                 if (hiddenInput) hiddenInput.value = imagePath;
                 if (previewImg) { previewImg.src = imagePath + '?' + new Date().getTime(); previewImg.style.display = 'block'; }
                 if (placeholderIcon) placeholderIcon.classList.add('d-none');
             } else {
-                alert('فشل رفع الصورة: ' + (data.message || 'خطأ غير معروف'));
+                alert('فشل رفع الصورة: ' + (data.message || data.error || 'خطأ غير معروف'));
             }
         })
         .catch(error => {
@@ -566,20 +572,23 @@
 
         const formData = new FormData();
         formData.append('image', file);
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
+
         const statusDiv = document.getElementById('logoUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري رفع الشعار...'; }
 
-        fetch('/admin/upload-image', { method: 'POST', body: formData })
+        fetch('index.php?url=admin/upload-image', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';
-            if (data.success || data.url || data.path) {
-                const imgPath = data.url || data.path || data.image_path;
+            if (data.success || data.url || data.path || data.data) {
+                const imgPath = data.url || data.path || data.image_path || (data.data ? data.data.filename : '');
                 document.getElementById('logoUrlInput').value = imgPath;
                 document.getElementById('logoPreviewImg').src = imgPath + '?' + new Date().getTime();
+                document.getElementById('logoPreviewImg').style.display = 'block';
                 document.getElementById('logoPathText').innerText = imgPath;
             } else {
-                alert('فشل رفع الشعار: ' + (data.message || 'خطأ غير معروف'));
+                alert('فشل رفع الشعار: ' + (data.message || data.error || 'خطأ غير معروف'));
             }
         })
         .catch(err => {
@@ -595,22 +604,24 @@
 
         const formData = new FormData();
         formData.append('image', file);
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
+
         const statusDiv = document.getElementById('adUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري الرفع...'; }
 
-        fetch('/admin/upload-image', { method: 'POST', body: formData })
+        fetch('index.php?url=admin/upload-image', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';
-            if (data.success || data.url || data.path) {
-                const imgPath = data.url || data.path || data.image_path;
+            if (data.success || data.url || data.path || data.data) {
+                const imgPath = data.url || data.path || data.image_path || (data.data ? data.data.filename : '');
                 document.getElementById('adImageUrl').value = imgPath;
                 const preview = document.getElementById('adImagePreview');
-                preview.src = '../../' + imgPath + '?' + new Date().getTime();
+                preview.src = imgPath + '?' + new Date().getTime();
                 preview.style.display = 'block';
                 document.getElementById('adImagePathText').innerText = imgPath;
             } else {
-                alert('فشل رفع الصورة: ' + (data.message || 'خطأ غير معروف'));
+                alert('فشل رفع الصورة: ' + (data.message || data.error || 'خطأ غير معروف'));
             }
         })
         .catch(err => {

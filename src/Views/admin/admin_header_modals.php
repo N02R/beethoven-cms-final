@@ -84,7 +84,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="socialLinksForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
+                <form id="socialLinksForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
@@ -143,7 +143,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
+                <form id="logoEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_general_settings">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars(function_exists('get_setting') ? get_setting('site_title', 'BCS') : 'BCS'); ?>">
@@ -194,7 +194,7 @@
                     $ad_color = $ad_data['text_color'] ?? '#1e293b';
                     $ad_size = $ad_data['font_size'] ?? '16';
                 ?>
-                <form id="announcementEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
+                <form id="announcementEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
                     <input type="hidden" name="image_path" id="adImageUrl" value="<?php echo htmlspecialchars($ad_img); ?>">
                     
@@ -297,7 +297,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="menuLinksForm" action="/save_config.php" method="POST">
+                <form id="menuLinksForm" action="/admin/config/save" method="POST">
                     <input type="hidden" name="action" value="update_menu">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
@@ -346,7 +346,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="langEditForm" action="/save_config.php" method="POST">
+                <form id="langEditForm" action="/admin/config/save" method="POST">
                     <input type="hidden" name="action" value="update_languages">
                     <div id="langRowsContainer" class="d-flex flex-column gap-2">
                         <?php if (!empty($data['languages'])): ?>
@@ -389,7 +389,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="heroEditForm" action="/save_config.php" method="POST" enctype="multipart/form-data">
+                <form id="heroEditForm" action="/admin/config/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
                     <?php $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; ?>
                     <div class="row g-3">
@@ -462,7 +462,7 @@
 
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري الرفع...'; }
 
-        fetch('upload_handler.php', { method: 'POST', body: formData })
+        fetch('/admin/upload-image', { method: 'POST', body: formData })
         .then(response => response.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';
@@ -506,6 +506,7 @@
         container.appendChild(div);
         socialCount++;
     }
+
     // إضافة صف جديد للقائمة الرئيسية
     let menuCount = <?php echo count($menu_links ?? []); ?>;
     function addMenuRow() {
@@ -568,7 +569,7 @@
         const statusDiv = document.getElementById('logoUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري رفع الشعار...'; }
 
-        fetch('upload_handler.php', { method: 'POST', body: formData })
+        fetch('/admin/upload-image', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';
@@ -597,7 +598,7 @@
         const statusDiv = document.getElementById('adUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري الرفع...'; }
 
-        fetch('upload_handler.php', { method: 'POST', body: formData })
+        fetch('/admin/upload-image', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(data => {
             if (statusDiv) statusDiv.style.display = 'none';

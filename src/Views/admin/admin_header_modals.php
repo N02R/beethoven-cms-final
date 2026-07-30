@@ -86,7 +86,7 @@
             <div class="modal-body p-4">
                 <form id="socialLinksForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="row_<?php echo $index; ?>">
@@ -146,7 +146,7 @@
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_general_settings">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars($settings['site_title'] ?? 'Beethoven Services'); ?>">
                     <input type="hidden" name="site_email" value="<?php echo htmlspecialchars($settings['site_email'] ?? 'info@beethoven.de'); ?>">
                     <input type="hidden" name="site_logo" id="logoUrlInput" value="<?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?>">
@@ -197,7 +197,7 @@
                 ?>
                 <form id="announcementEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <input type="hidden" name="image_path" id="adImageUrl" value="<?php echo htmlspecialchars($ad_img); ?>">
                     
                     <div class="card p-3 mb-4 border" style="background: #f8fafc; border-color: var(--border-color);">
@@ -301,7 +301,7 @@
             <div class="modal-body p-4">
                 <form id="menuLinksForm" action="index.php?url=admin/settings/save" method="POST">
                     <input type="hidden" name="action" value="update_menu">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="menu_row_<?php echo $index; ?>">
@@ -351,7 +351,7 @@
             <div class="modal-body p-4">
                 <form id="langEditForm" action="index.php?url=admin/settings/save" method="POST">
                     <input type="hidden" name="action" value="update_languages">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <div id="langRowsContainer" class="d-flex flex-column gap-2">
                         <?php if (!empty($data['languages'])): ?>
                             <?php foreach ($data['languages'] as $index => $lang): ?>
@@ -395,7 +395,7 @@
             <div class="modal-body p-4">
                 <form id="heroEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <?php $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; ?>
                     <div class="row g-3">
                         <div class="col-12">
@@ -439,7 +439,6 @@
 
 <!-- Scripts -->
 <script>
-    // الدوال الأساسية لإدارة الرفع الديناميكي والصفوف
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -452,14 +451,13 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 
-    // رفع صور التواصل الفوري
     function uploadSocialImage(inputElement, index) {
         const file = inputElement.files[0];
         if (!file) return;
 
         const formData = new FormData();
         formData.append('image', file);
-        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>');
 
         const statusDiv = document.getElementById('status_' + index);
         const previewImg = document.getElementById('preview_img_' + index);
@@ -487,7 +485,6 @@
         });
     }
 
-    // عدادات الصفوف الديناميكية
     let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -513,7 +510,6 @@
         socialCount++;
     }
 
-    // إضافة صف جديد للقائمة الرئيسية
     let menuCount = <?php echo count($menu_links ?? []); ?>;
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
@@ -542,7 +538,6 @@
         menuCount++;
     }
 
-    // إضافة صف جديد للغات
     let langCount = <?php echo count($data['languages'] ?? []); ?>;
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
@@ -565,14 +560,13 @@
         langCount++;
     }
 
-    // معاينة ورفع شعار الموقع الفوري
     document.getElementById('logoFileInput')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
         const formData = new FormData();
         formData.append('image', file);
-        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>');
 
         const statusDiv = document.getElementById('logoUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري رفع الشعار...'; }
@@ -597,14 +591,13 @@
         });
     });
 
-    // معاينة ورفع صورة الإعلان الفورية
     document.getElementById('adImageFileInput')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
         const formData = new FormData();
         formData.append('image', file);
-        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['settings_csrf'] ?? ''); ?>');
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>');
 
         const statusDiv = document.getElementById('adUploadStatus');
         if (statusDiv) { statusDiv.style.display = 'block'; statusDiv.innerText = 'جاري الرفع...'; }

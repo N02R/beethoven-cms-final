@@ -88,7 +88,7 @@ document.getElementById('configForm').addEventListener('submit', function(e) {
     const formData = new FormData(this);
 
     // 🔗 الربط المباشر مع المسار الجديد في MVC
-    fetch('index.php?url=admin/config/save', {
+    fetch('index.php?url=admin/settings/save', {
         method: 'POST',
         body: formData
     })

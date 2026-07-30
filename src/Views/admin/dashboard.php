@@ -49,7 +49,7 @@ if (!defined('ALLOWED_ACCESS')) {
     <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
       <div class="position-sticky text-center">
         <div class="bg-white p-3 rounded-3 mb-3 shadow-sm d-inline-block w-100">
-          <img src="../<?php echo htmlspecialchars($data['current_logo'] ?? 'assets/img/logo.png', ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع" class="img-fluid" style="max-height: 50px; object-fit: contain;">
+          <img src="<?php echo htmlspecialchars($data['current_logo'] ?? 'assets/img/logo.png', ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع" class="img-fluid" style="max-height: 50px; object-fit: contain;">
         </div>
         <h6 class="text-secondary small fw-bold mb-4">نظام الإدارة الأوروبي</h6>
         <ul class="nav flex-column text-end p-0">
@@ -63,17 +63,13 @@ if (!defined('ALLOWED_ACCESS')) {
             </a>
           </li>
           <li class="nav-item">
-<!-- القديم: href="../index.php" -->
-<a class="nav-link" href="index.php" target="_blank"><i class="bi bi-globe"></i> استعراض الموقع</a>
-
+            <a class="nav-link" href="index.php" target="_blank"><i class="bi bi-globe"></i> استعراض الموقع</a>
           </li>
           <li class="nav-item my-2">
             <hr class="border-secondary opacity-25">
           </li>
           <li class="nav-item">
-<!-- القديم: href="logout.php" -->
-<a class="nav-link text-danger" href="index.php?url=admin/logout"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
-
+            <a class="nav-link text-danger" href="index.php?url=admin/logout"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
           </li>
         </ul>
       </div>
@@ -90,7 +86,7 @@ if (!defined('ALLOWED_ACCESS')) {
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
           <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
-            <i class="bi bi-shield-check ms-1"></i> <?php echo htmlspecialchars($data['role_badge_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+            <i class="bi bi-shield-check ms-1"></i> <?php echo htmlspecialchars($data['role_badge_text'] ?? 'مشرف النظام', ENT_QUOTES, 'UTF-8'); ?>
           </span>
         </div>
       </div>
@@ -213,12 +209,10 @@ if (!defined('ALLOWED_ACCESS')) {
             <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-primary me-2"></i> التعديل الفوري للموقع</h5>
             <p class="text-muted small">يمكنك الانتقال للموقع كمسؤول، واستخدام أزرار التعديل العائمة والسريعة المرتبطة مباشرة بالنظام.</p>
             <div class="d-grid gap-2">
-<!-- القديم: href="../index.php" -->
-<a href="index.php" target="_blank" class="btn btn-outline-primary text-start p-2 fw-semibold d-flex align-items-center justify-content-between">
-  <span><i class="bi bi-pencil-square me-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً</span>
-  <i class="bi bi-arrow-left"></i>
-</a>
-
+              <a href="index.php" target="_blank" class="btn btn-outline-primary text-start p-2 fw-semibold d-flex align-items-center justify-content-between text-dark">
+                <span><i class="bi bi-pencil-square me-2"></i> فتح الصفحة الرئيسية وتعديل المحتوى فوراً</span>
+                <i class="bi bi-arrow-left"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -231,7 +225,7 @@ if (!defined('ALLOWED_ACCESS')) {
                 كافة البيانات مشفرة وتعمل ببروتوكول الفحص والحماية الأوروبي ضد الثغرات.
               </div>
             </div>
-            <p class="small text-muted mb-0">ملف الإعدادات النشط: <code class="bg-light p-1 rounded">announcement_config.json</code></p>
+            <p class="small text-muted mb-0">بيئة التشغيل الآمنة: <code class="bg-light p-1 rounded">Beethoven CMS MVC</code></p>
           </div>
         </div>
       </div>

@@ -1,15 +1,18 @@
 <?php
 declare(strict_types=1);
 
+// استدعاء ملف الدوال لجلب البيانات من قاعدة البيانات
+require_once __DIR__ . '/../../functions.php'; // عدل المسار حسب مكان وجود الهيدر بالنسبة للجذر
+
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
-// جلب المتغيرات الممررة من الـ Controller (مع توفير قيم افتراضية لمنع الأخطاء)
-$site_logo_path  = $data['site_logo_path'] ?? 'assets/img/logo.png';
-$menu_links      = $data['menu_links'] ?? [];
-$social_links    = $data['social_links'] ?? [];
-$languages       = $data['languages'] ?? [];
-$ad              = $data['announcement'] ?? [];
+// جلب الإعدادات مباشرة من قاعدة البيانات عبر دالة get_setting مع قيم افتراضية آمنة
+$site_logo_path  = get_setting('site_logo_path', 'assets/img/logo.png');
+$menu_links      = get_setting('menu_links', []);
+$social_links    = get_setting('social_links', []);
+$languages       = get_setting('languages', []);
+$ad              = get_setting('announcement', []);
 
 // حساب حالة ظهور الإعلان
 $is_published = ($ad['status'] ?? 'Draft') === 'Published';
@@ -19,6 +22,7 @@ if (!empty($ad['start_date']) && $current_time < $ad['start_date']) { $is_in_tim
 if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_in_time = false; }
 $is_visible = ($is_published && $is_in_time);
 ?>
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>

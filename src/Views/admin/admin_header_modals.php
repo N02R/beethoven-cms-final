@@ -844,9 +844,12 @@
             const pathText = document.getElementById('adImagePathText');
             const urlInput = document.getElementById('adImageUrl');
 
-            if (statusDiv) statusDiv.style.display = 'block';
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                statusDiv.innerText = 'جاري رفع صورة الإعلان...';
+            }
 
-            fetch('src/Services/ImageUploader.php', {
+            fetch('index.php?url=admin/upload-image', {
                 method: 'POST',
                 body: formData
             })
@@ -855,7 +858,7 @@
                 if (statusDiv) statusDiv.style.display = 'none';
                 
                 if (data.success || data.status === 'success' || data.url) {
-                    const imagePath = data.url || data.path;
+                    const imagePath = data.url || data.path || data.image_path;
                     
                     if (urlInput) urlInput.value = imagePath;
                     if (previewImg) {
@@ -892,9 +895,12 @@
             const pathText = document.getElementById('logoPathText');
             const urlInput = document.getElementById('logoUrlInput');
 
-            if (statusDiv) statusDiv.style.display = 'block';
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                statusDiv.innerText = 'جاري رفع الشعار...';
+            }
 
-            fetch('src/Services/ImageUploader.php', {
+            fetch('index.php?url=admin/upload-image', {
                 method: 'POST',
                 body: formData
             })
@@ -903,11 +909,12 @@
                 if (statusDiv) statusDiv.style.display = 'none';
                 
                 if (data.success || data.status === 'success' || data.url) {
-                    const imagePath = data.url || data.path;
+                    const imagePath = data.url || data.path || data.image_path;
                     
                     if (urlInput) urlInput.value = imagePath;
                     if (previewImg) {
                         previewImg.src = imagePath + '?' + new Date().getTime();
+                        previewImg.style.display = 'block';
                     }
                     if (pathText) {
                         pathText.textContent = imagePath;
@@ -937,9 +944,12 @@
         const placeholderIcon = document.getElementById('placeholder_icon_' + index);
         const hiddenInput = document.getElementById('social_img_val_' + index);
 
-        if (statusDiv) statusDiv.style.display = 'block';
+        if (statusDiv) {
+            statusDiv.style.display = 'block';
+            statusDiv.innerText = 'جاري الرفع...';
+        }
 
-        fetch('src/Services/ImageUploader.php', {
+        fetch('index.php?url=admin/upload-image', {
             method: 'POST',
             body: formData
         })
@@ -948,7 +958,7 @@
             if (statusDiv) statusDiv.style.display = 'none';
             
             if (data.success || data.status === 'success' || data.url) {
-                const imagePath = data.url || data.path;
+                const imagePath = data.url || data.path || data.image_path;
                 
                 if (hiddenInput) hiddenInput.value = imagePath;
                 
@@ -1153,5 +1163,6 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+
 
 

@@ -159,7 +159,8 @@
                     </div>
                     
                     <label class="form-label fw-bold text-start w-100 mb-1">رفع شعار جديد:</label>
-                    <input type="file" class="form-control w-100" name="site_logo" id="logoFileInput" accept="image/*">
+                    <input type="file" class="form-control w-100" id="logoFileInput" accept="image/*">
+
                     <div id="logoUploadStatus" class="small text-primary mt-1 text-start" style="display: none;">جاري رفع وتحويل الشعار...</div>
                 </form>
             </div>

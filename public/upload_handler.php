@@ -2,9 +2,12 @@
 // public/upload_handler.php
 header('Content-Type: application/json; charset=utf-8');
 
-// الصعود مستوى للأعلى (..) للخروج من public ثم الدخول إلى src
-require_once __DIR__ . '/../src/Config/Database.php';
-require_once __DIR__ . '/../src/Services/ImageUploader.php';
+// المسار المطلق الصحيح لمشروعك على الهاتف
+$rootPath = '/storage/emulated/0/Documents/beethoven-cms-final';
+
+// التعديل هنا ليتطابق مع مسار ملف الاتصال الحقيقي لديك
+require_once $rootPath . '/database/database.php';
+require_once $rootPath . '/src/Services/ImageUploader.php';
 
 use App\Services\ImageUploader;
 
@@ -21,7 +24,7 @@ try {
     $uploader = new ImageUploader();
     $filename = $uploader->upload($_FILES['image']);
 
-    // بما أننا داخل مجلد public، فالصورة ستخزن في مجلد uploads بداخله
+    // المسار الذي سيتم تخزينه وعرضه في الواجهة
     $imagePath = 'uploads/' . $filename;
 
     echo json_encode([

@@ -30,7 +30,7 @@ class ImageUploader
         int $maxHeight = 1920,
         int $webpQuality = 85
     ) {
-        // إذا لم يُحدد مسار، يتم الاعتماد على مجلد public/uploads الخاص بالنظام الجديد
+        // الاعتماد على مجلد public/uploads الخاص بالنظام
         $defaultDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads';
         $targetDir = $uploadDir ?? $defaultDir;
 
@@ -71,7 +71,7 @@ class ImageUploader
             // المعالجة باستخدام الـ MIME الحقيقي المفحوص
             $this->processAndConvertToWebP($file['tmp_name'], $destinationPath, $detectedMime);
             
-            // التخزين عبر كلاس الاتصال الموحد للنظام الجديد
+            // التخزين عبر كلاس الاتصال الموحد للنظام
             $this->saveToDatabase($finalFilename);
             
             if (isset($file['tmp_name']) && is_uploaded_file($file['tmp_name'])) {
@@ -116,7 +116,7 @@ class ImageUploader
     private function validateFileExtension(string $filename): void
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp','svg'], true)) {
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'svg'], true)) {
             throw new InvalidArgumentException('امتداد الملف غير مسموح به.');
         }
     }
@@ -197,11 +197,12 @@ class ImageUploader
     private function saveToDatabase(string $filename): void
     {
         try {
-            $pdo = Database::getInstance()->getConnection();
+            // التعديل هنا ليتطابق مع Database::getConnection() الموجودة في مشروعك
+            $pdo = Database::getConnection();
             $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, created_at) VALUES (:filename, NOW())');
             $stmt->execute(['filename' => $filename]);
         } catch (Exception $e) {
-            // تسجيل الخطأ دون إيقاف عملية الرفع إذا كان تسجيل القاعدة اختيارياً
+            // تسجيل الخطأ دون إيقاف عملية الرفع
             error_log('Failed to log uploaded image to database: ' . $e->getMessage());
         }
     }

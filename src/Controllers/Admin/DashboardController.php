@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
+use App\Models\DashboardModel;
+
 class DashboardController {
     
     public function index(): void {
@@ -23,20 +25,16 @@ class DashboardController {
             exit();
         }
 
-        // 3. قراءة ملف الإعدادات
-        $root_path = realpath(__DIR__ . '/../../../');
-        $config_file_path = $root_path . '/announcement_config.json';
-        $config_data = [];
-        if (file_exists($config_file_path)) {
-            $config_data = json_decode(file_get_contents($config_file_path), true);
-        }
+        // 3. جلب البيانات عبر الـ Model وقاعدة البيانات بدلاً من الـ JSON
+        $dashboardModel = new DashboardModel();
+        $config_data = $dashboardModel->getDashboardData();
 
         // تجهيز المتغيرات للـ View
-        $current_logo   = $config_data['site_logo_path'] ?? 'assets/img/logo.png';
-        $ad_status      = $config_data['status'] ?? 'Draft';
-        $ad_type        = $config_data['type'] ?? 'text';
-        $menu_count     = isset($config_data['menu_links']) ? count($config_data['menu_links']) : 6;
-        $consult_emails = $config_data['consultation_emails'] ?? [];
+        $current_logo   = $config_data['current_logo'];
+        $ad_status      = $config_data['ad_status'];
+        $ad_type        = $config_data['ad_type'];
+        $menu_count     = count($config_data['menu_links'] ?? []);
+        $consult_emails = $config_data['consult_emails'];
         $consult_count  = count($consult_emails);
 
         $role_badge_text = ($_SESSION['role'] === 'super_admin') ? 'مشرف عام (Super Admin)' : 'مسؤول النظام (Admin)';
@@ -45,13 +43,14 @@ class DashboardController {
             'current_logo'    => $current_logo,
             'ad_status'       => $ad_status,
             'ad_type'         => $ad_type,
-            'menu_count'      => $menu_count,
+            'menu_count'      => $menu_count > 0 ? $menu_count : 6,
             'consult_emails'  => $consult_emails,
             'consult_count'   => $consult_count,
             'role_badge_text' => $role_badge_text
         ];
 
         // 4. استدعاء ملف الـ View الخاص باللوحة
+        $root_path = realpath(__DIR__ . '/../../../');
         $view_file = $root_path . '/src/Views/admin/dashboard.php';
         if (file_exists($view_file)) {
             require_once $view_file;
@@ -68,10 +67,8 @@ class DashboardController {
             session_start();
         }
 
-        // تفريغ كافة متغيرات الجلسة
         $_SESSION = [];
 
-        // تدمير كوكيز الجلسة من متصفح المستخدم إن وجدت
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
             setcookie(session_name(), '', time() - 42000,
@@ -80,10 +77,8 @@ class DashboardController {
             );
         }
 
-        // تدمير الجلسة نهائياً من على الخادم
         session_destroy();
 
-        // التوجيه الفوري لصفحة تسجيل الدخول مع رسالة نجاح
         header("Location: /login?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
         exit();
     }

@@ -147,6 +147,7 @@ $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index'])
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);
 
+$router->post('admin/settings/save', [App\Controllers\Admin\SettingsController::class, 'save']);
 // ==========================================
 // 2. مسارات لوحة التحكم (Admin Routes)
 // ==========================================

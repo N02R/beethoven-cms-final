@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use ReflectionMethod;
+
 class Router {
     private array $routes = [];
 
@@ -32,7 +34,13 @@ class Router {
             if (class_exists($controllerClass)) {
                 $controller = new $controllerClass();
                 if (method_exists($controller, $action)) {
-                    $controller->$action($lang);
+                    // التحقق مما إذا كانت الدالة تقبل معاملات (مثل $lang) أم لا
+                    $reflection = new ReflectionMethod($controller, $action);
+                    if ($reflection->getNumberOfParameters() > 0) {
+                        $controller->$action($lang);
+                    } else {
+                        $controller->$action();
+                    }
                     return;
                 }
             }

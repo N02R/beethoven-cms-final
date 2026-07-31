@@ -61,11 +61,10 @@ class SettingsController
             exit;
         }
 
-        // جلب اتصال قاعدة البيانات أولاً لضمان توفر $pdo وعدم وقوه بقيمة null أبداً
-        require_once realpath(__DIR__ . '/../../../database/database.php');
-        global $pdo;
-
-        if (!isset($pdo) || !($pdo instanceof PDO)) {
+        // جلب الاتصال من الكلاس الجديد
+        try {
+            $pdo = \App\Config\Database::getConnection();
+        } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database connection failed.']);
             exit;
@@ -122,7 +121,7 @@ class SettingsController
             exit;
 
         } catch (Exception $e) {
-            if ($pdo && $pdo->inTransaction()) {
+            if (isset($pdo) && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
             error_log("Settings Save Error: " . $e->getMessage());
@@ -131,8 +130,6 @@ class SettingsController
             exit;
         }
     }
-
-
 
     private function checkAdminAuth(): void
     {

@@ -12,7 +12,7 @@ class Database {
     public static function getConnection(): PDO {
         if (self::$instance === null) {
             $host = '127.0.0.1';
-            $db   = 'beethoven_cms'; // استبدليها باسم قاعدة البيانات لديكِ
+            $db   = 'beethoven_cms'; // اسم قاعدة البيانات
             $user = 'root';          // اسم مستخدم قاعدة البيانات
             $pass = '';              // كلمة المرور
             $charset = 'utf8mb4';
@@ -27,7 +27,6 @@ class Database {
             try {
                 self::$instance = new PDO($dsn, $user, $pass, $options);
             } catch (PDOException $e) {
-                // عدم كشف مسارات أو تفاصيل قاعدة البيانات للمستخدم نهائياً (Security Best Practice)
                 error_log("Database Connection Error: " . $e->getMessage());
                 http_response_code(500);
                 exit("Database connection failed. Please try again later.");

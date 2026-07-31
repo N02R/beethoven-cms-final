@@ -155,6 +155,7 @@
                     <!-- الحقل المخفي الهام جداً الذي يستقبل مسار الشعار -->
                     <input type="hidden" name="site_logo" id="logoUrlInput" value="<?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?>">
 
+
                     <div class="mb-4">
                         <label class="form-label fw-bold d-block text-start mb-2">الشعار الحالي للموقع:</label>
                         <div class="p-3 bg-light rounded border d-inline-block w-100">

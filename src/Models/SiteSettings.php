@@ -15,53 +15,51 @@ class SiteSettings
     public static function getSettings(): array
     {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query("SELECT * FROM site_settings");
+        $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // تحويل النتائج إلى مصفوفة مترابطة (Key => Value) لسهولة الاستخدام
         $settings = [];
         foreach ($results as $row) {
-            // اعتماداً على بنية جدولك، إذا كان يحتوي على حقول مثل setting_key و setting_value
             if (isset($row['setting_key'])) {
                 $settings[$row['setting_key']] = $row['setting_value'];
-            } else {
-                // إذا كان الجدول مخزناً كصف واحد يحتوي على أعمدة مباشرة
-                $settings = $row;
-                break;
             }
         }
         return $settings;
     }
 
     /**
-     * تحديث أو حفظ إعدادات الموقع
+     * تحديث أو حفظ إعدادات الموقع بنظام المفتاح والقيمة
      */
     public static function updateSettings(array $data): bool
     {
         $pdo = Database::getConnection();
         
-        // التحقق مما إذا كان الجدول يعتمد على نظام المفتاح والقيمة أو الأعمدة المباشرة
-        // هنا سنقوم بتحديث الأعمدة مباشرة بناءً على المفاتيح المرسلة
-        $fields = [];
-        $values = [];
+        $stmt = $pdo->prepare("
+            INSERT INTO site_settings (setting_key, setting_value) 
+            VALUES (:k, :v) 
+            ON DUPLICATE KEY UPDATE setting_value = :v_update
+        ");
+
+        $success = true;
 
         foreach ($data as $key => $value) {
-            if ($key === 'csrf_token' || $key === 'action') {
-                continue; // استبعاد رموز الحماية والإجراءات
+            // استبعاد المتغيرات التي لا تمثل إعدادات مخزنة
+            if (in_array($key, ['csrf_token', 'action'])) {
+                continue;
             }
-            $fields[] = "$key = ?";
-            $values[] = $value;
+
+            // تنفيذ التحديث أو الإدراج لكل مفتاح وقيمة على حدة
+            $res = $stmt->execute([
+                'k' => $key,
+                'v' => $value,
+                'v_update' => $value
+            ]);
+
+            if (!$res) {
+                $success = false;
+            }
         }
 
-        if (empty($fields)) {
-            return false;
-        }
-
-        // نفترض هنا وجود صف رئيسي للإعدادات (ID = 1) أو تحديث عام
-        // يمكنك تعديل الشرط حسب تصميم جدول site_settings لديك
-        $sql = "UPDATE site_settings SET " . implode(', ', $fields) . " WHERE id = 1";
-        $stmt = $pdo->prepare($sql);
-        
-        return $stmt->execute($values);
+        return $success;
     }
 }

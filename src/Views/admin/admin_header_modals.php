@@ -802,8 +802,8 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         col3Count++;
     }
 
-    // معالج النماذج الموحد المرتبط بمسار الـ API الصحيح في مشروعك
-    document.querySelectorAll('form').forEach(form => {
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
+    document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -833,3 +833,4 @@ if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+

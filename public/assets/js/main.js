@@ -183,7 +183,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   
 });
 
-const csrfToken = document.querySelector('meta[name="csrf-token']').getAttribute('content');
-
-const formData = new FormData(formElement);
-formData.append('csrf_token', csrfToken); // إرساله يدوياً مع أي طلب POST

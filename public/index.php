@@ -20,7 +20,8 @@ if (session_status() === PHP_SESSION_NONE) {
         'domain'   => '',                   
         'secure'   => $isSecure,            // HTTPS حصرياً عند توفره
         'httponly' => true,                 // حماية من هجمات XSS
-        'samesite' => 'Strict'              // حماية صارمة ضد هجمات CSRF
+       'samesite' => 'Lax'
+            // حماية صارمة ضد هجمات CSRF
     ]);
 
     session_start();

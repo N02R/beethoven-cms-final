@@ -49,7 +49,7 @@ class SettingsController
     /**
      * حفظ وتحديث الإعدادات (معالجة AJAX / Form POST)
      */
-    public function save(): void
+        public function save(): void
     {
         $this->checkAdminAuth();
 
@@ -58,6 +58,16 @@ class SettingsController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
+            exit;
+        }
+
+        // جلب اتصال قاعدة البيانات أولاً لضمان توفر $pdo وعدم وقوه بقيمة null أبداً
+        require_once realpath(__DIR__ . '/../../../database/database.php');
+        global $pdo;
+
+        if (!isset($pdo) || !($pdo instanceof PDO)) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Database connection failed.']);
             exit;
         }
 
@@ -84,9 +94,6 @@ class SettingsController
             exit;
         }
 
-        require_once realpath(__DIR__ . '/../../../database/database.php');
-        global $pdo;
-
         try {
             $action = $_POST['action'] ?? '';
 
@@ -106,7 +113,6 @@ class SettingsController
                 }
             }
 
-            // يمكن إضافة باقي الـ actions هنا حسب الحاجة أو تركها للتعامل مع الـ settings العامة
             $pdo->commit();
 
             echo json_encode([
@@ -125,6 +131,7 @@ class SettingsController
             exit;
         }
     }
+
 
 
     private function checkAdminAuth(): void

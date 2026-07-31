@@ -7,7 +7,7 @@ namespace App\Models;
 use App\Config\Database;
 use PDO;
 
-class SiteSettings
+class SiteModel
 {
     /**
      * جلب جميع الإعدادات من قاعدة البيانات
@@ -43,12 +43,10 @@ class SiteSettings
         $success = true;
 
         foreach ($data as $key => $value) {
-            // استبعاد المتغيرات التي لا تمثل إعدادات مخزنة
             if (in_array($key, ['csrf_token', 'action'])) {
                 continue;
             }
 
-            // تنفيذ التحديث أو الإدراج لكل مفتاح وقيمة على حدة
             $res = $stmt->execute([
                 'k' => $key,
                 'v' => $value,

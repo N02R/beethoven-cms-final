@@ -97,20 +97,21 @@ class SettingsController
             $action = $_POST['action'] ?? '';
 
             // معالجة عامة حسب الـ action القادم من النماذج المختلفة
-            $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v");
+                        $pdo->beginTransaction();
+            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
             if ($action === 'update_general_settings' || isset($_POST['site_title'])) {
                 $siteTitle = trim($_POST['site_title'] ?? '');
                 $siteEmail = trim($_POST['site_email'] ?? '');
                 $siteLogo  = trim($_POST['site_logo'] ?? '');
 
-                $stmt->execute(['k' => 'site_title', 'v' => $siteTitle]);
-                $stmt->execute(['k' => 'site_email', 'v' => $siteEmail]);
+                $stmt->execute(['k' => 'site_title', 'v' => $siteTitle, 'v_update' => $siteTitle]);
+                $stmt->execute(['k' => 'site_email', 'v' => $siteEmail, 'v_update' => $siteEmail]);
                 if (!empty($siteLogo)) {
-                    $stmt->execute(['k' => 'site_logo', 'v' => $siteLogo]);
+                    $stmt->execute(['k' => 'site_logo', 'v' => $siteLogo, 'v_update' => $siteLogo]);
                 }
             }
+
 
             $pdo->commit();
 

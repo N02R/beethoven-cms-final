@@ -629,4 +629,36 @@
             console.error(err);
         });
     });
+    document.addEventListener('submit', function (e) {
+    const form = e.target;
+    
+    // التأكد من أن النموذج يخص لوحة التحكم أو الإعدادات (يمكنك تعديل الشرط حسب رغبتك)
+    if (form && form.action && form.action.includes('admin/')) {
+        e.preventDefault(); // منع التحويل التقليدي لصفحة جديدة
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success || data.status === 'success') {
+                // إظهار رسالة نجاح سريعة أو تحديث الصفحة مباشرة
+                location.reload(); 
+            } else {
+                alert('فشل الحفظ: ' + (data.message || data.error || 'حدث خطأ غير معروف'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء الاتصال بالسيرفر.');
+        });
+    }
+});
+
 </script>

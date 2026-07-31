@@ -143,13 +143,16 @@
                 <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
+            
+            <!-- الفورم يحيط بكل محتوى الـ modal-body -->
+            <form id="logoEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
+                <div class="modal-body p-4 text-center">
                     <input type="hidden" name="action" value="update_general_settings">
-<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
-
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars($settings['site_title'] ?? 'Beethoven Services'); ?>">
                     <input type="hidden" name="site_email" value="<?php echo htmlspecialchars($settings['site_email'] ?? 'info@beethoven.de'); ?>">
+                    
+                    <!-- الحقل المخفي الهام جداً الذي يستقبل مسار الشعار -->
                     <input type="hidden" name="site_logo" id="logoUrlInput" value="<?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?>">
 
                     <div class="mb-4">
@@ -164,8 +167,9 @@
                     <input type="file" class="form-control w-100" id="logoFileInput" accept="image/*">
 
                     <div id="logoUploadStatus" class="small text-primary mt-1 text-start" style="display: none;">جاري رفع وتحويل الشعار...</div>
-                </form>
-            </div>
+                </div>
+            </form>
+
             <div class="modal-footer">
                 <button type="submit" form="logoEditForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
@@ -173,6 +177,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Announcement Modal -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">

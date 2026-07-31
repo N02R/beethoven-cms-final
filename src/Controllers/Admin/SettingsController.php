@@ -21,7 +21,6 @@ class SettingsController
 
         // تضمين ملف الاتصال بقاعدة البيانات الموجود في جذر المشروع
         require_once realpath(__DIR__ . '/../../../database/database.php');
-        // افتراض أن $pdo معرف مسبقاً في database.php
         global $pdo; 
 
         $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
@@ -49,7 +48,7 @@ class SettingsController
     /**
      * حفظ وتحديث الإعدادات (معالجة AJAX / Form POST)
      */
-        public function save(): void
+    public function save(): void
     {
         $this->checkAdminAuth();
 
@@ -61,7 +60,7 @@ class SettingsController
             exit;
         }
 
-        // جلب الاتصال من الكلاس الجديد
+        // جلب الاتصال من الكلاس
         try {
             $pdo = \App\Config\Database::getConnection();
         } catch (\Exception $e) {
@@ -70,15 +69,13 @@ class SettingsController
             exit;
         }
 
-        // استقبال الرمز من POST أو من الهيدر للإضافات الحديثة
+        // استقبال الرمز من POST أو من الهيدر
         $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
 
-        // إذا لم يكن الرمز موجوداً في الجلسة، نقوم بتوليده تلقائياً لمنع توقف العمل أثناء التطوير
         if (empty($_SESSION['csrf_token'])) {
             Security::generateCsrfToken();
         }
 
-        // التحقق المرن (يقبل الرمز الرئيسي أو الرمز الاحتياطي لمنع أي خطأ 403)
         $isValid = Security::verifyCsrfToken($token) || 
                    (isset($_SESSION['settings_csrf']) && hash_equals($_SESSION['settings_csrf'], $token));
 
@@ -96,29 +93,28 @@ class SettingsController
         try {
             $action = $_POST['action'] ?? '';
 
-            // معالجة عامة حسب الـ action القادم من النماذج المختلفة
-                        $pdo->beginTransaction();
+            $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-                    if ($action === 'update_general_settings') {
-            $siteTitle = trim($_POST['site_title'] ?? '');
-            $siteEmail = trim($_POST['site_email'] ?? '');
-            $siteLogo  = trim($_POST['site_logo'] ?? '');
+            if ($action === 'update_general_settings') {
+                $siteTitle = trim($_POST['site_title'] ?? '');
+                $siteEmail = trim($_POST['site_email'] ?? '');
+                $siteLogo  = trim($_POST['site_logo'] ?? '');
 
-            if (!empty($siteTitle)) {
-                $this->settingsModel->set('site_title', $siteTitle);
-            }
-            if (!empty($siteEmail)) {
-                $this->settingsModel->set('site_email', $siteEmail);
-            }
-            if (!empty($siteLogo)) {
-                $this->settingsModel->set('site_logo', $siteLogo);
-            }
+                if (!empty($siteTitle)) {
+                    $stmt->execute(['k' => 'site_title', 'v' => $siteTitle, 'v_update' => $siteTitle]);
+                }
+                if (!empty($siteEmail)) {
+                    $stmt->execute(['k' => 'site_email', 'v' => $siteEmail, 'v_update' => $siteEmail]);
+                }
+                if (!empty($siteLogo)) {
+                    $stmt->execute(['k' => 'site_logo', 'v' => $siteLogo, 'v_update' => $siteLogo]);
+                }
 
-            echo json_encode(['success' => true, 'message' => 'تم حفظ الإعدادات بنجاح.']);
-            exit;
-        }
-
+                $pdo->commit();
+                echo json_encode(['success' => true, 'message' => 'تم حفظ الإعدادات بنجاح.']);
+                exit;
+            }
 
             $pdo->commit();
 

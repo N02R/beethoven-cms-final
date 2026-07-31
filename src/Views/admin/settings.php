@@ -25,6 +25,7 @@
                         <!-- رمز الحماية CSRF -->
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
 
+
                         <h6 class="border-bottom pb-2 mb-3 text-secondary">إعدادات الموقع العامة والشعار</h6>
 
                         <div class="mb-3">

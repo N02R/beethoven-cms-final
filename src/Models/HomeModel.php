@@ -12,7 +12,7 @@ class HomeModel {
      */
     public static function getHomeData(): array {
         // جلب كافة الإعدادات باستخدام المودل المركزي SiteSettings
-        $settings = SiteSettings::getSettings();
+        $settings = SiteModel::getSettings();
         
         // إرجاع مصفوفة منسقة تحتوي على أقسام الصفحة الرئيسية بعد فك تشفير JSON
         return [

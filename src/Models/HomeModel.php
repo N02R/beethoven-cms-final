@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+// أضيفي هذا السطر ليتمكن PHP من العثور على كلاس SiteSettings
+use App\Models\SiteModel;
+
 class HomeModel {
     /**
      * جلب وتجهيز بيانات الصفحة الرئيسية فقط

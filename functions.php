@@ -3,9 +3,14 @@
  * functions.php - ملف المساعدة لجلب الإعدادات من قاعدة البيانات
  */
 
-// استدعاء الاتصال بقاعدة البيانات من مجلد database
-require_once __DIR__ . '/database/database.php';
 use App\Config\Database;
+
+// استدعاء الاتصال بقاعدة البيانات باستخدام الكلاس الحديث
+try {
+    $pdo = Database::getConnection();
+} catch (\Exception $e) {
+    // معالجة الخطأ أو ترك المتفجر حسب الحاجة
+}
 
 if (!function_exists('get_setting')) {
     function get_setting($key, $default = '') {

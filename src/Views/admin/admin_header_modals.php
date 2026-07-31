@@ -146,7 +146,7 @@
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" action="index.php?url=admin/settings/save" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_general_settings">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? $_SESSION['settings_csrf'] ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
                     <input type="hidden" name="site_title" value="<?php echo htmlspecialchars($settings['site_title'] ?? 'Beethoven Services'); ?>">
                     <input type="hidden" name="site_email" value="<?php echo htmlspecialchars($settings['site_email'] ?? 'info@beethoven.de'); ?>">
                     <input type="hidden" name="site_logo" id="logoUrlInput" value="<?php echo htmlspecialchars($settings['site_logo'] ?? ''); ?>">

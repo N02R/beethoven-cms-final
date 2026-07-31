@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\HomeModel;
+
 class HomeController {
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
@@ -18,12 +20,12 @@ class HomeController {
             session_start();
         }
 
-        // تحديد مسار الجذر وجلب البيانات المركزية من الـ JSON
+        // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');
-        $config_file = $root_path . '/announcement_config.json';
-        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
-        
-        $data = $global_data;
+
+        // جلب بيانات الصفحة الرئيسية عبر الـ Model بدلاً من ملف الـ JSON
+        $homeModel = new HomeModel();
+        $data = $homeModel->getHomeData();
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في AuthController
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -55,7 +57,7 @@ class HomeController {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك (تم تصحيح المسار هنا)
+        // 3. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;

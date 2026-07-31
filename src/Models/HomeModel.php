@@ -3,19 +3,30 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Config\Database;
-use PDO;
-
 class HomeModel {
-    public function getHomeData(): array {
-        $db = Database::getConnection();
+    /**
+     * جلب وتجهيز بيانات الصفحة الرئيسية فقط
+     */
+    public static function getHomeData(): array {
+        // جلب كافة الإعدادات باستخدام المودل المركزي SiteSettings
+        $settings = SiteSettings::getSettings();
         
-        // استعلام جلب الإعدادات والبيانات من قاعدة البيانات
-        $stmt = $db->query("SELECT setting_key, setting_value FROM site_settings");
-        $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
-        
+        // إرجاع مصفوفة منسقة تحتوي على أقسام الصفحة الرئيسية بعد فك تشفير JSON
         return [
-            'settings' => $settings
+            'hero'                 => isset($settings['hero']) ? json_decode($settings['hero'], true) : [],
+            'services_section_title'=> $settings['services_section_title'] ?? '',
+            'services_section_desc' => $settings['services_section_desc'] ?? '',
+            'services'             => isset($settings['services']) ? json_decode($settings['services'], true) : [],
+            'choose_title'         => $settings['choose_title'] ?? '',
+            'choose_section_desc'  => $settings['choose_section_desc'] ?? '',
+            'choose_items'         => isset($settings['choose_items']) ? json_decode($settings['choose_items'], true) : [],
+            'reviews_title'        => $settings['reviews_title'] ?? '',
+            'reviews_items'        => isset($settings['reviews_items']) ? json_decode($settings['reviews_items'], true) : [],
+            'guide_title'          => $settings['guide_title'] ?? '',
+            'guide_desc'           => $settings['guide_desc'] ?? '',
+            'guide_items'          => isset($settings['guide_items']) ? json_decode($settings['guide_items'], true) : [],
+            'faq_title'            => $settings['faq_title'] ?? '',
+            'faq_items'            => isset($settings['faq_items']) ? json_decode($settings['faq_items'], true) : [],
         ];
     }
 }

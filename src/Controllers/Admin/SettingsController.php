@@ -156,7 +156,7 @@ class SettingsController
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 6. تحديث الفوتر العام وباقي الحقول النصية (إذا رغبتِ بإضافة بقية الـ Modals بنفس الآلية)
+            // 6. تحديث الفوتر العام وباقي الحقول النصية
             elseif ($action === 'update_footer') {
                 $consultTitle = $_POST['consult_title'] ?? '';
                 $consultDesc  = $_POST['consult_desc'] ?? '';
@@ -169,6 +169,116 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_desc', 'v' => $footerDesc, 'v_update' => $footerDesc]);
                 $stmt->execute(['k' => 'footer_col2_title', 'v' => $col2Title, 'v_update' => $col2Title]);
                 $stmt->execute(['k' => 'footer_col3_title', 'v' => $col3Title, 'v_update' => $col3Title]);
+            }
+
+            // 7. تحديث قسم الهيرو (Hero)
+            elseif ($action === 'update_hero') {
+                $heroImg = $_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg';
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES['hero_img']['name'], PATHINFO_EXTENSION);
+                    $filename = 'hero_' . time() . '.' . $ext;
+                    move_uploaded_file($_FILES['hero_img']['tmp_name'], $uploadDir . $filename);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $heroData = [
+                    'title'    => $_POST['hero_title'] ?? '',
+                    'desc'     => $_POST['hero_desc'] ?? '',
+                    'btn_text' => $_POST['hero_btn_text'] ?? '',
+                    'btn_url'  => $_POST['hero_btn_url'] ?? '',
+                    'img'      => $heroImg
+                ];
+                $jsonVal = json_encode($heroData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 8. تحديث الخدمات (Services)
+            elseif ($action === 'update_services') {
+                $servTitle = $_POST['services_title'] ?? '';
+                $servDesc  = $_POST['services_desc'] ?? '';
+                $stmt->execute(['k' => 'services_section_title', 'v' => $servTitle, 'v_update' => $servTitle]);
+                $stmt->execute(['k' => 'services_section_desc', 'v' => $servDesc, 'v_update' => $servDesc]);
+
+                $servicesData = $_POST['services'] ?? [];
+                foreach ($servicesData as $index => $item) {
+                    if (isset($_FILES['service_img_' . $index]) && $_FILES['service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['service_img_' . $index]['name'], PATHINFO_EXTENSION);
+                        $filename = 'service_' . $index . '_' . time() . '.' . $ext;
+                        move_uploaded_file($_FILES['service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $servicesData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($servicesData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($servicesData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 9. تحديث المميزات (Choose Us)
+            elseif ($action === 'update_choose') {
+                $chooseTitle = $_POST['choose_title'] ?? '';
+                $chooseDesc  = $_POST['choose_desc'] ?? '';
+                $stmt->execute(['k' => 'choose_title', 'v' => $chooseTitle, 'v_update' => $chooseTitle]);
+                $stmt->execute(['k' => 'choose_section_desc', 'v' => $chooseDesc, 'v_update' => $chooseDesc]);
+
+                $chooseData = $_POST['choose'] ?? [];
+                foreach ($chooseData as $index => $item) {
+                    if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['choose_img_' . $index]['name'], PATHINFO_EXTENSION);
+                        $filename = 'choose_' . $index . '_' . time() . '.' . $ext;
+                        move_uploaded_file($_FILES['choose_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $chooseData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($chooseData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($chooseData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 10. تحديث التقييمات / الفيديوهات (Reviews)
+            elseif ($action === 'update_reviews') {
+                $revTitle = $_POST['reviews_title'] ?? '';
+                $stmt->execute(['k' => 'reviews_title', 'v' => $revTitle, 'v_update' => $revTitle]);
+
+                $reviewsData = $_POST['reviews'] ?? [];
+                $jsonVal = json_encode(array_values($reviewsData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 11. تحديث الدليل الشامل (Guide)
+            elseif ($action === 'update_guide') {
+                $guideTitle = $_POST['guide_title'] ?? '';
+                $guideDesc  = $_POST['guide_desc'] ?? '';
+                $stmt->execute(['k' => 'guide_title', 'v' => $guideTitle, 'v_update' => $guideTitle]);
+                $stmt->execute(['k' => 'guide_desc', 'v' => $guideDesc, 'v_update' => $guideDesc]);
+
+                $guideData = $_POST['guide'] ?? [];
+                foreach ($guideData as $index => $item) {
+                    if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['guide_img_' . $index]['name'], PATHINFO_EXTENSION);
+                        $filename = 'guide_' . $index . '_' . time() . '.' . $ext;
+                        move_uploaded_file($_FILES['guide_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $guideData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $guideData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($guideData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($guideData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 12. تحديث الأسئلة الشائعة (FAQ)
+            elseif ($action === 'update_faq') {
+                $faqTitle = $_POST['faq_title'] ?? '';
+                $stmt->execute(['k' => 'faq_title', 'v' => $faqTitle, 'v_update' => $faqTitle]);
+
+                $faqData = $_POST['faq'] ?? [];
+                $jsonVal = json_encode(array_values($faqData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             $pdo->commit();

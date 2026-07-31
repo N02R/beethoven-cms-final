@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
-use App\Config\Database;
+use App\Core\Security;
 use App\Services\ImageUploader;
 use Exception;
 use InvalidArgumentException;
@@ -19,7 +19,11 @@ class SettingsController
     {
         $this->checkAdminAuth();
 
-        $pdo = Database::getConnection();
+        // تضمين ملف الاتصال بقاعدة البيانات الموجود في جذر المشروع
+        require_once realpath(__DIR__ . '/../../../database/database.php');
+        // افتراض أن $pdo معرف مسبقاً في database.php
+        global $pdo; 
+
         $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
         $rawSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 
@@ -29,12 +33,8 @@ class SettingsController
             'site_logo'  => $rawSettings['site_logo'] ?? '',
         ];
 
-        // توليد رمز CSRF لحماية نموذج الإعدادات
-        if (empty($_SESSION['settings_csrf'])) {
-            $_SESSION['settings_csrf'] = bin2hex(random_bytes(32));
-        }
-
-        $csrf_token = $_SESSION['settings_csrf'];
+        // استخدام كلاس الأمان لتوليد رمز CSRF
+        $csrf_token = Security::generateCsrfToken();
 
         $root_path = realpath(__DIR__ . '/../../../');
         $view_file = $root_path . '/src/Views/admin/settings.php';
@@ -61,28 +61,28 @@ class SettingsController
             exit;
         }
 
-        // 1. التحقق من CSRF Token
+        // التحقق من CSRF باستخدام كلاس Security الموجود في مشروعك
         $token = $_POST['csrf_token'] ?? '';
-        if (empty($token) || !hash_equals($_SESSION['settings_csrf'] ?? '', $token)) {
+        if (!Security::verifyCsrfToken($token)) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'رمز الحماية غير صالح (CSRF Invalid)']);
             exit;
         }
 
-        $pdo = Database::getConnection();
+        require_once realpath(__DIR__ . '/../../../database/database.php');
+        global $pdo;
 
         try {
             $siteTitle = trim($_POST['site_title'] ?? '');
             $siteEmail = trim($_POST['site_email'] ?? '');
 
-            // 2. معالجة رفع الشعار باستخدام ImageUploader الموحد
+            // معالجة رفع الشعار
             $logoFilename = null;
             if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] !== UPLOAD_ERR_NO_FILE) {
                 $uploader = new ImageUploader();
                 $logoFilename = $uploader->upload($_FILES['site_logo']);
             }
 
-            // 3. حفظ الإعدادات في قاعدة البيانات
             $pdo->beginTransaction();
 
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v");
@@ -104,14 +104,14 @@ class SettingsController
             exit;
 
         } catch (InvalidArgumentException $e) {
-            if ($pdo->inTransaction()) {
+            if ($pdo && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => $e->getMessage()]);
             exit;
         } catch (Exception $e) {
-            if ($pdo->inTransaction()) {
+            if ($pdo && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
             error_log("Settings Save Error: " . $e->getMessage());
@@ -121,9 +121,6 @@ class SettingsController
         }
     }
 
-    /**
-     * التحقق من جلسة الأدمن
-     */
     private function checkAdminAuth(): void
     {
         if (session_status() === PHP_SESSION_NONE) {

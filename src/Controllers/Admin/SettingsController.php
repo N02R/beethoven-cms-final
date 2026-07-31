@@ -63,11 +63,19 @@ class SettingsController
 
         // التحقق من CSRF باستخدام كلاس Security الموجود في مشروعك
         $token = $_POST['csrf_token'] ?? '';
-        if (!Security::verifyCsrfToken($token)) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'رمز الحماية غير صالح (CSRF Invalid)']);
-            exit;
-        }
+
+// فحص تفصيلي لما يراه السيرفر في الجلسة وفي الـ POST
+if (!Security::verifyCsrfToken($token)) {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'CSRF Failed Test',
+        'session_has_token' => isset($_SESSION['csrf_token']) ? 'YES' : 'NO',
+        'session_value' => $_SESSION['csrf_token'] ?? 'EMPTY',
+        'post_value' => $token
+    ]);
+    exit;
+}
 
         require_once realpath(__DIR__ . '/../../../database/database.php');
         global $pdo;

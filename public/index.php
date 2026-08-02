@@ -167,11 +167,19 @@ $router->add('GET', 'media/view', [MediaController::class, 'serve']);
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch
 // ==========================================
-$uri = $_GET['url'] ?? '';
-if ($uri === '/') {
-    $uri = '';
+// 3. معالجة الـ URI والـ Dispatch (دعم كامل لسيرفر PHP المحلي والاستضافات)
+$uri = $_SERVER['REQUEST_URI'] ?? '';
+
+// إزالة query string إن وجد (مثل ?lang=de)
+if (false !== $pos = strpos($uri, '?')) {
+    $uri = substr($uri, 0, $pos);
 }
 
+// تنظيف المسار ليعمل بسلاسة
+$uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
+
+// إذا كان المشروع يعمل داخل مجلد فرعي، يمكنك إزالة اسم المجلد هنا إن أردت، 
+// أو الاعتماد على معالجة الـ Router النظيفة الحالية:
 $method = $_SERVER['REQUEST_METHOD'];
 
 $router->dispatch($uri, $method);

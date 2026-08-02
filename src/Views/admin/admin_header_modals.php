@@ -1,5 +1,4 @@
 
-
 <style>
     :root {
         --primary: #3b82f6;
@@ -117,11 +116,8 @@
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_logo">
-                    <!-- أضفنا هذا السطر لإرسال مسار الشعار الحالي وتجنب أي خطأ مفقود -->
-                    <input type="hidden" name="old_logo" value="<?php echo htmlspecialchars($site_logo_path ?? ''); ?>">
-                    
                     <div class="mb-4"><div class="p-3 bg-white rounded border d-inline-block"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" style="max-height: 100px;"></div></div>
-                    <input type="file" class="form-control w-100" name="logo_img">
+                    <input type="file" class="form-control w-100" name="logo_img" required>
                 </form>
             </div>
             <div class="modal-footer">
@@ -131,7 +127,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 3. Announcement Modal -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
@@ -942,32 +937,26 @@
         col3Count++;
     }
 
-    // تعديل معالج النماذج ليشمل جميع النماذج داخل لوحة الإعدادات التي تفتقر لتحديد الكلاس القديم
-    document.querySelectorAll('form').forEach(form => {
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
+    document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
-            // التحقق مما إذا كان النموذج يخص الإعدادات أو يحتوي على حقول رفع ملفات
             e.preventDefault();
             const formData = new FormData(this);
-            
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
                 body: formData
             })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'فشل الحفظ');
-                }
-                return data;
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     location.reload();
+                } else {
+                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('خطأ: ' + err.message);
+                alert('حدث خطأ أثناء الاتصال بالسيرفر');
             });
         });
     });
@@ -979,6 +968,3 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
-
-
-

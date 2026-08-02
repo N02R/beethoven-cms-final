@@ -447,8 +447,92 @@
                                         </div>
                                         <div class="col-md-3">
                                             <label class="small text-muted">الأيقونة (صورة)</label>
+                                            
+                                            <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" 
+                                                         alt="Choose Item Icon" 
+                                                         class="rounded" 
+                                                         style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
+                                            <?php endif; ?>
+
                                             <input type="file" class="form-control form-control-sm" name="choose_img_<?php echo $index; ?>">
-                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo $item['img']; ?>">
+                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-auto mt-4">
+                                            <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addChooseRow()">
+                        <i class="bi bi-plus-circle"></i> إضافة ميزة جديدة
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="chooseForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 8. Choose Edit Modal -->
+<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-star text-primary"></i> تعديل المميزات</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="chooseForm" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_choose">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
+                        <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?>">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">وصف القسم (اختياري)</label>
+                        <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء"><?php echo htmlspecialchars($data['choose_section_desc'] ?? ''); ?></textarea>
+                    </div>
+                    <hr>
+                    <div id="chooseRowsContainer">
+                        <?php if (!empty($data['choose_items'])): ?>
+                            <?php foreach ($data['choose_items'] as $index => $item): ?>
+                                <div class="card p-3 border-0 mb-3" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="choose_row_<?php echo $index; ?>">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-md-3">
+                                            <label class="small text-muted">العنوان</label>
+                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small text-muted">الوصف</label>
+                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="small text-muted">الأيقونة (صورة)</label>
+                                            
+                                            <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" 
+                                                         alt="Choose Item Icon" 
+                                                         class="rounded" 
+                                                         style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <input type="file" class="form-control form-control-sm" name="choose_img_<?php echo $index; ?>">
+                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                         </div>
                                         <div class="col-md-auto mt-4">
                                             <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">

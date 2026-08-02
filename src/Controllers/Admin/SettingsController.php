@@ -1,3 +1,4 @@
+/src/Controllers/Admin/SettingsController.php
 <?php
 
 declare(strict_types=1);
@@ -556,3 +557,6 @@ class SettingsController
         return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
     }
 }
+
+
+

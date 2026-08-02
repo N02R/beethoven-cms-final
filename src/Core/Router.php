@@ -9,32 +9,35 @@ class Router {
     private array $routes = [];
 
     public function add(string $method, string $path, array $controllerAction): void {
-        $path = trim($path, '/');
+        // توحيد نمط تخزين المسارات بإزالة الشرطات الزائدة وتحويلها لحروف صغيرة
+        $path = strtolower(trim($path, '/'));
         $this->routes[strtoupper($method)][$path] = $controllerAction;
     }
 
     public function dispatch(string $uri, string $method): void {
-        // تنقية وتوحيد المسار (حروف صغيرة، إزالة الشرطات الزائدة)
+        // تنقية وتوحيد المسار القادم من الـ URL
         $uri = strtolower(trim(parse_url($uri, PHP_URL_PATH) ?? '', '/'));
         $method = strtoupper($method);
 
-        // استخراج بادئة اللغة إن وجدت (مثال: /de/services/... -> de)
+        // استخراج بادئة اللغة إن وجدت (مثال: de/about -> de)
         $segments = explode('/', $uri);
-        $lang = 'de'; // اللغة الافتراضية للشركة الألمانية
+        $lang = 'de'; // اللغة الافتراضية
         
         if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
             $lang = array_shift($segments);
             $uri = implode('/', $segments);
         }
 
-        // مطابقة المسارات
+        // إزالة أي شرطات مائلة في البداية أو النهاية بعد فصل اللغة
+        $uri = trim($uri, '/');
+
+        // مطابقة المسارات بشكل دقيق
         if (isset($this->routes[$method][$uri])) {
             [$controllerClass, $action] = $this->routes[$method][$uri];
             
             if (class_exists($controllerClass)) {
                 $controller = new $controllerClass();
                 if (method_exists($controller, $action)) {
-                    // التحقق مما إذا كانت الدالة تقبل معاملات (مثل $lang) أم لا
                     $reflection = new ReflectionMethod($controller, $action);
                     if ($reflection->getNumberOfParameters() > 0) {
                         $controller->$action($lang);
@@ -48,6 +51,7 @@ class Router {
             return;
         }
 
+        // في حال لم يتم العثور على المسار، إرجاع خطأ 404
         $this->sendError(404, "Page Not Found");
     }
 

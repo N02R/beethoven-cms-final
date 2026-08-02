@@ -39,15 +39,20 @@ class SiteModel {
             'languages'         => isset($settings['languages']) ? json_decode($settings['languages'], true) : [],
             'announcement'      => isset($settings['announcement']) ? json_decode($settings['announcement'], true) : [],
             
-            // بيانات الفوتر المشتركة
-            'consult_title'     => $settings['consult_title'] ?? '',
+            // بيانات قسم الاستشارة في الفوتر
+            'consult_title'     => $settings['consult_title'] ?? 'احصل على استشارة مجانية',
             'consult_desc'      => $settings['consult_desc'] ?? '',
+            
+            // بيانات أعمدة الفوتر
             'footer_desc'       => $settings['footer_desc'] ?? '',
             'footer_col2_title' => $settings['footer_col2_title'] ?? 'روابط سريعة',
             'footer_col3_title' => $settings['footer_col3_title'] ?? 'تواصل معنا',
+            
+            // روابط تواصل معنا (مهم جداً أن تكون معالجة بـ json_decode)
             'footer_col3_links' => isset($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
         ];
     }
+
 
     /**
      * تحديث أو حفظ إعدادات الموقع بنظام المفتاح والقيمة

@@ -725,14 +725,36 @@
                             <input type="text" class="form-control mb-3" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?>">
                             <div id="col3LinksContainer">
                                 <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
-                                    <div class="card p-2 mb-2" id="col3_<?php echo $i; ?>">
-                                        <div class="row g-1 align-items-center">
-                                            <div class="col-3"><input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm"></div>
-                                            <div class="col-4"><input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm" value="<?php echo $link['title']; ?>" placeholder="الاسم"></div>
-                                            <div class="col-4"><input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm" value="<?php echo $link['url']; ?>" placeholder="الرابط"></div>
-                                            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col3_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button></div>
+                                    <div class="card p-2 mb-3" id="col3_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 10px;">
+                                        <div class="row g-2 align-items-center">
+                                            
+                                            <!-- معاينة أيقونة التواصل الحالية إن وجدت -->
+                                            <div class="col-12">
+                                                <?php if (!empty($link['img'])): ?>
+                                                    <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                        <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $link['img']); ?>" 
+                                                             alt="Contact Icon" 
+                                                             class="rounded" 
+                                                             style="width: 24px; height: 24px; object-fit: cover;">
+                                                        <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($link['img']); ?></span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm" value="<?php echo htmlspecialchars($link['title'] ?? ''); ?>" placeholder="الاسم">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <button type="button" class="btn-icon-trash" onclick="removeRow('col3_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
+                                            </div>
                                         </div>
-                                        <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
+                                        <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? ''); ?>">
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -748,6 +770,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     function removeRow(id) {

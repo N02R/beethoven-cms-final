@@ -323,8 +323,20 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold">صورة الخلفية</label>
+                            
+                            <!-- معاينة الصورة الحالية -->
+                            <?php if (!empty($h['img'])): ?>
+                                <div class="mb-2 p-2 border rounded bg-light text-center">
+                                    <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
+                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $h['img']); ?>" 
+                                         alt="Current Hero Image" 
+                                         class="img-thumbnail rounded" 
+                                         style="max-height: 120px; object-fit: cover;">
+                                </div>
+                            <?php endif; ?>
+
                             <input type="file" class="form-control" name="hero_img" accept="image/*">
-                            <input type="hidden" name="old_hero_img" value="<?php echo $h['img'] ?? 'assets/img/hero-bg.jpg'; ?>">
+                            <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($h['img'] ?? 'assets/img/hero-bg.jpg'); ?>">
                         </div>
                     </div>
                 </form>
@@ -336,6 +348,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 7. Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true">

@@ -947,17 +947,21 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'فشل الحفظ');
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     location.reload();
-                } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                alert('خطأ: ' + err.message);
             });
         });
     });
@@ -969,4 +973,5 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+
 

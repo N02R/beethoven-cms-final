@@ -55,15 +55,8 @@ class Router {
             }
         }
 
-        // إذا لم يتم العثور على المسار، اطبع لنا قائمة الروابط المسجلة لتعرف ما الذي يبحث عنه النظام
-        echo "<div style='background:#ffe6e6; color:#900; padding:20px; font-family:sans-serif; direction:rtl;'>";
-        echo "<h3>❌ خطأ 404: المسار غير مسجل في الروتر!</h3>";
-        echo "<p>الرابط الذي تحاول طلبه بعد التنقية هو: <code><strong>" . htmlspecialchars($uri) . "</strong></code></p>";
-        echo "<p>طريقة الطلب (Method): <code><strong>" . htmlspecialchars($method) . "</strong></code></p>";
-        echo "<hr>";
-        echo "<p>تأكد أن الرابط مسجل تماماً في ملف <code>public/index.php</code> بنفس الصيغة.</p>";
-        echo "</div>";
-        exit;
+        // إذا لم يتم العثور على المسار، عرض صفحة 404 الأصلية للنظام
+        $this->sendError(404, "Page Not Found");
     }
 
     private function sendError(int $code, string $message): void {

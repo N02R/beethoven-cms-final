@@ -61,18 +61,11 @@ class SettingsController
             exit;
         }
 
-        // التحقق من حماية الـ CSRF للطلبات بطريقة آمنة
-        $headers = getallheaders();
-        $csrfToken = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
-        
-        $isTokenValid = false;
-        if (method_exists(Security::class, 'validateCsrfToken')) {
-            $isTokenValid = Security::validateCsrfToken($csrfToken);
-        } else {
-            $isTokenValid = (!empty($csrfToken) && isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $csrfToken));
-        }
+        // التحقق من حماية الـ CSRF للطلبات باستخدام الدالة الصحيحة في Security class
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $csrfToken = $headers['X-CSRF-Token'] ?? $headers['x-csrf-token'] ?? $_POST['csrf_token'] ?? '';
 
-        if (!$isTokenValid) {
+        if (!Security::verifyCsrfToken($csrfToken)) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'رمز التحقق غير صالح (CSRF token validation failed).']);
             exit;

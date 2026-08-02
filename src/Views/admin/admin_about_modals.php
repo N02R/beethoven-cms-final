@@ -303,7 +303,7 @@
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
@@ -333,7 +333,7 @@
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
@@ -363,7 +363,7 @@
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
@@ -381,16 +381,21 @@
         partnerCount++;
     }
 
-    // ربط النماذج بإرسال الـ AJAX الموحد لنظام التحكم الخاص بك
+    // ربط النماذج بإرسال الـ AJAX الموحد لنظام التحكم الخاص بك مع تمرير الـ CSRF Token بأمان
     document.querySelectorAll('.admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
 
+            const csrfToken = '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
+
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-Token': '<?php echo htmlspecialchars($csrf_token); ?>',
+                    'X-CSRF-Token': csrfToken,
                     'Accept': 'application/json'
                 },
                 body: formData

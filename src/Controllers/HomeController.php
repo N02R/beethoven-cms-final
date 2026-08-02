@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-// تأكدي من وجود هذين السطرين تماماً في أعلى الملف تحت الـ namespace:
 use App\Models\SiteModel;
 use App\Models\HomeModel;
 

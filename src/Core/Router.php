@@ -9,29 +9,29 @@ class Router {
     private array $routes = [];
 
     public function add(string $method, string $path, array $controllerAction): void {
-        // توحيد نمط تخزين المسارات بإزالة الشرطات الزائدة وتحويلها لحروف صغيرة
         $path = strtolower(trim($path, '/'));
         $this->routes[strtoupper($method)][$path] = $controllerAction;
     }
 
     public function dispatch(string $uri, string $method): void {
-        // تنقية وتوحيد المسار القادم من الـ URL
         $uri = strtolower(trim(parse_url($uri, PHP_URL_PATH) ?? '', '/'));
         $method = strtoupper($method);
 
-        // استخراج بادئة اللغة إن وجدت (مثال: de/about -> de)
         $segments = explode('/', $uri);
-        $lang = 'de'; // اللغة الافتراضية
+        $lang = 'de';
         
         if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
             $lang = array_shift($segments);
             $uri = implode('/', $segments);
         }
 
-        // إزالة أي شرطات مائلة في البداية أو النهاية بعد فصل اللغة
         $uri = trim($uri, '/');
 
-        // مطابقة المسارات بشكل دقيق
+        // ==========================================
+        // 🔍 سطر التشخيص المؤقت (قم بإلغاء التعليق لرؤية المسار المستلم)
+        // ==========================================
+        // echo "<div style='background:#222; color:#0ff; padding:10px; font-family:monospace; z-index:99999; position:relative;'>الرابط المستلم بعد التنقية: [<strong>{$uri}</strong>] | الطريقة: [<strong>{$method}</strong>]</div>";
+
         if (isset($this->routes[$method][$uri])) {
             [$controllerClass, $action] = $this->routes[$method][$uri];
             
@@ -45,14 +45,25 @@ class Router {
                         $controller->$action();
                     }
                     return;
+                } else {
+                    echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الدالة (Method) <code>{$action}</code> غير موجودة داخل الكلاس <code>{$controllerClass}</code></div>";
+                    exit;
                 }
+            } else {
+                echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الكلاس (Controller) <code>{$controllerClass}</code> غير موجود أو مساره خاطئ!</div>";
+                exit;
             }
-            $this->sendError(500, "Internal Server Error");
-            return;
         }
 
-        // في حال لم يتم العثور على المسار، إرجاع خطأ 404
-        $this->sendError(404, "Page Not Found");
+        // إذا لم يتم العثور على المسار، اطبع لنا قائمة الروابط المسجلة لتعرف ما الذي يبحث عنه النظام
+        echo "<div style='background:#ffe6e6; color:#900; padding:20px; font-family:sans-serif; direction:rtl;'>";
+        echo "<h3>❌ خطأ 404: المسار غير مسجل في الروتر!</h3>";
+        echo "<p>الرابط الذي تحاول طلبه بعد التنقية هو: <code><strong>" . htmlspecialchars($uri) . "</strong></code></p>";
+        echo "<p>طريقة الطلب (Method): <code><strong>" . htmlspecialchars($method) . "</strong></code></p>";
+        echo "<hr>";
+        echo "<p>تأكد أن الرابط مسجل تماماً في ملف <code>public/index.php</code> بنفس الصيغة.</p>";
+        echo "</div>";
+        exit;
     }
 
     private function sendError(int $code, string $message): void {

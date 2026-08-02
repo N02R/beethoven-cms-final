@@ -58,7 +58,7 @@
             <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
-                <img src="/assets/img/home/Arrow.svg" alt="Arrow">
+                <img src="/assets/img/home/ArrowLink.svg.webp" alt="Arrow" width="35">
               </div>
             </div>
           </a>

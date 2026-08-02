@@ -938,11 +938,13 @@
         col3Count++;
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
-    document.querySelectorAll('.custom-modal form').forEach(form => {
+    // تعديل معالج النماذج ليشمل جميع النماذج داخل لوحة الإعدادات التي تفتقر لتحديد الكلاس القديم
+    document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
+            // التحقق مما إذا كان النموذج يخص الإعدادات أو يحتوي على حقول رفع ملفات
             e.preventDefault();
             const formData = new FormData(this);
+            
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
                 body: formData
@@ -973,5 +975,6 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+
 
 

@@ -210,3 +210,8 @@
   </div>
 </section>
 <!-- partenar end -->
+
+<?php 
+// تضمين ملف الـ Modals هنا لكي يتم قراءة الـ HTML الخاص بها داخل الصفحة
+include_once __DIR__ . '/about_modals.php'; 
+?>

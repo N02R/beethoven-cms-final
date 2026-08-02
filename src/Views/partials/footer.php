@@ -23,7 +23,7 @@ if (!isset($path_prefix)) {
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
                     <input type="email" id="consultEmailInput" name="email" placeholder="ادخل إيميلك..." required />
-                    <button type="button" id="openConsentModalBtn"><img src="<?php echo $path_prefix; ?>/assets/img/home/send.svg" alt="إرسال"></button>
+                    <button type="button" id="openConsentModalBtn"><img src="<?php echo $path_prefix; ?>/assets/img/home/send.svg.webp" alt="إرسال"></button>
                 </form>
             </div>
         </div>

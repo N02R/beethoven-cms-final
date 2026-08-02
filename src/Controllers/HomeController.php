@@ -66,7 +66,7 @@ class HomeController {
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class='container py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

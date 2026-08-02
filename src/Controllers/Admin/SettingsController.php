@@ -156,7 +156,7 @@ class SettingsController
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 6. تحديث الفوتر العام وباقي الحقول النصية
+            // 6. تحديث الفوتر العام وباقي الحقول النصية وروابط تواصل معنا
             elseif ($action === 'update_footer') {
                 $consultTitle = $_POST['consult_title'] ?? '';
                 $consultDesc  = $_POST['consult_desc'] ?? '';
@@ -169,6 +169,22 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_desc', 'v' => $footerDesc, 'v_update' => $footerDesc]);
                 $stmt->execute(['k' => 'footer_col2_title', 'v' => $col2Title, 'v_update' => $col2Title]);
                 $stmt->execute(['k' => 'footer_col3_title', 'v' => $col3Title, 'v_update' => $col3Title]);
+
+                // معالجة روابط العمود الثالث للفوتر (تواصل معنا) والأيقونات الخاصة بها
+                $footerCol3Data = $_POST['col3'] ?? [];
+                foreach ($footerCol3Data as $index => $item) {
+                    if (isset($_FILES['col3_img_' . $index]) && $_FILES['col3_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['col3_img_' . $index]['name'], PATHINFO_EXTENSION);
+                        $filename = 'footer_col3_' . $index . '_' . time() . '.' . $ext;
+                        move_uploaded_file($_FILES['col3_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($footerCol3Data[$index]['old_img']);
+                }
+                $jsonCol3Val = json_encode(array_values($footerCol3Data), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
             }
 
             // 7. تحديث قسم الهيرو (Hero)

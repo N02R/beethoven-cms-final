@@ -1,154 +1,212 @@
 <?php
 /**
  * صفحة من نحن - About Page View
- * يتلقى المتغيرات $data و $is_admin من AboutController
  */
-
-// استخراج البيانات وتجهيزها للاستخدام السهل في العرض
-$about         = $data['about'] ?? [];
-$teamTitle     = $data['team_title'] ?? 'فريق العمل';
-$teamDesc      = $data['team_desc'] ?? '';
-$teamMembers   = $data['team_members'] ?? [];
-$counts        = $data['about_counts'] ?? [];
-$partnersTitle = $data['partners_title'] ?? 'شركاؤنا';
-$partnersItems = $data['partners_items'] ?? [];
 ?>
 
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($about['title'] ?? 'من نحن') ?> - بيتهوفن سيتي</title>
-    <!-- روابط الـ CSS المشتركة أو الهيدر -->
-</head>
-<body>
+<!-- 1. about start -->
+<section class="about py-5" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#aboutEditModal" title="تعديل قسم من نحن">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
 
-    <!-- استدعاء الهيدر العام للموقع -->
+  <div class="custom-container">
     <?php 
-    // include __DIR__ . '/partials/header.php'; 
+    $ab = $data['about'] ?? [];
+    $about_main_img = !empty($ab['main_img']) ? $ab['main_img'] . '?v=' . time() : 'assets/img/about us icon, image/about1.jpg';
+    $about_sub_img = !empty($ab['sub_img']) ? $ab['sub_img'] . '?v=' . time() : 'assets/img/about us icon, image/about2.png';
+    $vision_icon = !empty($ab['vision_icon']) ? $ab['vision_icon'] . '?v=' . time() : 'assets/img/About us Icon, image/Company vision.svg';
+    $message_icon = !empty($ab['message_icon']) ? $ab['message_icon'] . '?v=' . time() : 'assets/img/About us Icon, image/Company message.svg';
     ?>
-
-    <!-- قسم من نحن الرئيسي -->
-    <section class="about-section py-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <?php if (!empty($about['main_img'])): ?>
-                        <img src="<?= htmlspecialchars($about['main_img']) ?>" alt="About Main" class="img-fluid rounded shadow">
-                    <?php endif; ?>
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 order-2 order-lg-1">
+        <h2 class="sec-title mb-3"><?php echo htmlspecialchars($ab['title'] ?? 'من نحن'); ?></h2>
+        <p class="about-par mb-4"><?php echo nl2br(htmlspecialchars($ab['desc'] ?? '')); ?></p>
+        
+        <div class="row g-3 mb-4">
+          <!-- رؤية الشركة -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body p-0">
+                <div class="title mb-2">
+                  <span class="icon-wrap">
+                    <img src="<?php echo htmlspecialchars($vision_icon); ?>" alt="رؤية الشركة">
+                  </span>
+                  <span><?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?></span>
                 </div>
-                <div class="col-lg-6">
-                    <h1 class="mb-3"><?= htmlspecialchars($about['title'] ?? '') ?></h1>
-                    <p class="text-muted"><?= nl2br(htmlspecialchars($about['desc'] ?? '')) ?></p>
-                    
-                    <?php if (!empty($about['btn_text']) && !empty($about['btn_url'])): ?>
-                        <a href="<?= htmlspecialchars($about['btn_url']) ?>" class="btn btn-primary">
-                            <?= htmlspecialchars($about['btn_text']) ?>
-                        </a>
-                    <?php endif; ?>
-                </div>
+                <p class="card-text"><?php echo htmlspecialchars($ab['vision_desc'] ?? ''); ?></p>
+              </div>
             </div>
+          </div>
 
-            <!-- الرؤية والرسالة -->
-            <div class="row mt-5">
-                <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100 shadow-sm">
-                        <?php if (!empty($about['vision_icon'])): ?>
-                            <img src="<?= htmlspecialchars($about['vision_icon']) ?>" alt="Vision" width="50" class="mb-3">
-                        <?php endif; ?>
-                        <h3><?= htmlspecialchars($about['vision_title'] ?? 'رؤيتنا') ?></h3>
-                        <p><?= htmlspecialchars($about['vision_desc'] ?? '') ?></p>
-                    </div>
+          <!-- رسالة الشركة -->
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body p-0">
+                <div class="title mb-2">
+                  <span class="icon-wrap">
+                    <img src="<?php echo htmlspecialchars($message_icon); ?>" alt="رسالة الشركة">
+                  </span>
+                  <span><?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?></span>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100 shadow-sm">
-                        <?php if (!empty($about['message_icon'])): ?>
-                            <img src="<?= htmlspecialchars($about['message_icon']) ?>" alt="Message" width="50" class="mb-3">
-                        <?php endif; ?>
-                        <h3><?= htmlspecialchars($about['message_title'] ?? 'رسالتنا') ?></h3>
-                        <p><?= htmlspecialchars($about['message_desc'] ?? '') ?></p>
-                    </div>
-                </div>
+                <p class="card-text"><?php echo htmlspecialchars($ab['message_desc'] ?? ''); ?></p>
+              </div>
             </div>
+          </div>
         </div>
-    </section>
 
-    <!-- قسم الإحصائيات (Counts) -->
-    <?php if (!empty($counts)): ?>
-    <section class="counts-section bg-light py-4">
-        <div class="container">
-            <div class="row text-center">
-                <?php foreach ($counts as $count): ?>
-                    <div class="col-md-3 col-6 mb-3">
-                        <?php if (!empty($count['img'])): ?>
-                            <img src="<?= htmlspecialchars($count['img']) ?>" alt="Icon" width="40" class="mb-2">
-                        <?php endif; ?>
-                        <h2 class="fw-bold"><?= htmlspecialchars($count['number'] ?? '0') ?></h2>
-                        <p class="text-muted"><?= htmlspecialchars($count['title'] ?? '') ?></p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+        <a href="<?php echo htmlspecialchars($ab['btn_url'] ?? '#'); ?>" class="btn btn-about">
+          <?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد'); ?>
+        </a>
+      </div>
+
+      <!-- صور القسم -->
+      <div class="col-lg-6 order-1 order-lg-2 position-relative">
+        <div class="image-stack">
+          <img src="<?php echo htmlspecialchars($about_main_img); ?>" alt="Main About Image" class="img-fluid main-img">
+          <div class="sub-img-wrapper">
+            <img src="<?php echo htmlspecialchars($about_sub_img); ?>" alt="Sub About Image" class="img-fluid sub-img">
+            <div class="dots-bg"></div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- about end -->
+
+<!-- 2. services start -->
+<section class="services py-5" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <h2 class="mb-3 sec-title"><?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?></h2>
+    
+    <?php if (!empty($data['services_section_desc'])): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;">
+            <?php echo htmlspecialchars($data['services_section_desc']); ?>
+        </p>
     <?php endif; ?>
 
-    <!-- قسم فريق العمل -->
-    <?php if (!empty($teamMembers)): ?>
-    <section class="team-section py-5">
-        <div class="container text-center">
-            <h2 class="mb-2"><?= htmlspecialchars($teamTitle) ?></h2>
-            <p class="text-muted mb-5"><?= htmlspecialchars($teamDesc) ?></p>
-            <div class="row">
-                <?php foreach ($teamMembers as $member): ?>
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <?php if (!empty($member['img'])): ?>
-                                <img src="<?= htmlspecialchars($member['img']) ?>" class="card-img-top" alt="Team Member">
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($member['name'] ?? '') ?></h5>
-                                <p class="text-muted small"><?= htmlspecialchars($member['job'] ?? '') ?></p>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+    <div class="row g-4">
+      <?php 
+      $services = $data['services'] ?? []; 
+      foreach ($services as $service): 
+      ?>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
+            <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
+              <div class="card-info">
+                <h3><?php echo htmlspecialchars($service['title'] ?? 'اسم الخدمة'); ?></h3>
+                <img src="/assets/img/home/ArrowLink.svg.webp" alt="Arrow">
+              </div>
             </div>
+          </a>
         </div>
-    </section>
-    <?php endif; ?>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<!-- services end -->
 
-    <!-- قسم الشركاء -->
-    <?php if (!empty($partnersItems)): ?>
-    <section class="partners-section py-5 bg-white">
-        <div class="container text-center">
-            <h3 class="mb-4"><?= htmlspecialchars($partnersTitle) ?></h3>
-            <div class="row align-items-center justify-content-center">
-                <?php foreach ($partnersItems as $partner): ?>
-                    <div class="col-md-2 col-4 mb-3">
-                        <?php if (!empty($partner['img'])): ?>
-                            <img src="<?= htmlspecialchars($partner['img']) ?>" alt="Partner" class="img-fluid grayscale">
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
+<!-- 3. team start -->
+<section class="team py-5" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#teamEditModal" title="تعديل فريق العمل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <div class="team-text mb-5">
+      <h2 class="sec-title"><?php echo htmlspecialchars($data['team_title'] ?? 'فريق العمل'); ?></h2>
+      <p class="description main-p"><?php echo htmlspecialchars($data['team_desc'] ?? ''); ?></p>
+    </div>
+    <div class="swiper-container-wrapper">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          <?php 
+          $team_members = $data['team_members'] ?? [];
+          if (!empty($team_members)): 
+          ?>
+            <?php foreach ($team_members as $member): ?>
+              <div class="swiper-slide">
+                <div class="team-card">
+                  <img src="<?php echo htmlspecialchars(($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
+                  <div class="info">
+                    <h5><?php echo htmlspecialchars($member['name'] ?? ''); ?></h5>
+                    <p><?php echo htmlspecialchars($member['role'] ?? ''); ?></p>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <p class="text-center w-100">لا يوجد أعضاء مضافون حالياً.</p>
+          <?php endif; ?>
+        </div>
+      </div>
+      <div class="swiper-nav-wrapper">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- team end -->
+
+<!-- 4. count start -->
+<section class="count" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#countsEditModal" title="تعديل الإحصائيات">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <div class="row g-4">
+      <?php foreach (($data['about_counts'] ?? []) as $c): ?>
+        <div class="col-lg-3 col-md-6">
+          <div class="count-card">
+            <div class="count-img">
+              <img src="<?php echo htmlspecialchars(($c['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
             </div>
+            <div class="count-info">
+              <span><?php echo htmlspecialchars($c['number'] ?? ''); ?></span>
+              <p><?php echo htmlspecialchars($c['title'] ?? ''); ?></p>
+            </div>
+          </div>
         </div>
-    </section>
-    <?php endif; ?>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<!-- count end -->
 
-    <!-- زر التحكم السريع للمدير (إن وجد) -->
-    <?php if (isset($is_admin) && $is_admin): ?>
-        <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
-            <a href="index.php?url=admin/settings" class="btn btn-dark shadow rounded-pill px-4 py-2">
-                ✏️ تعديل هذه الصفحة
-            </a>
+<!-- 5. partenar start -->
+<section class="partenar py-5" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#partnersEditModal" title="تعديل الشركاء">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="custom-container">
+    <h2 class="sec-title mb-5"><?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا'); ?></h2>
+    <div class="row row-cols-2 row-cols-md-4 g-4 align-items-center justify-content-center">
+      <?php foreach (($data['partners_items'] ?? []) as $p): ?>
+        <div class="col">
+          <div class="partner-item">
+            <img src="<?php echo htmlspecialchars(($p['img'] ?? '') . '?v=' . time()); ?>" alt="Partner" class="img-fluid" />
+          </div>
         </div>
-    <?php endif; ?>
-
-    <!-- استدعاء الفوتر العام للموقع -->
-    <?php 
-    // include __DIR__ . '/partials/footer.php'; 
-    ?>
-
-</body>
-</html>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<!-- partenar end -->

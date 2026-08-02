@@ -371,13 +371,31 @@
                     </div>
                     <div id="servicesRowsContainer">
                         <?php foreach (($data['services'] ?? []) as $index => $service): ?>
-                            <div class="card p-3 border-0 mb-2" id="service_row_<?php echo $index; ?>" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <div class="card p-3 border-0 mb-3" id="service_row_<?php echo $index; ?>" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
                                 <div class="row g-2 align-items-center">
-                                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title']); ?>" placeholder="العنوان"></div>
-                                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url']); ?>" placeholder="الرابط"></div>
-                                    <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="service_img_<?php echo $index; ?>"></div>
-                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo $service['img']; ?>">
-                                    <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('service_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? ''); ?>" placeholder="العنوان">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? ''); ?>" placeholder="الرابط">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <!-- معاينة صورة الخدمة الحالية إن وجدت -->
+                                        <?php if (!empty($service['img'])): ?>
+                                            <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $service['img']); ?>" 
+                                                     alt="Service Image" 
+                                                     class="rounded" 
+                                                     style="width: 32px; height: 32px; object-fit: cover;">
+                                                <span class="small text-muted text-truncate" style="max-size: 120px; font-size: 11px;"><?php echo basename($service['img']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" class="form-control form-control-sm" name="service_img_<?php echo $index; ?>">
+                                    </div>
+                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? ''); ?>">
+                                    <div class="col-md-auto">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('service_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -392,6 +410,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 8. Choose Edit Modal -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true">

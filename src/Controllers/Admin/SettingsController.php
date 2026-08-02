@@ -44,7 +44,7 @@ class SettingsController
     }
 
     /**
-     * حفظ وتحديث الإعدادات مع المعالجة الكاملة والآمنة للصور عبر نظام الـ Media Router
+     * حفظ وتحديث الإعدادات مع المعالجة الكاملة والآمنة للصور بصيغة WebP
      */
     public function save(): void
     {
@@ -72,7 +72,7 @@ class SettingsController
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-            // مسار التخزين الموحد والآمن للصور
+            // مسار التخزين الموحد للصور المحولة
             $uploadDir = realpath(__DIR__ . '/../../../storage/uploads/');
             if (!$uploadDir) {
                 $uploadDir = __DIR__ . '/../../../storage/uploads/';
@@ -85,16 +85,11 @@ class SettingsController
 
             $imageUploader = new ImageUploader($uploadDir);
 
-            // دالة مساعدة لتوليد مسار عرض الصورة عبر الـ Router الآمن
-            $getMediaUrl = function(string $filename): string {
-                return 'index.php?url=media/view&file=' . $filename;
-            };
-
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
                     $filename = $imageUploader->upload($_FILES['logo_img']);
-                    $logoPath = $getMediaUrl($filename);
+                    $logoPath = 'storage/uploads/' . $filename;
                     $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
                 }
             }
@@ -105,7 +100,7 @@ class SettingsController
                 foreach ($socialData as $index => $item) {
                     if (isset($_FILES['social_img_' . $index]) && $_FILES['social_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $filename = $imageUploader->upload($_FILES['social_img_' . $index]);
-                        $socialData[$index]['img'] = $getMediaUrl($filename);
+                        $socialData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
                         $socialData[$index]['img'] = $item['old_img'] ?? '';
                     }
@@ -137,7 +132,7 @@ class SettingsController
                 $adImage = $_POST['old_ad_image'] ?? 'assets/img/default-ad.png';
                 if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
                     $filename = $imageUploader->upload($_FILES['ad_image']);
-                    $adImage = $getMediaUrl($filename);
+                    $adImage = 'storage/uploads/' . $filename;
                 }
 
                 $adData = [
@@ -174,7 +169,7 @@ class SettingsController
                 foreach ($footerCol3Data as $index => $item) {
                     if (isset($_FILES['col3_img_' . $index]) && $_FILES['col3_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $filename = $imageUploader->upload($_FILES['col3_img_' . $index]);
-                        $footerCol3Data[$index]['img'] = $getMediaUrl($filename);
+                        $footerCol3Data[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
                         $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
                     }
@@ -189,7 +184,7 @@ class SettingsController
                 $heroImg = $_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg';
                 if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
                     $filename = $imageUploader->upload($_FILES['hero_img']);
-                    $heroImg = $getMediaUrl($filename);
+                    $heroImg = 'storage/uploads/' . $filename;
                 }
 
                 $heroData = [
@@ -214,7 +209,7 @@ class SettingsController
                 foreach ($servicesData as $index => $item) {
                     if (isset($_FILES['service_img_' . $index]) && $_FILES['service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $filename = $imageUploader->upload($_FILES['service_img_' . $index]);
-                        $servicesData[$index]['img'] = $getMediaUrl($filename);
+                        $servicesData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
                         $servicesData[$index]['img'] = $item['old_img'] ?? '';
                     }
@@ -235,7 +230,7 @@ class SettingsController
                 foreach ($chooseData as $index => $item) {
                     if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $filename = $imageUploader->upload($_FILES['choose_img_' . $index]);
-                        $chooseData[$index]['img'] = $getMediaUrl($filename);
+                        $chooseData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
                         $chooseData[$index]['img'] = $item['old_img'] ?? '';
                     }
@@ -266,7 +261,7 @@ class SettingsController
                 foreach ($guideData as $index => $item) {
                     if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $filename = $imageUploader->upload($_FILES['guide_img_' . $index]);
-                        $guideData[$index]['img'] = $getMediaUrl($filename);
+                        $guideData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
                         $guideData[$index]['img'] = $item['old_img'] ?? '';
                     }
@@ -290,7 +285,7 @@ class SettingsController
 
             echo json_encode([
                 'success' => true,
-                'message' => 'تم حفظ التغييرات وتحديث النظام ومعالجة الصور وتحويلها إلى WebP بنجاح.'
+                'message' => 'تم حفظ التغييرات وتحديث النظام ومعالجة الصور إلى WebP بنجاح.'
             ]);
             exit;
 

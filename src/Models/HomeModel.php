@@ -7,18 +7,15 @@ use App\Models\SiteModel;
 
 class HomeModel {
     /**
-     * جلب وتجهيز بيانات الصفحة الرئيسية فقط
+     * جلب وتجهيز بيانات أقسام الصفحة الرئيسية الخاصة فقط
      */
     public static function getHomeData(): array {
         // جلب كافة الإعدادات باستخدام المودل المركزي SiteModel
         $settings = SiteModel::getSettings();
         
-        // إرجاع مصفوفة منسقة تحتوي على أقسام الصفحة الرئيسية بعد فك تشفير JSON
+        // إرجاع مصفوفة منسقة تحتوي على أقسام الصفحة الرئيسية فقط (لأن الهيدر والفوتر أصبحا يُجلبان عبر getGlobalData)
         return [
             'hero'                  => isset($settings['hero']) ? json_decode($settings['hero'], true) : [],
-            // سطر جلب وفك تشفير روابط السوشيال ميديا للمودل:
-            'social_links'          => isset($settings['social_links']) ? json_decode($settings['social_links'], true) : [],
-            
             'services_section_title'=> $settings['services_section_title'] ?? '',
             'services_section_desc' => $settings['services_section_desc'] ?? '',
             'services'              => isset($settings['services']) ? json_decode($settings['services'], true) : [],

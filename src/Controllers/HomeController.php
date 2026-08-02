@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\SiteModel;
 use App\Models\HomeModel;
 
 class HomeController {
@@ -23,9 +24,12 @@ class HomeController {
         // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');
 
-        // جلب بيانات الصفحة الرئيسية عبر الـ Model بدلاً من ملف الـ JSON
-        $homeModel = new HomeModel();
-        $data = $homeModel->getHomeData();
+        // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
+        $data = SiteModel::getGlobalData();
+
+        // 2. دمجها مع بيانات الصفحة الرئيسية الخاصة عبر HomeModel
+        $homeData = HomeModel::getHomeData();
+        $data = array_merge($data, $homeData);
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في AuthController
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

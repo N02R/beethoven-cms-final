@@ -1,10 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
-$ab = $data['about'] ?? [];
-?>
 
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">

@@ -87,11 +87,12 @@ class SettingsController
 
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
+                $logoPath = $_POST['old_logo'] ?? 'storage/uploads/default-logo.png';
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
                     $filename = $imageUploader->upload($_FILES['logo_img']);
                     $logoPath = 'storage/uploads/' . $filename;
-                    $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
                 }
+                $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
             }
 
             // 2. تحديث منصات التواصل الاجتماعي
@@ -102,7 +103,7 @@ class SettingsController
                         $filename = $imageUploader->upload($_FILES['social_img_' . $index]);
                         $socialData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
-                        $socialData[$index]['img'] = $item['old_img'] ?? '';
+                        $socialData[$index]['img'] = $item['old_img'] ?? ($item['img'] ?? '');
                     }
                     unset($socialData[$index]['old_img']);
                 }
@@ -171,7 +172,7 @@ class SettingsController
                         $filename = $imageUploader->upload($_FILES['col3_img_' . $index]);
                         $footerCol3Data[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
-                        $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
+                        $footerCol3Data[$index]['img'] = $item['old_img'] ?? ($item['img'] ?? '');
                     }
                     unset($footerCol3Data[$index]['old_img']);
                 }
@@ -211,7 +212,7 @@ class SettingsController
                         $filename = $imageUploader->upload($_FILES['service_img_' . $index]);
                         $servicesData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
-                        $servicesData[$index]['img'] = $item['old_img'] ?? '';
+                        $servicesData[$index]['img'] = $item['old_img'] ?? ($item['img'] ?? '');
                     }
                     unset($servicesData[$index]['old_img']);
                 }
@@ -232,7 +233,7 @@ class SettingsController
                         $filename = $imageUploader->upload($_FILES['choose_img_' . $index]);
                         $chooseData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
-                        $chooseData[$index]['img'] = $item['old_img'] ?? '';
+                        $chooseData[$index]['img'] = $item['old_img'] ?? ($item['img'] ?? '');
                     }
                     unset($chooseData[$index]['old_img']);
                 }
@@ -263,7 +264,7 @@ class SettingsController
                         $filename = $imageUploader->upload($_FILES['guide_img_' . $index]);
                         $guideData[$index]['img'] = 'storage/uploads/' . $filename;
                     } else {
-                        $guideData[$index]['img'] = $item['old_img'] ?? '';
+                        $guideData[$index]['img'] = $item['old_img'] ?? ($item['img'] ?? '');
                     }
                     unset($guideData[$index]['old_img']);
                 }

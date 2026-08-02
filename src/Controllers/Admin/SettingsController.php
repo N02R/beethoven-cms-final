@@ -88,12 +88,21 @@ class SettingsController
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
                 $logoPath = $_POST['old_logo'] ?? 'storage/uploads/default-logo.png';
+                
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
-                    $filename = $imageUploader->upload($_FILES['logo_img']);
-                    $logoPath = 'storage/uploads/' . $filename;
+                    try {
+                        $filename = $imageUploader->upload($_FILES['logo_img']);
+                        $logoPath = 'storage/uploads/' . $filename;
+                    } catch (\Exception $e) {
+                        http_response_code(400);
+                        echo json_encode(['success' => false, 'error' => 'فشل رفع صورة الشعار: ' . $e->getMessage()]);
+                        exit;
+                    }
                 }
+                
                 $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
             }
+
 
             // 2. تحديث منصات التواصل الاجتماعي
             elseif ($action === 'update_social') {

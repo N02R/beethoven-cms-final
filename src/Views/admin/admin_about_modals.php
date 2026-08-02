@@ -1,3 +1,11 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
+
+$ab = $data['about'] ?? [];
+$csrf_token = \App\Core\Security::generateCsrfToken();
+?>
 
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">
@@ -8,8 +16,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="aboutSectionForm" enctype="multipart/form-data">
+                <form id="aboutSectionForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_section">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="row g-3">
                         <!-- العنوان والوصف -->
@@ -79,7 +88,7 @@
                             
                             <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['vision_icon'])): ?>
-                                <div class="d-flex height-auto align-items-center gap-2 mb-2 p-1 border rounded bg-light">
+                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-light">
                                     <img src="<?php echo htmlspecialchars($ab['vision_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon']); ?></span>
                                 </div>
@@ -126,8 +135,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="teamForm" enctype="multipart/form-data">
+                <form id="teamForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_team">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
@@ -190,8 +200,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="countsForm" enctype="multipart/form-data">
+                <form id="countsForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_counts">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['about_counts'] ?? []) as $index => $c): ?>
@@ -245,8 +256,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="partnersForm" enctype="multipart/form-data">
+                <form id="partnersForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_partners">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="mb-4">
                         <label class="form-label fw-bold">عنوان القسم</label>
@@ -288,7 +300,7 @@
     </div>
 </div>
 
-<!-- Dynamic Rows JS Engine -->
+<!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
     function removeRow(id) {
         const el = document.getElementById(id);
@@ -304,10 +316,22 @@
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="team[${teamCount}][name]" placeholder="الاسم"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي"></div>
-                <div class="col-md-5"><input type="file" class="form-control form-control-sm" name="team_img_${teamCount}" accept="image/*"></div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('team_row_${teamCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-3">
+                    <label class="small text-muted">الاسم</label>
+                    <input type="text" class="form-control form-control-sm" name="team[${teamCount}][name]" placeholder="الاسم">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted">المسمى الوظيفي</label>
+                    <input type="text" class="form-control form-control-sm" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                </div>
+                <div class="col-md-5">
+                    <label class="small text-muted">صورة جديدة</label>
+                    <input type="file" class="form-control form-control-sm" name="team_img_${teamCount}" accept="image/*">
+                    <input type="hidden" name="team[${teamCount}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_${teamCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         teamCount++;
@@ -322,10 +346,22 @@
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="counts[${countsCount}][number]" placeholder="الرقم"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="counts[${countsCount}][title]" placeholder="الوصف"></div>
-                <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="count_img_${countsCount}" accept="image/*"></div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-3">
+                    <label class="small text-muted">الرقم</label>
+                    <input type="text" class="form-control form-control-sm" name="counts[${countsCount}][number]" placeholder="الرقم">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted">الوصف</label>
+                    <input type="text" class="form-control form-control-sm" name="counts[${countsCount}][title]" placeholder="الوصف">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted">أيقونة جديدة</label>
+                    <input type="file" class="form-control form-control-sm" name="count_img_${countsCount}" accept="image/*">
+                    <input type="hidden" name="counts[${countsCount}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         countsCount++;
@@ -341,36 +377,44 @@
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-11">
+                    <label class="small text-muted mb-1">صورة الشريك الجديدة</label>
                     <input type="file" class="form-control form-control-sm" name="partner_img_${partnerCount}" accept="image/*">
                     <input type="hidden" name="partners[${partnerCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         partnerCount++;
     }
 
-    document.querySelectorAll('#aboutEditModal form, #teamEditModal form, #countsEditModal form, #partnersEditModal form, #servicesEditModal form').forEach(form => {
+    // ربط النماذج بإرسال الـ AJAX الموحد لنظام التحكم الخاص بك
+    document.querySelectorAll('.admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
 
-            fetch('admin/api/save_config.php', {
+            fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': '<?php echo htmlspecialchars($csrf_token); ?>',
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('تم الحفظ بنجاح');
+                    alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
-                console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                console.error('Error:', err);
+                alert('حدث خطأ في الاتصال بالخادم.');
             });
         });
     });

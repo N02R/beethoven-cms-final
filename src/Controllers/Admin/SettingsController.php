@@ -18,8 +18,12 @@ class SettingsController
     {
         $this->checkAdminAuth();
 
-        require_once realpath(__DIR__ . '/../../../database/database.php');
-        global $pdo; 
+        try {
+            $pdo = \App\Config\Database::getConnection();
+        } catch (\Exception $e) {
+            error_log("Database connection failed in index: " . $e->getMessage());
+            die("Database connection failed.");
+        }
 
         $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
         $rawSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
@@ -57,6 +61,15 @@ class SettingsController
             exit;
         }
 
+        // التحقق من حماية الـ CSRF للطلبات
+        $headers = getallheaders();
+        $csrfToken = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
+        if (!Security::validateCsrfToken($csrfToken)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'رمز التحقق غير صالح (CSRF token validation failed).']);
+            exit;
+        }
+
         try {
             $pdo = \App\Config\Database::getConnection();
         } catch (\Exception $e) {
@@ -65,14 +78,20 @@ class SettingsController
             exit;
         }
 
+        $root_path = realpath(__DIR__ . '/../../../');
+
         try {
             $action = $_POST['action'] ?? '';
 
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+            // جلب الإعدادات الحالية للتمكن من حذف الصور القديمة عند التحديث
+            $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+            $currentSettings = $currentSettingsStmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+
             // مسار المجلد المطلوب بدقة داخل public/assets/uploads/
-            $uploadDir = realpath(__DIR__ . '/../../../public/assets/uploads/') . '/';
+            $uploadDir = $root_path . '/public/assets/uploads/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -80,6 +99,9 @@ class SettingsController
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
+                    $oldLogo = $currentSettings['site_logo_path'] ?? '';
+                    $this->deleteOldImageFile($root_path, $oldLogo);
+
                     $filename = 'logo_' . time() . '.webp';
                     $this->convertToWebpAndSave($_FILES['logo_img']['tmp_name'], $uploadDir . $filename);
                     $logoPath = 'assets/uploads/' . $filename;
@@ -126,6 +148,11 @@ class SettingsController
             elseif ($action === 'update_announcement') {
                 $adImage = $_POST['old_ad_image'] ?? 'assets/img/default-ad.png';
                 if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
+                    $oldAdData = json_decode($currentSettings['announcement'] ?? '', true);
+                    if (!empty($oldAdData['image_path'])) {
+                        $this->deleteOldImageFile($root_path, $oldAdData['image_path']);
+                    }
+
                     $filename = 'ad_' . time() . '.webp';
                     $this->convertToWebpAndSave($_FILES['ad_image']['tmp_name'], $uploadDir . $filename);
                     $adImage = 'assets/uploads/' . $filename;
@@ -180,6 +207,11 @@ class SettingsController
             elseif ($action === 'update_hero') {
                 $heroImg = $_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg';
                 if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    $oldHeroData = json_decode($currentSettings['hero'] ?? '', true);
+                    if (!empty($oldHeroData['img'])) {
+                        $this->deleteOldImageFile($root_path, $oldHeroData['img']);
+                    }
+
                     $filename = 'hero_' . time() . '.webp';
                     $this->convertToWebpAndSave($_FILES['hero_img']['tmp_name'], $uploadDir . $filename);
                     $heroImg = 'assets/uploads/' . $filename;
@@ -282,6 +314,149 @@ class SettingsController
                 $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
+            // ==========================================
+            // 13. تحديث قسم من نحن الرئيسي (About Section)
+            // ==========================================
+            elseif ($action === 'update_about_section') {
+                $oldAboutData = json_decode($currentSettings['about_section'] ?? '{}', true);
+
+                // معالجة الصورة الرئيسية
+                $mainImg = $_POST['old_about_main_img'] ?? ($oldAboutData['main_img'] ?? '');
+                if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldAboutData['main_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldAboutData['main_img']);
+                    }
+                    $filename = 'about_main_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['about_main_img']['tmp_name'], $uploadDir . $filename);
+                    $mainImg = 'assets/uploads/' . $filename;
+                }
+
+                // معالجة الصورة الفرعية
+                $subImg = $_POST['old_about_sub_img'] ?? ($oldAboutData['sub_img'] ?? '');
+                if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldAboutData['sub_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldAboutData['sub_img']);
+                    }
+                    $filename = 'about_sub_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['about_sub_img']['tmp_name'], $uploadDir . $filename);
+                    $subImg = 'assets/uploads/' . $filename;
+                }
+
+                // معالجة أيقونة الرؤية
+                $visionIcon = $_POST['old_vision_icon'] ?? ($oldAboutData['vision_icon'] ?? '');
+                if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldAboutData['vision_icon'])) {
+                        $this->deleteOldImageFile($root_path, $oldAboutData['vision_icon']);
+                    }
+                    $filename = 'vision_icon_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['about_vision_icon']['tmp_name'], $uploadDir . $filename);
+                    $visionIcon = 'assets/uploads/' . $filename;
+                }
+
+                // معالجة أيقونة الرسالة
+                $messageIcon = $_POST['old_message_icon'] ?? ($oldAboutData['message_icon'] ?? '');
+                if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldAboutData['message_icon'])) {
+                        $this->deleteOldImageFile($root_path, $oldAboutData['message_icon']);
+                    }
+                    $filename = 'message_icon_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['about_message_icon']['tmp_name'], $uploadDir . $filename);
+                    $messageIcon = 'assets/uploads/' . $filename;
+                }
+
+                $aboutData = [
+                    'title'        => $_POST['about_title'] ?? '',
+                    'desc'         => $_POST['about_desc'] ?? '',
+                    'btn_text'     => $_POST['about_btn_text'] ?? '',
+                    'btn_url'      => $_POST['about_btn_url'] ?? '',
+                    'vision_title' => $_POST['vision_title'] ?? '',
+                    'vision_desc'  => $_POST['vision_desc'] ?? '',
+                    'message_title'=> $_POST['message_title'] ?? '',
+                    'message_desc' => $_POST['message_desc'] ?? '',
+                    'main_img'     => $mainImg,
+                    'sub_img'      => $subImg,
+                    'vision_icon'  => $visionIcon,
+                    'message_icon' => $messageIcon
+                ];
+
+                $jsonVal = json_encode($aboutData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 14. تحديث فريق العمل (Team)
+            // ==========================================
+            elseif ($action === 'update_about_team') {
+                $teamTitle = $_POST['team_title'] ?? '';
+                $teamDesc  = $_POST['team_desc'] ?? '';
+                $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
+                $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
+
+                $teamData = $_POST['team'] ?? [];
+                foreach ($teamData as $index => $item) {
+                    if (isset($_FILES['team_img_' . $index]) && $_FILES['team_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'team_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['team_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $teamData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $teamData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($teamData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 15. تحديث الإحصائيات (Counts)
+            // ==========================================
+            elseif ($action === 'update_about_counts') {
+                $countsData = $_POST['counts'] ?? [];
+                foreach ($countsData as $index => $item) {
+                    if (isset($_FILES['count_img_' . $index]) && $_FILES['count_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'count_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['count_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $countsData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $countsData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($countsData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($countsData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 16. تحديث الشركاء (Partners)
+            // ==========================================
+            elseif ($action === 'update_about_partners') {
+                $partnersTitle = $_POST['partners_title'] ?? '';
+                $stmt->execute(['k' => 'partners_title', 'v' => $partnersTitle, 'v_update' => $partnersTitle]);
+
+                $partnersData = $_POST['partners'] ?? [];
+                foreach ($partnersData as $index => $item) {
+                    if (isset($_FILES['partner_img_' . $index]) && $_FILES['partner_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'partner_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['partner_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $partnersData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $partnersData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($partnersData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($partnersData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
             $pdo->commit();
 
             echo json_encode([
@@ -343,6 +518,19 @@ class SettingsController
 
         if (!$success) {
             throw new Exception('فشل في حفظ الصورة بصيغة WebP الجديدة.');
+        }
+    }
+
+    /**
+     * دالة مساعدة لحذف الصور القديمة من السيرفر عند رفع صور بديلة
+     */
+    private function deleteOldImageFile(string $rootPath, string $imagePath): void
+    {
+        if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
+            $fullPath = $rootPath . '/public/' . $imagePath;
+            if (file_exists($fullPath) && is_file($fullPath)) {
+                @unlink($fullPath);
+            }
         }
     }
 

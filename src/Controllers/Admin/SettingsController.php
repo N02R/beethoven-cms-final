@@ -61,10 +61,18 @@ class SettingsController
             exit;
         }
 
-        // التحقق من حماية الـ CSRF للطلبات
+        // التحقق من حماية الـ CSRF للطلبات بطريقة آمنة
         $headers = getallheaders();
         $csrfToken = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
-        if (!Security::validateCsrfToken($csrfToken)) {
+        
+        $isTokenValid = false;
+        if (method_exists(Security::class, 'validateCsrfToken')) {
+            $isTokenValid = Security::validateCsrfToken($csrfToken);
+        } else {
+            $isTokenValid = (!empty($csrfToken) && isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $csrfToken));
+        }
+
+        if (!$isTokenValid) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'رمز التحقق غير صالح (CSRF token validation failed).']);
             exit;
@@ -320,7 +328,6 @@ class SettingsController
             elseif ($action === 'update_about_section') {
                 $oldAboutData = json_decode($currentSettings['about_section'] ?? '{}', true);
 
-                // معالجة الصورة الرئيسية
                 $mainImg = $_POST['old_about_main_img'] ?? ($oldAboutData['main_img'] ?? '');
                 if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['main_img'])) {
@@ -331,7 +338,6 @@ class SettingsController
                     $mainImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة الصورة الفرعية
                 $subImg = $_POST['old_about_sub_img'] ?? ($oldAboutData['sub_img'] ?? '');
                 if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['sub_img'])) {
@@ -342,7 +348,6 @@ class SettingsController
                     $subImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرؤية
                 $visionIcon = $_POST['old_vision_icon'] ?? ($oldAboutData['vision_icon'] ?? '');
                 if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['vision_icon'])) {
@@ -353,7 +358,6 @@ class SettingsController
                     $visionIcon = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرسالة
                 $messageIcon = $_POST['old_message_icon'] ?? ($oldAboutData['message_icon'] ?? '');
                 if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['message_icon'])) {

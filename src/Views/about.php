@@ -212,6 +212,9 @@
 <!-- partenar end -->
 
 <?php 
-// تضمين ملف الـ Modals هنا لكي يتم قراءة الـ HTML الخاص بها داخل الصفحة
-include_once __DIR__ . '/about_modals.php'; 
+// تضمين موديلات التعديل الخاصة بصفحة من نحن للمشرف فقط
+$about_modals_file = __DIR__ . '/admin/admin_about_modals.php';
+if (!empty($is_admin) && file_exists($about_modals_file)) { 
+    include_once $about_modals_file; 
+} 
 ?>

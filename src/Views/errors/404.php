@@ -19,24 +19,29 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// إزالة قيد ALLOWED_ACCESS الصارم لكي لا يمنع الـ Router عرض الصفحة
 if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
+    define('ALLOWED_ACCESS', true);
 }
 
-$path_prefix = ''; 
+$path_prefix = '/'; 
 
-// تعريف ملفات الـ CSS الخاصة بصفحة 404
+// تعريف ملفات الـ CSS الخاصة بصفحة 404 (مسارات عامة تبدأ بـ / لتعمل مع الروتر)
 $page_css = [
-    'assets/css/style.css',
-    'assets/css/responsive-index.css'
+    '/assets/css/style.css',
+    '/assets/css/responsive-index.css'
 ];
 
 $page_js = [];
 
-// استدعاء الهيدر المشترك (مع الحفاظ على مسار آمن)
-if (file_exists(__DIR__ . '/includes/header.php')) {
-    include_once __DIR__ . '/includes/header.php';
+// استدعاء الهيدر المشترك مع دعم نظام المسارات الحديثة
+$header_path = __DIR__ . '/../Views/includes/header.php';
+if (!file_exists($header_path)) {
+    $header_path = __DIR__ . '/includes/header.php';
+}
+
+if (file_exists($header_path)) {
+    include_once $header_path;
 }
 ?>
 
@@ -206,19 +211,24 @@ if (file_exists(__DIR__ . '/includes/header.php')) {
 
     <!-- الوصف -->
     <p class="error-404-desc">
-      هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص..
+      عذراً، يبدو أن الرابط الذي تحاول الوصول إليه غير موجود أو تم نقله إلى مسار آخر.
     </p>
 
-    <!-- زر الرجوع للرئيسية -->
-    <a href="<?php echo htmlspecialchars($path_prefix . 'index.php'); ?>" class="btn-go-home">العودة الى الرئيسية</a>
+    <!-- زر الرجوع للرئيسية متوافق مع نظام الـ MVC والروتر -->
+    <a href="<?php echo htmlspecialchars($path_prefix); ?>" class="btn-go-home">العودة الى الرئيسية</a>
 
   </div>
 </section>
 <!-- ========== /نهاية القسم ========== -->
 
 <?php 
-// استدعاء الفوتر المشترك بأمان
-if (file_exists(__DIR__ . '/includes/footer.php')) {
-    include_once __DIR__ . '/includes/footer.php';
+// استدعاء الفوتر المشترك بأمان ضمن نظام المجلدات
+$footer_path = __DIR__ . '/../Views/includes/footer.php';
+if (!file_exists($footer_path)) {
+    $footer_path = __DIR__ . '/includes/footer.php';
+}
+
+if (file_exists($footer_path)) {
+    include_once $footer_path;
 }
 ?>

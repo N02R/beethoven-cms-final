@@ -1,10 +1,8 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
+// تم التحقق من الصلاحيات مسبقاً في الصفحة الأب لتعارض طباعة الرؤوس (Headers)
 $ab = $data['about'] ?? [];
 $csrf_token = \App\Core\Security::generateCsrfToken();
+$path_prefix = $path_prefix ?? '/';
 ?>
 
 <!-- 1. About Section Modal (قسم من نحن) -->
@@ -50,9 +48,9 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                                 <?php endif; ?>
                             </label>
                             <?php if (!empty($ab['main_img'])): ?>
-                                <div class="mb-2 p-1 border rounded bg-light text-center">
-                                    <img src="<?php echo htmlspecialchars($ab['main_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
-                                    <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($ab['main_img']); ?></div>
+                                <div class="mb-2 p-1 border rounded bg-white text-center">
+                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['main_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
+                                    <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['main_img']); ?></div>
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="about_main_img" accept="image/*">
@@ -67,9 +65,9 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                                 <?php endif; ?>
                             </label>
                             <?php if (!empty($ab['sub_img'])): ?>
-                                <div class="mb-2 p-1 border rounded bg-light text-center">
-                                    <img src="<?php echo htmlspecialchars($ab['sub_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
-                                    <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($ab['sub_img']); ?></div>
+                                <div class="mb-2 p-1 border rounded bg-white text-center">
+                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['sub_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
+                                    <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['sub_img']); ?></div>
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="about_sub_img" accept="image/*">
@@ -88,8 +86,8 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                             
                             <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['vision_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-light">
-                                    <img src="<?php echo htmlspecialchars($ab['vision_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
+                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['vision_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -107,8 +105,8 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                             
                             <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['message_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-light">
-                                    <img src="<?php echo htmlspecialchars($ab['message_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
+                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['message_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['message_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -164,7 +162,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                                         <label class="small text-muted">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($member['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($member['img']); ?>" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" title="<?php echo htmlspecialchars($member['img']); ?>">
+                                                <img src="<?php echo htmlspecialchars($path_prefix . $member['img']); ?>" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" title="<?php echo htmlspecialchars($member['img']); ?>">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="team_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -178,7 +176,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addTeamRow()">
+                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addTeamRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة عضو جديد
                     </button>
                 </form>
@@ -220,7 +218,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                                         <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($c['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars($path_prefix . $c['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -234,7 +232,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addCountRow()">
+                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addCountRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة عداد جديد
                     </button>
                 </form>
@@ -273,7 +271,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                                         <label class="small text-muted mb-1">صورة الشريك الحالية / اختيار جديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($partner['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($partner['img']); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
+                                                <img src="<?php echo htmlspecialchars($path_prefix . $partner['img']); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -287,7 +285,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addPartnerRow()">
+                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addPartnerRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة شريك جديد
                     </button>
                 </form>
@@ -409,7 +407,7 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
                     alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.error || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {

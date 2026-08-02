@@ -20,8 +20,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'domain'   => '',                   
         'secure'   => $isSecure,            // HTTPS حصرياً عند توفره
         'httponly' => true,                 // حماية من هجمات XSS
-       'samesite' => 'Lax'
-            // حماية صارمة ضد هجمات CSRF
+        'samesite' => 'Lax'                 // حماية صارمة ضد هجمات CSRF
     ]);
 
     session_start();
@@ -150,9 +149,6 @@ $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index'])
 // ==========================================
 // 2. مسارات لوحة التحكم (Admin Routes)
 // ==========================================
-// ==========================================
-// 2. مسارات لوحة التحكم (Admin Routes)
-// ==========================================
 $router->add('GET', 'admin/login', [AuthController::class, 'login']);
 $router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
 $router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
@@ -161,25 +157,25 @@ $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save'])
 $router->add('GET', 'admin/logout', [DashboardController::class, 'logout']);
 $router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
 $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
-// داخل مصفوفة الروتس أو دالة التوجيه في Router.php
 $router->add('GET', 'media/view', [MediaController::class, 'serve']);
 
 // ==========================================
-// 3. معالجة الـ URI والـ Dispatch
+// 3. معالجة الـ URI والـ Dispatch (دعم كامل لسيرفر PHP المحلي و ?url=)
 // ==========================================
-// 3. معالجة الـ URI والـ Dispatch (دعم كامل لسيرفر PHP المحلي والاستضافات)
-$uri = $_SERVER['REQUEST_URI'] ?? '';
-
-// إزالة query string إن وجد (مثل ?lang=de)
-if (false !== $pos = strpos($uri, '?')) {
-    $uri = substr($uri, 0, $pos);
+if (isset($_GET['url'])) {
+    $uri = '/' . trim($_GET['url'], '/');
+} else {
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (false !== $pos = strpos($uri, '?')) {
+        $uri = substr($uri, 0, $pos);
+    }
+    $uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
+    
+    $scriptName = dirname($_SERVER['SCRIPT_NAME']);
+    if ($scriptName !== '/' && strpos($uri, $scriptName) === 0) {
+        $uri = substr($uri, strlen($scriptName));
+    }
 }
 
-// تنظيف المسار ليعمل بسلاسة
-$uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
-
-// إذا كان المشروع يعمل داخل مجلد فرعي، يمكنك إزالة اسم المجلد هنا إن أردت، 
-// أو الاعتماد على معالجة الـ Router النظيفة الحالية:
 $method = $_SERVER['REQUEST_METHOD'];
-
 $router->dispatch($uri, $method);

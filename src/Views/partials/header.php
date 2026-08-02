@@ -166,9 +166,9 @@ $is_visible = ($is_published && $is_in_time);
               <?php endif; ?>
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="/public/assets/img/home/global.svg.webp" alt="lang">
+                  <img src="/assets/img/home/global.svg.webp" alt="lang">
                   <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
-                  <img src="/public/assets/img/home/arowwdown.svg.webp" alt="arrow">
+                  <img src="/assets/img/home/arowwdown.svg.webp" alt="arrow">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach ($languages as $lang): ?>

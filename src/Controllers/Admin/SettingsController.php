@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Security;
-use App\Services\ImageUploader;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -19,7 +18,6 @@ class SettingsController
     {
         $this->checkAdminAuth();
 
-        // تضمين ملف الاتصال بقاعدة البيانات الموجود في جذر المشروع
         require_once realpath(__DIR__ . '/../../../database/database.php');
         global $pdo; 
 
@@ -32,7 +30,6 @@ class SettingsController
             'site_logo'  => $rawSettings['site_logo'] ?? '',
         ];
 
-        // استخدام كلاس الأمان لتوليد رمز CSRF
         $csrf_token = Security::generateCsrfToken();
 
         $root_path = realpath(__DIR__ . '/../../../');
@@ -46,7 +43,7 @@ class SettingsController
     }
 
     /**
-     * حفظ وتحديث الإعدادات (معالجة AJAX / Form POST)
+     * حفظ وتحديث الإعدادات مع تحويل الصور تلقائياً إلى WebP
      */
     public function save(): void
     {
@@ -68,15 +65,14 @@ class SettingsController
             exit;
         }
 
-        // (ملاحظة: إذا كنتِ تستخدمين نظام حماية CSRF مشدد عبر الـ JS، تأكدي من مروره، أو تجنبيه مؤقتاً للاختبار)
         try {
             $action = $_POST['action'] ?? '';
 
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-            // مساعدة لرفع الصور
-            $uploadDir = __DIR__ . '/../../../public/assets/uploads/';
+            // مسار المجلد المطلوب بدقة داخل public/assets/uploads/
+            $uploadDir = realpath(__DIR__ . '/../../../public/assets/uploads/') . '/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -84,9 +80,8 @@ class SettingsController
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES['logo_img']['name'], PATHINFO_EXTENSION);
-                    $filename = 'logo_' . time() . '.' . $ext;
-                    move_uploaded_file($_FILES['logo_img']['tmp_name'], $uploadDir . $filename);
+                    $filename = 'logo_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['logo_img']['tmp_name'], $uploadDir . $filename);
                     $logoPath = 'assets/uploads/' . $filename;
                     
                     $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
@@ -97,11 +92,9 @@ class SettingsController
             elseif ($action === 'update_social') {
                 $socialData = $_POST['social'] ?? [];
                 foreach ($socialData as $index => $item) {
-                    // معالجة صورة أيقونة السوشيال الخاصة بهذا العنصر إن وجدت
                     if (isset($_FILES['social_img_' . $index]) && $_FILES['social_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($_FILES['social_img_' . $index]['name'], PATHINFO_EXTENSION);
-                        $filename = 'social_' . $index . '_' . time() . '.' . $ext;
-                        move_uploaded_file($_FILES['social_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $filename = 'social_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['social_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $socialData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $socialData[$index]['img'] = $item['old_img'] ?? '';
@@ -115,7 +108,6 @@ class SettingsController
             // 3. تحديث القائمة الرئيسية (Menu)
             elseif ($action === 'update_menu') {
                 $menuData = $_POST['menu'] ?? [];
-                // ترتيب العناصر حسب الحقل order
                 usort($menuData, function($a, $b) {
                     return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
                 });
@@ -134,9 +126,8 @@ class SettingsController
             elseif ($action === 'update_announcement') {
                 $adImage = $_POST['old_ad_image'] ?? 'assets/img/default-ad.png';
                 if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES['ad_image']['name'], PATHINFO_EXTENSION);
-                    $filename = 'ad_' . time() . '.' . $ext;
-                    move_uploaded_file($_FILES['ad_image']['tmp_name'], $uploadDir . $filename);
+                    $filename = 'ad_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['ad_image']['tmp_name'], $uploadDir . $filename);
                     $adImage = 'assets/uploads/' . $filename;
                 }
 
@@ -156,7 +147,7 @@ class SettingsController
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 6. تحديث الفوتر العام وباقي الحقول النصية وروابط تواصل معنا
+            // 6. تحديث الفوتر العام وروابط العمود الثالث
             elseif ($action === 'update_footer') {
                 $consultTitle = $_POST['consult_title'] ?? '';
                 $consultDesc  = $_POST['consult_desc'] ?? '';
@@ -170,13 +161,11 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_col2_title', 'v' => $col2Title, 'v_update' => $col2Title]);
                 $stmt->execute(['k' => 'footer_col3_title', 'v' => $col3Title, 'v_update' => $col3Title]);
 
-                // معالجة روابط العمود الثالث للفوتر (تواصل معنا) والأيقونات الخاصة بها
                 $footerCol3Data = $_POST['col3'] ?? [];
                 foreach ($footerCol3Data as $index => $item) {
                     if (isset($_FILES['col3_img_' . $index]) && $_FILES['col3_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($_FILES['col3_img_' . $index]['name'], PATHINFO_EXTENSION);
-                        $filename = 'footer_col3_' . $index . '_' . time() . '.' . $ext;
-                        move_uploaded_file($_FILES['col3_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $filename = 'footer_col3_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['col3_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
@@ -191,9 +180,8 @@ class SettingsController
             elseif ($action === 'update_hero') {
                 $heroImg = $_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg';
                 if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES['hero_img']['name'], PATHINFO_EXTENSION);
-                    $filename = 'hero_' . time() . '.' . $ext;
-                    move_uploaded_file($_FILES['hero_img']['tmp_name'], $uploadDir . $filename);
+                    $filename = 'hero_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['hero_img']['tmp_name'], $uploadDir . $filename);
                     $heroImg = 'assets/uploads/' . $filename;
                 }
 
@@ -218,9 +206,8 @@ class SettingsController
                 $servicesData = $_POST['services'] ?? [];
                 foreach ($servicesData as $index => $item) {
                     if (isset($_FILES['service_img_' . $index]) && $_FILES['service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($_FILES['service_img_' . $index]['name'], PATHINFO_EXTENSION);
-                        $filename = 'service_' . $index . '_' . time() . '.' . $ext;
-                        move_uploaded_file($_FILES['service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $filename = 'service_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['service_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $servicesData[$index]['img'] = $item['old_img'] ?? '';
@@ -241,9 +228,8 @@ class SettingsController
                 $chooseData = $_POST['choose'] ?? [];
                 foreach ($chooseData as $index => $item) {
                     if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($_FILES['choose_img_' . $index]['name'], PATHINFO_EXTENSION);
-                        $filename = 'choose_' . $index . '_' . time() . '.' . $ext;
-                        move_uploaded_file($_FILES['choose_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $filename = 'choose_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['choose_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $chooseData[$index]['img'] = $item['old_img'] ?? '';
@@ -254,7 +240,7 @@ class SettingsController
                 $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 10. تحديث التقييمات / الفيديوهات (Reviews)
+            // 10. تحديث التقييمات (Reviews)
             elseif ($action === 'update_reviews') {
                 $revTitle = $_POST['reviews_title'] ?? '';
                 $stmt->execute(['k' => 'reviews_title', 'v' => $revTitle, 'v_update' => $revTitle]);
@@ -274,9 +260,8 @@ class SettingsController
                 $guideData = $_POST['guide'] ?? [];
                 foreach ($guideData as $index => $item) {
                     if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $ext = pathinfo($_FILES['guide_img_' . $index]['name'], PATHINFO_EXTENSION);
-                        $filename = 'guide_' . $index . '_' . time() . '.' . $ext;
-                        move_uploaded_file($_FILES['guide_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $filename = 'guide_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['guide_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $guideData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $guideData[$index]['img'] = $item['old_img'] ?? '';
@@ -301,7 +286,7 @@ class SettingsController
 
             echo json_encode([
                 'success' => true,
-                'message' => 'تم حفظ التغييرات وتحديث النظام بنجاح.'
+                'message' => 'تم حفظ التغييرات وتحديث الصور بصيغة WebP بنجاح.'
             ]);
             exit;
 
@@ -316,6 +301,50 @@ class SettingsController
         }
     }
 
+    /**
+     * دالة مساعدة لتحويل أي صورة مرفوعة إلى صيغة WebP وحفظها في المسار المحدد
+     */
+    private function convertToWebpAndSave(string $tmpPath, string $destination): void
+    {
+        $imageInfo = @getimagesize($tmpPath);
+        if ($imageInfo === false) {
+            throw new Exception('الملف المرفوع ليس صورة صالحة.');
+        }
+
+        $mimeType = $imageInfo['mime'];
+        $image = null;
+
+        switch ($mimeType) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = @imagecreatefromjpeg($tmpPath);
+                break;
+            case 'image/png':
+                $image = @imagecreatefrompng($tmpPath);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/webp':
+                $image = @imagecreatefromwebp($tmpPath);
+                break;
+            default:
+                throw new Exception('صيغة الصورة غير مدعومة. يرجى رفع JPG, PNG أو WebP.');
+        }
+
+        if (!$image) {
+            throw new Exception('فشل في معالجة وفك تشفير الصورة.');
+        }
+
+        $success = @imagewebp($image, $destination, 85);
+        @imagedestroy($image);
+
+        if (!$success) {
+            throw new Exception('فشل في حفظ الصورة بصيغة WebP الجديدة.');
+        }
+    }
 
     private function checkAdminAuth(): void
     {
@@ -339,5 +368,3 @@ class SettingsController
         return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
     }
 }
-
-

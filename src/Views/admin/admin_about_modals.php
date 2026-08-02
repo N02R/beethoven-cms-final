@@ -1,9 +1,3 @@
-<?php
-// تم التحقق من الصلاحيات مسبقاً في الصفحة الأب لتعارض طباعة الرؤوس (Headers)
-$ab = $data['about'] ?? [];
-$csrf_token = \App\Core\Security::generateCsrfToken();
-$path_prefix = $path_prefix ?? '/';
-?>
 
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">

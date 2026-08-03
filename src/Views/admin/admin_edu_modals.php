@@ -1,22 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
-$edu_hero = $data['edu_hero'] ?? [];
-$edu_why_title = $data['edu_why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
-$edu_why_desc = $data['edu_why_desc'] ?? '';
-$edu_why_items = $data['edu_why_items'] ?? [];
-
-$edu_timeline_title = $data['edu_timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS';
-$edu_timeline_desc = $data['edu_timeline_desc'] ?? '';
-$edu_timeline_steps = $data['edu_timeline_steps'] ?? [];
-
-$edu_services_title = $data['edu_services_title'] ?? 'ماذا تقدم في بيتهوفن سيتي؟';
-$edu_services_desc = $data['edu_services_desc'] ?? '';
-$edu_services_items = $data['edu_services_items'] ?? [];
-?>
-
 <!-- 1. Edu Hero Modal (قسم الهيرو) -->
 <div class="modal fade custom-modal" id="eduHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -56,8 +37,9 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                 <?php endif; ?>
                             </label>
                             <?php if (!empty($edu_hero['img'])): ?>
-                                <div class="mb-2 p-1 border rounded bg-light text-center">
-                                    <img src="<?php echo htmlspecialchars($edu_hero['img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Hero Preview">
+                                <div class="mb-2 p-2 border rounded bg-light text-center">
+                                    <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
+                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $edu_hero['img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Hero Preview">
                                     <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($edu_hero['img']); ?></div>
                                 </div>
                             <?php endif; ?>
@@ -112,7 +94,10 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                         <label class="small text-muted">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($item['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -180,7 +165,10 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                         <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
-                                                <img src="<?php echo htmlspecialchars($step['icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $step['icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($step['icon']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="step_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -210,7 +198,6 @@ $edu_services_items = $data['edu_services_items'] ?? [];
         </div>
     </div>
 </div>
-
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">
@@ -249,7 +236,10 @@ $edu_services_items = $data['edu_services_items'] ?? [];
                                         <label class="small text-muted">صورة الخلفية الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($item['img']); ?>" style="width: 30px; height: 30px; object-fit: cover; border-radius: 4px;">
+                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" style="width: 30px; height: 30px; object-fit: cover; border-radius: 4px;">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="srv_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -287,7 +277,7 @@ $edu_services_items = $data['edu_services_items'] ?? [];
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'why_row_' + eduWhyCount;
         div.innerHTML = `
@@ -308,7 +298,7 @@ $edu_services_items = $data['edu_services_items'] ?? [];
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'step_row_' + eduStepCount;
         div.innerHTML = `
@@ -331,7 +321,7 @@ $edu_services_items = $data['edu_services_items'] ?? [];
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
+        div.className = 'card p-3 border-0 mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'edu_srv_row_' + eduSrvCount;
         div.innerHTML = `
@@ -348,27 +338,38 @@ $edu_services_items = $data['edu_services_items'] ?? [];
         eduSrvCount++;
     }
 
-    document.querySelectorAll('#eduHeroModal form, #eduWhyModal form, #eduTimelineModal form, #eduServicesModal form').forEach(form => {
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط (مع تضمين الـ CSRF Token لمنع خطأ 403)
+    document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            
+            // جلب الـ CSRF token من الـ Meta tag بأمان تام مع التأكد من إرفاقه تلقائياً
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
 
-            fetch('admin/api/save_config.php', {
+            fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('تم الحفظ بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    console.error('Server Response Error:', data);
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });

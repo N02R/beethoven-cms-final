@@ -338,6 +338,9 @@
     right: 10%;
 }
 
+.info-content h4 {
+    font-size: 15px;
+}
 /* time line style end */
 
 /* education services style start */

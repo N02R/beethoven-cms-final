@@ -1,11 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
-$path_prefix = $path_prefix ?? '';
-?>
-
 <!-- 1. Job Hero Modal -->
 <div class="modal fade custom-modal" id="jobHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -92,7 +84,10 @@ $path_prefix = $path_prefix ?? '';
                                         <label class="small text-muted mb-1">الصورة / الأيقونة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
-                                                <img src="<?php echo $path_prefix . htmlspecialchars($item['img']); ?>" class="thumb-preview">
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="why_img_<?php echo $i; ?>" accept="image/*">
                                         </div>
@@ -160,7 +155,10 @@ $path_prefix = $path_prefix ?? '';
                                         <label class="small text-muted mb-1">الصورة والألوان</label>
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <?php if (!empty($prog['img'])): ?>
-                                                <img src="<?php echo $path_prefix . htmlspecialchars($prog['img']); ?>" class="thumb-preview">
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $prog['img']); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($prog['img']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="prog_img_<?php echo $i; ?>" accept="image/*">
                                         </div>
@@ -224,7 +222,10 @@ $path_prefix = $path_prefix ?? '';
                                         <label class="small text-muted mb-1">أيقونة الخطوة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
-                                                <img src="<?php echo $path_prefix . htmlspecialchars($step['icon']); ?>" class="thumb-preview">
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $step['icon']); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($step['icon']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="step_icon_<?php echo $i; ?>" accept="image/*">
                                         </div>
@@ -288,7 +289,10 @@ $path_prefix = $path_prefix ?? '';
                                         <label class="small text-muted mb-1">صورة الخلفية</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
-                                                <img src="<?php echo $path_prefix . htmlspecialchars($item['img']); ?>" class="thumb-preview">
+                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="srv_img_<?php echo $i; ?>" accept="image/*">
                                         </div>
@@ -384,27 +388,38 @@ $path_prefix = $path_prefix ?? '';
         jobSrvCount++;
     }
 
-    document.querySelectorAll('#jobHeroModal form, #jobWhyModal form, #jobProgramModal form, #jobTimelineModal form, #jobServicesModal form').forEach(form => {
+    // معالج النماذج الموحد مع تضمين الحماية (CSRF Token) والتعامل الآمن مع السيرفر
+    document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            
+            // جلب الـ CSRF token بأمان تام ومنع أخطاء الصلاحيات
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
 
             fetch('admin/api/save_config.php', {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('تم الحفظ بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    console.error('Server Response Error:', data);
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });

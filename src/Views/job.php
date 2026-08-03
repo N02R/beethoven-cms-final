@@ -195,18 +195,29 @@ $job_services_items = $data['job_services_items'] ?? [
       </div>
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
-          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector.png" alt="base" class="line-base">
-          <img src="<?php echo $path_prefix; ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
+          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector.png" alt="base" class="line-base">
+          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
           
           <?php 
           $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
           foreach ($job_timeline_steps as $idx => $step): 
               $num = sprintf("%02d", $idx + 1);
               $dotClass = $dots[$idx % count($dots)];
+              $stepNumber = $idx + 1;
+              
+              // الأيقونة الداخلية القابلة للتعديل
+              $iconPath = !empty($step['icon']) 
+                  ? $path_prefix . ltrim($step['icon'], '/') 
+                  : $path_prefix . 'assets/img/vector/Grouptime' . $stepNumber . '.png';
+                  
+              // خلفية الرقم الثابتة لضمان ظهورها بالشكل الصحيح
+              $groupNumImg = $path_prefix . 'assets/img/vector/Group' . $stepNumber . '.png';
           ?>
-            <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
-              <div class="step-img-num"><img src="<?php echo $path_prefix; ?>assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>"></div>
-              <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png", '/') . '?v=' . time()); ?>" alt=""></div>
+            <div class="step-wrapper step-<?php echo $stepNumber; ?>">
+              <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+              <div class="icon-main">
+                <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
+              </div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                 <span class="dot <?php echo $dotClass; ?>"></span>
@@ -221,6 +232,10 @@ $job_services_items = $data['job_services_items'] ?? [
       <div class="mobile-timeline d-lg-none">
         <?php foreach ($job_timeline_steps as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
+            $stepNumber = $idx + 1;
+            $iconPath = !empty($step['icon']) 
+                ? $path_prefix . ltrim($step['icon'], '/') 
+                : $path_prefix . 'assets/img/vector/Grouptime' . $stepNumber . '.png';
         ?>
           <div class="m-step">
             <div class="m-number-box">
@@ -228,7 +243,9 @@ $job_services_items = $data['job_services_items'] ?? [
             </div>
             <div class="m-content">
               <div class="m-header">
-                <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime".($idx+1).".png", '/') . '?v=' . time()); ?>" alt=""></div>
+                <div class="m-icon">
+                  <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
+                </div>
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
               </div>
               <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
@@ -274,3 +291,9 @@ $job_services_items = $data['job_services_items'] ?? [
     </div>
   </section>
   <!-- education services end -->
+
+  <?php 
+  if (!empty($is_admin) && file_exists(__DIR__ . '/admin/admin_job_modals.php')) { 
+      include_once __DIR__ . '/admin/admin_job_modals.php'; 
+  }
+  ?>

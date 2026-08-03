@@ -13,20 +13,20 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label fw-bold">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($edu_hero['title'] ?? ''); ?>">
+                            <input type="text" class="form-control" name="edu_hero_title" value="<?php echo htmlspecialchars($edu_hero['title'] ?? ''); ?>">
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold">الوصف</label>
-                            <textarea class="form-control" name="desc" rows="4"><?php echo htmlspecialchars($edu_hero['desc'] ?? ''); ?></textarea>
+                            <textarea class="form-control" name="edu_hero_desc" rows="4"><?php echo htmlspecialchars($edu_hero['desc'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label fw-bold">نص الزر</label>
-                            <input type="text" class="form-control" name="btn_text" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن'); ?>">
+                            <input type="text" class="form-control" name="edu_hero_btn_text" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن'); ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">رابط الزر</label>
-                            <input type="text" class="form-control" name="btn_url" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#'); ?>">
+                            <input type="text" class="form-control" name="edu_hero_btn_url" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#'); ?>">
                         </div>
 
                         <div class="col-12">
@@ -43,8 +43,8 @@
                                     <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($edu_hero['img']); ?></div>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="hero_img" accept="image/*">
-                            <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($edu_hero['img'] ?? ''); ?>">
+                            <input type="file" class="form-control" name="edu_hero_img" accept="image/*">
+                            <input type="hidden" name="old_edu_hero_img" value="<?php echo htmlspecialchars($edu_hero['img'] ?? ''); ?>">
                         </div>
                     </div>
                 </form>
@@ -71,11 +71,11 @@
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="why_title" value="<?php echo htmlspecialchars($edu_why_title); ?>">
+                        <input type="text" class="form-control" name="edu_why_title" value="<?php echo htmlspecialchars($edu_why_title); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="why_desc" rows="2"><?php echo htmlspecialchars($edu_why_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_why_desc" rows="2"><?php echo htmlspecialchars($edu_why_desc); ?></textarea>
                     </div>
 
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
@@ -84,11 +84,11 @@
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted">العنوان</label>
-                                        <input type="text" class="form-control form-control-sm" name="items[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="العنوان">
+                                        <input type="text" class="form-control form-control-sm" name="why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="العنوان">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="small text-muted">الوصف</label>
-                                        <input type="text" class="form-control form-control-sm" name="items[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>" placeholder="الوصف">
+                                        <input type="text" class="form-control form-control-sm" name="why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>" placeholder="الوصف">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="small text-muted">الصورة الحالية / الجديدة</label>
@@ -99,9 +99,9 @@
                                                     <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="why_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="items[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                        <input type="hidden" name="why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
@@ -138,11 +138,11 @@
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title); ?>">
+                        <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="timeline_desc" rows="2"><?php echo htmlspecialchars($edu_timeline_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_timeline_desc" rows="2"><?php echo htmlspecialchars($edu_timeline_desc); ?></textarea>
                     </div>
 
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
@@ -170,7 +170,7 @@
                                                     <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="step_icon_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                         <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
@@ -213,11 +213,11 @@
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($edu_services_title); ?>">
+                        <input type="text" class="form-control" name="edu_services_title" value="<?php echo htmlspecialchars($edu_services_title); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="services_desc" rows="2"><?php echo htmlspecialchars($edu_services_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_services_desc" rows="2"><?php echo htmlspecialchars($edu_services_desc); ?></textarea>
                     </div>
 
                     <div id="eduServicesContainer" class="d-flex flex-column gap-3">
@@ -226,11 +226,11 @@
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted">اسم الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="اسم الخدمة">
+                                        <input type="text" class="form-control form-control-sm" name="eduservices[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="small text-muted">رابط الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="الرابط">
+                                        <input type="text" class="form-control form-control-sm" name="eduservices[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="الرابط">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="small text-muted">صورة الخلفية الحالية / الجديدة</label>
@@ -241,9 +241,9 @@
                                                     <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="srv_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm" name="edu_service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                        <input type="hidden" name="eduservices[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
@@ -282,11 +282,11 @@
         div.id = 'why_row_' + eduWhyCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="items[${eduWhyCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="items[${eduWhyCount}][desc]" placeholder="الوصف"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف"></div>
                 <div class="col-md-4">
-                    <input type="file" class="form-control form-control-sm" name="why_img_${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="items[${eduWhyCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                    <input type="hidden" name="why[${eduWhyCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
@@ -307,7 +307,7 @@
                 <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
                 <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="steps[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب"></div>
                 <div class="col-md-3">
-                    <input type="file" class="form-control form-control-sm" name="step_icon_${eduStepCount}" accept="image/*">
+                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
                     <input type="hidden" name="steps[${eduStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('step_row_${eduStepCount}')"><i class="bi bi-trash"></i></button></div>
@@ -326,11 +326,11 @@
         div.id = 'edu_srv_row_' + eduSrvCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${eduSrvCount}][title]" placeholder="اسم الخدمة"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="services[${eduSrvCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][title]" placeholder="اسم الخدمة"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][url]" placeholder="الرابط"></div>
                 <div class="col-md-4">
-                    <input type="file" class="form-control form-control-sm" name="srv_img_${eduSrvCount}" accept="image/*">
-                    <input type="hidden" name="services[${eduSrvCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
+                    <input type="hidden" name="eduservices[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
@@ -338,13 +338,12 @@
         eduSrvCount++;
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط (مع تضمين الـ CSRF Token لمنع خطأ 403)
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             
-            // جلب الـ CSRF token من الـ Meta tag بأمان تام مع التأكد من إرفاقه تلقائياً
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
@@ -374,4 +373,3 @@
         });
     });
 </script>
-

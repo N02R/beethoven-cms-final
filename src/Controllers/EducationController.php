@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\SiteModel;
-use App\Models\EducationModel; // 1. استيراد موديل التعليم المخصص
+use App\Models\EducationModel;
 
 class EducationController {
     public function index(string $lang = 'de'): void {
@@ -44,6 +44,9 @@ class EducationController {
         // متغيرات إضافية قد تحتاجها الـ View
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/education.css'];
+
+        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
+        extract($data);
 
         // 1. استدعاء الهيدر المشترك
         $header_file = __DIR__ . '/../Views/partials/header.php';

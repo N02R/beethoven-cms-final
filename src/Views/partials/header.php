@@ -30,7 +30,8 @@ $is_visible = ($is_published && $is_in_time);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token ?? '') ?>">
+ <meta name="csrf-token" content="<?php echo \App\Core\Security::generateCsrfToken(); ?>">
+
 
   <title><?php echo htmlspecialchars($page_title ?? 'BCS || Beethoven City Services'); ?></title>
   

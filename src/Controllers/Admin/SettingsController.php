@@ -62,10 +62,12 @@ class SettingsController
 
         // التحقق من حماية الـ CSRF للطلبات
         $headers = getallheaders();
-        $csrfToken = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
-        if (!(method_exists(Security::class, 'verifyCsrfToken') ? Security::verifyCsrfToken($csrfToken) : Security::validateCsrfToken($csrfToken))) {
+        $token = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
+
+        if (!Security::verifyCsrfToken($token)) {
+            // إرجاع خطأ 403 إذا فشل التحقق
             http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'رمز التحقق غير صالح (CSRF token validation failed).']);
+            echo json_encode(['success' => false, 'message' => 'انصهار الجلسة أو خطأ في الـ CSRF Token']);
             exit;
         }
 
@@ -555,6 +557,3 @@ class SettingsController
         return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
     }
 }
-
-
-

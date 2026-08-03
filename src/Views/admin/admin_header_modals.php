@@ -905,6 +905,43 @@
         if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
+    
+        document.querySelectorAll('.custom-modal form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            // التأكد من إرفاق الـ CSRF Token تلقائياً في البيانات المرسلة إذا لم يكن موجوداً
+            // يمكنك وضع حقل مخفي في المودل أو استخراجه من الجلسة عبر ميتاتاق
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
+
+            fetch('index.php?url=admin/settings/save', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken || '',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    console.error('Server Response Error:', data);
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
+            });
+        });
+    });
+
 </script>
 
 

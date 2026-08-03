@@ -14,7 +14,7 @@
 
   <div class="custom-container">
     <?php 
-    $ab = $data['about'] ?? [];
+    $ab = $data['about_section'] ?? ($data['about'] ?? []);
     $about_main_img = !empty($ab['main_img']) ? $ab['main_img'] . '?v=' . time() : 'assets/img/about us icon, image/about1.jpg';
     $about_sub_img = !empty($ab['sub_img']) ? $ab['sub_img'] . '?v=' . time() : 'assets/img/about us icon, image/about2.png';
     $vision_icon = !empty($ab['vision_icon']) ? $ab['vision_icon'] . '?v=' . time() : 'assets/img/About us Icon, image/Company vision.svg';
@@ -132,7 +132,7 @@
       <div class="swiper mySwiper">
         <div class="swiper-wrapper">
           <?php 
-          $team_members = $data['team_members'] ?? [];
+          $team_members = $data['team_items'] ?? ($data['team_members'] ?? []);
           if (!empty($team_members)): 
           ?>
             <?php foreach ($team_members as $member): ?>

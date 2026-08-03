@@ -60,11 +60,12 @@ class SettingsController
             exit;
         }
 
-        // التحقق المرن والآمن من حماية الـ CSRF لمنع الخطأ الوهمي أثناء طلبات الـ AJAX
+        // التحقق من حماية الـ CSRF للطلبات باستخدام كلاس الأمان الأساسي لضمان توافقية عالية
         $headers = function_exists('getallheaders') ? getallheaders() : [];
         $token = $_POST['csrf_token'] ?? $headers['X-CSRF-Token'] ?? $headers['x-csrf-token'] ?? '';
 
-        if (empty($token) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+        if (!Security::verifyCsrfToken($token)) {
+            // إرجاع خطأ 403 إذا فشل التحقق
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'انصهار الجلسة أو خطأ في الـ CSRF Token']);
             exit;

@@ -138,6 +138,7 @@
             <div class="modal-body p-4">
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
+                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars($data['announcement']['image_path'] ?? 'assets/img/default-ad.png'); ?>">
                     
                     <div class="card p-3 mb-4 border-0" style="background: #f1f5f9;">
                         <div class="section-label"><i class="bi bi-gear"></i> حالة الإعلان والتوقيت</div>
@@ -189,6 +190,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- 4. Menu Edit Modal -->

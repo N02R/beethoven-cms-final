@@ -85,15 +85,18 @@
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
             
-            // 1. مسار الأيقونة الداخلية (القابلة للتعديل من لوحة التحكم)
+            // تحديد مسار الأيقونة الداخلية
             $iconPath = !empty($step['icon']) 
                 ? $path_prefix . ltrim($step['icon'], '/') 
                 : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
                 
-            // 2. مسار خلفية الرقم الثابتة (Group1.png, Group2.png, ...) لضمان ظهورها دائماً
             $groupNumImg = $path_prefix . 'assets/img/vector/Group' . ($idx + 1) . '.png';
+            
+            // تحديد الـ Class الخاص بالوضع (فردي للأعلى / زوجي للأسفل أو العكس بناءً على تصميم الـ CSS لديك)
+            // غالباً في الـ CSS الخاص بهذا الـ Timeline، الكلاسات مثل step-1, step-3, step-5 تكون باتجاه (أعلى أو أسفل) و 2, 4, 6 بالاتجاه المعاكس
+            $stepNumberClass = 'step-' . ($idx + 1);
         ?>
-          <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
+          <div class="step-wrapper <?php echo $stepNumberClass; ?>">
             <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
             <div class="icon-main">
               <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
@@ -136,6 +139,7 @@
   </div>
 </section>
 <!-- time line end -->
+
 
 <!-- 4. education services start -->
 <section class="edu-services py-5" style="position: relative;">

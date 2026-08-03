@@ -293,6 +293,9 @@ class SettingsController
                 $guideData = $_POST['guide'] ?? [];
                 foreach ($guideData as $index => $item) {
                     if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'guide_' . $index . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES['guide_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $guideData[$index]['img'] = 'assets/uploads/' . $filename;
@@ -567,6 +570,119 @@ class SettingsController
                 }
                 $jsonVal = json_encode(array_values($eduServicesData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 21. تحديث صفحة التدريب والتوظيف: الهيرو (Job Hero)
+            // ==========================================
+            elseif ($action === 'update_job_hero') {
+                $jobHeroImg = $_POST['old_job_hero_img'] ?? 'assets/img/jobs/hero.jpg';
+                if (isset($_FILES['job_hero_img']) && $_FILES['job_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    $oldJobHeroData = json_decode($currentSettings['job_hero'] ?? '', true);
+                    if (!empty($oldJobHeroData['img'])) {
+                        $this->deleteOldImageFile($root_path, $oldJobHeroData['img']);
+                    }
+                    $filename = 'job_hero_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['job_hero_img']['tmp_name'], $uploadDir . $filename);
+                    $jobHeroImg = 'assets/uploads/' . $filename;
+                }
+
+                $jobHeroData = [
+                    'title'    => $_POST['job_hero_title'] ?? '',
+                    'desc'     => $_POST['job_hero_desc'] ?? '',
+                    'btn_text' => $_POST['job_hero_btn_text'] ?? '',
+                    'btn_url'  => $_POST['job_hero_btn_url'] ?? '',
+                    'img'      => $jobHeroImg
+                ];
+                $jsonVal = json_encode($jobHeroData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'job_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 22. تحديث صفحة التدريب والتوظيف: لماذا نحن / الميزات (Job Why Us)
+            // ==========================================
+            elseif ($action === 'update_job_why') {
+                $jobWhyTitle = $_POST['job_why_title'] ?? '';
+                $jobWhyDesc  = $_POST['job_why_desc'] ?? '';
+                $stmt->execute(['k' => 'job_why_title', 'v' => $jobWhyTitle, 'v_update' => $jobWhyTitle]);
+                $stmt->execute(['k' => 'job_why_desc', 'v' => $jobWhyDesc, 'v_update' => $jobWhyDesc]);
+
+                $jobWhyData = $_POST['jobwhy'] ?? [];
+                foreach ($jobWhyData as $index => $item) {
+                    if (isset($_FILES['job_why_img_' . $index]) && $_FILES['job_why_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'job_why_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['job_why_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $jobWhyData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $jobWhyData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($jobWhyData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($jobWhyData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'job_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 23. تحديث صفحة التدريب والتوظيف: خطوات التقديم (Job Timeline)
+            // ==========================================
+            elseif ($action === 'update_job_timeline') {
+                $jobTimelineTitle = $_POST['job_timeline_title'] ?? '';
+                $jobTimelineDesc  = $_POST['job_timeline_desc'] ?? '';
+                $stmt->execute(['k' => 'job_timeline_title', 'v' => $jobTimelineTitle, 'v_update' => $jobTimelineTitle]);
+                $stmt->execute(['k' => 'job_timeline_desc', 'v' => $jobTimelineDesc, 'v_update' => $jobTimelineDesc]);
+
+                $jobStepsData = $_POST['jobsteps'] ?? [];
+                foreach ($jobStepsData as $index => $item) {
+                    if (isset($_FILES['job_timeline_icon_' . $index]) && $_FILES['job_timeline_icon_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_icon'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_icon']);
+                        }
+                        $filename = 'job_step_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['job_timeline_icon_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $jobStepsData[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $jobStepsData[$index]['icon'] = $item['old_icon'] ?? '';
+                    }
+                    unset($jobStepsData[$index]['old_icon']);
+                    $jobStepsData[$index]['order'] = (int)($item['order'] ?? $index);
+                }
+
+                usort($jobStepsData, function($a, $b) {
+                    return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
+                });
+
+                $jsonVal = json_encode(array_values($jobStepsData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 24. تحديث صفحة التدريب والتوظيف: الخدمات (Job Services)
+            // ==========================================
+            elseif ($action === 'update_job_services') {
+                $jobServicesTitle = $_POST['job_services_title'] ?? '';
+                $jobServicesDesc  = $_POST['job_services_desc'] ?? '';
+                $stmt->execute(['k' => 'job_services_title', 'v' => $jobServicesTitle, 'v_update' => $jobServicesTitle]);
+                $stmt->execute(['k' => 'job_services_desc', 'v' => $jobServicesDesc, 'v_update' => $jobServicesDesc]);
+
+                $jobServicesData = $_POST['jobservices'] ?? [];
+                foreach ($jobServicesData as $index => $item) {
+                    if (isset($_FILES['job_service_img_' . $index]) && $_FILES['job_service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'job_serv_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['job_service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $jobServicesData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $jobServicesData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($jobServicesData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($jobServicesData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'job_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             $pdo->commit();

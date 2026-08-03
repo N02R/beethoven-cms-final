@@ -878,12 +878,13 @@
                 if (data.success) {
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    console.error('Server Response Error:', data);
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });
@@ -895,3 +896,4 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+

@@ -866,13 +866,21 @@
         col3Count++;
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط (مع تضمين الـ CSRF Token لمنع خطأ 403)
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            
+            // جلب الـ CSRF token من الـ Meta tag بأمان تام
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
             .then(response => response.json())
@@ -898,4 +906,5 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 </script>
+
 

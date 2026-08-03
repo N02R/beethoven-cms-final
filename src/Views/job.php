@@ -192,12 +192,12 @@
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
       <?php foreach ($job_services_items as $item): 
           $raw_url = $item['url'] ?? '#';
-          $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '/') . ltrim($raw_url, '/') : $raw_url;
+          $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? $path_prefix . ltrim($raw_url, '/') : $raw_url;
       ?>
         <div class="col">
           <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
             <div class="card service-card text-white border-0 rounded-5"
-              style="background-image: url('<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>');">
+              style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>');">
               <div class="card-body d-flex align-items-end justify-content-center">
                 <h6 class="card-title m-0">
                   <?php echo htmlspecialchars($item['title'] ?? ''); ?>

@@ -303,23 +303,23 @@
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 team-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
                     <label class="small text-muted">الاسم</label>
-                    <input type="text" class="form-control form-control-sm" name="team[${teamCount}][name]" placeholder="الاسم">
+                    <input type="text" class="form-control form-control-sm team-name" name="team[${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
                     <label class="small text-muted">المسمى الوظيفي</label>
-                    <input type="text" class="form-control form-control-sm" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <input type="text" class="form-control form-control-sm team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
                     <label class="small text-muted">صورة جديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="team_img_${teamCount}" accept="image/*">
-                    <input type="hidden" name="team[${teamCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm team-file" name="team_img_${teamCount}" accept="image/*">
+                    <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_${teamCount}')"><i class="bi bi-trash"></i></button>
@@ -333,23 +333,23 @@
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 count-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
                     <label class="small text-muted">الرقم</label>
-                    <input type="text" class="form-control form-control-sm" name="counts[${countsCount}][number]" placeholder="الرقم">
+                    <input type="text" class="form-control form-control-sm count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
                 </div>
                 <div class="col-md-4">
                     <label class="small text-muted">الوصف</label>
-                    <input type="text" class="form-control form-control-sm" name="counts[${countsCount}][title]" placeholder="الوصف">
+                    <input type="text" class="form-control form-control-sm count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
                     <label class="small text-muted">أيقونة جديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="count_img_${countsCount}" accept="image/*">
-                    <input type="hidden" name="counts[${countsCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm count-file" name="count_img_${countsCount}" accept="image/*">
+                    <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')"><i class="bi bi-trash"></i></button>
@@ -363,15 +363,15 @@
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 partner-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-11">
                     <label class="small text-muted mb-1">صورة الشريك الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="partner_img_${partnerCount}" accept="image/*">
-                    <input type="hidden" name="partners[${partnerCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                    <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button>
@@ -381,10 +381,49 @@
         partnerCount++;
     }
 
-    // ربط النماذج بإرسال الـ AJAX الموحد لنظام التحكم الخاص بك مع تمرير الـ CSRF Token بأمان
+    // ربط النماذج بإرسال الـ AJAX الموحد مع تصحيح إعادة ترقيم الحقول لتتطابق تماماً مع ما يتوقعه المتحكم
     document.querySelectorAll('.admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // إعادة ترقيم صفوف الفريق إن وجدت لتجنب الفراغات في المؤشرات
+            const teamRows = form.querySelectorAll('.team-row-item');
+            teamRows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[name*="[name]"]');
+                const roleInput = row.querySelector('input[name*="[role]"]');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+
+                if(nameInput) nameInput.name = `team[${index}][name]`;
+                if(roleInput) roleInput.name = `team[${index}][role]`;
+                if(fileInput) fileInput.name = `team_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
+            });
+
+            // إعادة ترقيم صفوف الإحصائيات إن وجدت
+            const countRows = form.querySelectorAll('.count-row-item');
+            countRows.forEach((row, index) => {
+                const numInput = row.querySelector('input[name*="[number]"]');
+                const titleInput = row.querySelector('input[name*="[title]"]');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+
+                if(numInput) numInput.name = `counts[${index}][number]`;
+                if(titleInput) titleInput.name = `counts[${index}][title]`;
+                if(fileInput) fileInput.name = `count_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
+            });
+
+            // إعادة ترقيم صفوف الشركاء إن وجدت
+            const partnerRows = form.querySelectorAll('.partner-row-item');
+            partnerRows.forEach((row, index) => {
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+
+                if(fileInput) fileInput.name = `partner_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `partners[${index}][old_img]`;
+            });
+
             const formData = new FormData(this);
 
             const csrfToken = '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
@@ -416,3 +455,4 @@
         });
     });
 </script>
+

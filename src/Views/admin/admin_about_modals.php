@@ -381,8 +381,8 @@
         partnerCount++;
     }
 
-    // ربط النماذج بإرسال الـ AJAX الموحد مع تصحيح إعادة ترقيم الحقول لتتطابق تماماً مع ما يتوقعه المتحكم
-    document.querySelectorAll('.admin-settings-form').forEach(form => {
+    // معالج النماذج الموحد الشامل (يدعم .custom-modal و .admin-settings-form)
+    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -426,7 +426,9 @@
 
             const formData = new FormData(this);
 
-            const csrfToken = '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            // جلب الـ CSRF Token بأمان من الـ Meta tag أو PHP المتغير
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -445,14 +447,16 @@
                     alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
+                    console.error('Server Response Error:', data);
                     alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
-                console.error('Error:', err);
-                alert('حدث خطأ في الاتصال بالخادم.');
+                console.error('Fetch Error:', err);
+                alert('حدث خطأ أثناء الاتصال بالخادم، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });
 </script>
+
 

@@ -84,13 +84,18 @@
         foreach ($edu_timeline_steps as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
+            
+            // تحديد مسار الأيقونة (إما المُحملة من قاعدة البيانات أو الافتراضية)
+            $iconPath = !empty($step['icon']) 
+                ? $path_prefix . ltrim($step['icon'], '/') 
+                : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+                
+            $groupNumImg = $path_prefix . 'assets/img/vector/Group' . ($idx + 1) . '.png';
         ?>
           <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
-            <div class="step-img-num">
-              <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group<?php echo ($idx + 1); ?>.png" alt="<?php echo $num; ?>">
-            </div>
+            <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
             <div class="icon-main">
-              <img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime" . ($idx+1) . ".png", '/') . '?v=' . time()); ?>" alt="">
+              <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
             </div>
             <div class="info-content">
               <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
@@ -106,6 +111,9 @@
     <div class="mobile-timeline d-lg-none">
       <?php foreach ($edu_timeline_steps as $idx => $step): 
           $num = sprintf("%02d", $idx + 1);
+          $iconPath = !empty($step['icon']) 
+              ? $path_prefix . ltrim($step['icon'], '/') 
+              : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
       ?>
         <div class="m-step">
           <div class="m-number-box">
@@ -114,7 +122,7 @@
           <div class="m-content">
             <div class="m-header">
               <div class="m-icon">
-                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($step['icon'] ?? "assets/img/vector/Grouptime" . ($idx+1) . ".png", '/') . '?v=' . time()); ?>" alt="">
+                <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
               </div>
               <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
             </div>
@@ -127,6 +135,7 @@
   </div>
 </section>
 <!-- time line end -->
+
 
 <!-- 4. education services start -->
 <section class="edu-services py-5" style="position: relative;">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\SiteModel;
+use App\Models\EducationModel; // 1. استيراد موديل التعليم المخصص
 
 class EducationController {
     public function index(string $lang = 'de'): void {
@@ -26,9 +27,8 @@ class EducationController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات قسم التعليم الخاصة (المخزنة في site_settings)
-        // يمكننا جلبها عبر دالة مخصصة في SiteModel أو جلبها مباشرة كـ associative array
-        $eduData = SiteModel::getEducationData(); // سنضيف هذه الدالة في SiteModel لتجلب المفاتيح التي تبدأ بـ edu_ وتفك الـ JSON الخاص بها
+        // 2. جلب بيانات قسم التعليم الخاصة باستخدام EducationModel
+        $eduData = EducationModel::getEducationData(); 
         $data = array_merge($data, $eduData);
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة

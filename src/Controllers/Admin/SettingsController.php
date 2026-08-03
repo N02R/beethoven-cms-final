@@ -60,9 +60,9 @@ class SettingsController
             exit;
         }
 
-        // التحقق من حماية الـ CSRF للطلبات باستخدام كلاس الأمان الأساسي لضمان توافقية عالية
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
-        $token = $_POST['csrf_token'] ?? $headers['X-CSRF-Token'] ?? $headers['x-csrf-token'] ?? '';
+        // التحقق من حماية الـ CSRF للطلبات
+        $headers = getallheaders();
+        $token = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
 
         if (!Security::verifyCsrfToken($token)) {
             // إرجاع خطأ 403 إذا فشل التحقق

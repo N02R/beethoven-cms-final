@@ -85,11 +85,12 @@
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
             
-            // تحديد مسار الأيقونة (إما المُحملة من قاعدة البيانات أو الافتراضية)
+            // 1. مسار الأيقونة الداخلية (القابلة للتعديل من لوحة التحكم)
             $iconPath = !empty($step['icon']) 
                 ? $path_prefix . ltrim($step['icon'], '/') 
                 : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
                 
+            // 2. مسار خلفية الرقم الثابتة (Group1.png, Group2.png, ...) لضمان ظهورها دائماً
             $groupNumImg = $path_prefix . 'assets/img/vector/Group' . ($idx + 1) . '.png';
         ?>
           <div class="step-wrapper step-<?php echo ($idx + 1); ?>">
@@ -135,7 +136,6 @@
   </div>
 </section>
 <!-- time line end -->
-
 
 <!-- 4. education services start -->
 <section class="edu-services py-5" style="position: relative;">

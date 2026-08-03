@@ -57,7 +57,7 @@ class JobController {
         }
 
         // 2. استدعاء ملف الـ View الخاص بالتدريب والتوظيف (jobs.php أو job.php بناءً على تسمية ملف الـ View لديك)
-        $view_file = __DIR__ . '/../Views/jobs.php';
+        $view_file = __DIR__ . '/../Views/job.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {

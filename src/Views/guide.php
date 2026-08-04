@@ -1,12 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية إن لم تكن معرفة
-$path_prefix = '/';
-
-$guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
-$guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
-$guide_items = $data['guide_items'] ?? [];
-?>
-
   <!-- ===== GUIDE PAGE START ===== -->
   <section class="guide py-5" style="position: relative;">
     <!-- زر التعديل الخاص بالأدمن -->
@@ -58,3 +49,9 @@ $guide_items = $data['guide_items'] ?? [];
     </div>
   </section>
   <!-- ===== GUIDE PAGE END ===== -->
+
+<?php 
+if (!empty($is_admin) && file_exists(__DIR__ . '/admin/admin_header_modals.php')) { 
+    include_once __DIR__ . '/admin/admin_header_modals.php'; 
+}
+?>

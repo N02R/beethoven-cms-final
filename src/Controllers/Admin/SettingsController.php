@@ -685,6 +685,70 @@ class SettingsController
                 $stmt->execute(['k' => 'job_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
+            // ==========================================
+            // 25. تحديث قسم تواصل معنا (Contact Page Settings)
+            // ==========================================
+            elseif ($action === 'update_contact_hero') {
+                $contactHeroImg = $_POST['old_contact_hero_img'] ?? '';
+                if (isset($_FILES['contact_hero_img']) && $_FILES['contact_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    $this->deleteOldImageFile($root_path, $contactHeroImg);
+                    $filename = 'contact_hero_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['contact_hero_img']['tmp_name'], $uploadDir . $filename);
+                    $contactHeroImg = 'assets/uploads/' . $filename;
+                }
+                $stmt->execute(['k' => 'contact_hero_img', 'v' => $contactHeroImg, 'v_update' => $contactHeroImg]);
+            }
+
+            elseif ($action === 'update_contact_info') {
+                $contactAddress = $_POST['contact_address'] ?? '';
+                $contactEmail = $_POST['contact_email'] ?? '';
+                $contactPhone = $_POST['contact_phone'] ?? '';
+
+                $stmt->execute(['k' => 'contact_address', 'v' => $contactAddress, 'v_update' => $contactAddress]);
+                $stmt->execute(['k' => 'contact_email', 'v' => $contactEmail, 'v_update' => $contactEmail]);
+                $stmt->execute(['k' => 'contact_phone', 'v' => $contactPhone, 'v_update' => $contactPhone]);
+
+                // أيقونة العنوان
+                $contactAddressIcon = $_POST['old_contact_address_icon'] ?? '';
+                if (isset($_FILES['contact_address_icon']) && $_FILES['contact_address_icon']['error'] === UPLOAD_ERR_OK) {
+                    $this->deleteOldImageFile($root_path, $contactAddressIcon);
+                    $filename = 'contact_addr_icon_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['contact_address_icon']['tmp_name'], $uploadDir . $filename);
+                    $contactAddressIcon = 'assets/uploads/' . $filename;
+                }
+                $stmt->execute(['k' => 'contact_address_icon', 'v' => $contactAddressIcon, 'v_update' => $contactAddressIcon]);
+
+                // أيقونة البريد الإلكتروني
+                $contactEmailIcon = $_POST['old_contact_email_icon'] ?? '';
+                if (isset($_FILES['contact_email_icon']) && $_FILES['contact_email_icon']['error'] === UPLOAD_ERR_OK) {
+                    $this->deleteOldImageFile($root_path, $contactEmailIcon);
+                    $filename = 'contact_email_icon_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['contact_email_icon']['tmp_name'], $uploadDir . $filename);
+                    $contactEmailIcon = 'assets/uploads/' . $filename;
+                }
+                $stmt->execute(['k' => 'contact_email_icon', 'v' => $contactEmailIcon, 'v_update' => $contactEmailIcon]);
+
+                // أيقونة الهاتف
+                $contactPhoneIcon = $_POST['old_contact_phone_icon'] ?? '';
+                if (isset($_FILES['contact_phone_icon']) && $_FILES['contact_phone_icon']['error'] === UPLOAD_ERR_OK) {
+                    $this->deleteOldImageFile($root_path, $contactPhoneIcon);
+                    $filename = 'contact_phone_icon_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['contact_phone_icon']['tmp_name'], $uploadDir . $filename);
+                    $contactPhoneIcon = 'assets/uploads/' . $filename;
+                }
+                $stmt->execute(['k' => 'contact_phone_icon', 'v' => $contactPhoneIcon, 'v_update' => $contactPhoneIcon]);
+            }
+
+            elseif ($action === 'update_whatsapp_section') {
+                $whatsappText = $_POST['whatsapp_text'] ?? '';
+                $whatsappUrl = $_POST['whatsapp_url'] ?? '';
+                $whatsappBtnTxt = $_POST['whatsapp_btn_txt'] ?? '';
+
+                $stmt->execute(['k' => 'whatsapp_text', 'v' => $whatsappText, 'v_update' => $whatsappText]);
+                $stmt->execute(['k' => 'whatsapp_url', 'v' => $whatsappUrl, 'v_update' => $whatsappUrl]);
+                $stmt->execute(['k' => 'whatsapp_btn_txt', 'v' => $whatsappBtnTxt, 'v_update' => $whatsappBtnTxt]);
+            }
+
             $pdo->commit();
 
             echo json_encode([

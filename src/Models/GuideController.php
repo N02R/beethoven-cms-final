@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\SiteModel;
-use App\Models\HomeModel;
 
 class GuideController {
     public function index(string $lang = 'de'): void {
@@ -15,7 +14,7 @@ class GuideController {
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            if (isset($_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on') {
                 ini_set('session.cookie_secure', '1');
             }
             session_start();

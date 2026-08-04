@@ -1,4 +1,3 @@
-
 <!-- 1. Contact Hero Modal -->
 <div class="modal fade custom-modal" id="contactHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -149,14 +148,15 @@
         if (el) el.remove();
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية (مع تضمين الـ CSRF Token تلقائياً لمنع خطأ 403)
-    document.querySelectorAll('.custom-modal form').forEach(form => {
+    // معالج النماذج الموحد الشامل (يتطابق مع معمارية ملف الـ about modals)
+    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+
+            // جلب الـ CSRF Token بأمان من الـ Meta tag أو PHP المتغير
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             
-            // جلب الـ CSRF token من الـ Meta tag بأمان تام أو من الجلسة
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -164,7 +164,7 @@
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-Token': csrfToken || '',
+                    'X-CSRF-Token': csrfToken,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -172,15 +172,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
                     console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
+                alert('حدث خطأ أثناء الاتصال بالخادم، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });

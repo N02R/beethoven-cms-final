@@ -9,7 +9,7 @@
   <div class="custom-container">
     <div class="contact-hero-img">
       <?php 
-      $contact_hero_bg = !empty($contact_hero_img) ? $path_prefix . ltrim($contact_hero_img, '/') . '?v=' . time() : $path_prefix . 'assets/img/contact us/hero.jpg';
+      $contact_hero_bg = !empty($contact_hero_img) ? $path_prefix . ltrim($contact_hero_img, '/') . '?v=' . time() : $path_prefix . 'assets/img/contacthero.png';
       ?>
       <img src="<?php echo htmlspecialchars($contact_hero_bg); ?>" alt="تواصل معنا" class="img-fluid w-100" style="border-radius: 20px;">
     </div>

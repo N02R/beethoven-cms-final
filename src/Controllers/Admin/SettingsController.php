@@ -693,17 +693,29 @@ class SettingsController
             }
 
             // ==========================================
-            // 25. تحديث قسم تواصل معنا (Contact Page Settings)
+            // 25. تحديث قسم تواصل معنا (Contact Page Settings) - [تم التحديث ليطابق باقي أقسام الهيرو]
             // ==========================================
             elseif ($action === 'update_contact_hero') {
-                $contactHeroImg = $_POST['old_contact_hero_img'] ?? '';
+                $contactHeroImg = $_POST['old_contact_hero_img'] ?? 'assets/img/contact-hero.jpg';
                 if (isset($_FILES['contact_hero_img']) && $_FILES['contact_hero_img']['error'] === UPLOAD_ERR_OK) {
-                    $this->deleteOldImageFile($root_path, $contactHeroImg);
+                    $oldContactHeroData = json_decode($currentSettings['contact_hero'] ?? '', true);
+                    if (!empty($oldContactHeroData['img'])) {
+                        $this->deleteOldImageFile($root_path, $oldContactHeroData['img']);
+                    }
                     $filename = 'contact_hero_' . time() . '.webp';
                     $this->convertToWebpAndSave($_FILES['contact_hero_img']['tmp_name'], $uploadDir . $filename);
                     $contactHeroImg = 'assets/uploads/' . $filename;
                 }
-                $stmt->execute(['k' => 'contact_hero_img', 'v' => $contactHeroImg, 'v_update' => $contactHeroImg]);
+
+                $contactHeroData = [
+                    'title'    => $_POST['contact_hero_title'] ?? '',
+                    'desc'     => $_POST['contact_hero_desc'] ?? '',
+                    'btn_text' => $_POST['contact_hero_btn_text'] ?? '',
+                    'btn_url'  => $_POST['contact_hero_btn_url'] ?? '',
+                    'img'      => $contactHeroImg
+                ];
+                $jsonVal = json_encode($contactHeroData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'contact_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             elseif ($action === 'update_contact_info') {

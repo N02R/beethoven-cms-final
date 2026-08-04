@@ -7,13 +7,12 @@ use App\Models\SiteModel;
 
 class JobModel {
     /**
-     * جلب وتجهيز بيانات أقسام صفحة التدريب والتوظيف الخاصة فقط
+     * جلب وتجهيز بيانات أقسام صفحة التدريب والتوظيف
      */
     public static function getJobData(): array {
-        // جلب كافة الإعدادات باستخدام المودل المركزي SiteModel
         $settings = SiteModel::getSettings();
         
-        // تجهيز خطوات الـ Timeline وفرزها تصاعدياً حسب حقل order
+        // فرز خطوات الـ Timeline تصاعدياً حسب حقل order
         $timeline_steps = isset($settings['job_timeline_steps']) ? json_decode($settings['job_timeline_steps'], true) : [];
         if (is_array($timeline_steps)) {
             usort($timeline_steps, function($a, $b) {
@@ -21,7 +20,6 @@ class JobModel {
             });
         }
 
-        // إرجاع مصفوفة منسقة تحتوي على أقسام صفحة التدريب والتوظيف فقط
         return [
             'job_hero'           => isset($settings['job_hero']) ? json_decode($settings['job_hero'], true) : [],
             'job_why_title'      => $settings['job_why_title'] ?? '',

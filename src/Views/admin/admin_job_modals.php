@@ -168,10 +168,14 @@
                                             <label class="form-check-label small text-muted">تصميم داكن (Highlight)</label>
                                         </div>
                                     </div>
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i> حذف البرنامج</button>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addJobProgramRow()">+ إضافة برنامج جديد</button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -344,6 +348,33 @@
         jobWhyCount++;
     }
 
+    let jobProgCount = <?php echo count($job_program_types); ?>;
+    function addJobProgramRow() {
+        const container = document.getElementById('jobProgramContainer');
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'prog_row_' + jobProgCount;
+        div.innerHTML = `
+            <div class="row g-2">
+                <div class="col-md-6"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][title]" placeholder="اسم البرنامِج"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_text]" value="اطلب الآن" placeholder="نص الزر"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_url]" value="#" placeholder="رابط الزر"></div>
+                <div class="col-md-8"><textarea class="form-control form-control-sm" name="programs[${jobProgCount}][desc]" rows="2" placeholder="تفاصيل البرنامِج"></textarea></div>
+                <div class="col-md-4">
+                    <input type="file" class="form-control form-control-sm mb-1" name="prog_img_${jobProgCount}" accept="image/*">
+                    <input type="hidden" name="programs[${jobProgCount}][old_img]" value="">
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" name="programs[${jobProgCount}][is_dark]" value="1" id="prog_dark_${jobProgCount}">
+                        <label class="form-check-label small text-muted" for="prog_dark_${jobProgCount}">تصميم داكن (Highlight)</label>
+                    </div>
+                </div>
+                <div class="col-12 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_${jobProgCount}')"><i class="bi bi-trash"></i> حذف البرنامج</button></div>
+            </div>`;
+        container.appendChild(div);
+        jobProgCount++;
+    }
+
     let jobStepCount = <?php echo count($job_timeline_steps); ?>;
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
@@ -394,7 +425,6 @@
             e.preventDefault();
             const formData = new FormData(this);
             
-            // جلب الـ CSRF token بأمان تام ومنع أخطاء الصلاحيات
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);

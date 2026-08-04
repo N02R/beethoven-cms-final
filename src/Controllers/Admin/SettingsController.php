@@ -693,29 +693,29 @@ class SettingsController
             }
 
             // ==========================================
-            // 25. تحديث قسم تواصل معنا (Contact Page Settings) - [تم التحديث ليطابق باقي أقسام الهيرو]
+            // 25. تحديث صورة قسم تواصل معنا فقط (Contact Hero Image)
             // ==========================================
             elseif ($action === 'update_contact_hero') {
                 $contactHeroImg = $_POST['old_contact_hero_img'] ?? 'assets/img/contact-hero.jpg';
+                
                 if (isset($_FILES['contact_hero_img']) && $_FILES['contact_hero_img']['error'] === UPLOAD_ERR_OK) {
-                    $oldContactHeroData = json_decode($currentSettings['contact_hero'] ?? '', true);
-                    if (!empty($oldContactHeroData['img'])) {
+                    $oldContactHeroValue = $currentSettings['contact_hero'] ?? '';
+                    
+                    // التحقق ما إذا كانت القيمة القديمة عبارة عن JSON تحتوي على مفتاح img أو مسار عادي
+                    $oldContactHeroData = json_decode($oldContactHeroValue, true);
+                    if (is_array($oldContactHeroData) && !empty($oldContactHeroData['img'])) {
                         $this->deleteOldImageFile($root_path, $oldContactHeroData['img']);
+                    } elseif (!empty($oldContactHeroValue) && !str_starts_with($oldContactHeroValue, '{')) {
+                        $this->deleteOldImageFile($root_path, $oldContactHeroValue);
                     }
+
                     $filename = 'contact_hero_' . time() . '.webp';
                     $this->convertToWebpAndSave($_FILES['contact_hero_img']['tmp_name'], $uploadDir . $filename);
                     $contactHeroImg = 'assets/uploads/' . $filename;
                 }
 
-                $contactHeroData = [
-                    'title'    => $_POST['contact_hero_title'] ?? '',
-                    'desc'     => $_POST['contact_hero_desc'] ?? '',
-                    'btn_text' => $_POST['contact_hero_btn_text'] ?? '',
-                    'btn_url'  => $_POST['contact_hero_btn_url'] ?? '',
-                    'img'      => $contactHeroImg
-                ];
-                $jsonVal = json_encode($contactHeroData, JSON_UNESCAPED_UNICODE);
-                $stmt->execute(['k' => 'contact_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+                // حفظ مسار الصورة مباشرة في قاعدة البيانات
+                $stmt->execute(['k' => 'contact_hero', 'v' => $contactHeroImg, 'v_update' => $contactHeroImg]);
             }
 
             elseif ($action === 'update_contact_info') {

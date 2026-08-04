@@ -48,11 +48,15 @@ class SiteModel {
             'footer_col2_title' => $settings['footer_col2_title'] ?? 'روابط سريعة',
             'footer_col3_title' => $settings['footer_col3_title'] ?? 'تواصل معنا',
             
-            // روابط تواصل معنا (مهم جداً أن تكون معالجة بـ json_decode)
+            // روابط تواصل معنا
             'footer_col3_links' => isset($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
+            
+            // بيانات صفحة الدليل الشامل (محدثة لتعرض التعديلات فوراً)
+            'guide_title'       => $settings['guide_title'] ?? 'دليل بيتهوفن الشامل',
+            'guide_desc'        => $settings['guide_desc'] ?? '',
+            'guide_items'       => isset($settings['guide_items']) ? (is_string($settings['guide_items']) ? json_decode($settings['guide_items'], true) : $settings['guide_items']) : [],
         ];
     }
-
 
     /**
      * تحديث أو حفظ إعدادات الموقع بنظام المفتاح والقيمة

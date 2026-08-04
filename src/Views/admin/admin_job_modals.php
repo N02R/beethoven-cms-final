@@ -331,7 +331,7 @@
     function addJobWhyRow() {
         const container = document.getElementById('jobWhyContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 job-why-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'job_why_row_' + jobWhyCount;
         div.innerHTML = `
@@ -352,7 +352,7 @@
     function addJobProgramRow() {
         const container = document.getElementById('jobProgramContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 job-prog-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'prog_row_' + jobProgCount;
         div.innerHTML = `
@@ -379,7 +379,7 @@
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 job-step-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'job_step_row_' + jobStepCount;
         div.innerHTML = `
@@ -402,7 +402,7 @@
     function addJobServiceRow() {
         const container = document.getElementById('jobServicesContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
+        div.className = 'card p-3 border-0 mb-2 job-srv-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'job_srv_row_' + jobSrvCount;
         div.innerHTML = `
@@ -419,18 +419,86 @@
         jobSrvCount++;
     }
 
-    // معالج النماذج الموحد مع تضمين الحماية (CSRF Token) والتعامل الآمن مع السيرفر
+    // معالج النماذج الموحد الشامل المتوافق مع هيكل المشروع
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // إعادة ترقيم صفوف (لماذا التدريب معنا) إن وجدت لتجنب الفراغات
+            const whyRows = form.querySelectorAll('.job-why-row-item');
+            whyRows.forEach((row, index) => {
+                const titleInput = row.querySelector('input[name*="[title]"]');
+                const descInput = row.querySelector('input[name*="[desc]"]');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+
+                if(titleInput) titleInput.name = `items[${index}][title]`;
+                if(descInput) descInput.name = `items[${index}][desc]`;
+                if(fileInput) fileInput.name = `why_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `items[${index}][old_img]`;
+            });
+
+            // إعادة ترقيم صفوف البرامج إن وجدت
+            const progRows = form.querySelectorAll('.job-prog-row-item');
+            progRows.forEach((row, index) => {
+                const titleInput = row.querySelector('input[name*="[title]"]');
+                const btnTextInput = row.querySelector('input[name*="[btn_text]"]');
+                const btnUrlInput = row.querySelector('input[name*="[btn_url]"]');
+                const descInput = row.querySelector('textarea');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                const darkInput = row.querySelector('input[type="checkbox"]');
+
+                if(titleInput) titleInput.name = `programs[${index}][title]`;
+                if(btnTextInput) btnTextInput.name = `programs[${index}][btn_text]`;
+                if(btnUrlInput) btnUrlInput.name = `programs[${index}][btn_url]`;
+                if(descInput) descInput.name = `programs[${index}][desc]`;
+                if(fileInput) fileInput.name = `prog_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `programs[${index}][old_img]`;
+                if(darkInput) darkInput.name = `programs[${index}][is_dark]`;
+            });
+
+            // إعادة ترقيم صفوف الخطوات إن وجدت
+            const stepRows = form.querySelectorAll('.job-step-row-item');
+            stepRows.forEach((row, index) => {
+                const titleInput = row.querySelector('input[name*="[title]"]');
+                const subInput = row.querySelector('input[name*="[subtitle]"]');
+                const orderInput = row.querySelector('input[name*="[order]"]');
+                const descInput = row.querySelector('input[name*="[desc]"]');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
+
+                if(titleInput) titleInput.name = `steps[${index}][title]`;
+                if(subInput) subInput.name = `steps[${index}][subtitle]`;
+                if(orderInput) orderInput.name = `steps[${index}][order]`;
+                if(descInput) descInput.name = `steps[${index}][desc]`;
+                if(fileInput) fileInput.name = `step_icon_${index}`;
+                if(oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
+            });
+
+            // إعادة ترقيم صفوف الخدمات إن وجدت
+            const srvRows = form.querySelectorAll('.job-srv-row-item');
+            srvRows.forEach((row, index) => {
+                const titleInput = row.querySelector('input[name*="[title]"]');
+                const urlInput = row.querySelector('input[name*="[url]"]');
+                const fileInput = row.querySelector('input[type="file"]');
+                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+
+                if(titleInput) titleInput.name = `services[${index}][title]`;
+                if(urlInput) urlInput.name = `services[${index}][url]`;
+                if(fileInput) fileInput.name = `srv_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `services[${index}][old_img]`;
+            });
+
             const formData = new FormData(this);
             
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            // جلب الـ CSRF Token بأمان تام
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
 
-            fetch('admin/api/save_config.php', {
+            fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-Token': csrfToken,
@@ -441,16 +509,18 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
                     console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
+                alert('حدث خطأ أثناء الاتصال بالخادم، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });
 </script>
+

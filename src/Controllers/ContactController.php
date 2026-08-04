@@ -40,7 +40,7 @@ class ContactController {
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css'];
+        $page_css = ['/assets/css/style.css', '/assets/css/contact.css'];
 
         // تحويل مفاتيح المصفوفة إلى متغيرات مستقلة للـ View
         extract($data);

@@ -36,7 +36,7 @@ class JobController {
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/jobs.css'];
+        $page_css = ['/assets/css/style.css', '/assets/css/education.css'];
 
         extract($data);
 

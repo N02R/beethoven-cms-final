@@ -1,19 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية إن لم تكن معرفة
-$path_prefix = '/';
-
-$contact_hero_img     = $data['contact_hero_img'] ?? 'assets/img/contact us/contacthero.png';
-$contact_address      = $data['contact_address'] ?? 'Rheinweg 140 ,53129 Bonn,Germany';
-$contact_address_icon = $data['contact_address_icon'] ?? 'assets/img/Location.svg';
-$contact_email        = $data['contact_email'] ?? 'info@Beethoven-City-Services.com';
-$contact_email_icon   = $data['contact_email_icon'] ?? 'assets/img/Mail.svg';
-$contact_phone        = $data['contact_phone'] ?? '666-230-71 176 (0) 49+';
-$contact_phone_icon   = $data['contact_phone_icon'] ?? 'assets/img/Call.svg';
-$whatsapp_text        = $data['whatsapp_text'] ?? 'نحن في Beethoven City نؤمن أن التواصل المباشر هو الأفضل.. لذلك نوفر لك قنوات تواصل واضحة وآمنة بدون أي نماذج أو جمع بيانات';
-$whatsapp_url         = $data['whatsapp_url'] ?? 'https://wa.me/4917671230666';
-$whatsapp_btn_txt     = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عبر واتساب';
-?>
-
   <!-- ===== HERO IMAGE ===== -->
   <section class="contact-hero py-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

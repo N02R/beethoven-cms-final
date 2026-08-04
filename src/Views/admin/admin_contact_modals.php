@@ -149,7 +149,7 @@
         if (el) el.remove();
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية (مع تضمين الـ CSRF Token لمنع خطأ 403)
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية (مع تضمين الـ CSRF Token تلقائياً لمنع خطأ 403)
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -185,3 +185,4 @@
         });
     });
 </script>
+

@@ -92,3 +92,9 @@ $whatsapp_btn_txt     = $data['whatsapp_btn_txt'] ?? 'تواصل معنا عبر
     </div>
   </section>
   <!-- ===== WHATSAPP SECTION END ===== -->
+
+<?php 
+if (!empty($is_admin) && file_exists(__DIR__ . '/admin/admin_contact_modals.php')) { 
+    include_once __DIR__ . '/admin/admin_contact_modals.php'; 
+}
+?>

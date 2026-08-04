@@ -192,6 +192,9 @@ class SettingsController
                 $footerCol3Data = $_POST['col3'] ?? [];
                 foreach ($footerCol3Data as $index => $item) {
                     if (isset($_FILES['col3_img_' . $index]) && $_FILES['col3_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'footer_col3_' . $index . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES['col3_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
@@ -239,6 +242,9 @@ class SettingsController
                 $servicesData = $_POST['services'] ?? [];
                 foreach ($servicesData as $index => $item) {
                     if (isset($_FILES['service_img_' . $index]) && $_FILES['service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'service_' . $index . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES['service_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
@@ -261,6 +267,9 @@ class SettingsController
                 $chooseData = $_POST['choose'] ?? [];
                 foreach ($chooseData as $index => $item) {
                     if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'choose_' . $index . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES['choose_img_' . $index]['tmp_name'], $uploadDir . $filename);
                         $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
@@ -532,11 +541,9 @@ class SettingsController
                         $stepsData[$index]['icon'] = $item['old_icon'] ?? '';
                     }
                     unset($stepsData[$index]['old_icon']);
-                    // التأكد من ترتيب الـ order كرقم صحيح
                     $stepsData[$index]['order'] = (int)($item['order'] ?? $index);
                 }
 
-                // ترتيب الخطوات تصاعدياً حسب الـ order قبل تخزينها كـ JSON
                 usort($stepsData, function($a, $b) {
                     return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
                 });

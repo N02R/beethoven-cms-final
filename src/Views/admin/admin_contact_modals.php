@@ -9,14 +9,21 @@
             <div class="modal-body p-4">
                 <form id="contactHeroForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_hero">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold d-block">الصورة الحالية</label>
+                    
+                    <div class="col-12">
+                        <label class="form-label fw-bold d-flex justify-content-between">
+                            <span>الصورة الرئيسية الحالية</span>
+                            <?php if (!empty($contact_hero_img)): ?>
+                                <span class="badge bg-light text-dark border">موجودة</span>
+                            <?php endif; ?>
+                        </label>
                         <?php if (!empty($contact_hero_img)): ?>
-                            <div class="p-2 border rounded bg-light mb-2 text-center">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($contact_hero_img) . '?' . time(); ?>" style="max-height: 120px; object-fit: contain;">
+                            <div class="mb-2 p-2 border rounded bg-light text-center">
+                                <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
+                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_hero_img, '/')); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                                <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($contact_hero_img); ?></div>
                             </div>
                         <?php endif; ?>
-                        <label class="form-label fw-bold">تغيير الصورة</label>
                         <input type="file" class="form-control" name="contact_hero_img" accept="image/*">
                         <input type="hidden" name="old_contact_hero_img" value="<?php echo htmlspecialchars($contact_hero_img ?? ''); ?>">
                     </div>
@@ -30,7 +37,7 @@
     </div>
 </div>
 
-<!-- 2. Contact Info Modal (مع معلومات والأيقونات الثلاث) -->
+<!-- 2. Contact Info Modal (معلومات والأيقونات الثلاث) -->
 <div class="modal fade custom-modal" id="contactInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -42,60 +49,77 @@
                 <form id="contactInfoForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
                     
-                    <!-- 1. العنوان وأيقونته -->
-                    <div class="card p-3 mb-3 border-0 bg-light rounded-3">
-                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-geo-alt text-danger"></i> خانة العنوان</h6>
-                        <div class="mb-2">
-                            <label class="small text-muted mb-1">نص العنوان</label>
-                            <input type="text" class="form-control form-control-sm" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>">
-                        </div>
-                        <div class="mb-1">
-                            <label class="small text-muted mb-1">أيقونة العنوان الحالية</label>
-                            <?php if (!empty($contact_address_icon)): ?>
-                                <div class="mb-1 p-2 bg-white border rounded d-inline-block">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_address_icon) . '?' . time(); ?>" class="thumb-preview" style="max-height: 35px; object-fit: contain;">
+                    <div class="d-flex flex-column gap-3">
+                        <!-- 1. العنوان وأيقونته -->
+                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-geo-alt text-danger me-1"></i> خانة العنوان</h6>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">نص العنوان</label>
+                                    <input type="text" class="form-control form-control-sm" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>" placeholder="العنوان">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control form-control-sm mt-1" name="contact_address_icon" accept="image/*">
-                            <input type="hidden" name="old_contact_address_icon" value="<?php echo htmlspecialchars($contact_address_icon ?? ''); ?>">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">أيقونة العنوان الحالية / الجديدة</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <?php if (!empty($contact_address_icon)): ?>
+                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_address_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_address_icon); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" class="form-control form-control-sm" name="contact_address_icon" accept="image/*">
+                                    </div>
+                                    <input type="hidden" name="old_contact_address_icon" value="<?php echo htmlspecialchars($contact_address_icon ?? ''); ?>">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 2. البريد الإلكتروني وأيقونته -->
-                    <div class="card p-3 mb-3 border-0 bg-light rounded-3">
-                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-envelope text-primary"></i> خانة البريد الإلكتروني</h6>
-                        <div class="mb-2">
-                            <label class="small text-muted mb-1">البريد الإلكتروني</label>
-                            <input type="email" class="form-control form-control-sm" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>">
-                        </div>
-                        <div class="mb-1">
-                            <label class="small text-muted mb-1">أيقونة البريد الحالية</label>
-                            <?php if (!empty($contact_email_icon)): ?>
-                                <div class="mb-1 p-2 bg-white border rounded d-inline-block">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_email_icon) . '?' . time(); ?>" class="thumb-preview" style="max-height: 35px; object-fit: contain;">
+                        <!-- 2. البريد الإلكتروني وأيقونته -->
+                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-envelope text-primary me-1"></i> خانة البريد الإلكتروني</h6>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">البريد الإلكتروني</label>
+                                    <input type="email" class="form-control form-control-sm" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>" placeholder="البريد الإلكتروني">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control form-control-sm mt-1" name="contact_email_icon" accept="image/*">
-                            <input type="hidden" name="old_contact_email_icon" value="<?php echo htmlspecialchars($contact_email_icon ?? ''); ?>">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">أيقونة البريد الحالية / الجديدة</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <?php if (!empty($contact_email_icon)): ?>
+                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_email_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_email_icon); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" class="form-control form-control-sm" name="contact_email_icon" accept="image/*">
+                                    </div>
+                                    <input type="hidden" name="old_contact_email_icon" value="<?php echo htmlspecialchars($contact_email_icon ?? ''); ?>">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- 3. الهاتف وأيقونته -->
-                    <div class="card p-3 mb-0 border-0 bg-light rounded-3">
-                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-telephone text-success"></i> خانة الهاتف</h6>
-                        <div class="mb-2">
-                            <label class="small text-muted mb-1">رقم الهاتف</label>
-                            <input type="text" class="form-control form-control-sm" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>">
-                        </div>
-                        <div class="mb-1">
-                            <label class="small text-muted mb-1">أيقونة الهاتف الحالية</label>
-                            <?php if (!empty($contact_phone_icon)): ?>
-                                <div class="mb-1 p-2 bg-white border rounded d-inline-block">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($contact_phone_icon) . '?' . time(); ?>" class="thumb-preview" style="max-height: 35px; object-fit: contain;">
+                        <!-- 3. الهاتف وأيقونته -->
+                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-telephone text-success me-1"></i> خانة الهاتف</h6>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">رقم الهاتف</label>
+                                    <input type="text" class="form-control form-control-sm" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>" placeholder="رقم الهاتف">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control form-control-sm mt-1" name="contact_phone_icon" accept="image/*">
-                            <input type="hidden" name="old_contact_phone_icon" value="<?php echo htmlspecialchars($contact_phone_icon ?? ''); ?>">
+                                <div class="col-md-6">
+                                    <label class="small text-muted mb-1">أيقونة الهاتف الحالية / الجديدة</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <?php if (!empty($contact_phone_icon)): ?>
+                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_phone_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_phone_icon); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" class="form-control form-control-sm" name="contact_phone_icon" accept="image/*">
+                                    </div>
+                                    <input type="hidden" name="old_contact_phone_icon" value="<?php echo htmlspecialchars($contact_phone_icon ?? ''); ?>">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -119,17 +143,20 @@
             <div class="modal-body p-4">
                 <form id="whatsappForm">
                     <input type="hidden" name="action" value="update_whatsapp_section">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">النص الترويجي للواتساب</label>
-                        <textarea class="form-control" name="whatsapp_text" rows="3" style="height: auto;"><?php echo htmlspecialchars($whatsapp_text ?? ''); ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رابط المحادثة (URL)</label>
-                        <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">نص زر الواتساب</label>
-                        <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? ''); ?>">
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">النص الترويجي للواتساب</label>
+                            <textarea class="form-control" name="whatsapp_text" rows="3"><?php echo htmlspecialchars($whatsapp_text ?? ''); ?></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">رابط المحادثة (URL)</label>
+                            <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">نص زر الواتساب</label>
+                            <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? ''); ?>">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -143,20 +170,13 @@
 
 <!-- AJAX Submission Engine -->
 <script>
-    function removeRow(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
-    }
-
-    // معالج النماذج الموحد الشامل (يتطابق مع معمارية ملف الـ about modals)
-    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+    // معالج النماذج الموحد الخاص بمودلز التواصل
+    document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-
-            // جلب الـ CSRF Token بأمان من الـ Meta tag أو PHP المتغير
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -172,18 +192,16 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
                     console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالخادم، افتح الـ Console للمزيد من التفاصيل.');
+                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
             });
         });
     });
 </script>
-

@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\SiteModel;
+use App\Models\ContactModel;
+
 class ContactController {
-    
     public function index(string $lang = 'de'): void {
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
 
@@ -18,43 +20,53 @@ class ContactController {
         }
 
         $root_path = realpath(__DIR__ . '/../../');
-        $config_file = $root_path . '/announcement_config.json';
-        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
-        
-        $data = $global_data;
-        $is_admin = !empty($_SESSION['is_admin']);
+
+        // 1. جلب البيانات العامة (الهيدر والفوتر)
+        $globalData = SiteModel::getGlobalData();
+
+        // 2. جلب بيانات صفحة التواصل الخاصة
+        $contactData = ContactModel::getContactData();
+
+        // 3. دمج البيانات معاً
+        $data = array_merge($globalData, $contactData);
+
+        // التحقق من صلاحيات المشرف
+        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+        $user_role = $_SESSION['role'] ?? '';
+        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+
         $path_prefix = '/';
+        $page_css = ['/assets/css/style.css'];
 
-        // تعريف ملفات الـ CSS الخاصة بصفحة التواصل
-        $page_css = [
-            '/assets/css/contact.css'
-        ]; 
+        // تحويل مفاتيح المصفوفة إلى متغيرات مستقلة للـ View
+        extract($data);
 
-        $page_js = [];
-        $custom_script = '';
-
-        // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/includes/header.php';
+        // تضمين الهيدر
+        $header_file = __DIR__ . '/../Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
         }
 
-        // 2. استدعاء الـ View الخاص بـ Contact
+        // تضمين الـ View الأساسي لصفحة التواصل
         $view_file = __DIR__ . '/../Views/contact.php';
         if (file_exists($view_file)) {
             require_once $view_file;
-        } else {
-            echo "<div class='container py-5 text-center'><h3>Contact View file not found.</h3></div>";
         }
 
-        // 3. استدعاء مودالات الأدمن الخاصة بالتواصل إن وجدت
-        $admin_modals = $root_path . '/includes/admin_contact_modals.php';
-        if (!empty($is_admin) && file_exists($admin_modals)) {
-            include_once $admin_modals;
+        // تضمين مودلز الإدارة الخاصة بالصفحة (إذا كان المشرف مسجلاً للدخول)
+        if ($is_admin) {
+            $modals_file = __DIR__ . '/../Views/admin/admin_contact_modals.php';
+            if (file_exists($modals_file)) {
+                require_once $modals_file;
+            }
         }
 
-        // 4. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/includes/footer.php';
+        // تضمين الفوتر
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
         }

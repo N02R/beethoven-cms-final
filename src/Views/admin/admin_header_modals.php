@@ -752,6 +752,55 @@
         if (el) el.remove();
     }
 
+    // دالة لإنشاء وعرض التنبيهات بطريقة عصرية باستخدام Bootstrap Toasts/Alerts
+    function showNotification(message, type = 'success') {
+        // إزالة أي تنبيه سابق متبقي
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        // تحديد الألوان والأيقونات بناءً على نوع الرسالة (Bootstrap Classes)
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        // إنشاء عنصر التنبيه
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"><div></div></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // إخفاء التنبيه تلقائياً بعد 4 ثواني (إذا لم يغلقه المستخدم يدويياً)
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
+    }
+
     let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -919,13 +968,12 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية (بدون تكرار وبحماية كاملة)
+    // معالج النماذج الموحد مع التنبيهات الجديدة المفهومة لمدير الموقع
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             
-            // جلب الـ CSRF token من الـ Meta tag أو إضافته بأمان
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
@@ -945,21 +993,26 @@
                 try {
                     const data = JSON.parse(text);
                     if (data.success) {
-                        location.reload();
+                        // إشعار أخضر جميل عند النجاح ثم إعادة التحميل بعد ثانية
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
                     } else {
-                        alert('خطأ من السيرفر: ' + (data.message || 'فشل الحفظ'));
+                        // إشعار أحمر إذا كان هناك خطأ مرسل من السيرفر
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                     }
                 } catch (e) {
-                    alert('الرد ليس JSON صافي. افتح الكونسول لمعرفة النص القادم من السيرفر.');
+                    // إشعار أصفر (تحذيري) إذا كان الرد مشابهاً لخطأ PHP أو نصوص غير مُهيكلة
+                    showNotification('تنبيه: استقبل النظام رداً غير متوقع من الخادم (راجع وحدة التحكم للمطورين).', 'warning');
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('خطأ في الاتصال');
+                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });
 </script>
+
 
 
 

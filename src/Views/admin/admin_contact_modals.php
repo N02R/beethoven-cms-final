@@ -7,8 +7,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="contactHeroForm" enctype="multipart/form-data">
+                <form id="contactHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_hero">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="col-12">
                         <label class="form-label fw-bold d-flex justify-content-between">
@@ -20,7 +21,7 @@
                         <?php if (!empty($contact_hero_img)): ?>
                             <div class="mb-2 p-2 border rounded bg-light text-center">
                                 <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
-                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_hero_img, '/')); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                                <img src="<?php echo htmlspecialchars(get_image_url($contact_hero_img)); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
                                 <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($contact_hero_img); ?></div>
                             </div>
                         <?php endif; ?>
@@ -37,6 +38,7 @@
     </div>
 </div>
 
+
 <!-- 2. Contact Info Modal (معلومات والأيقونات الثلاث) -->
 <div class="modal fade custom-modal" id="contactInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -46,8 +48,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="contactInfoForm" enctype="multipart/form-data">
+                <form id="contactInfoForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="d-flex flex-column gap-3">
                         <!-- 1. العنوان وأيقونته -->
@@ -63,7 +66,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_address_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_address_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_address_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                                 <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_address_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
@@ -87,7 +90,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_email_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_email_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_email_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                                 <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_email_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
@@ -111,7 +114,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_phone_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($contact_phone_icon, '/')); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_phone_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                                 <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_phone_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
@@ -132,6 +135,7 @@
     </div>
 </div>
 
+
 <!-- 3. WhatsApp Section Modal -->
 <div class="modal fade custom-modal" id="whatsappSectionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -141,8 +145,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="whatsappForm">
+                <form id="whatsappForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_whatsapp_section">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div class="row g-3">
                         <div class="col-12">
@@ -168,6 +173,7 @@
     </div>
 </div>
 
+
 <!-- AJAX Submission Engine -->
 <script>
     // معالج النماذج الموحد الخاص بمودلز التواصل
@@ -176,7 +182,8 @@
             e.preventDefault();
             const formData = new FormData(this);
             
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            // جلب الـ CSRF Token من الـ Meta Tag أو البديل الاحتياطي الآمن
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -192,6 +199,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    alert(data.message || 'تم حفظ التغييرات بنجاح');
                     location.reload();
                 } else {
                     console.error('Server Response Error:', data);
@@ -205,3 +213,4 @@
         });
     });
 </script>
+

@@ -333,7 +333,7 @@
     }
 
     // 1. إضافة صف جديد لـ "لماذا الدراسة" (Why)
-    let eduWhyCount = <?php echo count($edu_why_items); ?>;
+    let eduWhyCount = <?php echo count($edu_why_items ?? []); ?>;
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
         const div = document.createElement('div');
@@ -343,14 +343,14 @@
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
-                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف">
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
-                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="why[${eduWhyCount}][old_img]" value="">
+                    <input type="file" class="form-control form-control-sm edu-why-file" data-index="${eduWhyCount}" accept="image/*">
+                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
@@ -365,7 +365,7 @@
         const container = document.getElementById('eduTimelineContainer');
         const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-timeline-row-item';
+        div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'step_row_' + eduStepCount;
         div.innerHTML = `
@@ -388,7 +388,7 @@
                 </div>
                 <div class="col-md-9">
                     <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
+                    <input type="file" class="form-control form-control-sm edu-timeline-file" accept="image/*">
                     <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
@@ -405,7 +405,7 @@
         const container = document.getElementById('eduServicesContainer');
         const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-service-row-item';
+        div.className = 'card p-3 border-0 edu-service-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'edu_srv_row_' + eduSrvCount;
         div.innerHTML = `
@@ -420,7 +420,7 @@
                 </div>
                 <div class="col-md-11">
                     <label class="small text-muted fw-bold mb-1">صورة الخلفية الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
+                    <input type="file" class="form-control form-control-sm edu-service-file" accept="image/*">
                     <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
@@ -437,7 +437,7 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // 1. إعادة ترقيم صفوف "لماذا الدراسة" إن وجدت
+            // 1. إعادة ترقيم صفوف "لماذا الدراسة"
             const whyRows = form.querySelectorAll('.edu-why-row-item');
             whyRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -445,13 +445,13 @@
                 const fileInput = row.querySelector('input[type="file"]');
                 const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                if (titleInput) titleInput.name = `why[${index}][title]`;
-                if (descInput) descInput.name = `why[${index}][desc]`;
-                if (fileInput) fileInput.name = `edu_why_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `why[${index}][old_img]`;
+                if (titleInput) titleInput.name = `edu_why[${index}][title]`;
+                if (descInput) descInput.name = `edu_why[${index}][desc]`;
+                if (fileInput) fileInput.name = `edu_why_img_${index}`; // الاسم المتطابق مع PHP
+                if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
             });
 
-            // 2. إعادة ترقيم صفوف "خطوات الرحلة" إن وجدت
+            // 2. إعادة ترقيم صفوف "خطوات الرحلة"
             const stepRows = form.querySelectorAll('.edu-timeline-row-item');
             stepRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -465,11 +465,11 @@
                 if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
                 if (orderInput) orderInput.name = `edu_timeline[${index}][order]`;
                 if (descInput) descInput.name = `edu_timeline[${index}][desc]`;
-                if (fileInput) fileInput.name = `edu_timeline_icon_${index}`;
+                if (fileInput) fileInput.name = `edu_timeline_icon_${index}`; // الاسم المتطابق مع PHP
                 if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
             });
 
-            // 3. إعادة ترقيم صفوف "خدمات التعليم" وتصحيح أسماء حقول الملفات لترسل بشكل صحيح للباك إند
+            // 3. إعادة ترقيم صفوف "خدمات التعليم"
             const srvRows = form.querySelectorAll('.edu-service-row-item');
             srvRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -478,8 +478,8 @@
                 const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
                 if (titleInput) titleInput.name = `edu_services[${index}][title]`;
-                if (urlInput) urlInput.name = `edu_services[${index}][url]`;
-                if (fileInput) fileInput.name = `edu_service_img_${index}`; // تم ضبط الاسم ليتطابق مع معالج الـ PHP
+                if (urlInput) titleInput.name = `edu_services[${index}][url]`;
+                if (fileInput) fileInput.name = `edu_service_img_${index}`; // الاسم المتطابق مع PHP
                 if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
             });
 
@@ -515,6 +515,7 @@
         });
     });
 </script>
+
 
 
 

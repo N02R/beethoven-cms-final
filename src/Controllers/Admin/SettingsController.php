@@ -19,7 +19,7 @@ class SettingsController
 
         try {
             $pdo = \App\Config\Database::getConnection();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log("Database connection failed in index: " . $e->getMessage());
             die("Database connection failed.");
         }
@@ -65,7 +65,6 @@ class SettingsController
         $token = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
 
         if (!Security::verifyCsrfToken($token)) {
-            // إرجاع خطأ 403 إذا فشل التحقق
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'انصهار الجلسة أو خطأ في الـ CSRF Token']);
             exit;
@@ -73,7 +72,7 @@ class SettingsController
 
         try {
             $pdo = \App\Config\Database::getConnection();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database connection failed.']);
             exit;
@@ -327,9 +326,7 @@ class SettingsController
                 $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 13. تحديث قسم من نحن الرئيسي (About Section)
-            // ==========================================
             elseif ($action === 'update_about_section') {
                 $oldAboutData = json_decode($currentSettings['about_section'] ?? '{}', true);
 
@@ -392,9 +389,7 @@ class SettingsController
                 $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 14. تحديث فريق العمل (Team)
-            // ==========================================
             elseif ($action === 'update_about_team') {
                 $teamTitle = $_POST['team_title'] ?? '';
                 $teamDesc  = $_POST['team_desc'] ?? '';
@@ -419,9 +414,7 @@ class SettingsController
                 $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 15. تحديث الإحصائيات (Counts)
-            // ==========================================
             elseif ($action === 'update_about_counts') {
                 $countsData = $_POST['counts'] ?? [];
                 foreach ($countsData as $index => $item) {
@@ -441,9 +434,7 @@ class SettingsController
                 $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 16. تحديث الشركاء (Partners)
-            // ==========================================
             elseif ($action === 'update_about_partners') {
                 $partnersTitle = $_POST['partners_title'] ?? '';
                 $stmt->execute(['k' => 'partners_title', 'v' => $partnersTitle, 'v_update' => $partnersTitle]);
@@ -466,9 +457,7 @@ class SettingsController
                 $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 17. تحديث صفحة التعليم: الهيرو (Edu Hero)
-            // ==========================================
             elseif ($action === 'update_edu_hero') {
                 $eduHeroImg = $_POST['old_edu_hero_img'] ?? 'assets/img/education/hero.jpg';
                 if (isset($_FILES['edu_hero_img']) && $_FILES['edu_hero_img']['error'] === UPLOAD_ERR_OK) {
@@ -492,9 +481,7 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 18. تحديث صفحة التعليم: لماذا ألمانيا (Edu Why Us)
-            // ==========================================
             elseif ($action === 'update_edu_why') {
                 $whyTitle = $_POST['edu_why_title'] ?? '';
                 $whyDesc  = $_POST['edu_why_desc'] ?? '';
@@ -519,9 +506,7 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 19. تحديث صفحة التعليم: الـ Timeline (الخطوات)
-            // ==========================================
             elseif ($action === 'update_edu_timeline') {
                 $timelineTitle = $_POST['edu_timeline_title'] ?? '';
                 $timelineDesc  = $_POST['edu_timeline_desc'] ?? '';
@@ -552,36 +537,32 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 20. تحديث صفحة التعليم: الخدمات التعليمية (Edu Services)
-            // ==========================================
             elseif ($action === 'update_edu_services') {
                 $servicesTitle = $_POST['edu_services_title'] ?? '';
                 $servicesDesc  = $_POST['edu_services_desc'] ?? '';
                 $stmt->execute(['k' => 'edu_services_title', 'v' => $servicesTitle, 'v_update' => $servicesTitle]);
                 $stmt->execute(['k' => 'edu_services_desc', 'v' => $servicesDesc, 'v_update' => $servicesDesc]);
 
-                $eduServicesData = $_POST['eduservices'] ?? [];
-                foreach ($eduServicesData as $index => $item) {
+                $servicesData = $_POST['eduservices'] ?? [];
+                foreach ($servicesData as $index => $item) {
                     if (isset($_FILES['edu_service_img_' . $index]) && $_FILES['edu_service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'edu_serv_' . $index . '_' . time() . '.webp';
+                        $filename = 'edu_service_' . $index . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES['edu_service_img_' . $index]['tmp_name'], $uploadDir . $filename);
-                        $eduServicesData[$index]['img'] = 'assets/uploads/' . $filename;
+                        $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
-                        $eduServicesData[$index]['img'] = $item['old_img'] ?? '';
+                        $servicesData[$index]['img'] = $item['old_img'] ?? '';
                     }
-                    unset($eduServicesData[$index]['old_img']);
+                    unset($servicesData[$index]['old_img']);
                 }
-                $jsonVal = json_encode(array_values($eduServicesData), JSON_UNESCAPED_UNICODE);
+                $jsonVal = json_encode(array_values($servicesData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 21. تحديث صفحة التدريب والتوظيف: الهيرو (Job Hero)
-            // ==========================================
             elseif ($action === 'update_job_hero') {
                 $jobHeroImg = $_POST['old_job_hero_img'] ?? 'assets/img/jobs/hero.jpg';
                 if (isset($_FILES['job_hero_img']) && $_FILES['job_hero_img']['error'] === UPLOAD_ERR_OK) {
@@ -605,9 +586,7 @@ class SettingsController
                 $stmt->execute(['k' => 'job_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 22. تحديث صفحة التدريب والتوظيف: لماذا نحن / الميزات (Job Why Us)
-            // ==========================================
             elseif ($action === 'update_job_why') {
                 $jobWhyTitle = $_POST['job_why_title'] ?? '';
                 $jobWhyDesc  = $_POST['job_why_desc'] ?? '';
@@ -632,9 +611,7 @@ class SettingsController
                 $stmt->execute(['k' => 'job_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 23. تحديث صفحة التدريب والتوظيف: خطوات التقديم (Job Timeline)
-            // ==========================================
             elseif ($action === 'update_job_timeline') {
                 $jobTimelineTitle = $_POST['job_timeline_title'] ?? '';
                 $jobTimelineDesc  = $_POST['job_timeline_desc'] ?? '';
@@ -665,9 +642,7 @@ class SettingsController
                 $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 24. تحديث صفحة التدريب والتوظيف: الخدمات (Job Services)
-            // ==========================================
             elseif ($action === 'update_job_services') {
                 $jobServicesTitle = $_POST['job_services_title'] ?? '';
                 $jobServicesDesc  = $_POST['job_services_desc'] ?? '';
@@ -692,16 +667,13 @@ class SettingsController
                 $stmt->execute(['k' => 'job_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
-            // 25. تحديث صورة قسم تواصل معنا فقط (Contact Hero Image)
-            // ==========================================
+            // 25. تحديث صورة قسم تواصل معنا (Contact Hero Image)
             elseif ($action === 'update_contact_hero') {
                 $contactHeroImg = $_POST['old_contact_hero_img'] ?? 'assets/img/contact-hero.jpg';
                 
                 if (isset($_FILES['contact_hero_img']) && $_FILES['contact_hero_img']['error'] === UPLOAD_ERR_OK) {
                     $oldContactHeroValue = $currentSettings['contact_hero'] ?? '';
                     
-                    // التحقق ما إذا كانت القيمة القديمة عبارة عن JSON تحتوي على مفتاح img أو مسار عادي
                     $oldContactHeroData = json_decode($oldContactHeroValue, true);
                     if (is_array($oldContactHeroData) && !empty($oldContactHeroData['img'])) {
                         $this->deleteOldImageFile($root_path, $oldContactHeroData['img']);
@@ -714,14 +686,14 @@ class SettingsController
                     $contactHeroImg = 'assets/uploads/' . $filename;
                 }
 
-                // حفظ مسار الصورة مباشرة في قاعدة البيانات
                 $stmt->execute(['k' => 'contact_hero', 'v' => $contactHeroImg, 'v_update' => $contactHeroImg]);
             }
 
+            // 26. تحديث معلومات التواصل (Contact Info)
             elseif ($action === 'update_contact_info') {
                 $contactAddress = $_POST['contact_address'] ?? '';
-                $contactEmail = $_POST['contact_email'] ?? '';
-                $contactPhone = $_POST['contact_phone'] ?? '';
+                $contactEmail   = $_POST['contact_email'] ?? '';
+                $contactPhone   = $_POST['contact_phone'] ?? '';
 
                 $stmt->execute(['k' => 'contact_address', 'v' => $contactAddress, 'v_update' => $contactAddress]);
                 $stmt->execute(['k' => 'contact_email', 'v' => $contactEmail, 'v_update' => $contactEmail]);
@@ -758,9 +730,10 @@ class SettingsController
                 $stmt->execute(['k' => 'contact_phone_icon', 'v' => $contactPhoneIcon, 'v_update' => $contactPhoneIcon]);
             }
 
+            // 27. تحديث قسم الواتساب (WhatsApp Section)
             elseif ($action === 'update_whatsapp_section') {
-                $whatsappText = $_POST['whatsapp_text'] ?? '';
-                $whatsappUrl = $_POST['whatsapp_url'] ?? '';
+                $whatsappText   = $_POST['whatsapp_text'] ?? '';
+                $whatsappUrl    = $_POST['whatsapp_url'] ?? '';
                 $whatsappBtnTxt = $_POST['whatsapp_btn_txt'] ?? '';
 
                 $stmt->execute(['k' => 'whatsapp_text', 'v' => $whatsappText, 'v_update' => $whatsappText]);
@@ -788,25 +761,25 @@ class SettingsController
     }
 
     /**
-     * دالة مساعدة لتحويل أي صورة مرفوعة إلى صيغة WebP وحفظها في المسار المحدد
+     * تحويل الصور المرفوعة تلقائياً إلى صيغة WebP وحفظها
      */
-    private function convertToWebpAndSave(string $tmpPath, string $destination): void
+    private function convertToWebpAndSave(string $sourcePath, string $outputPath, int $quality = 80): bool
     {
-        $imageInfo = @getimagesize($tmpPath);
-        if ($imageInfo === false) {
-            throw new Exception('الملف المرفوع ليس صورة صالحة.');
+        $info = @getimagesize($sourcePath);
+        if (!$info) {
+            return move_uploaded_file($sourcePath, $outputPath);
         }
 
-        $mimeType = $imageInfo['mime'];
+        $mime = $info['mime'];
         $image = null;
 
-        switch ($mimeType) {
+        switch ($mime) {
             case 'image/jpeg':
             case 'image/jpg':
-                $image = @imagecreatefromjpeg($tmpPath);
+                $image = @imagecreatefromjpeg($sourcePath);
                 break;
             case 'image/png':
-                $image = @imagecreatefrompng($tmpPath);
+                $image = @imagecreatefrompng($sourcePath);
                 if ($image) {
                     imagepalettetotruecolor($image);
                     imagealphablending($image, true);
@@ -814,56 +787,71 @@ class SettingsController
                 }
                 break;
             case 'image/webp':
-                $image = @imagecreatefromwebp($tmpPath);
+                $image = @imagecreatefromwebp($sourcePath);
                 break;
-            default:
-                throw new Exception('صيغة الصورة غير مدعومة. يرجى رفع JPG, PNG أو WebP.');
+            case 'image/gif':
+                $image = @imagecreatefromgif($sourcePath);
+                break;
         }
 
-        if (!$image) {
-            throw new Exception('فشل في معالجة وفك تشفير الصورة.');
+        if ($image !== null && $image !== false) {
+            $result = imagewebp($image, $outputPath, $quality);
+            imagedestroy($image);
+            return $result;
         }
 
-        $success = @imagewebp($image, $destination, 85);
-        @imagedestroy($image);
+        return move_uploaded_file($sourcePath, $outputPath);
+    }
 
-        if (!$success) {
-            throw new Exception('فشل في حفظ الصورة بصيغة WebP الجديدة.');
+    /**
+     * حذف الملفات والصور القديمة من السيرفر
+     */
+    private function deleteOldImageFile(string $rootPath, string $relativePath): void
+    {
+        if (empty($relativePath)) {
+            return;
+        }
+
+        // تجنب حذف الصور الافتراضية المبدئية
+        if (str_contains($relativePath, 'assets/img/') && !str_contains($relativePath, 'assets/uploads/')) {
+            return;
+        }
+
+        $fullPath = $rootPath . '/public/' . ltrim($relativePath, '/');
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            @unlink($fullPath);
         }
     }
 
     /**
-     * دالة مساعدة لحذف الصور القديمة من السيرفر عند رفع صور بديلة
+     * التحقق من الصلاحيات والتحقق من جلسة المدير
      */
-    private function deleteOldImageFile(string $rootPath, string $imagePath): void
-    {
-        if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
-            $fullPath = $rootPath . '/public/' . $imagePath;
-            if (file_exists($fullPath) && is_file($fullPath)) {
-                @unlink($fullPath);
-            }
-        }
-    }
-
     private function checkAdminAuth(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+        $is_logged_in = $_SESSION['is_logged_in'] ?? false;
+        $role = $_SESSION['role'] ?? '';
+
+        if (!$is_logged_in || !in_array($role, ['admin', 'super_admin'], true)) {
             if ($this->isJsonRequest()) {
-                http_response_code(401);
-                echo json_encode(['success' => false, 'error' => 'غير مصرح بالوصول']);
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'غير مصرح لك بالوصول']);
                 exit;
             }
-            header("Location: index.php?url=admin/login");
+            header('Location: /login');
             exit;
         }
     }
 
+    /**
+     * التحقق مما إذا كان الطلب عبارة عن AJAX / JSON Request
+     */
     private function isJsonRequest(): bool
     {
-        return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
+        return (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json')) ||
+               (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
     }
 }

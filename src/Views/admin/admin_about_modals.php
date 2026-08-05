@@ -213,33 +213,45 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                     
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['about_counts'] ?? []) as $index => $c): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="count_row_<?php echo $index; ?>">
+                        <?php 
+                        $counts_items = $data['about_counts'] ?? [];
+                        if (!empty($counts_items)):
+                            foreach ($counts_items as $index => $c): 
+                        ?>
+                            <div class="card p-3 border-0 count-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="count_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted">الرقم</label>
-                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? ''); ?>" placeholder="الرقم">
+                                        <input type="text" class="form-control form-control-sm count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? ''); ?>" placeholder="الرقم">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="small text-muted">الوصف</label>
-                                        <input type="text" class="form-control form-control-sm" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? ''); ?>" placeholder="الوصف">
+                                        <input type="text" class="form-control form-control-sm count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? ''); ?>" placeholder="الوصف">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
+                                        <label class="small text-muted d-flex justify-content-between">
+                                            <span>الأيقونة الحالية / الجديدة</span>
+                                            <?php if (!empty($c['img'])): ?>
+                                                <span class="badge bg-light text-dark border" style="font-size: 10px;">موجودة</span>
+                                            <?php endif; ?>
+                                        </label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
                                                 <img src="<?php echo htmlspecialchars(get_image_url($c['img'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? ''); ?>">
+                                        <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_<?php echo $index; ?>')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php 
+                            endforeach; 
+                        endif; 
+                        ?>
                     </div>
 
                     <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addCountRow()">
@@ -254,6 +266,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 4. Partners Edit Modal (قسم الشركاء) -->
 <div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">
@@ -318,7 +331,7 @@
 
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
-        const teamCount = container.querySelectorAll('.team-row-item').length; // حساب العدد الفعلي مباشرة
+        const teamCount = container.querySelectorAll('.team-row-item').length;
         const div = document.createElement('div');
         div.className = 'card p-3 border team-row-item shadow-sm';
         div.style.cssText = 'background: var(--bg-soft, #f8f9fa); border-radius: 12px;';
@@ -368,7 +381,7 @@
                     <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -389,18 +402,18 @@
                     <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
     }
 
-    // معالج النماذج الموحد الشامل (يدعم .custom-modal و .admin-settings-form)
+    // معالج النماذج الموحد الشامل
     document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم صفوف الفريق بدقة متناهية لضمان عدم وجود فراغات في المؤشرات
+            // إعادة ترقيم صفوف الفريق بدقة متناهية
             const teamRows = form.querySelectorAll('.team-row-item');
             teamRows.forEach((row, index) => {
                 const nameInput = row.querySelector('input[name*="[name]"]');
@@ -414,7 +427,7 @@
                 if(oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
             });
 
-            // إعادة ترقيم صفوف الإحصائيات بدقة
+            // إعادة ترقيم صفوف الإحصائيات/العدادات بدقة تامة
             const countRows = form.querySelectorAll('.count-row-item');
             countRows.forEach((row, index) => {
                 const numInput = row.querySelector('input[name*="[number]"]');
@@ -440,7 +453,6 @@
 
             const formData = new FormData(this);
 
-            // جلب الـ CSRF Token بأمان من الـ Meta tag أو PHP المتغير
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             
             if (csrfToken && !formData.has('csrf_token')) {
@@ -472,3 +484,4 @@
         });
     });
 </script>
+

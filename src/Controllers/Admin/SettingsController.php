@@ -37,7 +37,7 @@ class SettingsController
         $data = [
             'team_title'   => $rawSettings['team_title'] ?? 'فريق العمل',
             'team_desc'    => $rawSettings['team_desc'] ?? '',
-            'team_items' => json_decode($rawSettings['team_items'] ?? '[]', true)
+            'team_members' => json_decode($rawSettings['team_items'] ?? '[]', true)
         ];
 
         $csrf_token = Security::generateCsrfToken();
@@ -328,7 +328,6 @@ class SettingsController
             elseif ($action === 'update_about_section') {
                 $oldAboutData = json_decode($currentSettings['about_section'] ?? '{}', true);
 
-                // معالجة الصورة الرئيسية
                 $mainImg = $_POST['old_about_main_img'] ?? ($oldAboutData['main_img'] ?? '');
                 if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['main_img'])) {
@@ -339,7 +338,6 @@ class SettingsController
                     $mainImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة الصورة الفرعية
                 $subImg = $_POST['old_about_sub_img'] ?? ($oldAboutData['sub_img'] ?? '');
                 if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['sub_img'])) {
@@ -350,7 +348,6 @@ class SettingsController
                     $subImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرؤية
                 $visionIcon = $_POST['old_vision_icon'] ?? ($oldAboutData['vision_icon'] ?? '');
                 if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['vision_icon'])) {
@@ -361,7 +358,6 @@ class SettingsController
                     $visionIcon = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرسالة
                 $messageIcon = $_POST['old_message_icon'] ?? ($oldAboutData['message_icon'] ?? '');
                 if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['message_icon'])) {
@@ -392,28 +388,43 @@ class SettingsController
             }
 
             // ==========================================
-            // 14. تحديث فريق العمل (Team)
+            // 14. تحديث فريق العمل (Team) - [محدث ومصحح بدقة]
             // ==========================================
             elseif ($action === 'update_about_team') {
                 $teamTitle = $_POST['team_title'] ?? '';
                 $teamDesc  = $_POST['team_desc'] ?? '';
+                
+                // حفظ عنوان وصف القسم الرئيسي لفريق العمل
                 $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
                 $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
 
                 $teamData = $_POST['team'] ?? [];
+                
                 foreach ($teamData as $index => $item) {
-                    if (isset($_FILES['team_img_' . $index]) && $_FILES['team_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    // معالجة رفع الصورة لكل عضو بناءً على التسمية team_img_<?php echo $index; 
+                    $fileKey = 'team_img_' . $index;
+                    
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        // حذف الصورة القديمة إن وجدت
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'team_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['team_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename);
                         $teamData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
+                        // الاحتفاظ بالصورة القديمة إذا لم يتم رفع صورة جديدة
                         $teamData[$index]['img'] = $item['old_img'] ?? '';
                     }
+                    
+                    // تنظيف حقل old_img المؤقت قبل التخزين في قاعدة البيانات
                     unset($teamData[$index]['old_img']);
+                    
+                    // التأكد من الحقول النصية (name, role)
+                    $teamData[$index]['name'] = $item['name'] ?? '';
+                    $teamData[$index]['role'] = $item['role'] ?? '';
                 }
+
                 $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }

@@ -233,20 +233,17 @@
                     </div>
 
                     <div id="eduServicesContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($edu_services_items as $index => $item): ?>
+                        <?php foreach (($edu_services_items ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0 edu-service-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="edu_srv_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
-                                    <!-- السطر الأول: اسم الخدمة + رابط الخدمة -->
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">اسم الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="eduservices[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="اسم الخدمة">
+                                        <input type="text" class="form-control form-control-sm" name="edu_services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">رابط الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="eduservices[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="الرابط">
+                                        <input type="text" class="form-control form-control-sm" name="edu_services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="الرابط">
                                     </div>
-
-                                    <!-- السطر الثاني: صورة الخلفية + زر الحذف -->
                                     <div class="col-md-11">
                                         <label class="small text-muted fw-bold mb-1">صورة الخلفية الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
@@ -258,7 +255,7 @@
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="edu_service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="eduservices[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                        <input type="hidden" name="edu_services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')" title="حذف الخدمة">
@@ -282,8 +279,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Dynamic Rows JS Engine for Education Settings -->
 <script>
@@ -418,16 +413,16 @@
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small text-muted fw-bold mb-1">اسم الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][title]" placeholder="اسم الخدمة">
+                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
                 </div>
                 <div class="col-md-6">
                     <label class="small text-muted fw-bold mb-1">رابط الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][url]" placeholder="الرابط">
+                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-11">
                     <label class="small text-muted fw-bold mb-1">صورة الخلفية الجديدة</label>
                     <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
-                    <input type="hidden" name="eduservices[${eduSrvCount}][old_img]" value="">
+                    <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')" title="حذف الخدمة">
@@ -475,7 +470,7 @@
                 if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
             });
 
-            // 3. إعادة ترقيم صفوف "خدمات التعليم" إن وجدت لتتطابق مع eduservices
+            // 3. إعادة ترقيم صفوف "خدمات التعليم" إن وجدت لتتطابق مع edu_services
             const srvRows = form.querySelectorAll('.edu-service-row-item');
             srvRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -483,10 +478,10 @@
                 const fileInput = row.querySelector('input[type="file"]');
                 const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                if (titleInput) titleInput.name = `eduservices[${index}][title]`;
-                if (urlInput) urlInput.name = `eduservices[${index}][url]`;
+                if (titleInput) titleInput.name = `edu_services[${index}][title]`;
+                if (urlInput) urlInput.name = `edu_services[${index}][url]`;
                 if (fileInput) fileInput.name = `edu_service_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `eduservices[${index}][old_img]`;
+                if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
             });
 
             const formData = new FormData(this);
@@ -521,6 +516,7 @@
         });
     });
 </script>
+
 
 
 

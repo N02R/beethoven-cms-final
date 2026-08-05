@@ -142,8 +142,11 @@
                     </div>
 
                     <div id="teamRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['team_members'] ?? []) as $index => $member): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="team_row_<?php echo $index; ?>">
+                        <?php 
+                        $team_members = $data['team_members'] ?? [];
+                        foreach ($team_members as $index => $member): 
+                        ?>
+                            <div class="card p-3 border-0 team-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="team_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted">الاسم</label>
@@ -161,6 +164,7 @@
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="team_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
+                                        <!-- الاحتفاظ بالقيمة القديمة للصورة لضمان عدم ضياعها عند عدم رفع صورة جديدة -->
                                         <input type="hidden" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
@@ -183,6 +187,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- 3. Counts Edit Modal (قسم الإحصائيات/العدادات) -->
@@ -389,7 +394,7 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم صفوف الفريق إن وجدت لتجنب الفراغات في المؤشرات
+            // إعادة ترقيم صفوف الفريق بدقة متناهية لضمان عدم وجود فراغات في المؤشرات
             const teamRows = form.querySelectorAll('.team-row-item');
             teamRows.forEach((row, index) => {
                 const nameInput = row.querySelector('input[name*="[name]"]');
@@ -403,7 +408,7 @@
                 if(oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
             });
 
-            // إعادة ترقيم صفوف الإحصائيات إن وجدت
+            // إعادة ترقيم صفوف الإحصائيات بدقة
             const countRows = form.querySelectorAll('.count-row-item');
             countRows.forEach((row, index) => {
                 const numInput = row.querySelector('input[name*="[number]"]');
@@ -417,7 +422,7 @@
                 if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
             });
 
-            // إعادة ترقيم صفوف الشركاء إن وجدت
+            // إعادة ترقيم صفوف الشركاء بدقة
             const partnerRows = form.querySelectorAll('.partner-row-item');
             partnerRows.forEach((row, index) => {
                 const fileInput = row.querySelector('input[type="file"]');
@@ -461,6 +466,7 @@
         });
     });
 </script>
+
 
 
 

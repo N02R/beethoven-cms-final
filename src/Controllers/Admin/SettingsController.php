@@ -33,19 +33,21 @@ class SettingsController {
                    ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
         if (!$isAdmin) {
-            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-                if (ob_get_length()) { ob_clean(); }
-                http_response_code(403);
+            if (ob_get_length()) { ob_clean(); }
+
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+            if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
                     'success' => false,
-                    'message' => 'انتهت الجلسة أو ليس لديك الصلاحية للقيام بهذا الإجراء.'
+                    'message' => 'انتهت الجلسة أو ليس لديك الصلاحية، يرجى إعادة تسجيل الدخول.'
                 ]);
                 exit;
+            } else {
+                header("Location: /admin/login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
+                exit;
             }
-            
-            header("Location: /admin/login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
-            exit;
         }
     }
 
@@ -95,7 +97,6 @@ class SettingsController {
             $this->handleError('طريقة الطلب غير مسموح بها.', 405);
         }
 
-        // دعم التحقق من الـ CSRF Token سواء جاء عبر الـ POST أو الـ Headers
         $csrfToken = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
         if (empty($csrfToken) || !hash_equals($_SESSION['csrf_token'] ?? '', $csrfToken)) {
             $this->handleError('رمز الحماية (CSRF Token) غير صالح.', 403);
@@ -113,20 +114,15 @@ class SettingsController {
                 mkdir($uploadDir, 0755, true);
             }
 
-            // جلب الإعدادات الحالية لحذف الصور القديمة إن وجدت
             $stmtAll = $this->pdo->query("SELECT setting_key, setting_value FROM site_settings");
             $currentSettings = $stmtAll->fetchAll(PDO::FETCH_KEY_PAIR);
 
-            // استعلام إدخال أو تحديث الإعدادات
             $stmt = $this->pdo->prepare("
                 INSERT INTO site_settings (setting_key, setting_value) 
                 VALUES (:k, :v) 
                 ON DUPLICATE KEY UPDATE setting_value = :v_update
             ");
 
-            // ==========================================
-            // 1. تحديث الشعار (Update Logo)
-            // ==========================================
             if ($action === 'update_logo') {
                 if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
                     $oldLogo = $currentSettings['site_logo_path'] ?? '';
@@ -144,12 +140,7 @@ class SettingsController {
                 } else {
                     throw new Exception('يرجى اختيار صورة صحيحة للشعار.');
                 }
-            }
-
-            // ==========================================
-            // 2. تحديث الإعدادات العامة والنصوص (General Settings)
-            // ==========================================
-            elseif ($action === 'general' || isset($_POST['settings'])) {
+            } elseif ($action === 'general' || isset($_POST['settings'])) {
                 if (isset($_POST['settings']) && is_array($_POST['settings'])) {
                     foreach ($_POST['settings'] as $key => $value) {
                         $trimmedKey = trim($key);
@@ -163,10 +154,8 @@ class SettingsController {
                 }
             }
 
-            // تأكيد المعاملة في قاعدة البيانات
             $this->pdo->commit();
 
-            // تنظيف أي مخرجات سابقة لضمان نظافة استجابة الـ JSON 100%
             if (ob_get_length()) {
                 ob_clean();
             }
@@ -186,9 +175,6 @@ class SettingsController {
         }
     }
 
-    /**
-     * دالة مساعدة لتحويل الصور إلى WebP وحفظها
-     */
     private function convertToWebpAndSave(string $tmpPath, string $destination): bool {
         $fileType = mime_content_type($tmpPath);
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -220,9 +206,6 @@ class SettingsController {
         return $success;
     }
 
-    /**
-     * دالة مساعدة لحذف ملف الصورة القديم من السيرفر لمنع تكدس الملفات
-     */
     private function deleteOldImageFile(string $rootPath, string $oldPath): void {
         if (!empty($oldPath)) {
             $fullPath = $rootPath . '/public/' . ltrim($oldPath, '/');
@@ -232,9 +215,6 @@ class SettingsController {
         }
     }
 
-    /**
-     * معالجة الأخطاء وإرجاع صيغة JSON موحدة وآمنة
-     */
     private function handleError(string $message, int $statusCode = 400): void {
         if (ob_get_length()) {
             ob_clean();

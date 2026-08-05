@@ -146,7 +146,7 @@
 
                     <div id="teamRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        $team_members = $data['team_members'] ?? [];
+                        $team_members = $data['team_items'] ?? [];
                         if (!empty($team_members)):
                             foreach ($team_members as $index => $member): 
                         ?>

@@ -272,11 +272,60 @@
 </div>
 
 
-<!-- Dynamic Rows JS Engine -->
+<!-- Dynamic Rows JS Engine for Education Settings -->
 <script>
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
+    }
+
+    // دالة لإنشاء وعرض التنبيهات الاحترافية بأسلوب Bootstrap
+    function showNotification(message, type = 'success') {
+        // إزالة أي تنبيه سابق متبقي
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        // تحديد الألوان والأيقونات بناءً على نوع الرسالة
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        // إنشاء عنصر التنبيه العائم في منتصف الشاشة بالأعلى
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // إخفاء التنبيه تلقائياً بعد 4 ثواني
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
     }
 
     let eduWhyCount = <?php echo count($edu_why_items); ?>;
@@ -309,15 +358,15 @@
         div.id = 'step_row_' + eduStepCount;
         div.innerHTML = `
             <div class="row g-2">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][title]" placeholder="اسم الخطوة"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
-                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="steps[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
+                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب"></div>
                 <div class="col-md-3">
                     <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
-                    <input type="hidden" name="steps[${eduStepCount}][old_icon]" value="">
+                    <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('step_row_${eduStepCount}')"><i class="bi bi-trash"></i></button></div>
-                <div class="col-md-12 mt-2"><input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][desc]" placeholder="التفاصيل"></div>
+                <div class="col-md-12 mt-2"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل"></div>
             </div>`;
         container.appendChild(div);
         eduStepCount++;
@@ -332,11 +381,11 @@
         div.id = 'edu_srv_row_' + eduSrvCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][title]" placeholder="اسم الخدمة"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="eduservices[${eduSrvCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة"></div>
+                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط"></div>
                 <div class="col-md-4">
                     <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
-                    <input type="hidden" name="eduservices[${eduSrvCount}][old_img]" value="">
+                    <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
@@ -344,8 +393,8 @@
         eduSrvCount++;
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط
-    document.querySelectorAll('.custom-modal form').forEach(form => {
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية والنماذج العامة
+    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -363,7 +412,7 @@
                 if (oldImgInput) oldImgInput.name = `why[${index}][old_img]`;
             });
 
-            // 2. إعادة ترقيم صفوف "خطوات الرحلة" إن وجدت
+            // 2. إعادة ترقيم صفوف "خطوات الرحلة" إن وجدت لتتطابق مع edu_timeline
             const stepRows = form.querySelectorAll('.edu-timeline-row-item');
             stepRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -373,15 +422,15 @@
                 const fileInput = row.querySelector('input[type="file"]');
                 const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
 
-                if (titleInput) titleInput.name = `steps[${index}][title]`;
-                if (subtitleInput) subtitleInput.name = `steps[${index}][subtitle]`;
-                if (orderInput) orderInput.name = `steps[${index}][order]`;
-                if (descInput) descInput.name = `steps[${index}][desc]`;
+                if (titleInput) titleInput.name = `edu_timeline[${index}][title]`;
+                if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
+                if (orderInput) orderInput.name = `edu_timeline[${index}][order]`;
+                if (descInput) descInput.name = `edu_timeline[${index}][desc]`;
                 if (fileInput) fileInput.name = `edu_timeline_icon_${index}`;
-                if (oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
+                if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
             });
 
-            // 3. إعادة ترقيم صفوف "خدمات التعليم" إن وجدت
+            // 3. إعادة ترقيم صفوف "خدمات التعليم" إن وجدت لتتطابق مع edu_services
             const srvRows = form.querySelectorAll('.edu-service-row-item');
             srvRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -389,15 +438,15 @@
                 const fileInput = row.querySelector('input[type="file"]');
                 const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                if (titleInput) titleInput.name = `eduservices[${index}][title]`;
-                if (urlInput) urlInput.name = `eduservices[${index}][url]`;
+                if (titleInput) titleInput.name = `edu_services[${index}][title]`;
+                if (urlInput) urlInput.name = `edu_services[${index}][url]`;
                 if (fileInput) fileInput.name = `edu_service_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `eduservices[${index}][old_img]`;
+                if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
             });
 
             const formData = new FormData(this);
             
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -413,17 +462,20 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    showNotification(data.message || 'تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
                     console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
+                    showNotification('عذراً، لم يتم الحفظ: ' + (data.error || data.message || 'فشل الحفظ'), 'danger');
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
+                showNotification('حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });
 </script>
+
+
 

@@ -465,6 +465,113 @@ class SettingsController
                 $jsonVal = json_encode(array_values($partnersData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+                        // ==========================================
+            // 17. تحديث قسم الهيرو التعليمي (Edu Hero)
+            // ==========================================
+            elseif ($action === 'update_edu_hero') {
+                $currentEduHero = json_decode($currentSettings['edu_hero'] ?? '{}', true);
+                $heroImg = $_POST['old_edu_hero_img'] ?? ($currentEduHero['img'] ?? '');
+                
+                if (isset($_FILES['edu_hero_img']) && $_FILES['edu_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($currentEduHero['img'])) {
+                        $this->deleteOldImageFile($root_path, $currentEduHero['img']);
+                    }
+                    $filename = 'edu_hero_' . time() . '.webp';
+                    $this->convertToWebpAndSave($_FILES['edu_hero_img']['tmp_name'], $uploadDir . $filename);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $eduHeroData = [
+                    'title'    => $_POST['edu_hero_title'] ?? '',
+                    'desc'     => $_POST['edu_hero_desc'] ?? '',
+                    'btn_text' => $_POST['edu_hero_btn_text'] ?? '',
+                    'btn_url'  => $_POST['edu_hero_btn_url'] ?? '',
+                    'img'      => $heroImg
+                ];
+                $jsonVal = json_encode($eduHeroData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'edu_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 18. تحديث قسم لماذا الدراسة (Edu Why Study)
+            // ==========================================
+            elseif ($action === 'update_edu_why') {
+                $whyTitle = $_POST['edu_why_title'] ?? '';
+                $whyDesc  = $_POST['edu_why_desc'] ?? '';
+                $stmt->execute(['k' => 'edu_why_title', 'v' => $whyTitle, 'v_update' => $whyTitle]);
+                $stmt->execute(['k' => 'edu_why_desc', 'v' => $whyDesc, 'v_update' => $whyDesc]);
+
+                $whyData = $_POST['edu_why'] ?? [];
+                foreach ($whyData as $index => $item) {
+                    if (isset($_FILES['edu_why_img_' . $index]) && $_FILES['edu_why_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'edu_why_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['edu_why_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $whyData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $whyData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($whyData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($whyData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'edu_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 19. تحديث الخط الزمني والخطوات (Edu Timeline)
+            // ==========================================
+            elseif ($action === 'update_edu_timeline') {
+                $timelineTitle = $_POST['edu_timeline_title'] ?? '';
+                $timelineDesc  = $_POST['edu_timeline_desc'] ?? '';
+                $stmt->execute(['k' => 'edu_timeline_title', 'v' => $timelineTitle, 'v_update' => $timelineTitle]);
+                $stmt->execute(['k' => 'edu_timeline_desc', 'v' => $timelineDesc, 'v_update' => $timelineDesc]);
+
+                $timelineData = $_POST['edu_timeline'] ?? [];
+                foreach ($timelineData as $index => $item) {
+                    if (isset($_FILES['edu_timeline_icon_' . $index]) && $_FILES['edu_timeline_icon_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_icon'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_icon']);
+                        }
+                        $filename = 'edu_step_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['edu_timeline_icon_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $timelineData[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $timelineData[$index]['icon'] = $item['old_icon'] ?? '';
+                    }
+                    unset($timelineData[$index]['old_icon']);
+                }
+                $jsonVal = json_encode(array_values($timelineData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'edu_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 20. تحديث خدمات التعليم (Edu Services)
+            // ==========================================
+            elseif ($action === 'update_edu_services') {
+                $servicesTitle = $_POST['edu_services_title'] ?? '';
+                $servicesDesc  = $_POST['edu_services_desc'] ?? '';
+                $stmt->execute(['k' => 'edu_services_title', 'v' => $servicesTitle, 'v_update' => $servicesTitle]);
+                $stmt->execute(['k' => 'edu_services_desc', 'v' => $servicesDesc, 'v_update' => $servicesDesc]);
+
+                $servicesData = $_POST['edu_services'] ?? [];
+                foreach ($servicesData as $index => $item) {
+                    if (isset($_FILES['edu_service_img_' . $index]) && $_FILES['edu_service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'edu_service_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES['edu_service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $servicesData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($servicesData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($servicesData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
 
             $pdo->commit();
 

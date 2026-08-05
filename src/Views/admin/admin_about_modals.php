@@ -337,6 +337,55 @@
         if (el) el.remove();
     }
 
+    // دالة لإنشاء وعرض التنبيهات الاحترافية بأسلوب Bootstrap
+    function showNotification(message, type = 'success') {
+        // إزالة أي تنبيه سابق متبقي
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        // تحديد الألوان والأيقونات بناءً على نوع الرسالة
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        // إنشاء عنصر التنبيه العائم في منتصف الشاشة بالأعلى
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        // إخفاء التنبيه تلقائياً بعد 4 ثواني
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
+    }
+
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
         const teamCount = container.querySelectorAll('.team-row-item').length;
@@ -416,7 +465,7 @@
         container.appendChild(div);
     }
 
-    // معالج النماذج الموحد الشامل
+    // معالج النماذج الموحد الشامل مع التنبيهات المطورة
     document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -478,18 +527,19 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message || 'تم حفظ التغييرات بنجاح');
-                    location.reload();
+                    showNotification(data.message || 'تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
                     console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.error || data.message || 'فشل الحفظ'));
+                    showNotification('عذراً، لم يتم الحفظ: ' + (data.error || data.message || 'فشل الحفظ'), 'danger');
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالخادم، افتح الـ Console للمزيد من التفاصيل.');
+                showNotification('حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });
 </script>
+
 

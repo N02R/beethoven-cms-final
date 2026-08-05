@@ -79,7 +79,7 @@
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="row_<?php echo $index; ?>">
                             <div class="d-flex align-items-start gap-3">
                                 <div class="rounded-2 border bg-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0;">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($link['img'] ?? '') . '?' . time(); ?>" style="width: 28px; height: 28px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($link['img'] ?? '')); ?>" style="width: 28px; height: 28px; object-fit: contain;">
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="row g-2 mb-2">
@@ -92,7 +92,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo $link['img'] ?? ''; ?>">
+                            <input type="hidden" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? ''); ?>">
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -107,6 +107,7 @@
     </div>
 </div>
 
+
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
@@ -115,7 +116,7 @@
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_logo">
-                    <div class="mb-4"><div class="p-3 bg-white rounded border d-inline-block"><img src="<?php echo $path_prefix . $site_logo_path . '?' . time(); ?>" style="max-height: 100px;"></div></div>
+                    <div class="mb-4"><div class="p-3 bg-white rounded border d-inline-block"><img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? '')); ?>" style="max-height: 100px;"></div></div>
                     <input type="file" class="form-control w-100" name="logo_img" required>
                 </form>
             </div>
@@ -126,6 +127,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Announcement Modal -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1">
@@ -175,6 +177,11 @@
 
                         <div id="imageEditor" class="<?php echo (($data['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
                             <label class="small mb-1">ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):</label>
+                            <?php if (!empty($data['announcement']['image_path'])): ?>
+                                <div class="mb-2">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($data['announcement']['image_path'])); ?>" alt="معاينة الإعلان" class="img-thumbnail" style="max-height: 80px;">
+                                </div>
+                            <?php endif; ?>
                             <input type="file" class="form-control" name="ad_image">
                         </div>
                     </div>
@@ -192,7 +199,6 @@
 </div>
 
 
-
 <!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -208,17 +214,17 @@
                 <form id="menuLinksForm">
                     <input type="hidden" name="action" value="update_menu">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($menu_links as $index => $link): ?>
+                        <?php foreach (($menu_links ?? []) as $index => $link): ?>
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="menu_row_<?php echo $index; ?>">
                             <div class="row align-items-center g-2">
                                 <div class="col-md-3">
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title']); ?>" placeholder="عنوان الرابط">
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? ''); ?>" placeholder="عنوان الرابط">
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url']); ?>" placeholder="الرابط (URL)">
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط (URL)">
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo ($link['order'] ?? $index); ?>" placeholder="الترتيب">
+                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index); ?>" placeholder="الترتيب">
                                 </div>
                                 <div class="col-auto">
                                     <button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_<?php echo $index; ?>')">
@@ -243,6 +249,7 @@
     </div>
 </div>
 
+
 <!-- 5. Lang Edit Modal -->
 <div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -263,10 +270,10 @@
                             <?php foreach ($data['languages'] as $index => $lang): ?>
                                 <div class="row g-2" id="lang_row_<?php echo $index; ?>">
                                     <div class="col-5">
-                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name']); ?>" placeholder="اسم اللغة">
+                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? ''); ?>" placeholder="اسم اللغة">
                                     </div>
                                     <div class="col-6">
-                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url']); ?>" placeholder="الرابط">
+                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? ''); ?>" placeholder="الرابط">
                                     </div>
                                     <div class="col-1">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_<?php echo $index; ?>')">
@@ -291,6 +298,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 6. Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">
@@ -328,7 +336,7 @@
                             <?php if (!empty($h['img'])): ?>
                                 <div class="mb-2 p-2 border rounded bg-light text-center">
                                     <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
-                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $h['img']); ?>" 
+                                    <img src="<?php echo htmlspecialchars(get_image_url($h['img'])); ?>" 
                                          alt="Current Hero Image" 
                                          class="img-thumbnail rounded" 
                                          style="max-height: 120px; object-fit: cover;">
@@ -383,7 +391,7 @@
                                         <!-- معاينة صورة الخدمة الحالية إن وجدت -->
                                         <?php if (!empty($service['img'])): ?>
                                             <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $service['img']); ?>" 
+                                                <img src="<?php echo htmlspecialchars(get_image_url($service['img'])); ?>" 
                                                      alt="Service Image" 
                                                      class="rounded" 
                                                      style="width: 32px; height: 32px; object-fit: cover;">
@@ -451,7 +459,7 @@
                                             <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" 
                                                          alt="Choose Item Icon" 
                                                          class="rounded" 
                                                          style="width: 28px; height: 28px; object-fit: cover;">
@@ -484,6 +492,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 9. Reviews Edit Modal -->
 <div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true">
@@ -525,6 +534,7 @@
     </div>
 </div>
 
+
 <!-- 10. Guide Edit Modal -->
 <div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -548,12 +558,27 @@
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="guide_row_<?php echo $index; ?>">
-                                <div class="row g-2">
+                                <div class="row g-2 align-items-center">
                                     <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="عنوان المقال"></div>
                                     <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="رابط الصفحة"></div>
-                                    <div class="col-6"><input type="file" class="form-control form-control-sm" name="guide_img_<?php echo $index; ?>"></div>
+                                    
+                                    <div class="col-6">
+                                        <?php if (!empty($item['img'])): ?>
+                                            <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" 
+                                                     alt="Guide Item Image" 
+                                                     class="rounded" 
+                                                     style="width: 32px; height: 32px; object-fit: cover;">
+                                                <span class="small text-muted text-truncate" style="max-width: 120px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" class="form-control form-control-sm" name="guide_img_<?php echo $index; ?>">
+                                    </div>
+                                    
                                     <div class="col-5"><textarea class="form-control form-control-sm" name="guide[<?php echo $index; ?>][desc]" rows="1" placeholder="الوصف"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></textarea></div>
-                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo $item['img'] ?? ''; ?>">
+                                    
+                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                    
                                     <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
                                 </div>
                             </div>
@@ -571,6 +596,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 11. FAQ Edit Modal -->
 <div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">
@@ -590,9 +616,9 @@
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="faq_row_<?php echo $index; ?>">
-                                <div class="row g-2">
-                                    <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question']); ?>" placeholder="السؤال"></div>
-                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer']); ?>" placeholder="الإجابة"></div>
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? ''); ?>" placeholder="السؤال"></div>
+                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? ''); ?>" placeholder="الإجابة"></div>
                                     <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
                                 </div>
                             </div>
@@ -608,6 +634,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 12. Footer Edit Modal -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1">
@@ -660,7 +687,7 @@
                                             <div class="col-12">
                                                 <?php if (!empty($link['img'])): ?>
                                                     <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                        <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $link['img']); ?>" 
+                                                        <img src="<?php echo htmlspecialchars(get_image_url($link['img'])); ?>" 
                                                              alt="Contact Icon" 
                                                              class="rounded" 
                                                              style="width: 24px; height: 24px; object-fit: cover;">
@@ -866,14 +893,24 @@
         col3Count++;
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية فقط (مع تضمين الـ CSRF Token لمنع خطأ 403)
+    function toggleAdContent(val) { 
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
+        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
+    }
+
+    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية (بدون تكرار وبحماية كاملة)
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             
-            // جلب الـ CSRF token من الـ Meta tag بأمان تام
+            // جلب الـ CSRF token من الـ Meta tag أو إضافته بأمان
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
 
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
@@ -898,50 +935,7 @@
             });
         });
     });
-
-    function toggleAdContent(val) { 
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
-        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
-    }
-    
-        document.querySelectorAll('.custom-modal form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            // التأكد من إرفاق الـ CSRF Token تلقائياً في البيانات المرسلة إذا لم يكن موجوداً
-            // يمكنك وضع حقل مخفي في المودل أو استخراجه من الجلسة عبر ميتاتاق
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken || '',
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
-            });
-        });
-    });
-
 </script>
+
 
 

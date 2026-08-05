@@ -356,28 +356,44 @@
     }
 
     let eduStepCount = <?php echo count($edu_timeline_steps); ?>;
-    function addEduStepRow() {
+       function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
+        const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 edu-timeline-row-item';
+        div.className = 'card p-3 border-0 edu-timeline-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'step_row_' + eduStepCount;
         div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
-                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب"></div>
-                <div class="col-md-3">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة">
+                </div>
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                </div>
+                <div class="col-md-12">
+                    <label class="small text-muted fw-bold mb-1">التفاصيل</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل">
+                </div>
+                <div class="col-md-2">
+                    <label class="small text-muted fw-bold mb-1">الترتيب</label>
+                    <input type="number" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-9">
+                    <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
                     <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
                     <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('step_row_${eduStepCount}')"><i class="bi bi-trash"></i></button></div>
-                <div class="col-md-12 mt-2"><input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل"></div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('step_row_${eduStepCount}')" title="حذف الخطوة">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
             </div>`;
         container.appendChild(div);
-        eduStepCount++;
     }
-
     let eduSrvCount = <?php echo count($edu_services_items); ?>;
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');

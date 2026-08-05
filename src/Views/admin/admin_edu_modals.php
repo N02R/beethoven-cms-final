@@ -151,7 +151,7 @@
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($edu_timeline_steps as $index => $step): ?>
                             <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
-                                <div class="row g-3">
+                                <div class="row g-3 align-items-center">
                                     <!-- السطر الأول: اسم الخطوة + العنوان الفرعي -->
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
@@ -162,7 +162,7 @@
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
 
-                                    <!-- السطر الثاني: التفاصيل (تأخذ المساحة الأكبر) -->
+                                    <!-- السطر الثاني: التفاصيل -->
                                     <div class="col-md-12">
                                         <label class="small text-muted fw-bold mb-1">التفاصيل</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
@@ -186,8 +186,8 @@
                                         </div>
                                         <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 d-flex align-items-end">
-                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
+                                    <div class="col-md-1 text-end pt-3">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -208,6 +208,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">

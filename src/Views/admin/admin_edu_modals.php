@@ -280,7 +280,6 @@
     </div>
 </div>
 
-<!-- Dynamic Rows JS Engine for Education Settings -->
 <script>
     // دالة عامة لحذف أي صف بناءً على الـ ID
     function removeRow(id) {
@@ -361,7 +360,7 @@
         eduWhyCount++;
     }
 
-    // 2. إضافة صف جديد لـ "خطوات الرحلة" (Timeline) المتوافق مع التصميم الجديد
+    // 2. إضافة صف جديد لـ "خطوات الرحلة" (Timeline)
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
@@ -401,7 +400,7 @@
         container.appendChild(div);
     }
 
-    // 3. إضافة صف جديد لـ "خدمات التعليم" (Services) المتوافق مع التصميم المريح الجديد
+    // 3. إضافة صف جديد لـ "خدمات التعليم" (Services)
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');
         const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
@@ -452,7 +451,7 @@
                 if (oldImgInput) oldImgInput.name = `why[${index}][old_img]`;
             });
 
-            // 2. إعادة ترقيم صفوف "خطوات الرحلة" إن وجدت لتتطابق مع edu_timeline
+            // 2. إعادة ترقيم صفوف "خطوات الرحلة" إن وجدت
             const stepRows = form.querySelectorAll('.edu-timeline-row-item');
             stepRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -470,7 +469,7 @@
                 if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
             });
 
-            // 3. إعادة ترقيم صفوف "خدمات التعليم" إن وجدت لتتطابق مع edu_services
+            // 3. إعادة ترقيم صفوف "خدمات التعليم" وتصحيح أسماء حقول الملفات لترسل بشكل صحيح للباك إند
             const srvRows = form.querySelectorAll('.edu-service-row-item');
             srvRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -480,7 +479,7 @@
 
                 if (titleInput) titleInput.name = `edu_services[${index}][title]`;
                 if (urlInput) urlInput.name = `edu_services[${index}][url]`;
-                if (fileInput) fileInput.name = `edu_service_img_${index}`;
+                if (fileInput) fileInput.name = `edu_service_img_${index}`; // تم ضبط الاسم ليتطابق مع معالج الـ PHP
                 if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
             });
 
@@ -516,6 +515,7 @@
         });
     });
 </script>
+
 
 
 

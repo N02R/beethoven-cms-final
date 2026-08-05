@@ -37,7 +37,7 @@ class SettingsController
         $data = [
             'team_title'   => $rawSettings['team_title'] ?? 'فريق العمل',
             'team_desc'    => $rawSettings['team_desc'] ?? '',
-            'team_members' => json_decode($rawSettings['team_items'] ?? '[]', true)
+            'team_items' => json_decode($rawSettings['team_items'] ?? '[]', true)
         ];
 
         $csrf_token = Security::generateCsrfToken();

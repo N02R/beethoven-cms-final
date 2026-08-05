@@ -34,6 +34,7 @@ class SettingsController {
 
         if (!$isAdmin) {
             if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                if (ob_get_length()) { ob_clean(); }
                 http_response_code(403);
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
@@ -94,7 +95,8 @@ class SettingsController {
             $this->handleError('طريقة الطلب غير مسموح بها.', 405);
         }
 
-        $csrfToken = $_POST['csrf_token'] ?? '';
+        // دعم التحقق من الـ CSRF Token سواء جاء عبر الـ POST أو الـ Headers
+        $csrfToken = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
         if (empty($csrfToken) || !hash_equals($_SESSION['csrf_token'] ?? '', $csrfToken)) {
             $this->handleError('رمز الحماية (CSRF Token) غير صالح.', 403);
         }
@@ -111,7 +113,7 @@ class SettingsController {
                 mkdir($uploadDir, 0755, true);
             }
 
-            // جلب الإعدادات الحالية (مهم جداً لحذف الصور القديمة إن وجدت)
+            // جلب الإعدادات الحالية لحذف الصور القديمة إن وجدت
             $stmtAll = $this->pdo->query("SELECT setting_key, setting_value FROM site_settings");
             $currentSettings = $stmtAll->fetchAll(PDO::FETCH_KEY_PAIR);
 
@@ -137,8 +139,10 @@ class SettingsController {
                         $logoPath = 'assets/uploads/' . $filename;
                         $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
                     } else {
-                        throw new Error('فشل معالجة وتحويل صورة الشعار.');
+                        throw new Exception('فشل معالجة وتحويل صورة الشعار.');
                     }
+                } else {
+                    throw new Exception('يرجى اختيار صورة صحيحة للشعار.');
                 }
             }
 
@@ -161,6 +165,11 @@ class SettingsController {
 
             // تأكيد المعاملة في قاعدة البيانات
             $this->pdo->commit();
+
+            // تنظيف أي مخرجات سابقة لضمان نظافة استجابة الـ JSON 100%
+            if (ob_get_length()) {
+                ob_clean();
+            }
 
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
@@ -224,9 +233,12 @@ class SettingsController {
     }
 
     /**
-     * معالجة الأخطاء وإرجاع صيغة JSON موحدة
+     * معالجة الأخطاء وإرجاع صيغة JSON موحدة وآمنة
      */
     private function handleError(string $message, int $statusCode = 400): void {
+        if (ob_get_length()) {
+            ob_clean();
+        }
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([

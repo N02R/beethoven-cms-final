@@ -280,6 +280,7 @@
 
 <!-- Dynamic Rows JS Engine for Education Settings -->
 <script>
+    // دالة عامة لحذف أي صف بناءً على الـ ID
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -287,11 +288,9 @@
 
     // دالة لإنشاء وعرض التنبيهات الاحترافية بأسلوب Bootstrap
     function showNotification(message, type = 'success') {
-        // إزالة أي تنبيه سابق متبقي
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        // تحديد الألوان والأيقونات بناءً على نوع الرسالة
         let bgClass = 'alert-success';
         let icon = 'bi-check-circle-fill';
         let title = 'تم بنجاح!';
@@ -306,7 +305,6 @@
             title = 'تنبيه هام';
         }
 
-        // إنشاء عنصر التنبيه العائم في منتصف الشاشة بالأعلى
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
@@ -325,7 +323,6 @@
 
         document.body.appendChild(alertDiv);
 
-        // إخفاء التنبيه تلقائياً بعد 4 ثواني
         setTimeout(() => {
             if (alertDiv) {
                 alertDiv.classList.remove('show');
@@ -334,6 +331,7 @@
         }, 4000);
     }
 
+    // 1. إضافة صف جديد لـ "لماذا الدراسة" (Why)
     let eduWhyCount = <?php echo count($edu_why_items); ?>;
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
@@ -343,20 +341,26 @@
         div.id = 'why_row_' + eduWhyCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف"></div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف">
+                </div>
                 <div class="col-md-4">
                     <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
                     <input type="hidden" name="why[${eduWhyCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         eduWhyCount++;
     }
 
-    let eduStepCount = <?php echo count($edu_timeline_steps); ?>;
-       function addEduStepRow() {
+    // 2. إضافة صف جديد لـ "خطوات الرحلة" (Timeline) المتوافق مع التصميم الجديد
+    function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
         const div = document.createElement('div');
@@ -394,6 +398,8 @@
             </div>`;
         container.appendChild(div);
     }
+
+    // 3. إضافة صف جديد لـ "خدمات التعليم" (Services)
     let eduSrvCount = <?php echo count($edu_services_items); ?>;
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');
@@ -403,13 +409,19 @@
         div.id = 'edu_srv_row_' + eduSrvCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
+                </div>
                 <div class="col-md-4">
                     <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
                     <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         eduSrvCount++;
@@ -498,6 +510,7 @@
         });
     });
 </script>
+
 
 
 

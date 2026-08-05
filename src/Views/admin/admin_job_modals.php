@@ -7,8 +7,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="jobHeroForm" enctype="multipart/form-data">
+                <form id="jobHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_hero">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">العنوان الرئيسي</label>
                         <input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($job_hero['title'] ?? ''); ?>">
@@ -31,7 +33,7 @@
                         <label class="form-label fw-bold d-block">الصورة الحالية</label>
                         <?php if (!empty($job_hero['img'])): ?>
                             <div class="p-2 border rounded bg-light mb-2 text-center">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($job_hero['img']) . '?' . time(); ?>" style="max-height: 100px; object-fit: contain;">
+                                <img src="<?php echo htmlspecialchars(get_image_url($job_hero['img'])) . '?' . time(); ?>" style="max-height: 100px; object-fit: contain;">
                             </div>
                         <?php endif; ?>
                         <label class="form-label fw-bold">تغيير الصورة</label>
@@ -48,6 +50,7 @@
     </div>
 </div>
 
+
 <!-- 2. Job Why Modal -->
 <div class="modal fade custom-modal" id="jobWhyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -57,8 +60,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="jobWhyForm" enctype="multipart/form-data">
+                <form id="jobWhyForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_why">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="why_title" value="<?php echo htmlspecialchars($job_why_title); ?>">
@@ -70,7 +75,7 @@
                     <hr>
                     <div id="jobWhyContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_why_items as $i => $item): ?>
-                            <div class="card p-3 border-0" id="job_why_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-why-row-item" id="job_why_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted mb-1">العنوان</label>
@@ -85,7 +90,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
                                                     <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -111,6 +116,7 @@
     </div>
 </div>
 
+
 <!-- 3. Job Program Modal (أنواع التدريب) -->
 <div class="modal fade custom-modal" id="jobProgramModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -120,8 +126,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="jobProgramForm" enctype="multipart/form-data">
+                <form id="jobProgramForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_program">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="program_title" value="<?php echo htmlspecialchars($job_program_title); ?>">
@@ -133,7 +141,7 @@
                     <hr>
                     <div id="jobProgramContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_program_types as $i => $prog): ?>
-                            <div class="card p-3 border-0" id="prog_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-program-row-item" id="prog_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2">
                                     <div class="col-md-6">
                                         <label class="small text-muted mb-1">اسم البرنامِج</label>
@@ -156,7 +164,7 @@
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <?php if (!empty($prog['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $prog['img']); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($prog['img'])); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
                                                     <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($prog['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -186,6 +194,7 @@
     </div>
 </div>
 
+
 <!-- 4. Job Timeline Modal (خطوات التدريب والتوظيف) -->
 <div class="modal fade custom-modal" id="jobTimelineModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -195,8 +204,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="jobTimelineForm" enctype="multipart/form-data">
+                <form id="jobTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_timeline">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($job_timeline_title); ?>">
@@ -208,7 +219,7 @@
                     <hr>
                     <div id="jobTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_timeline_steps as $i => $step): ?>
-                            <div class="card p-3 border-0" id="job_step_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-timeline-row-item" id="job_step_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <label class="small text-muted mb-1">اسم الخطوة</label>
@@ -227,7 +238,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $step['icon']); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
                                                     <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -257,6 +268,7 @@
     </div>
 </div>
 
+
 <!-- 5. Job Services Modal -->
 <div class="modal fade custom-modal" id="jobServicesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -266,8 +278,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="jobServicesForm" enctype="multipart/form-data">
+                <form id="jobServicesForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_services">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($job_services_title); ?>">
@@ -279,7 +293,7 @@
                     <hr>
                     <div id="jobServicesContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_services_items as $i => $item): ?>
-                            <div class="card p-3 border-0" id="job_srv_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-service-row-item" id="job_srv_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted mb-1">اسم الخدمة</label>
@@ -294,7 +308,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(($path_prefix ?? '/') . $item['img']); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
                                                     <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -319,6 +333,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic Rows JS Engine -->
 <script>
@@ -523,4 +538,5 @@
         });
     });
 </script>
+
 

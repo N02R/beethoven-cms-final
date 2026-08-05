@@ -151,38 +151,43 @@
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($edu_timeline_steps as $index => $step): ?>
                             <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
-                                <div class="row g-2">
-                                    <div class="col-md-3">
+                                <div class="row g-3">
+                                    <!-- السطر الأول: اسم الخطوة، العنوان الفرعي، الترتيب -->
+                                    <div class="col-md-5">
                                         <label class="small text-muted">اسم الخطوة</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
+                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <label class="small text-muted">العنوان الفرعي</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
+                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="small text-muted">الترتيب</label>
-                                        <input type="number" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
+                                        <input type="number" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
                                     </div>
-                                    <div class="col-md-3">
+
+                                    <!-- السطر الثاني: الأيقونة والتفاصيل وزر الحذف -->
+                                    <div class="col-md-8">
                                         <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
                                                     <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                    <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($step['icon']); ?></span>
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
+                                        <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                    <div class="col-md-12 mt-2">
+
+                                    <div class="col-md-3">
                                         <label class="small text-muted">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
+                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
+                                    </div>
+
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -201,7 +206,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">

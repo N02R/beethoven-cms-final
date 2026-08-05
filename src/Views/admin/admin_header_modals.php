@@ -931,35 +931,36 @@
                 formData.append('csrf_token', csrfToken);
             }
 
-                    fetch('index.php?url=admin/settings/save', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: formData
-        })
-        .then(response => response.text()) // نحول الاستجابة إلى نص لنفحصها
-        .then(text => {
-            console.log("Raw Server Response:", text); // اطبعي الاستجابة في الكونسول لنراها
-            try {
-                const data = JSON.parse(text);
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('خطأ من السيرفر: ' + (data.message || 'فشل الحفظ'));
+            fetch('index.php?url=admin/settings/save', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log("Raw Server Response:", text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('خطأ من السيرفر: ' + (data.message || 'فشل الحفظ'));
+                    }
+                } catch (e) {
+                    alert('الرد ليس JSON صافي. افتح الكونسول لمعرفة النص القادم من السيرفر.');
                 }
-            } catch (e) {
-                // إذا لم تكن الاستجابة JSON صافي، ستظهر هنا بالتفصيل
-                alert('الرد ليس JSON صافي. افتح الكونسول لمعرفة النص القادم من السيرفر.');
-            }
-        })
-        .catch(err => {
-            console.error('Fetch Error:', err);
-            alert('خطأ في الاتصال');
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                alert('خطأ في الاتصال');
+            });
         });
-
+    });
 </script>
+
 
 
 

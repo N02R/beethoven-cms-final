@@ -33,6 +33,13 @@ class SettingsController
             'site_logo'  => $rawSettings['site_logo'] ?? '',
         ];
 
+        // تجهيز مصفوفة البيانات ($data) لعرض الإعدادات الحالية بما فيها قسم فريق العمل داخل المودلز
+        $data = [
+            'team_title'   => $rawSettings['team_title'] ?? 'فريق العمل',
+            'team_desc'    => $rawSettings['team_desc'] ?? '',
+            'team_members' => json_decode($rawSettings['team_items'] ?? '[]', true)
+        ];
+
         $csrf_token = Security::generateCsrfToken();
 
         $root_path = realpath(__DIR__ . '/../../../');

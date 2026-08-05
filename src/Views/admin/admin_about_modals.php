@@ -310,16 +310,15 @@
 
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
-<<script>
+<script>
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    let teamCount = document.querySelectorAll('.team-row-item').length;
-
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
+        const teamCount = container.querySelectorAll('.team-row-item').length; // حساب العدد الفعلي مباشرة
         const div = document.createElement('div');
         div.className = 'card p-3 border team-row-item shadow-sm';
         div.style.cssText = 'background: var(--bg-soft, #f8f9fa); border-radius: 12px;';
@@ -344,12 +343,11 @@
                 </div>
             </div>`;
         container.appendChild(div);
-        teamCount++;
     }
 
-    let countsCount = document.querySelectorAll('.count-row-item').length;
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
+        const countsCount = container.querySelectorAll('.count-row-item').length;
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 mb-2 count-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
@@ -374,12 +372,11 @@
                 </div>
             </div>`;
         container.appendChild(div);
-        countsCount++;
     }
 
-    let partnerCount = document.querySelectorAll('.partner-row-item').length;
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
+        const partnerCount = container.querySelectorAll('.partner-row-item').length;
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 mb-2 partner-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
@@ -396,7 +393,6 @@
                 </div>
             </div>`;
         container.appendChild(div);
-        partnerCount++;
     }
 
     // معالج النماذج الموحد الشامل (يدعم .custom-modal و .admin-settings-form)
@@ -476,8 +472,3 @@
         });
     });
 </script>
-
-
-
-
-

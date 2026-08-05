@@ -390,7 +390,7 @@ class SettingsController
                        // ==========================================
             // 14. تحديث فريق العمل (Team)
             // ==========================================
-            elseif ($action === 'update_about_team') {
+           elseif ($action === 'update_about_team') {
                 $teamTitle = $_POST['team_title'] ?? '';
                 $teamDesc  = $_POST['team_desc'] ?? '';
                 

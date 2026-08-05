@@ -387,47 +387,44 @@ class SettingsController
                 $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
-            // 14. تحديث فريق العمل (Team) - [محدث ومصحح بدقة]
+                       // ==========================================
+            // 14. تحديث فريق العمل (Team)
             // ==========================================
             elseif ($action === 'update_about_team') {
                 $teamTitle = $_POST['team_title'] ?? '';
                 $teamDesc  = $_POST['team_desc'] ?? '';
                 
-                // حفظ عنوان وصف القسم الرئيسي لفريق العمل
                 $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
                 $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
 
-                $teamData = $_POST['team'] ?? [];
-                
-                foreach ($teamData as $index => $item) {
-                    // معالجة رفع الصورة لكل عضو بناءً على التسمية team_img_<?php echo $index; 
+                $rawTeamData = $_POST['team'] ?? [];
+                $teamData = [];
+
+                // إعادة تنظيم البيانات وترتيبها بشكل صحيح تلافيًا لمشاكل المفاتيح
+                foreach ($rawTeamData as $index => $item) {
                     $fileKey = 'team_img_' . $index;
                     
+                    $memberImg = $item['old_img'] ?? '';
                     if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        // حذف الصورة القديمة إن وجدت
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'team_' . $index . '_' . time() . '.webp';
+                        $filename = 'team_' . uniqid() . '_' . time() . '.webp';
                         $this->convertToWebpAndSave($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename);
-                        $teamData[$index]['img'] = 'assets/uploads/' . $filename;
-                    } else {
-                        // الاحتفاظ بالصورة القديمة إذا لم يتم رفع صورة جديدة
-                        $teamData[$index]['img'] = $item['old_img'] ?? '';
+                        $memberImg = 'assets/uploads/' . $filename;
                     }
-                    
-                    // تنظيف حقل old_img المؤقت قبل التخزين في قاعدة البيانات
-                    unset($teamData[$index]['old_img']);
-                    
-                    // التأكد من الحقول النصية (name, role)
-                    $teamData[$index]['name'] = $item['name'] ?? '';
-                    $teamData[$index]['role'] = $item['role'] ?? '';
+
+                    $teamData[] = [
+                        'name' => $item['name'] ?? '',
+                        'role' => $item['role'] ?? '',
+                        'img'  => $memberImg
+                    ];
                 }
 
-                $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
+                $jsonVal = json_encode($teamData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+
 
             // ==========================================
             // 15. تحديث الإحصائيات (Counts)

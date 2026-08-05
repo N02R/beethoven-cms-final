@@ -387,46 +387,37 @@ class SettingsController
                 $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-                       // ==========================================
+            // ==========================================
             // 14. تحديث فريق العمل (Team)
             // ==========================================
-           // مثال على الكود داخل الـ Controller عند حفظ بيانات الـ Team
-elseif ($action === 'update_about_team') {
-    $teamTitle = $_POST['team_title'] ?? '';
-    $teamDesc  = $_POST['team_desc'] ?? '';
-    
-    // تحديث العنوان والوصف
-    // ...
+            elseif ($action === 'update_about_team') {
+                $teamTitle = $_POST['team_title'] ?? '';
+                $teamDesc  = $_POST['team_desc'] ?? '';
+                
+                // حفظ العنوان والوصف في الجدول
+                $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
+                $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
 
-    $teamData = $_POST['team'] ?? [];
-    foreach ($teamData as $index => $item) {
-        $fileKey = 'team_img_' . $index;
-        
-        // إذا تم رفع صورة جديدة لهذا العضو
-        if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-            if (!empty($item['old_img'])) {
-                // حذف الصورة القديمة إن وجدت
-                $this->deleteOldImageFile($root_path, $item['old_img']);
+                $teamData = $_POST['team'] ?? [];
+                foreach ($teamData as $index => $item) {
+                    $fileKey = 'team_img_' . $index;
+                    
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = 'member_' . $index . '_' . time() . '.webp';
+                        $this->convertToWebpAndSave($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename);
+                        $teamData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $teamData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($teamData[$index]['old_img']);
+                }
+                
+                $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-            $filename = 'member_' . $index . '_' . time() . '.webp';
-            $this->convertToWebpAndSave($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename);
-            $teamData[$index]['img'] = 'assets/uploads/' . $filename;
-        } else {
-            // الاحتفاظ بالصورة القديمة إذا لم يتم رفع صورة جديدة
-            $teamData[$index]['img'] = $item['old_img'] ?? '';
-        }
-        unset($teamData[$index]['old_img']); // إزالة الحقل المؤقت
-    }
-    
-    // تحويل المصفوفة إلى JSON وحفظها باستخدام المفتاح الصحيح team_items
-    $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
-    
-    // تنفيذ الاستعلام لتحديث setting_key = 'team_items'
-    $stmt = $pdo->prepare("UPDATE site_settings SET setting_value = :val WHERE setting_key = 'team_items'");
-    $stmt->execute(['val' => $jsonVal]);
-}
-
-
 
             // ==========================================
             // 15. تحديث الإحصائيات (Counts)

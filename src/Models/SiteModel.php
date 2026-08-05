@@ -39,6 +39,11 @@ class SiteModel {
             'languages'         => isset($settings['languages']) ? json_decode($settings['languages'], true) : [],
             'announcement'      => isset($settings['announcement']) ? json_decode($settings['announcement'], true) : [],
             
+            // بيانات قسم الخدمات المشترك بين الصفحات
+            'services_section_title' => $settings['services_section_title'] ?? 'خدماتنا المميزة',
+            'services_section_desc'  => $settings['services_section_desc'] ?? '',
+            'services'               => isset($settings['services']) ? json_decode($settings['services'], true) : [],
+
             // بيانات قسم الاستشارة في الفوتر
             'consult_title'     => $settings['consult_title'] ?? 'احصل على استشارة مجانية',
             'consult_desc'      => $settings['consult_desc'] ?? '',

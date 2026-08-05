@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $german_data = $data['germanlang_page'] ?? [
     'page_breadcrumb'   => 'دورات اللغة الألمانية',
@@ -73,7 +75,7 @@ $german_data = $data['germanlang_page'] ?? [
 
     <div class="custom-container">
       <div class="germanlang-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($german_data['hero_img'] ?? 'assets/img/education/servicesimg4.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo get_image_url($german_data['hero_img'] ?? null, 'assets/img/education/servicesimg4.png'); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -115,7 +117,7 @@ $german_data = $data['germanlang_page'] ?? [
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                   <li>
                     <p class="mb-0">
-                      <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                      <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
                       <?php echo htmlspecialchars($level); ?>
                     </p>
                   </li>

@@ -24,7 +24,9 @@ if (!defined('ALLOWED_ACCESS')) {
     define('ALLOWED_ACCESS', true);
 }
 
-$path_prefix = '/'; 
+if (!isset($path_prefix)) {
+    $path_prefix = '/'; 
+}
 
 // تعريف ملفات الـ CSS الخاصة بصفحة 404 (مسارات عامة تبدأ بـ / لتعمل مع الروتر)
 $page_css = [
@@ -34,8 +36,8 @@ $page_css = [
 
 $page_js = [];
 
-// استدعاء الهيدر المشترك مع دعم نظام المسارات الحديثة
-$header_path = __DIR__ . '/../Views/includes/header.php';
+// استدعاء الهيدر المشترك بصورة آمنة ومباشرة
+$header_path = __DIR__ . '/../includes/header.php';
 if (!file_exists($header_path)) {
     $header_path = __DIR__ . '/includes/header.php';
 }
@@ -223,7 +225,7 @@ if (file_exists($header_path)) {
 
 <?php 
 // استدعاء الفوتر المشترك بأمان ضمن نظام المجلدات
-$footer_path = __DIR__ . '/../Views/includes/footer.php';
+$footer_path = __DIR__ . '/../includes/footer.php';
 if (!file_exists($footer_path)) {
     $footer_path = __DIR__ . '/includes/footer.php';
 }

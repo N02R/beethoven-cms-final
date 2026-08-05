@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $english_data = $data['english_programs_page'] ?? [
     'page_breadcrumb'     => 'برامج دراسية باللغة الإنجليزية',
@@ -50,7 +52,7 @@ $english_data = $data['english_programs_page'] ?? [
 
     <div class="custom-container">
       <div class="germanlang-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($english_data['hero_img'] ?? 'assets/img/education/servicesimg5.png', '/') . '?v=' . time()); ?>');">
+        style="background-image: url('<?php echo get_image_url($english_data['hero_img'] ?? null, 'assets/img/education/servicesimg5.png'); ?>');">
       </div>
     </div>
   </section>
@@ -107,7 +109,7 @@ $english_data = $data['english_programs_page'] ?? [
             <?php foreach (($english_data['lang_points'] ?? []) as $point): ?>
               <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                 <li>
-                  <p><img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/><?php echo htmlspecialchars($point); ?></p>
+                  <p><img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/><?php echo htmlspecialchars($point); ?></p>
                 </li>
               </div>
             <?php endforeach; ?>

@@ -51,7 +51,7 @@ $job_agreements_data = $data['job_search_package_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($job_agreements_data['hero_img'] ?? 'assets/img/job/servicesimg4.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($job_agreements_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($job_agreements_data['hero_img'] ?? 'assets/img/job/servicesimg4.png')); ?>'); background-position: <?php echo htmlspecialchars($job_agreements_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -83,7 +83,7 @@ $job_agreements_data = $data['job_search_package_page'] ?? [
         <ul class="star-list">
           <li>
             <p>
-              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="تنبيه" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="تنبيه" class="ms-2" />
               <?php 
                 $note_text = $job_agreements_data['note_text'] ?? '';
                 $safe_note = htmlspecialchars($note_text);
@@ -113,7 +113,7 @@ $job_agreements_data = $data['job_search_package_page'] ?? [
                   $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
                 ?>
-                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($icon_img, '/')); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقيات العمل'); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>

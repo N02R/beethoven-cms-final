@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $lang_data = $data['language_page'] ?? [
     'page_breadcrumb'     => 'الدورة التحضيرية لشهادات اللغة الألمانية',
@@ -48,7 +50,7 @@ $lang_data = $data['language_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($lang_data['hero_img'] ?? 'assets/img/education/servicesimg12.png', '/') . '?v=' . time()); ?>');">
+        style="background-image: url('<?php echo get_image_url($lang_data['hero_img'] ?? null, 'assets/img/education/servicesimg12.png'); ?>');">
       </div>
     </div>
   </section>

@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $pricelist_data = $data['pricelist_page'] ?? [
     'page_breadcrumb'     => 'قائمة أسعار الخدمات',
@@ -49,7 +51,7 @@ $pricelist_data = $data['pricelist_page'] ?? [
 
     <div class="custom-container">
       <div class="custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($pricelist_data['hero_img'] ?? 'assets/img/education/servicesimg15.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($pricelist_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo get_image_url($pricelist_data['hero_img'] ?? null, 'assets/img/education/servicesimg15.png'); ?>'); background-position: <?php echo htmlspecialchars($pricelist_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -93,7 +95,7 @@ $pricelist_data = $data['pricelist_page'] ?? [
                       $alt_text = 'ملف PDF';
                   }
                 ?>
-                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($icon_img, '/')); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo get_image_url($icon_img); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة الأسعار العامة'); ?></div>
                 </div>

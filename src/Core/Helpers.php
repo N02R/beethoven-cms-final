@@ -32,3 +32,39 @@ if (!function_exists('get_setting')) {
         return $default;
     }
 }
+
+if (!function_exists('get_image_url')) {
+    /**
+     * تحويل أي مسار صورة مخزن في قاعدة البيانات إلى رابط يعمل بشكل صحيح من مجلد uploads أو المجلدات الثابتة.
+     *
+     * @param string|null $path المسار المخزن في قاعدة البيانات
+     * @param string $default الصورة الافتراضية في حال عدم وجود الصورة
+     * @return string
+     */
+    function get_image_url(?string $path, string $default = '/assets/img/placeholder.png'): string
+    {
+        if (empty($path)) {
+            return $default;
+        }
+
+        // 1. استخراج اسم الملف فقط لو كان المسار يحتوي على مجلدات فرعية
+        $filename = basename($path);
+
+        // 2. المسار الفيزيائي للملف على السيرفر (داخل public/uploads)
+        $uploadFilePath = __DIR__ . '/../../public/uploads/' . $filename;
+
+        // 3. التحقق من وجود الملف داخل مجلد uploads
+        if (file_exists($uploadFilePath)) {
+            return '/uploads/' . $filename;
+        }
+
+        // 4. إذا كان المسار القديم يشير إلى assets/img وموجود فعلياً على السيرفر
+        $staticFilePath = __DIR__ . '/../../public/' . ltrim($path, '/');
+        if (file_exists($staticFilePath)) {
+            return '/' . ltrim($path, '/');
+        }
+
+        // 5. في حال عدم العثور على الملف نهائياً، إرجاع الصورة الافتراضية
+        return $default;
+    }
+}

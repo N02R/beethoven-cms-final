@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $cv_data = $data['cv_page'] ?? [
     'page_breadcrumb'     => 'السيرة الذاتية CV',
@@ -46,7 +48,7 @@ $cv_data = $data['cv_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($cv_data['hero_img'] ?? 'assets/img/education/servicesimg2.jpg', '/') . '?v=' . time()); ?>'); background-position: center -30px;">
+        style="background-image: url('<?php echo get_image_url($cv_data['hero_img'] ?? null, 'assets/img/education/servicesimg2.jpg'); ?>'); background-position: center -30px;">
       </div>
     </div>
   </section>
@@ -94,13 +96,14 @@ $cv_data = $data['cv_page'] ?? [
 
         <?php foreach (($cv_data['download_items'] ?? []) as $item): 
             $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-            $icon_img = $is_pdf ? 'Grouppdf.png' : 'Groupword.png';
+            $icon_file = $is_pdf ? 'Grouppdf.png' : 'Groupword.png';
             $alt_text = $is_pdf ? 'PDF Icon' : 'Word Icon';
+            $icon_url = get_image_url('assets/img/education/' . $icon_file);
         ?>
           <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="download-card mb-3">
               <div class="download-row">
-                <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/' . $icon_img); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>

@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $arrival_data = $data['arrival_page'] ?? [
     'hero_img'            => 'assets/img/education/servicesimg9.png',
@@ -47,7 +49,7 @@ $arrival_data = $data['arrival_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($arrival_data['hero_img'] ?? 'assets/img/education/servicesimg9.png', '/') . '?v=' . time()); ?>');">
+      <div class="arrival-hero custom-hero" style="background-image: url('<?php echo get_image_url($arrival_data['hero_img'] ?? null, 'assets/img/education/servicesimg9.png'); ?>');">
       </div>
     </div>
   </section>
@@ -100,7 +102,10 @@ $arrival_data = $data['arrival_page'] ?? [
         <ul class="star-list">
           <?php foreach (($arrival_data['notes'] ?? []) as $note): ?>
             <li class="mb-2">
-              <p><img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="" class="ms-2"><?php echo $note; ?></p>
+              <p>
+                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="" class="ms-2">
+                <?php echo $note; ?>
+              </p>
             </li>
           <?php endforeach; ?>
         </ul>

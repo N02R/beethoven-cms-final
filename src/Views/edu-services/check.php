@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $check_data = $data['check_page'] ?? [
     'page_breadcrumb'     => 'تحقق من شهاداتك التعليمية',
@@ -52,7 +54,7 @@ $check_data = $data['check_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($check_data['hero_img'] ?? 'assets/img/education/servicesimg13.png', '/') . '?v=' . time()); ?>'); background-position: center -9rem;">
+        style="background-image: url('<?php echo get_image_url($check_data['hero_img'] ?? null, 'assets/img/education/servicesimg13.png'); ?>'); background-position: center -9rem;">
       </div>
     </div>
   </section>
@@ -86,7 +88,10 @@ $check_data = $data['check_page'] ?? [
         <ul class="star-list">
           <?php foreach (($check_data['notes'] ?? []) as $note): ?>
             <li class="mb-2">
-              <p><img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="" class="ms-2"/><?php echo $note; ?></p>
+              <p>
+                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="" class="ms-2"/>
+                <?php echo $note; ?>
+              </p>
             </li>
           <?php endforeach; ?>
         </ul>

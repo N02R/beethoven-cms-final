@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $bachelor_data = $data['bachelor_page'] ?? [
     'page_breadcrumb'     => 'BCS Bachelor Package',

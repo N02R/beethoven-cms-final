@@ -7,7 +7,7 @@ if (!isset($path_prefix)) {
 
 <!--footer start -->
 <section class="consult-banner-section" style="position: relative;">
-    <?php if ($is_admin): ?>
+    <?php if (!empty($is_admin)): ?>
         <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" style="top: 10px; right: 10px;">
             <i class="bi bi-pencil-fill"></i>
         </button>
@@ -23,7 +23,9 @@ if (!isset($path_prefix)) {
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo $path_prefix; ?>send_consult.php" method="POST">
                     <input type="email" id="consultEmailInput" name="email" placeholder="ادخل إيميلك..." required />
-                    <button type="button" id="openConsentModalBtn"><img src="/assets/img/home/send.svg.webp" alt="إرسال" width="35"></button>
+                    <button type="button" id="openConsentModalBtn">
+                        <img src="<?php echo get_image_url('assets/img/home/send.svg.webp'); ?>" alt="إرسال" width="35">
+                    </button>
                 </form>
             </div>
         </div>
@@ -69,45 +71,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmBtn = document.getElementById('confirmAndSendBtn');
     const modalCheckbox = document.getElementById('modalPrivacyCheckbox');
 
-    openBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (!emailInput.value || !emailInput.checkValidity()) {
-            emailInput.reportValidity();
-            return;
-        }
-        modalCheckbox.checked = false;
-        consentModal.show();
-    });
-
-    confirmBtn.addEventListener('click', function() {
-        if (!modalCheckbox.checked) {
-            alert('يجب الموافقة على شروط سياسة الخصوصية للمتابعة.');
-            return;
-        }
-        consentModal.hide();
-
-        const formData = new FormData();
-        formData.append('email', emailInput.value);
-        formData.append('privacy_consent', 'on');
-
-        fetch('<?php echo $path_prefix; ?>send_consult.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('تم إرسال طلبك بنجاح. شكراً لك!');
-                consultForm.reset();
-            } else {
-                alert('خطأ: ' + (data.message || 'حدث خطأ ما'));
+    if (openBtn) {
+        openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                emailInput.reportValidity();
+                return;
             }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('حدث خطأ في الاتصال بالخادم');
+            modalCheckbox.checked = false;
+            consentModal.show();
         });
-    });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            if (!modalCheckbox.checked) {
+                alert('يجب الموافقة على شروط سياسة الخصوصية للمتابعة.');
+                return;
+            }
+            consentModal.hide();
+
+            const formData = new FormData();
+            formData.append('email', emailInput.value);
+            formData.append('privacy_consent', 'on');
+
+            fetch('<?php echo $path_prefix; ?>send_consult.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إرسال طلبك بنجاح. شكراً لك!');
+                    consultForm.reset();
+                } else {
+                    alert('خطأ: ' + (data.message || 'حدث خطأ ما'));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+        });
+    }
 });
 </script>
 
@@ -115,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container-fluid custom-container">
         <div class="row gy-5">
             <div class="col-12 col-lg-5">
-                <img src="<?php echo $path_prefix . ($data['site_logo_path'] ?? 'assets/img/logo.png'); ?>" alt="BCS Logo" class="mb-4">
+                <img src="<?php echo get_image_url($data['site_logo_path'] ?? null, 'assets/img/logo.png'); ?>" alt="BCS Logo" class="mb-4">
                 <p class="footer-desc"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></p>
             </div>
 
@@ -123,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h5><?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?></h5>
                 <div class="quick-link">
                     <?php foreach(($data['menu_links'] ?? []) as $link): ?>
-                        <a href="<?php echo htmlspecialchars($link['url']); ?>"><?php echo htmlspecialchars($link['title']); ?></a>
+                        <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>"><?php echo htmlspecialchars($link['title'] ?? ''); ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -131,12 +137,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-md-6 col-lg-4">
                 <h5><?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?></h5>
                 <div class="contact-link">
-                    <?php foreach(($data['footer_col3_links'] ?? []) as $link): ?>
-                        <a href="<?php echo htmlspecialchars($link['url']); ?>" class="d-flex align-items-center gap-2">
-                            <?php if(!empty($link['img'])): ?>
-                                <img src="<?php echo $path_prefix . $link['img']; ?>" style="width:20px;">
+                    <?php foreach(($data['footer_col3_links'] ?? []) as $link): 
+                        $icon_img = get_image_url($link['img'] ?? null);
+                    ?>
+                        <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" class="d-flex align-items-center gap-2">
+                            <?php if(!empty($icon_img)): ?>
+                                <img src="<?php echo htmlspecialchars($icon_img); ?>" style="width:20px;" alt="">
                             <?php endif; ?>
-                            <?php echo htmlspecialchars($link['title']); ?>
+                            <?php echo htmlspecialchars($link['title'] ?? ''); ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
@@ -148,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p class="mb-0 text-center text-md-start">
                 <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
             </p>
-            <a href="#">سياسة الخصوصية وشروط الإستخدام</a>
+            <a href="<?php echo $path_prefix; ?>privacy.php">سياسة الخصوصية وشروط الإستخدام</a>
         </div>
     </div>
 </footer>
@@ -157,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php 
 // تضمين نوافذ المودال الخاصة بالتعديل للمشرف بالمسار الصحيح داخل الـ Views
 $admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
-if ($is_admin && file_exists($admin_modals_file)) { 
+if (!empty($is_admin) && file_exists($admin_modals_file)) { 
     include_once $admin_modals_file; 
 } 
 ?>
@@ -167,13 +175,13 @@ if (isset($page_js) && is_array($page_js)) {
     echo "<!-- Dynamic JS Injector -->" . PHP_EOL;
     foreach ($page_js as $js_file) {
         $clean_js = ltrim($js_file, '/');
-        echo '<script src="' . $path_prefix . $clean_js . '?v=' . time() . '"></script>' . PHP_EOL;
+        echo '<script src="' . $path_prefix . $clean_js . '"></script>' . PHP_EOL;
     }
 }
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?php echo $path_prefix; ?>assets/js/main.js?v=<?php echo time(); ?>"></script>
+<script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>
 
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
 

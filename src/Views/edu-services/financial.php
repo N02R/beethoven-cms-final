@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $blocked_data = $data['blocked_account_page'] ?? [
     'page_breadcrumb'     => 'الضمانات المالية والحساب البنكي المغلق',
@@ -50,7 +52,7 @@ $blocked_data = $data['blocked_account_page'] ?? [
 
     <div class="custom-container">
       <div class="financial-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($blocked_data['hero_img'] ?? 'assets/img/education/servicesimg7.png', '/') . '?v=' . time()); ?>');">
+        style="background-image: url('<?php echo get_image_url($blocked_data['hero_img'] ?? null, 'assets/img/education/servicesimg7.png'); ?>');">
       </div>
     </div>
   </section>
@@ -105,7 +107,7 @@ $blocked_data = $data['blocked_account_page'] ?? [
             <?php foreach (($blocked_data['account_points'] ?? []) as $point): ?>
               <li>
                 <p class="mb-0">
-                  <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
                   <?php echo htmlspecialchars($point); ?>
                 </p>
               </li>

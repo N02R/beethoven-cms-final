@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $motivation_data = $data['motivation_page'] ?? [
     'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
@@ -69,7 +71,7 @@ $motivation_data = $data['motivation_page'] ?? [
 
     <div class="custom-container">
       <div class="motivition-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($motivation_data['hero_img'] ?? 'assets/img/education/servicesimg3.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo get_image_url($motivation_data['hero_img'] ?? null, 'assets/img/education/servicesimg3.png'); ?>'); background-position: <?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -128,12 +130,12 @@ $motivation_data = $data['motivation_page'] ?? [
           if (!empty($downloads)):
             foreach ($downloads as $dl):
               $is_pdf = (strtolower($dl['type'] ?? 'pdf') === 'pdf');
-              $icon_img = $is_pdf ? 'Grouppdf.png' : 'Groupword.png';
+              $icon_img = $is_pdf ? 'assets/img/education/Grouppdf.png' : 'assets/img/education/Groupword.png';
         ?>
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card">
                   <div class="download-row">
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/' . $icon_img); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" />
+                    <img src="<?php echo get_image_url($icon_img); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" />
                     <div class="dl-info">
                       <div class="dl-title"><?php echo htmlspecialchars($dl['title'] ?? ''); ?></div>
                       <div class="dl-sub"><?php echo htmlspecialchars($dl['sub'] ?? ''); ?></div>

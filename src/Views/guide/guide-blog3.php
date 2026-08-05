@@ -34,7 +34,7 @@ $guide_blog3_data = $data['guide_blog3_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($guide_blog3_data['hero_img'] ?? 'assets/img/guide/image.jpg', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($guide_blog3_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($guide_blog3_data['hero_img'] ?? 'assets/img/guide/image.jpg')); ?>'); background-position: <?php echo htmlspecialchars($guide_blog3_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -66,19 +66,19 @@ $guide_blog3_data = $data['guide_blog3_page'] ?? [
         <h5 class="mb-4 advice-text"><?php echo htmlspecialchars($guide_blog3_data['diff_title'] ?? ''); ?></h5>
         <ul class="star-list">
           <li>
-            <p><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_1_bold'] ?? ''); ?></span>
+            <p><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_1_bold'] ?? ''); ?></span>
               <?php echo htmlspecialchars($guide_blog3_data['diff_1_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_2_bold'] ?? ''); ?></span>
+            <p> <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_2_bold'] ?? ''); ?></span>
                <?php echo htmlspecialchars($guide_blog3_data['diff_2_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_3_bold'] ?? ''); ?></span>
+            <p> <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_3_bold'] ?? ''); ?></span>
               <?php echo htmlspecialchars($guide_blog3_data['diff_3_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_4_bold'] ?? ''); ?></span>
+            <p> <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog3_data['diff_4_bold'] ?? ''); ?></span>
               <?php echo htmlspecialchars($guide_blog3_data['diff_4_text'] ?? ''); ?></p>
           </li>
         </ul>

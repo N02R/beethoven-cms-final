@@ -1,3 +1,9 @@
+<?php
+/**
+ * صفحة الدراسة في ألمانيا - Education Page View
+ */
+?>
+
 <!-- 1. education start -->
 <section class="education py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
@@ -8,7 +14,7 @@
 
   <div class="custom-container">
     <?php 
-    $hero_bg = !empty($edu_hero['img']) ? $path_prefix . ltrim($edu_hero['img'], '/') . '?v=' . time() : $path_prefix . 'assets/img/education/hero.jpg';
+    $hero_bg = get_image_url($edu_hero['img'] ?? null, 'assets/img/education/hero.jpg');
     ?>
     <div class="row align-items-stretch g-5">
       <div class="col-lg-6">
@@ -42,12 +48,12 @@
       <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($edu_why_desc ?? ''); ?></p>
     </div>
     <div class="row g-3">
-      <?php foreach ($edu_why_items as $item): ?>
+      <?php foreach (($edu_why_items ?? []) as $item): ?>
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
               <a href="#">
-                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>" alt="icon" />
+                <img src="<?php echo get_image_url($item['img'] ?? null); ?>" alt="icon" />
               </a>
               <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
               <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
@@ -76,30 +82,26 @@
     
     <div class="map-container d-none d-lg-block">
       <div class="map-box">
-        <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector.png" alt="base" class="line-base">
-        <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
+        <img src="<?php echo get_image_url('assets/img/vector/Vector.png'); ?>" alt="base" class="line-base">
+        <img src="<?php echo get_image_url('assets/img/vector/Vector-1.png'); ?>" alt="active" class="line-active">
         
         <?php 
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-        foreach ($edu_timeline_steps as $idx => $step): 
+        foreach (($edu_timeline_steps ?? []) as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
             
-            // تحديد مسار الأيقونة الداخلية
-            $iconPath = !empty($step['icon']) 
-                ? $path_prefix . ltrim($step['icon'], '/') 
-                : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
-                
-            $groupNumImg = $path_prefix . 'assets/img/vector/Group' . ($idx + 1) . '.png';
+            // تحديد مسار الأيقونة الداخلية وحساب مسار الصورة الخلفية للرقم
+            $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+            $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+            $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
             
-            // تحديد الـ Class الخاص بالوضع (فردي للأعلى / زوجي للأسفل أو العكس بناءً على تصميم الـ CSS لديك)
-            // غالباً في الـ CSS الخاص بهذا الـ Timeline، الكلاسات مثل step-1, step-3, step-5 تكون باتجاه (أعلى أو أسفل) و 2, 4, 6 بالاتجاه المعاكس
             $stepNumberClass = 'step-' . ($idx + 1);
         ?>
           <div class="step-wrapper <?php echo $stepNumberClass; ?>">
             <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
             <div class="icon-main">
-              <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
+              <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
             </div>
             <div class="info-content">
               <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
@@ -113,11 +115,10 @@
     </div>
 
     <div class="mobile-timeline d-lg-none">
-      <?php foreach ($edu_timeline_steps as $idx => $step): 
+      <?php foreach (($edu_timeline_steps ?? []) as $idx => $step): 
           $num = sprintf("%02d", $idx + 1);
-          $iconPath = !empty($step['icon']) 
-              ? $path_prefix . ltrim($step['icon'], '/') 
-              : $path_prefix . 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+          $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+          $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
       ?>
         <div class="m-step">
           <div class="m-number-box">
@@ -126,7 +127,7 @@
           <div class="m-content">
             <div class="m-header">
               <div class="m-icon">
-                <img src="<?php echo htmlspecialchars($iconPath . '?v=' . time()); ?>" alt="">
+                <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
               </div>
               <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
             </div>
@@ -153,14 +154,15 @@
     <p class="mb-5 main-p" style="max-width: 700px;"><?php echo htmlspecialchars($edu_services_desc ?? ''); ?></p>
     
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
-      <?php foreach ($edu_services_items as $item): 
+      <?php foreach (($edu_services_items ?? []) as $item): 
           $raw_url = $item['url'] ?? '#';
-          $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? $path_prefix . ltrim($raw_url, '/') : $raw_url;
+          $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
+          $bg_img = get_image_url($item['img'] ?? null);
       ?>
         <div class="col">
           <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
             <div class="card service-card text-white border-0 rounded-5"
-              style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($item['img'] ?? '', '/') . '?v=' . time()); ?>');">
+              style="background-image: url('<?php echo htmlspecialchars($bg_img); ?>');">
               <div class="card-body d-flex align-items-end justify-content-center">
                 <h6 class="card-title m-0">
                   <?php echo htmlspecialchars($item['title'] ?? ''); ?>
@@ -176,7 +178,8 @@
 <!-- education services end -->
 
 <?php 
-if (!empty($is_admin) && file_exists(__DIR__ . '/admin/admin_edu_modals.php')) { 
-    include_once __DIR__ . '/admin/admin_edu_modals.php'; 
+$edu_modals_file = __DIR__ . '/admin/admin_edu_modals.php';
+if (!empty($is_admin) && file_exists($edu_modals_file)) { 
+    include_once $edu_modals_file; 
 }
 ?>

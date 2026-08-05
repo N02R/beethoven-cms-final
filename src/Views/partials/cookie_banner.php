@@ -3,6 +3,8 @@ if (!defined('ALLOWED_ACCESS')) {
     header("HTTP/1.1 403 Forbidden");
     exit('Access Denied');
 }
+
+$path_prefix = $path_prefix ?? '/';
 ?>
 <!-- GDPR Cookie Consent Banner -->
 <div id="gdpr-cookie-banner" class="cookie-banner-container" style="display: none;">
@@ -11,7 +13,7 @@ if (!defined('ALLOWED_ACCESS')) {
             <h5 class="cookie-title">حماية خصوصيتك ومعلوماتك الشخصية</h5>
             <p class="cookie-desc">
                 نحن نستخدم ملفات تعريف الارتباط (Cookies) الضرورية لضمان عمل الموقع بكفاءة وتأمين الجلسات (Sessions) وفقاً لقوانين حماية البيانات الأوروبية (GDPR). يمكنك قبول الكوكيز الأساسية أو مراجعة التفاصيل.
-                <a href="/privacy" class="privacy-link">سياسة الخصوصية</a>.
+                <a href="<?php echo $path_prefix; ?>privacy" class="privacy-link">سياسة الخصوصية</a>.
             </p>
         </div>
         <div class="cookie-actions">
@@ -109,14 +111,12 @@ document.addEventListener("DOMContentLoaded", function() {
         localStorage.setItem('gdpr_consent_status', 'accepted_all');
         localStorage.setItem('gdpr_consent_timestamp', new Date().toISOString());
         banner.style.display = 'none';
-        // هنا يمكنك تفعيل أدوات التحليل أو التتبع إن وجدت
     });
 
     document.getElementById('reject-optional-cookies').addEventListener('click', function() {
         localStorage.setItem('gdpr_consent_status', 'essential_only');
         localStorage.setItem('gdpr_consent_timestamp', new Date().toISOString());
         banner.style.display = 'none';
-        // يتم الاكتفاء بالكوكيز الضرورية للجلسات فقط
     });
 });
 </script>

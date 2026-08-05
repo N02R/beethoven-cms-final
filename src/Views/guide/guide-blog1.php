@@ -30,7 +30,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg')); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -63,7 +63,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <ul class="star-list">
           <li>
             <p class="fw-bold">
-              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
               <?php echo htmlspecialchars($guide_data['note_1_bold'] ?? ''); ?>
             </p>
             <p><span class="fw-bold">فصل الشتاء: </span><?php echo htmlspecialchars($guide_data['note_winter'] ?? ''); ?></p>
@@ -71,13 +71,13 @@ $guide_data = $data['guide_blog1_page'] ?? [
           </li>
           <li>
             <p class="fw-bold"> 
-              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" /> 
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" /> 
               <?php echo htmlspecialchars($guide_data['note_2_text'] ?? ''); ?>
             </p>
           </li>
           <li>
             <p class="fw-bold"> 
-              <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
               <?php echo htmlspecialchars($guide_data['note_3_title'] ?? ''); ?>
             </p>
             <ul>
@@ -111,7 +111,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services1.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services1.png')); ?>" alt="" /></a>
               <h5 class="card-title">جودة التعليم العالمي</h5>
               <p class="card-text">جامعات ألمانية مرموقة وبرامج أكاديمية معترف بها دوليًا.</p>
             </div>
@@ -120,7 +120,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services2.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services2.png')); ?>" alt=""></a>
               <h5 class="card-title">شهادات معترف بها دوليًا</h5>
               <p class="card-text">الدراسة في ألمانيا تضمن لك شهادة معترف بها وفرص عمل ومستقبل مهني ناجح.</p>
             </div>
@@ -129,7 +129,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services3.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services3.png')); ?>" alt=""></a>
               <h5 class="card-title">تدريب عملي إلى جانب الدراسة</h5>
               <p class="card-text">الدراسة في ألمانيا تجمع بين التعلم النظري والتدريب العملي مع شركات حقيقية.</p>
             </div>
@@ -138,7 +138,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services4.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services4.png')); ?>" alt=""></a>
               <h5 class="card-title">تخصصات متنوعة</h5>
               <p class="card-text">معاهد ألمانيا تقدم آلاف البرامج والشهادات لتناسب جميع اهتمامات الطلاب.</p>
             </div>
@@ -147,7 +147,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services5.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services5.png')); ?>" alt="" /></a>
               <h5 class="card-title">رسوم دراسية منخفضة</h5>
               <p class="card-text">تعليم برسوم رمزية في الجامعات الحكومية، حتى للطلاب الخليجيين.</p>
             </div>
@@ -156,7 +156,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services6.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services6.png')); ?>" alt=""></a>
               <h5 class="card-title">فرصة لاكتشاف أوروبا</h5>
               <p class="card-text">تأشيرة الطالب تتيح لك الإقامة في ألمانيا والسفر بحرية داخل أوروبا بدون تأشيرة.</p>
             </div>
@@ -165,7 +165,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services7.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services7.png')); ?>" alt=""></a>
               <h5 class="card-title">الدراسة بالإنجليزية أو الألمانية</h5>
               <p class="card-text">ألمانيا تقدم آلاف البرامج الدراسية باللغة الإنجليزية لجميع الطلاب.</p>
             </div>
@@ -174,7 +174,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services8.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services8.png')); ?>" alt=""></a>
               <h5 class="card-title">إمكانية العمل أثناء الدراسة</h5>
               <p class="card-text">تكلفة المعيشة في ألمانيا معقولة، ويمكنك العمل أثناء الدراسة لتساعد نفسك.</p>
             </div>
@@ -183,7 +183,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services9.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services9.png')); ?>" alt="" /></a>
               <h5 class="card-title">فرص توظيف بعد التخرج</h5>
               <p class="card-text">بعد التخرج، يمكنك البقاء في ألمانيا لفترة للبحث عن وظيفة.</p>
             </div>
@@ -192,7 +192,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services8.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services8.png')); ?>" alt=""></a>
               <h5 class="card-title">بلد آمن ومستقر</h5>
               <p class="card-text">ألمانيا بلد آمن جدًا، يمكنك التنقل بحرية بدون خوف من الجريمة أو العنصرية.</p>
             </div>
@@ -201,7 +201,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services11.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services11.png')); ?>" alt=""></a>
               <h5 class="card-title">تعلم الألمانية = فرص أكبر</h5>
               <p class="card-text">الألمانية قريبة من الإنجليزية وتزيد فرصك في الدراسة والشغل.</p>
             </div>
@@ -210,7 +210,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services12.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services12.png')); ?>" alt=""></a>
               <h5 class="card-title">ثقافة غنية وتجربة حياتية مميزة</h5>
               <p class="card-text">مجتمع متنوع، صداقات دولية، وانفتاح ثقافي.</p>
             </div>
@@ -230,11 +230,11 @@ $guide_data = $data['guide_blog1_page'] ?? [
       </div>
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
-          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector.png" alt="base" class="line-base">
-          <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Vector-1.png" alt="active" class="line-active">
+          <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png')); ?>" alt="base" class="line-base">
+          <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png')); ?>" alt="active" class="line-active">
           <div class="step-wrapper step-1">
-            <div class="step-img-num"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group1.png" alt="01"></div>
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime1.png" alt=""></div>
+            <div class="step-img-num"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group1.png')); ?>" alt="01"></div>
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime1.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>استشارة أولية </h3>
               <span class="dot bg-blue"></span>
@@ -243,8 +243,8 @@ $guide_data = $data['guide_blog1_page'] ?? [
             </div>
           </div>
           <div class="step-wrapper step-2">
-            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group2.png" class="step-img-num" alt="02">
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime2.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group2.png')); ?>" class="step-img-num" alt="02">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime2.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>تجهيز المستندات</h3>
               <span class="dot bg-green"></span>
@@ -253,8 +253,8 @@ $guide_data = $data['guide_blog1_page'] ?? [
             </div>
           </div>
           <div class="step-wrapper step-3">
-            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group3.png" class="step-img-num" alt="03">
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime3.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group3.png')); ?>" class="step-img-num" alt="03">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime3.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>تقديم الطلبات</h3>
               <span class="dot bg-yellow"></span>
@@ -263,8 +263,8 @@ $guide_data = $data['guide_blog1_page'] ?? [
             </div>
           </div>
           <div class="step-wrapper step-4">
-            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group4.png" class="step-img-num" alt="04">
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime4.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group4.png')); ?>" class="step-img-num" alt="04">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime4.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>دعم التأشيرة</h3>
               <span class="dot bg-orange"></span>
@@ -273,8 +273,8 @@ $guide_data = $data['guide_blog1_page'] ?? [
             </div>
           </div>
           <div class="step-wrapper step-5">
-            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group5.png" class="step-img-num" alt="05">
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime5.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group5.png')); ?>" class="step-img-num" alt="05">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime5.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>الوصول والاستقرار</h3>
               <span class="dot bg-orange"></span>
@@ -283,8 +283,8 @@ $guide_data = $data['guide_blog1_page'] ?? [
             </div>
           </div>
           <div class="step-wrapper step-6">
-            <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Group6.png" class="step-img-num" alt="06">
-            <div class="icon-main"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime6.png" alt=""></div>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group6.png')); ?>" class="step-img-num" alt="06">
+            <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime6.png')); ?>" alt=""></div>
             <div class="info-content">
               <h3>دعم بعد الوصول</h3>
               <span class="dot bg-red"></span>
@@ -299,7 +299,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">01</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime1.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime1.png')); ?>" alt=""></div>
                     <h3>استشارة أولية</h3>
                 </div>
                 <h4>نرسم معك طريقك الدراسي في ألمانيا</h4>
@@ -310,7 +310,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">02</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime2.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime2.png')); ?>" alt=""></div>
                     <h3>تجهيز المستندات</h3>
                 </div>
                 <h4>نجهز ملفك بالشكل المثالي</h4>
@@ -321,7 +321,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">03</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime3.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime3.png')); ?>" alt=""></div>
                     <h3>تقديم الطلبات</h3>
                 </div>
                 <h4>نقدم لك على أفضل الجامعات</h4>
@@ -332,7 +332,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">04</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime4.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime4.png')); ?>" alt=""></div>
                     <h3>دعم التأشيرة</h3>
                 </div>
                 <h4>نضمن جهوزيتك الكاملة للمقابلة</h4>
@@ -343,7 +343,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">05</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime5.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime5.png')); ?>" alt=""></div>
                     <h3>الوصول والاستقرار</h3>
                 </div>
                 <h4>نستقبلك ونرتب تفاصيل حياتك</h4>
@@ -354,7 +354,7 @@ $guide_data = $data['guide_blog1_page'] ?? [
             <div class="m-number-box"><span class="m-num">06</span></div>
             <div class="m-content">
                 <div class="m-header">
-                    <div class="m-icon"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/vector/Grouptime6.png" alt=""></div>
+                    <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Grouptime6.png')); ?>" alt=""></div>
                     <h3>دعم بعد الوصول</h3>
                 </div>
                 <h4>نبقى معك حتى تستقر تمامًا</h4>

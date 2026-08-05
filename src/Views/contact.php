@@ -1,3 +1,9 @@
+<?php
+/**
+ * صفحة تواصل معنا - Contact Page View
+ */
+?>
+
 <!-- ===== HERO IMAGE ===== -->
 <section class="contact-hero py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
@@ -9,7 +15,7 @@
   <div class="custom-container">
     <div class="contact-hero-img">
       <?php 
-      $contact_hero_bg = !empty($contact_hero_img) ? $path_prefix . ltrim($contact_hero_img, '/') . '?v=' . time() : $path_prefix . 'assets/img/contacthero.png';
+      $contact_hero_bg = get_image_url($contact_hero_img ?? null, 'assets/img/contacthero.png');
       ?>
       <img src="<?php echo htmlspecialchars($contact_hero_bg); ?>" alt="تواصل معنا" class="img-fluid w-100" style="border-radius: 20px;">
     </div>
@@ -37,27 +43,27 @@
       <!-- 1. العنوان -->
       <div class="contact-info-item">
         <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_address_icon ?? 'assets/img/Location.svg', '/') . '?v=' . time()); ?>" alt="Location" />
+          <img src="<?php echo get_image_url($contact_address_icon ?? null, 'assets/img/Location.svg'); ?>" alt="Location" />
         </div>
-        <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
+        <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
         <span><?php echo htmlspecialchars($contact_address ?? ''); ?></span>
       </div>
       
       <!-- 2. البريد الإلكتروني -->
       <div class="contact-info-item">
         <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_email_icon ?? 'assets/img/Mail.svg', '/') . '?v=' . time()); ?>" alt="Mail" />
+          <img src="<?php echo get_image_url($contact_email_icon ?? null, 'assets/img/Mail.svg'); ?>" alt="Mail" />
         </div>
-        <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
+        <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
         <a href="mailto:<?php echo htmlspecialchars($contact_email ?? ''); ?>"><?php echo htmlspecialchars($contact_email ?? ''); ?></a>
       </div>
       
       <!-- 3. الهاتف -->
       <div class="contact-info-item">
         <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars($path_prefix . ltrim($contact_phone_icon ?? 'assets/img/Call.svg', '/') . '?v=' . time()); ?>" alt="Call" />
+          <img src="<?php echo get_image_url($contact_phone_icon ?? null, 'assets/img/Call.svg'); ?>" alt="Call" />
         </div>
-        <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/contact us/Line 16.png'); ?>" alt="" />
+        <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
         <a href="tel:<?php echo htmlspecialchars($contact_phone ?? ''); ?>" dir="ltr"><?php echo htmlspecialchars($contact_phone ?? ''); ?></a>
       </div>
     </div>
@@ -87,7 +93,8 @@
 <!-- ===== WHATSAPP SECTION END ===== -->
 
 <?php 
-if (!empty($is_admin) && file_exists(__DIR__ . '/admin/admin_contact_modals.php')) { 
-    include_once __DIR__ . '/admin/admin_contact_modals.php'; 
+$contact_modals_file = __DIR__ . '/admin/admin_contact_modals.php';
+if (!empty($is_admin) && file_exists($contact_modals_file)) { 
+    include_once $contact_modals_file; 
 }
 ?>

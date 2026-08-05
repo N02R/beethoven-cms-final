@@ -14,7 +14,7 @@
   <div class="custom-container">
     <?php 
     $hero = $data['hero'] ?? [];
-    $hero_bg = !empty($hero['img']) ? $hero['img'] . '?v=' . time() : 'assets/img/home/home1.png';
+    $hero_bg = get_image_url($hero['img'] ?? null, '/assets/img/home/home1.png');
     ?>
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
       <div class="hero-content">
@@ -52,13 +52,14 @@
       <?php 
       $services = $data['services'] ?? []; 
       foreach ($services as $service): 
+        $service_img = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
       ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
           <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/default.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
+            <div class="card" style="background: url('<?php echo htmlspecialchars($service_img); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
-                <img src="/assets/img/home/ArrowLink.svg.webp" alt="Arrow" >
+                <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" alt="Arrow">
               </div>
             </div>
           </a>
@@ -90,7 +91,7 @@
           <div class="card choose-card">
             <div class="card-body">
               <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
-                <img src="<?php echo htmlspecialchars(($item['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
+                <img src="<?php echo get_image_url($item['img'] ?? null); ?>" alt="icon">
               </a>
               <h5 class="card-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
               <p class="card-text"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
@@ -181,7 +182,7 @@
             <div class="card h-100 border-0 shadow-sm">
               <?php if (!empty($item['img'])): ?>
                 <div class="card-img-wrapper">
-                  <img src="<?php echo htmlspecialchars(($path_prefix ?? '') . $item['img'] . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
+                  <img src="<?php echo get_image_url($item['img']); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="card-img-top img-fluid">
                 </div>
               <?php endif; ?>
               <div class="card-body d-flex flex-column">
@@ -189,7 +190,7 @@
                 <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
                 <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
                   قراءة المزيد
-                  <img src="/assets/img/home/Arrow..svg" alt="arrow" width="18">
+                  <img src="<?php echo get_image_url('assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
                 </a>
               </div>
             </div>
@@ -228,4 +229,3 @@
     </div>
   </div>
 </section>
-

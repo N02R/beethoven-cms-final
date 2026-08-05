@@ -1,13 +1,15 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $stk_data = $data['studienkolleg_page'] ?? [
     'page_breadcrumb'   => 'الدورة التأسيسية / السنة التحضيرية',
     'page_breadcrumb_url' => '#',
     'hero_img'          => 'assets/img/education/serviceimg11.png',
     'hero_position'     => 'center -20rem',
-    'main_title'        => 'الدورة التأسيسيّة/السنة التحضيرية \"Studienkolleg\"',
+    'main_title'        => 'الدورة التأسيسيّة/السنة التحضيرية "Studienkolleg"',
     'main_desc'         => '',
     'goals_title'       => 'أهداف الدورة التأسيسية',
     'goals_items'       => [],
@@ -67,7 +69,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
 
     <div class="custom-container">
       <div class="foundation-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($stk_data['hero_img'] ?? 'assets/img/education/serviceimg11.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($stk_data['hero_position'] ?? 'center -20rem'); ?>;">
+           style="background-image: url('<?php echo get_image_url($stk_data['hero_img'] ?? null, 'assets/img/education/serviceimg11.png'); ?>'); background-position: <?php echo htmlspecialchars($stk_data['hero_position'] ?? 'center -20rem'); ?>;">
       </div>
     </div>
   </section>
@@ -136,7 +138,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
               <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                 <li>
                   <p class="mb-0">
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                    <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
                     <?php echo htmlspecialchars($course); ?>
                   </p>
                 </li>
@@ -187,7 +189,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
             <?php foreach (($stk_data['notes_items'] ?? []) as $note): ?>
               <li>
                 <p class="mb-0">
-                  <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
                   <?php echo htmlspecialchars($note); ?>
                 </p>
               </li>

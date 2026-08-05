@@ -1,10 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// استدعاء ملف الدوال لجلب البيانات من قاعدة البيانات
 // استدعاء ملف الدوال بالرجوع ثلاثة مجلدات للوصول لجذر المشروع
 require_once __DIR__ . '/../../../functions.php';
- // عدل المسار حسب مكان وجود الهيدر بالنسبة للجذر
 
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
@@ -30,8 +28,7 @@ $is_visible = ($is_published && $is_in_time);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="csrf-token" content="<?php echo \App\Core\Security::generateCsrfToken(); ?>">
-
+  <meta name="csrf-token" content="<?php echo \App\Core\Security::generateCsrfToken(); ?>">
 
   <title><?php echo htmlspecialchars($page_title ?? 'BCS || Beethoven City Services'); ?></title>
   
@@ -40,10 +37,10 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- ملفات التنسيق المحلية -->
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css"> 
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/header.css">
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/header.css">
 
   <style>
     .editable-wrapper { position: relative; }
@@ -81,7 +78,7 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
 
           <a class="navbar-brand m-0" href="/">
-            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" width="178" height="72" loading="lazy" alt="Logo">
+            <img src="<?php echo get_image_url($site_logo_path, '/assets/img/logo.png'); ?>" width="178" height="72" loading="lazy" alt="Logo">
           </a>
         </div>
 
@@ -98,10 +95,12 @@ $is_visible = ($is_published && $is_in_time);
               <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo $ad['bg_color'] ?? '#f1f5f9'; ?>; color: <?php echo $ad['text_color'] ?? '#1e293b'; ?>; font-size: <?php echo $ad['font_size'] ?? '16'; ?>px;">
-                    <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً بكم!'); ?></marquee>
+                    <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً لكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;"><img src="/<?php echo htmlspecialchars($ad['image_path'] ?? 'assets/img/default-ad.png') . '?' . time(); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement"></div>
+                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
+                    <img src="<?php echo get_image_url($ad['image_path'] ?? null, '/assets/img/default-ad.png'); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
+                  </div>
                 <?php endif; ?>
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
@@ -118,7 +117,9 @@ $is_visible = ($is_published && $is_in_time);
 
           <div class="social-icons d-flex gap-3">
             <?php foreach ($social_links as $s): ?>
-                <a href="<?php echo htmlspecialchars($s['url']); ?>"><img src="/<?php echo htmlspecialchars($s['img']) . '?' . time(); ?>" width="28" alt="social"></a>
+                <a href="<?php echo htmlspecialchars($s['url'] ?? '#'); ?>">
+                  <img src="<?php echo get_image_url($s['img'] ?? null); ?>" width="28" alt="social">
+                </a>
             <?php endforeach; ?>
           </div>
         </div>
@@ -132,7 +133,7 @@ $is_visible = ($is_published && $is_in_time);
         <!-- اللوجو (Mobile Only) -->
         <div class="d-lg-none">
           <a class="navbar-brand" href="/">
-            <img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" alt="Logo" height="50">
+            <img src="<?php echo get_image_url($site_logo_path, '/assets/img/logo.png'); ?>" alt="Logo" height="50">
           </a>
         </div>
 
@@ -147,8 +148,8 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo ltrim(htmlspecialchars($link['url']), '/'); ?>">
-                    <?php echo htmlspecialchars($link['title']); ?>
+                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
+                    <?php echo htmlspecialchars($link['title'] ?? ''); ?>
                   </a>
                 </li>
             <?php endforeach; ?>
@@ -167,13 +168,13 @@ $is_visible = ($is_published && $is_in_time);
               <?php endif; ?>
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="/assets/img/home/global.svg.webp" alt="lang" width="20">
+                  <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20">
                   <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
-                  <img src="/assets/img/home/arowwdown.svg.webp" alt="arrow" width="15">
+                  <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                   <?php foreach ($languages as $lang): ?>
-                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url'] ?? ''), '/'); ?>"><?php echo htmlspecialchars($lang['name']); ?></a></li>
+                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url'] ?? ''), '/'); ?>"><?php echo htmlspecialchars($lang['name'] ?? ''); ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -183,11 +184,20 @@ $is_visible = ($is_published && $is_in_time);
     
     <!-- Offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-      <div class="offcanvas-header"><h5 class="offcanvas-title"><img src="/<?php echo htmlspecialchars($site_logo_path) . '?' . time(); ?>" height="50" alt="Logo"></h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">
+          <img src="<?php echo get_image_url($site_logo_path, '/assets/img/logo.png'); ?>" height="50" alt="Logo">
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+      </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): ?>
-                <li class="nav-item"><a class="nav-link" href="/<?php echo ltrim(htmlspecialchars($link['url']), '/'); ?>"><?php echo htmlspecialchars($link['title']); ?></a></li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
+                    <?php echo htmlspecialchars($link['title'] ?? ''); ?>
+                  </a>
+                </li>
             <?php endforeach; ?>
         </ul>
       </div>

@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $visa_data = $data['visa_requirements_page'] ?? [
     'page_breadcrumb'     => 'متطلبات التأشيرة',
@@ -47,7 +49,7 @@ $visa_data = $data['visa_requirements_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($visa_data['hero_img'] ?? 'assets/img/education/servicesimg14.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo get_image_url($visa_data['hero_img'] ?? null, 'assets/img/education/servicesimg14.png'); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -89,7 +91,7 @@ $visa_data = $data['visa_requirements_page'] ?? [
             <?php foreach ($notes_list as $note_text): ?>
               <li class="mb-2">
                 <p class="mb-0">
-                  <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
                   <?php echo htmlspecialchars($note_text); ?>
                 </p>
               </li>
@@ -111,12 +113,13 @@ $visa_data = $data['visa_requirements_page'] ?? [
             <?php foreach ($visa_data['download_items'] as $item): ?>
               <?php 
                 $file_type = strtolower($item['type'] ?? 'pdf');
-                $icon_img = ($file_type === 'word') ? 'Grouppdf.png' : 'Grouppdf.png'; 
+                $icon_file = ($file_type === 'word') ? 'Groupword.png' : 'Grouppdf.png'; 
+                $icon_url = get_image_url('assets/img/education/' . $icon_file);
               ?>
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card mb-3">
                   <div class="download-row">
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/' . $icon_img); ?>" alt="ملف التحميل" />
+                    <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="ملف التحميل" />
                     <div class="dl-info">
                       <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                     </div>

@@ -50,7 +50,7 @@ $medical_spec_data = $data['medical_specialties_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($medical_spec_data['hero_img'] ?? 'assets/img/job/servicesimg1.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($medical_spec_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($medical_spec_data['hero_img'] ?? 'assets/img/job/servicesimg1.png')); ?>'); background-position: <?php echo htmlspecialchars($medical_spec_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -89,7 +89,7 @@ $medical_spec_data = $data['medical_specialties_page'] ?? [
                   $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
                 ?>
-                <img src="<?php echo htmlspecialchars($path_prefix . ltrim($icon_img, '/')); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة أكثر التخصصات الطبية انتشارا'); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'اختر تخصصك الطبي'); ?></div>

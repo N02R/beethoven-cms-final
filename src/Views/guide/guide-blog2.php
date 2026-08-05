@@ -34,7 +34,7 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($guide_blog2_data['hero_img'] ?? 'assets/img/guide/image (1).jpg', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($guide_blog2_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($guide_blog2_data['hero_img'] ?? 'assets/img/guide/image (1).jpg')); ?>'); background-position: <?php echo htmlspecialchars($guide_blog2_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -76,7 +76,7 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services1.png" alt="" /></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services1.png')); ?>" alt="" /></a>
               <h5 class="card-title">تعليم مجاني</h5>
               <p class="card-text">فرصة لدراسة تخصصك المفضل في نظام تعليمي قوي يجمع بين المعرفة والتطبيق. </p>
             </div>
@@ -85,7 +85,7 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services3.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services3.png')); ?>" alt=""></a>
               <h5 class="card-title">فرص عمل ممتازة</h5>
               <p class="card-text">ابدأ مسيرتك المهنية فور تخرجك في سوق عمل يقدّر الكفاءات ويمنحك الاستقرار.</p>
             </div>
@@ -94,7 +94,7 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services3.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services3.png')); ?>" alt=""></a>
               <h5 class="card-title">إقامة دائمة</h5>
               <p class="card-text">حقق حلمك بالإقامة بعد سنوات محددة من الدراسة والعمل القانوني في ألمانيا.</p>
             </div>
@@ -103,7 +103,7 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
-              <a href="#"><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/edu-services4.png" alt=""></a>
+              <a href="#"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/edu-services4.png')); ?>" alt=""></a>
               <h5 class="card-title">تخصصات متنوعة</h5>
               <p class="card-text">معاهد ألمانيا تقدم آلاف البرامج والشهادات لتناسب جميع اهتمامات الطلاب.</p>
             </div>
@@ -214,15 +214,15 @@ $guide_blog2_data = $data['guide_blog2_page'] ?? [
         <h5 class="mb-4 advice-text"><?php echo htmlspecialchars($guide_blog2_data['tips_title'] ?? ''); ?></h5>
         <ul class="star-list">
           <li>
-            <p><img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_1_bold'] ?? ''); ?></span>
+            <p><img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_1_bold'] ?? ''); ?></span>
               <?php echo htmlspecialchars($guide_blog2_data['tip_1_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_2_bold'] ?? ''); ?></span>
+            <p> <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_2_bold'] ?? ''); ?></span>
             <?php echo htmlspecialchars($guide_blog2_data['tip_2_text'] ?? ''); ?></p>
           </li>
           <li>
-            <p> <img src="<?php echo htmlspecialchars($path_prefix); ?>assets/img/education/starList.svg" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_3_bold'] ?? ''); ?></span>
+            <p> <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" /><span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data['tip_3_bold'] ?? ''); ?></span>
                <?php echo htmlspecialchars($guide_blog2_data['tip_3_text'] ?? ''); ?></p>
           </li>
         </ul>

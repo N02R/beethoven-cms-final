@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $living_data = $data['living_cost_page'] ?? [
     'page_breadcrumb'     => 'تكلفة المعيشة في ألمانيا',
@@ -61,7 +63,7 @@ $living_data = $data['living_cost_page'] ?? [
 
     <div class="custom-container">
       <div class="living-hero custom-hero" 
-           style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($living_data['hero_img'] ?? 'assets/img/education/servicesimg8.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo get_image_url($living_data['hero_img'] ?? null, 'assets/img/education/servicesimg8.png'); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -125,7 +127,7 @@ $living_data = $data['living_cost_page'] ?? [
           <?php if (!empty($notes_items)): ?>
             <?php foreach ($notes_items as $note): ?>
               <li class="d-flex align-items-start mb-3">
-                <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
                 <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
               </li>
             <?php endforeach; ?>

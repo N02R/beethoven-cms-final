@@ -1,6 +1,8 @@
 <?php
 // تأمين المتغيرات الافتراضية
-$path_prefix = '/';
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
 
 $offers_data = $data['offers_page'] ?? [
     'page_breadcrumb'     => 'العروض والاتفاقيات',
@@ -65,7 +67,7 @@ $offers_data = $data['offers_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="pakeges-hero custom-hero" style="background-image: url('<?php echo htmlspecialchars($path_prefix . ltrim($offers_data['hero_img'] ?? 'assets/img/education/servicesimg10.png', '/') . '?v=' . time()); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="pakeges-hero custom-hero" style="background-image: url('<?php echo get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png'); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -96,7 +98,7 @@ $offers_data = $data['offers_page'] ?? [
         <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list list-unstyled p-0">
           <li class="d-flex align-items-start">
-            <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
+            <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
             <p class="mb-0">
               <?php 
               $processed_note = str_replace('href="contact.php"', 'href="' . $path_prefix . 'contact"', $offers_data['note_text'] ?? '');
@@ -128,7 +130,7 @@ $offers_data = $data['offers_page'] ?? [
                 <div class="<?php echo htmlspecialchars($card_class); ?>">
                   <h5 class="<?php echo htmlspecialchars($title_class); ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
                   <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo htmlspecialchars($path_prefix . 'assets/img/education/Grouppdf.png'); ?>" alt="ملف PDF" />
+                    <img src="<?php echo get_image_url('assets/img/education/Grouppdf.png'); ?>" alt="ملف PDF" />
                     <div class="card-body-info">
                       <a href="<?php echo htmlspecialchars($path_prefix . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
                       <p class="<?php echo htmlspecialchars($p_class); ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>

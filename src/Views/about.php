@@ -15,10 +15,10 @@
   <div class="custom-container">
     <?php 
     $ab = $data['about_section'] ?? ($data['about'] ?? []);
-    $about_main_img = !empty($ab['main_img']) ? $ab['main_img'] . '?v=' . time() : 'assets/img/about us icon, image/about1.jpg';
-    $about_sub_img = !empty($ab['sub_img']) ? $ab['sub_img'] . '?v=' . time() : 'assets/img/about us icon, image/about2.png';
-    $vision_icon = !empty($ab['vision_icon']) ? $ab['vision_icon'] . '?v=' . time() : 'assets/img/About us Icon, image/Company vision.svg';
-    $message_icon = !empty($ab['message_icon']) ? $ab['message_icon'] . '?v=' . time() : 'assets/img/About us Icon, image/Company message.svg';
+    $about_main_img = get_image_url($ab['main_img'] ?? null, '/assets/img/about us icon, image/about1.jpg');
+    $about_sub_img = get_image_url($ab['sub_img'] ?? null, '/assets/img/about us icon, image/about2.png');
+    $vision_icon = get_image_url($ab['vision_icon'] ?? null, '/assets/img/About us Icon, image/Company vision.svg');
+    $message_icon = get_image_url($ab['message_icon'] ?? null, '/assets/img/About us Icon, image/Company message.svg');
     ?>
     <div class="row align-items-center g-5">
       <div class="col-lg-6 order-2 order-lg-1">
@@ -98,13 +98,14 @@
       <?php 
       $services = $data['services'] ?? []; 
       foreach ($services as $service): 
+        $service_img = get_image_url($service['img'] ?? null, '/assets/img/home/education.jpg');
       ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
           <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('<?php echo htmlspecialchars(($service['img'] ?? 'assets/img/home/education.jpg') . '?t=' . time()); ?>') no-repeat center/cover;">
+            <div class="card" style="background: url('<?php echo htmlspecialchars($service_img); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service['title'] ?? 'اسم الخدمة'); ?></h3>
-                <img src="/assets/img/home/ArrowLink.svg.webp" alt="Arrow">
+                <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" alt="Arrow">
               </div>
             </div>
           </a>
@@ -138,7 +139,7 @@
             <?php foreach ($team_members as $member): ?>
               <div class="swiper-slide">
                 <div class="team-card">
-                  <img src="<?php echo htmlspecialchars(($member['img'] ?? 'assets/img/team/member1.jpg') . '?v=' . time()); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
+                  <img src="<?php echo get_image_url($member['img'] ?? null, '/assets/img/team/member1.jpg'); ?>" alt="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" />
                   <div class="info">
                     <h5><?php echo htmlspecialchars($member['name'] ?? ''); ?></h5>
                     <p><?php echo htmlspecialchars($member['role'] ?? ''); ?></p>
@@ -174,7 +175,7 @@
         <div class="col-lg-3 col-md-6">
           <div class="count-card">
             <div class="count-img">
-              <img src="<?php echo htmlspecialchars(($c['img'] ?? '') . '?v=' . time()); ?>" alt="icon">
+              <img src="<?php echo get_image_url($c['img'] ?? null); ?>" alt="icon">
             </div>
             <div class="count-info">
               <span><?php echo htmlspecialchars($c['number'] ?? ''); ?></span>
@@ -202,7 +203,7 @@
       <?php foreach (($data['partners_items'] ?? []) as $p): ?>
         <div class="col">
           <div class="partner-item">
-            <img src="<?php echo htmlspecialchars(($p['img'] ?? '') . '?v=' . time()); ?>" alt="Partner" class="img-fluid" />
+            <img src="<?php echo get_image_url($p['img'] ?? null); ?>" alt="Partner" class="img-fluid" />
           </div>
         </div>
       <?php endforeach; ?>

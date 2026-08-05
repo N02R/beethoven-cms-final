@@ -43,7 +43,7 @@
                             </label>
                             <?php if (!empty($ab['main_img'])): ?>
                                 <div class="mb-2 p-1 border rounded bg-white text-center">
-                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['main_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['main_img'])); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
                                     <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['main_img']); ?></div>
                                 </div>
                             <?php endif; ?>
@@ -60,7 +60,7 @@
                             </label>
                             <?php if (!empty($ab['sub_img'])): ?>
                                 <div class="mb-2 p-1 border rounded bg-white text-center">
-                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['sub_img']); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['sub_img'])); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
                                     <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['sub_img']); ?></div>
                                 </div>
                             <?php endif; ?>
@@ -81,7 +81,7 @@
                             <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['vision_icon'])): ?>
                                 <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
-                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['vision_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -100,7 +100,7 @@
                             <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['message_icon'])): ?>
                                 <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
-                                    <img src="<?php echo htmlspecialchars($path_prefix . $ab['message_icon']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['message_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -117,6 +117,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 2. Team Edit Modal (قسم فريق العمل) -->
 <div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true">
@@ -156,7 +157,7 @@
                                         <label class="small text-muted">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($member['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($path_prefix . $member['img']); ?>" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" title="<?php echo htmlspecialchars($member['img']); ?>">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($member['img'])); ?>" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" title="<?php echo htmlspecialchars($member['img']); ?>">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="team_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -182,6 +183,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Counts Edit Modal (قسم الإحصائيات/العدادات) -->
 <div class="modal fade custom-modal" id="countsEditModal" tabindex="-1" aria-hidden="true">
@@ -212,7 +214,7 @@
                                         <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($path_prefix . $c['img']); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($c['img'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -265,7 +267,7 @@
                                         <label class="small text-muted mb-1">صورة الشريك الحالية / اختيار جديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($partner['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars($path_prefix . $partner['img']); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($partner['img'])); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
@@ -291,6 +293,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
@@ -458,5 +461,6 @@
         });
     });
 </script>
+
 
 

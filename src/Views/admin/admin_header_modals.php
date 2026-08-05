@@ -112,21 +112,40 @@
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
+                    <!-- حقل الحماية ضد ثغرات CSRF (مهم جداً ليتطابق مع ما يشترطه الكنترولر) -->
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <!-- متغير الإجراء الذي سيلتقطه الـ Controller -->
                     <input type="hidden" name="action" value="update_logo">
-                    <div class="mb-4"><div class="p-3 bg-white rounded border d-inline-block"><img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? '')); ?>" style="max-height: 100px;"></div></div>
-                    <input type="file" class="form-control w-100" name="logo_img" required>
+                    
+                    <div class="mb-4">
+                        <div class="p-3 bg-white rounded border d-inline-block">
+                            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? '')); ?>" style="max-height: 100px;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
+                    </div>
+
+                    <!-- صندوق لطباعة رسائل الخطأ أو النجاح ديناميكياً -->
+                    <div id="logoAlertBox" class="alert d-none mt-2"></div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="logoEditForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <!-- 3. Announcement Modal -->

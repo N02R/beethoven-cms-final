@@ -149,18 +149,18 @@
                         if (!empty($team_items)):
                             foreach ($team_items as $index => $member): 
                         ?>
-                            <div class="card p-3 border team-row-item shadow-sm" style="background: var(--bg-soft, #f8f9fa); border-radius: 12px;" id="team_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="small text-muted fw-bold">الاسم</label>
+                            <div class="card p-3 border-0 team-row-item mb-2" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color) !important;" id="team_row_<?php echo $index; ?>">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-3">
+                                        <label class="small text-muted mb-1">الاسم</label>
                                         <input type="text" class="form-control form-control-sm team-name" name="team[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? ''); ?>" placeholder="الاسم">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="small text-muted fw-bold">المسمى الوظيفي</label>
+                                        <label class="small text-muted mb-1">المسمى الوظيفي</label>
                                         <input type="text" class="form-control form-control-sm team-role" name="team[<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? ''); ?>" placeholder="المسمى الوظيفي">
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="small text-muted fw-bold d-flex justify-content-between">
+                                    <div class="col-md-5">
+                                        <label class="small text-muted mb-1 d-flex justify-content-between align-items-center">
                                             <span>الصورة الشخصية</span>
                                             <?php if (!empty($member['img'])): ?>
                                                 <span class="badge bg-light text-dark border" style="font-size: 10px;">موجودة</span>
@@ -175,7 +175,7 @@
                                         <input type="hidden" class="team-old-img" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@
                     </div>
 
                     <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addTeamRow()">
-                        <i class="bi bi-plus-circle me-1">C</i> إضافة عضو جديد
+                        <i class="bi bi-plus-circle me-1"></i> إضافة عضو جديد
                     </button>
                 </form>
             </div>
@@ -197,6 +197,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Counts Edit Modal (قسم الإحصائيات/العدادات) -->
 <div class="modal fade custom-modal" id="countsEditModal" tabindex="-1" aria-hidden="true">

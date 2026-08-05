@@ -267,7 +267,6 @@
     </div>
 </div>
 
-
 <!-- 4. Partners Edit Modal (قسم الشركاء) -->
 <div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -287,25 +286,37 @@
                     </div>
 
                     <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['partners_items'] ?? []) as $index => $partner): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
+                        <?php 
+                        $partners_items = $data['partners_items'] ?? [];
+                        if (!empty($partners_items)):
+                            foreach ($partners_items as $index => $partner): 
+                        ?>
+                            <div class="card p-3 border-0 partner-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="partner_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-11">
-                                        <label class="small text-muted mb-1">صورة الشريك الحالية / اختيار جديدة</label>
+                                        <label class="small text-muted mb-1 d-flex justify-content-between">
+                                            <span>صورة الشريك الحالية / اختيار جديدة</span>
+                                            <?php if (!empty($partner['img'])): ?>
+                                                <span class="badge bg-light text-dark border" style="font-size: 10px;">موجودة</span>
+                                            <?php endif; ?>
+                                        </label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($partner['img'])): ?>
                                                 <img src="<?php echo htmlspecialchars(get_image_url($partner['img'])); ?>" style="height: 40px; max-width: 80px; object-fit: contain; background: #fff; padding: 2px; border-radius: 4px; border: 1px solid #ddd;">
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm partner-file" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
+                                        <input type="hidden" class="partner-old-img" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php 
+                            endforeach; 
+                        endif; 
+                        ?>
                     </div>
 
                     <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addPartnerRow()">
@@ -320,8 +331,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
     function removeRow(id) {

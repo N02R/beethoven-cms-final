@@ -152,42 +152,44 @@
                         <?php foreach ($edu_timeline_steps as $index => $step): ?>
                             <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-3">
-                                    <!-- السطر الأول: اسم الخطوة، العنوان الفرعي، الترتيب -->
-                                    <div class="col-md-5">
-                                        <label class="small text-muted">اسم الخطوة</label>
+                                    <!-- السطر الأول: اسم الخطوة + العنوان الفرعي -->
+                                    <div class="col-md-6">
+                                        <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
                                     </div>
-                                    <div class="col-md-5">
-                                        <label class="small text-muted">العنوان الفرعي</label>
+                                    <div class="col-md-6">
+                                        <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="small text-muted">الترتيب</label>
-                                        <input type="number" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
+
+                                    <!-- السطر الثاني: التفاصيل (تأخذ المساحة الأكبر) -->
+                                    <div class="col-md-12">
+                                        <label class="small text-muted fw-bold mb-1">التفاصيل</label>
+                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
                                     </div>
 
-                                    <!-- السطر الثاني: الأيقونة والتفاصيل وزر الحذف -->
-                                    <div class="col-md-8">
-                                        <label class="small text-muted">الأيقونة الحالية / الجديدة</label>
+                                    <!-- السطر الثالث: الترتيب + رفع الملف/الأيقونة + زر الحذف -->
+                                    <div class="col-md-2">
+                                        <label class="small text-muted fw-bold mb-1">الترتيب</label>
+                                        <input type="number" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
+                                    </div>
+                                    <div class="col-md-9">
+                                        <label class="small text-muted fw-bold mb-1">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($step['icon']); ?></span>
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                         <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
-
-                                    <div class="col-md-3">
-                                        <label class="small text-muted">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
-                                    </div>
-
                                     <div class="col-md-1 d-flex align-items-end">
-                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

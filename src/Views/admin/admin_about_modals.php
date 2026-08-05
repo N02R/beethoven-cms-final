@@ -310,13 +310,13 @@
 
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
-<script>
+<<script>
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-let teamCount = document.querySelectorAll('.team-row-item').length;
+    let teamCount = document.querySelectorAll('.team-row-item').length;
 
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
@@ -346,7 +346,8 @@ let teamCount = document.querySelectorAll('.team-row-item').length;
         container.appendChild(div);
         teamCount++;
     }
-    let countsCount = <?php echo count($data['about_counts'] ?? []); ?>;
+
+    let countsCount = document.querySelectorAll('.count-row-item').length;
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
         const div = document.createElement('div');
@@ -376,7 +377,7 @@ let teamCount = document.querySelectorAll('.team-row-item').length;
         countsCount++;
     }
 
-    let partnerCount = <?php echo count($data['partners_items'] ?? []); ?>;
+    let partnerCount = document.querySelectorAll('.partner-row-item').length;
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
         const div = document.createElement('div');
@@ -475,6 +476,7 @@ let teamCount = document.querySelectorAll('.team-row-item').length;
         });
     });
 </script>
+
 
 
 

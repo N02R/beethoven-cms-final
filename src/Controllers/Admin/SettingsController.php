@@ -53,7 +53,7 @@ class SettingsController
     }
 
     /**
-     * حفظ وتحديث الإعدادات مع تحويل الصور تلقائياً إلى WebP
+     * حفظ وتحديث الإعدادات مع تحويل الصور وتعديل حجمها تلقائياً إلى WebP
      */
     public function save(): void
     {
@@ -72,7 +72,6 @@ class SettingsController
         $token = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
 
         if (!Security::verifyCsrfToken($token)) {
-            // إرجاع خطأ 403 إذا فشل التحقق
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'انصهار الجلسة أو خطأ في الـ CSRF Token']);
             exit;
@@ -322,9 +321,7 @@ class SettingsController
                 $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 13. تحديث قسم من نحن الرئيسي (About Section)
-            // ==========================================
             elseif ($action === 'update_about_section') {
                 $oldAboutData = json_decode($currentSettings['about_section'] ?? '{}', true);
 
@@ -387,14 +384,11 @@ class SettingsController
                 $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 14. تحديث فريق العمل (Team)
-            // ==========================================
             elseif ($action === 'update_about_team') {
                 $teamTitle = $_POST['team_title'] ?? '';
                 $teamDesc  = $_POST['team_desc'] ?? '';
                 
-                // حفظ العنوان والوصف في الجدول
                 $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
                 $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
 
@@ -419,9 +413,7 @@ class SettingsController
                 $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 15. تحديث الإحصائيات (Counts)
-            // ==========================================
             elseif ($action === 'update_about_counts') {
                 $countsData = $_POST['counts'] ?? [];
                 foreach ($countsData as $index => $item) {
@@ -441,9 +433,7 @@ class SettingsController
                 $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 16. تحديث الشركاء (Partners)
-            // ==========================================
             elseif ($action === 'update_about_partners') {
                 $partnersTitle = $_POST['partners_title'] ?? '';
                 $stmt->execute(['k' => 'partners_title', 'v' => $partnersTitle, 'v_update' => $partnersTitle]);
@@ -465,9 +455,8 @@ class SettingsController
                 $jsonVal = json_encode(array_values($partnersData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-                        // ==========================================
+
             // 17. تحديث قسم الهيرو التعليمي (Edu Hero)
-            // ==========================================
             elseif ($action === 'update_edu_hero') {
                 $currentEduHero = json_decode($currentSettings['edu_hero'] ?? '{}', true);
                 $heroImg = $_POST['old_edu_hero_img'] ?? ($currentEduHero['img'] ?? '');
@@ -492,9 +481,7 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 18. تحديث قسم لماذا الدراسة (Edu Why Study)
-            // ==========================================
             elseif ($action === 'update_edu_why') {
                 $whyTitle = $_POST['edu_why_title'] ?? '';
                 $whyDesc  = $_POST['edu_why_desc'] ?? '';
@@ -519,9 +506,7 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 19. تحديث الخط الزمني والخطوات (Edu Timeline)
-            // ==========================================
             elseif ($action === 'update_edu_timeline') {
                 $timelineTitle = $_POST['edu_timeline_title'] ?? '';
                 $timelineDesc  = $_POST['edu_timeline_desc'] ?? '';
@@ -546,9 +531,7 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // ==========================================
             // 20. تحديث خدمات التعليم (Edu Services)
-            // ==========================================
             elseif ($action === 'update_edu_services') {
                 $servicesTitle = $_POST['edu_services_title'] ?? '';
                 $servicesDesc  = $_POST['edu_services_desc'] ?? '';
@@ -593,9 +576,9 @@ class SettingsController
     }
 
     /**
-     * دالة مساعدة لتحويل أي صورة مرفوعة إلى صيغة WebP وحفظها في المسار المحدد
+     * دالة مساعدة لتحويل الصورة إلى WebP، تعديل حجمها تلقائياً، وحفظها
      */
-    private function convertToWebpAndSave(string $tmpPath, string $destination): void
+    private function convertToWebpAndSave(string $tmpPath, string $destination, int $maxWidth = 1000, int $maxHeight = 1000, int $quality = 85): void
     {
         $imageInfo = @getimagesize($tmpPath);
         if ($imageInfo === false) {
@@ -603,8 +586,11 @@ class SettingsController
         }
 
         $mimeType = $imageInfo['mime'];
+        $origWidth = $imageInfo[0];
+        $origHeight = $imageInfo[1];
         $image = null;
 
+        // 1. قراءة الصورة حسب نوعها
         switch ($mimeType) {
             case 'image/jpeg':
             case 'image/jpg':
@@ -629,11 +615,47 @@ class SettingsController
             throw new Exception('فشل في معالجة وفك تشفير الصورة.');
         }
 
-        $success = @imagewebp($image, $destination, 85);
+        // 2. حساب الأبعاد الجديدة مع الحفاظ على تناسب الـ Aspect Ratio
+        $newWidth = $origWidth;
+        $newHeight = $origHeight;
+
+        if ($origWidth > $maxWidth || $origHeight > $maxHeight) {
+            $ratio = $origWidth / $origHeight;
+            if ($maxWidth / $maxHeight > $ratio) {
+                $newWidth = (int)($maxHeight * $ratio);
+                $newHeight = $maxHeight;
+            } else {
+                $newWidth = $maxWidth;
+                $newHeight = (int)($maxWidth / $ratio);
+            }
+        }
+
+        // 3. إنشاء صورة فارغة بالأبعاد الجديدة وتغيير الحجم
+        $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+        
+        // دعم الشفافية للـ PNG والـ WebP
+        imagealphablending($resizedImage, false);
+        imagesavealpha($resizedImage, true);
+        $transparent = imagecolorallocatealpha($resizedImage, 255, 255, 255, 127);
+        imagefilledrectangle($resizedImage, 0, 0, $newWidth, $newHeight, $transparent);
+
+        // نسخ الصورة الأصلية للأبعاد الجديدة المصغرة
+        imagecopyresampled(
+            $resizedImage, $image,
+            0, 0, 0, 0,
+            $newWidth, $newHeight,
+            $origWidth, $origHeight
+        );
+
+        // 4. الحفظ بصيغة WebP والجودة المحددة
+        $success = @imagewebp($resizedImage, $destination, $quality);
+
+        // تنظيف الذاكرة
         @imagedestroy($image);
+        @imagedestroy($resizedImage);
 
         if (!$success) {
-            throw new Exception('فشل في حفظ الصورة بصيغة WebP الجديدة.');
+            throw new Exception('فشل في حفظ وتعديل حجم الصورة بصيغة WebP.');
         }
     }
 

@@ -90,15 +90,18 @@
                         <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0 edu-why-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="why_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-end">
-                                    <div class="col-md-3">
+                                    <!-- الصف الأول: العنوان والوصف -->
+                                    <div class="col-md-5 mb-2">
                                         <label class="small text-muted fw-bold mb-1">العنوان</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="العنوان">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-7 mb-2">
                                         <label class="small text-muted fw-bold mb-1">الوصف</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>" placeholder="الوصف">
                                     </div>
-                                    <div class="col-md-4">
+
+                                    <!-- الصف الثاني: رفع الملف وزر الحذف -->
+                                    <div class="col-md-11">
                                         <label class="small text-muted fw-bold mb-1">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
@@ -110,7 +113,7 @@
                                         </div>
                                         <input type="hidden" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-center">
+                                    <div class="col-md-1 text-center d-flex align-items-end">
                                         <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -132,7 +135,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 3. Edu Timeline Modal (قسم خطوات الرحلة) -->
 <div class="modal fade custom-modal" id="eduTimelineModal" tabindex="-1" aria-hidden="true">

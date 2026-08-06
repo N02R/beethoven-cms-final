@@ -339,7 +339,7 @@
     }
 
     // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
-    function addEduWhyRow() {
+  function addEduWhyRow() {
     const container = document.getElementById('eduWhyContainer');
     const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
     const div = document.createElement('div');
@@ -347,27 +347,28 @@
     div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
     div.id = 'why_row_' + eduWhyCount;
     div.innerHTML = `
-        <div class="row g-2 align-items-center">
-            <div class="col-md-3">
-                <label class="small text-muted">العنوان</label>
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5 mb-2">
+                <label class="small text-muted fw-bold mb-1">العنوان</label>
                 <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
             </div>
-            <div class="col-md-4">
-                <label class="small text-muted">الوصف</label>
+            <div class="col-md-7 mb-2">
+                <label class="small text-muted fw-bold mb-1">الوصف</label>
                 <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
             </div>
-            <div class="col-md-4">
-                <label class="small text-muted">الصورة الجديدة</label>
+            <div class="col-md-11">
+                <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
                 <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
                 <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
             </div>
-            <div class="col-md-1 text-end pt-3">
-                <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
+            <div class="col-md-1 text-center d-flex align-items-end">
+                <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
-        `;
+        </div>`;
     container.appendChild(div);
 }
-
 
     // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
     function addEduStepRow() {

@@ -109,7 +109,8 @@
                                             <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+<input type="hidden" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+</div>
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
                                         <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
@@ -336,33 +337,34 @@
 
     // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
     function addEduWhyRow() {
-        const container = document.getElementById('eduWhyContainer');
-        const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-why-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'why_row_' + eduWhyCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3">
-                    <label class="small text-muted">العنوان</label>
-                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted">الوصف</label>
-                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted">الصورة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="why[${eduWhyCount}][old_img]" value="">
-                </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
+    const container = document.getElementById('eduWhyContainer');
+    const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
+    const div = document.createElement('div');
+    div.className = 'card p-3 border-0 edu-why-row-item mb-2';
+    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+    div.id = 'why_row_' + eduWhyCount;
+    div.innerHTML = `
+        <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <label class="small text-muted">العنوان</label>
+                <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
+            </div>
+            <div class="col-md-4">
+                <label class="small text-muted">الوصف</label>
+                <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
+            </div>
+            <div class="col-md-4">
+                <label class="small text-muted">الصورة الجديدة</label>
+                <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
+            </div>
+            <div class="col-md-1 text-end pt-3">
+                <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
+            </div>
+        `;
+    container.appendChild(div);
+}
+
 
     // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
     function addEduStepRow() {
@@ -443,18 +445,19 @@
                 e.preventDefault();
 
                 // إعادة ترقيم "لماذا الدراسة"
-                const whyRows = form.querySelectorAll('.edu-why-row-item');
-                whyRows.forEach((row, index) => {
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    const descInput = row.querySelector('input[name*="[desc]"]');
-                    const fileInput = row.querySelector('input[type="file"]');
-                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                // إعادة ترقيم "لماذا الدراسة"
+const whyRows = form.querySelectorAll('.edu-why-row-item');
+whyRows.forEach((row, index) => {
+    const titleInput = row.querySelector('input[name*="[title]"]');
+    const descInput = row.querySelector('input[name*="[desc]"]');
+    const fileInput = row.querySelector('input[type="file"]');
+    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                    if (titleInput) titleInput.name = `why[${index}][title]`;
-                    if (descInput) descInput.name = `why[${index}][desc]`;
-                    if (fileInput) fileInput.name = `edu_why_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `why[${index}][old_img]`;
-                });
+    if (titleInput) titleInput.name = `edu_why[${index}][title]`;
+    if (descInput) descInput.name = `edu_why[${index}][desc]`;
+    if (fileInput) fileInput.name = `edu_why_img_${index}`;
+    if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
+});
 
                 // إعادة ترقيم "خطوات الرحلة"
                 const stepRows = form.querySelectorAll('.edu-timeline-row-item');

@@ -104,16 +104,18 @@
                                     <div class="col-md-11">
                                         <label class="small text-muted fw-bold mb-1">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
-                                                <div class="d-flex align-items-center gap-1 p-1 bg-white border rounded" style="max-height: 32px;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 24px; height: 24px; object-fit: contain;" alt="icon">
-                                                </div>
-                                            <?php endif; ?>
+                                            <div style="min-width: 32px; height: 32px;" class="d-flex align-items-center justify-content-center">
+                                                <?php if (!empty($item['img'])): ?>
+                                                    <div class="p-1 bg-white border rounded">
+                                                        <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 24px; height: 24px; object-fit: contain;" alt="icon">
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
                                             <input type="file" class="form-control form-control-sm" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                         <input type="hidden" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-center d-flex align-items-end">
+                                    <div class="col-md-1 text-center">
                                         <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -339,7 +341,7 @@
     }
 
     // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
-  function addEduWhyRow() {
+function addEduWhyRow() {
     const container = document.getElementById('eduWhyContainer');
     const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
     const div = document.createElement('div');
@@ -358,10 +360,13 @@
             </div>
             <div class="col-md-11">
                 <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
-                <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="min-width: 32px; height: 32px;"></div>
+                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                </div>
                 <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
             </div>
-            <div class="col-md-1 text-center d-flex align-items-end">
+            <div class="col-md-1 text-center">
                 <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف">
                     <i class="bi bi-trash"></i>
                 </button>
@@ -369,6 +374,7 @@
         </div>`;
     container.appendChild(div);
 }
+
 
     // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
     function addEduStepRow() {

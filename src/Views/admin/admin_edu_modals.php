@@ -1,3 +1,9 @@
+<?php
+/**
+ * نافذة مودلز تعديل قسم الدراسة في ألمانيا - Admin Education Modals
+ */
+?>
+
 <!-- 1. Edu Hero Modal (قسم الهيرو) -->
 <div class="modal fade custom-modal" id="eduHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -9,7 +15,7 @@
             <div class="modal-body p-4">
                 <form id="eduHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="row g-3">
                         <div class="col-12">
@@ -69,19 +75,19 @@
             <div class="modal-body p-4">
                 <form id="eduWhyForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_why">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="edu_why_title" value="<?php echo htmlspecialchars($edu_why_title); ?>">
+                        <input type="text" class="form-control" name="edu_why_title" value="<?php echo htmlspecialchars($edu_why_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="edu_why_desc" rows="2"><?php echo htmlspecialchars($edu_why_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_why_desc" rows="2"><?php echo htmlspecialchars($edu_why_desc ?? ''); ?></textarea>
                     </div>
 
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($edu_why_items as $index => $item): ?>
+                        <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0 edu-why-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="why_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
@@ -97,7 +103,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 30px; height: 30px; object-fit: contain;" alt="icon">
                                                     <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -137,22 +143,21 @@
             <div class="modal-body p-4">
                 <form id="eduTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_timeline">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title); ?>">
+                        <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="edu_timeline_desc" rows="2"><?php echo htmlspecialchars($edu_timeline_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_timeline_desc" rows="2"><?php echo htmlspecialchars($edu_timeline_desc ?? ''); ?></textarea>
                     </div>
 
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($edu_timeline_steps as $index => $step): ?>
+                        <?php foreach (($edu_timeline_steps ?? []) as $index => $step): ?>
                             <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
-                                    <!-- السطر الأول: اسم الخطوة + العنوان الفرعي -->
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
@@ -162,13 +167,11 @@
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
 
-                                    <!-- السطر الثاني: التفاصيل -->
                                     <div class="col-md-12">
                                         <label class="small text-muted fw-bold mb-1">التفاصيل</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
                                     </div>
 
-                                    <!-- السطر الثالث: الترتيب + رفع الملف/الأيقونة + زر الحذف -->
                                     <div class="col-md-2">
                                         <label class="small text-muted fw-bold mb-1">الترتيب</label>
                                         <input type="number" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
@@ -178,7 +181,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;" alt="icon">
                                                     <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -209,7 +212,6 @@
     </div>
 </div>
 
-
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -221,15 +223,15 @@
             <div class="modal-body p-4">
                 <form id="eduServicesForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_services">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="edu_services_title" value="<?php echo htmlspecialchars($edu_services_title); ?>">
+                        <input type="text" class="form-control" name="edu_services_title" value="<?php echo htmlspecialchars($edu_services_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="edu_services_desc" rows="2"><?php echo htmlspecialchars($edu_services_desc); ?></textarea>
+                        <textarea class="form-control" name="edu_services_desc" rows="2"><?php echo htmlspecialchars($edu_services_desc ?? ''); ?></textarea>
                     </div>
 
                     <div id="eduServicesContainer" class="d-flex flex-column gap-3">
@@ -249,7 +251,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px;" alt="icon">
                                                     <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 150px;"><?php echo basename($item['img']); ?></span>
                                                 </div>
                                             <?php endif; ?>
@@ -281,13 +283,13 @@
 </div>
 
 <script>
-    // دالة عامة لحذف أي صف بناءً على الـ ID
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات الاحترافية بأسلوب Bootstrap
+    // 2. دالة إظهار التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -332,35 +334,37 @@
         }, 4000);
     }
 
-    // 1. إضافة صف جديد لـ "لماذا الدراسة" (Why)
-    let eduWhyCount = <?php echo count($edu_why_items ?? []); ?>;
+    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
+        const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 edu-why-row-item';
+        div.className = 'card p-3 border-0 edu-why-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
         div.id = 'why_row_' + eduWhyCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
+                    <label class="small text-muted">العنوان</label>
+                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
+                    <label class="small text-muted">الوصف</label>
+                    <input type="text" class="form-control form-control-sm" name="why[${eduWhyCount}][desc]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
-                    <input type="file" class="form-control form-control-sm edu-why-file" data-index="${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
+                    <label class="small text-muted">الصورة الجديدة</label>
+                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                    <input type="hidden" name="why[${eduWhyCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end">
+                <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
-        eduWhyCount++;
     }
 
-    // 2. إضافة صف جديد لـ "خطوات الرحلة" (Timeline)
+    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
@@ -388,7 +392,7 @@
                 </div>
                 <div class="col-md-9">
                     <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm edu-timeline-file" accept="image/*">
+                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
                     <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
@@ -400,7 +404,7 @@
         container.appendChild(div);
     }
 
-    // 3. إضافة صف جديد لـ "خدمات التعليم" (Services)
+    // 5. دالة إضافة صف جديد لـ "خدمات التعليم"
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');
         const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
@@ -420,7 +424,7 @@
                 </div>
                 <div class="col-md-11">
                     <label class="small text-muted fw-bold mb-1">صورة الخلفية الجديدة</label>
-                    <input type="file" class="form-control form-control-sm edu-service-file" accept="image/*">
+                    <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
                     <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
@@ -432,93 +436,87 @@
         container.appendChild(div);
     }
 
-    // معالج النماذج الموحد الخاص بنماذج المودلز الإدارية والنماذج العامة
-    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    // 6. معالج الحفظ وإعادة الترقيم التلقائي عند الضغط على حفظ في أي نموذج
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            // 1. إعادة ترقيم صفوف "لماذا الدراسة"
-            const whyRows = form.querySelectorAll('.edu-why-row-item');
-            whyRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const descInput = row.querySelector('input[name*="[desc]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                // إعادة ترقيم "لماذا الدراسة"
+                const whyRows = form.querySelectorAll('.edu-why-row-item');
+                whyRows.forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const descInput = row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                if (titleInput) titleInput.name = `edu_why[${index}][title]`;
-                if (descInput) descInput.name = `edu_why[${index}][desc]`;
-                if (fileInput) fileInput.name = `edu_why_img_${index}`; // الاسم المتطابق مع PHP
-                if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
-            });
+                    if (titleInput) titleInput.name = `why[${index}][title]`;
+                    if (descInput) descInput.name = `why[${index}][desc]`;
+                    if (fileInput) fileInput.name = `edu_why_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `why[${index}][old_img]`;
+                });
 
-            // 2. إعادة ترقيم صفوف "خطوات الرحلة"
-            const stepRows = form.querySelectorAll('.edu-timeline-row-item');
-            stepRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
-                const orderInput = row.querySelector('input[name*="[order]"]');
-                const descInput = row.querySelector('input[name*="[desc]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
+                // إعادة ترقيم "خطوات الرحلة"
+                const stepRows = form.querySelectorAll('.edu-timeline-row-item');
+                stepRows.forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
+                    const orderInput = row.querySelector('input[name*="[order]"]');
+                    const descInput = row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('input[type="file"]');
+                    const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
 
-                if (titleInput) titleInput.name = `edu_timeline[${index}][title]`;
-                if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
-                if (orderInput) orderInput.name = `edu_timeline[${index}][order]`;
-                if (descInput) descInput.name = `edu_timeline[${index}][desc]`;
-                if (fileInput) fileInput.name = `edu_timeline_icon_${index}`; // الاسم المتطابق مع PHP
-                if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
-            });
+                    if (titleInput) titleInput.name = `edu_timeline[${index}][title]`;
+                    if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
+                    if (orderInput) orderInput.name = `edu_timeline[${index}][order]`;
+                    if (descInput) descInput.name = `edu_timeline[${index}][desc]`;
+                    if (fileInput) fileInput.name = `edu_timeline_icon_${index}`;
+                    if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
+                });
 
-            // 3. إعادة ترقيم صفوف "خدمات التعليم"
-            const srvRows = form.querySelectorAll('.edu-service-row-item');
-            srvRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const urlInput = row.querySelector('input[name*="[url]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                // إعادة ترقيم "خدمات التعليم"
+                const srvRows = form.querySelectorAll('.edu-service-row-item');
+                srvRows.forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const urlInput = row.querySelector('input[name*="[url]"]');
+                    const fileInput = row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                if (titleInput) titleInput.name = `edu_services[${index}][title]`;
-                if (urlInput) titleInput.name = `edu_services[${index}][url]`;
-                if (fileInput) fileInput.name = `edu_service_img_${index}`; // الاسم المتطابق مع PHP
-                if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
-            });
+                    if (titleInput) titleInput.name = `edu_services[${index}][title]`;
+                    if (urlInput) urlInput.name = `edu_services[${index}][url]`;
+                    if (fileInput) fileInput.name = `edu_service_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
+                });
 
-            const formData = new FormData(this);
-            
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message || 'تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    console.error('Server Response Error:', data);
-                    showNotification('عذراً، لم يتم الحفظ: ' + (data.error || data.message || 'فشل الحفظ'), 'danger');
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
                 }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.', 'danger');
+
+                fetch('index.php?url=admin/settings/save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification(data.message || 'تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        console.error('Server Response Error:', data);
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data.error || data.message || 'فشل الحفظ'), 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });
 </script>
-
-
-
-
-
-
-

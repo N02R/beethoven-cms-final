@@ -89,34 +89,34 @@
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
                             <div class="card p-3 border-0 edu-why-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="why_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-end">
-                                    <!-- الصف الأول: العنوان والوصف -->
-                                    <div class="col-md-5 mb-2">
+                                <div class="row g-3 align-items-center">
+                                    <!-- العنوان -->
+                                    <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">العنوان</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="العنوان">
                                     </div>
-                                    <div class="col-md-7 mb-2">
+                                    <!-- الوصف -->
+                                    <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">الوصف</label>
                                         <input type="text" class="form-control form-control-sm" name="edu_why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>" placeholder="الوصف">
                                     </div>
 
-                                    <!-- الصف الثاني: رفع الملف وزر الحذف -->
+                                    <!-- رفع الصورة وزر الحذف بنفس هيكل الـ Timeline -->
                                     <div class="col-md-11">
                                         <label class="small text-muted fw-bold mb-1">الصورة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <div style="min-width: 32px; height: 32px;" class="d-flex align-items-center justify-content-center">
-                                                <?php if (!empty($item['img'])): ?>
-                                                    <div class="p-1 bg-white border rounded">
-                                                        <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 24px; height: 24px; object-fit: contain;" alt="icon">
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 28px; height: 28px; object-fit: contain;" alt="icon">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($item['img']); ?></span>
+                                                </div>
+                                            <?php endif; ?>
                                             <input type="file" class="form-control form-control-sm" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                         <input type="hidden" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-center">
-                                        <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف">
+                                    <div class="col-md-1 text-end pt-3">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف السبب">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -137,6 +137,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Edu Timeline Modal (قسم خطوات الرحلة) -->
 <div class="modal fade custom-modal" id="eduTimelineModal" tabindex="-1" aria-hidden="true">
@@ -349,31 +350,29 @@ function addEduWhyRow() {
     div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
     div.id = 'why_row_' + eduWhyCount;
     div.innerHTML = `
-        <div class="row g-2 align-items-end">
-            <div class="col-md-5 mb-2">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
                 <label class="small text-muted fw-bold mb-1">العنوان</label>
                 <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
             </div>
-            <div class="col-md-7 mb-2">
+            <div class="col-md-6">
                 <label class="small text-muted fw-bold mb-1">الوصف</label>
                 <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
             </div>
             <div class="col-md-11">
                 <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
-                <div class="d-flex align-items-center gap-2">
-                    <div style="min-width: 32px; height: 32px;"></div>
-                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                </div>
+                <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
                 <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
             </div>
-            <div class="col-md-1 text-center">
-                <button type="button" class="btn-icon-trash w-100" style="height: 31px;" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف">
+            <div class="col-md-1 text-end pt-3">
+                <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف السبب">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
         </div>`;
     container.appendChild(div);
 }
+
 
 
     // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"

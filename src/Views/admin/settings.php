@@ -9,7 +9,6 @@ if (!defined('ALLOWED_ACCESS')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إعدادات الموقع - لوحة التحكم</title>
-    <!-- استدعي ملفات الـ CSS الخاصة بلوحة التحكم لديك هنا -->
     <link rel="stylesheet" href="/assets/css/admin.css">
     <style>
         .settings-container { max-width: 900px; margin: 30px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -22,12 +21,13 @@ if (!defined('ALLOWED_ACCESS')) {
         .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .preview-img { max-height: 80px; margin-top: 10px; display: block; border-radius: 4px; }
+        .section-box { background: #f8fafc; padding: 20px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
 <div class="settings-container">
-    <h2>إعدادات الموقع العامة</h2>
+    <h2>إعدادات الموقع العامة وقسم الخدمات</h2>
     <hr style="margin-bottom: 20px; border: 0; border-top: 1px solid #eee;">
 
     <!-- رسائل التنبيه الديناميكية -->
@@ -36,27 +36,69 @@ if (!defined('ALLOWED_ACCESS')) {
     <form id="settingsForm" enctype="multipart/form-data">
         <!-- حقل حماية الـ CSRF -->
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        
+        <!-- تحديد الـ Action الخاص بتحديث الخدمات مثلاً أو يمكنك جعله نموذجاً منفصلاً لكل قسم -->
+        <input type="hidden" name="action" value="update_services">
 
-        <!-- مثال 1: حقل عنوان الموقع (Text) -->
+        <!-- 1. الإعدادات العامة (العنوان والبريد) -->
         <div class="form-group">
             <label for="site_title">عنوان الموقع (Site Title):</label>
             <input type="text" id="site_title" name="settings[site_title]" class="form-control" value="<?= htmlspecialchars($settingsData['site_title'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         </div>
 
-        <!-- مثال 2: حقل البريد الإلكتروني (Text) -->
         <div class="form-group">
             <label for="site_email">البريد الإلكتروني للإدارة (Site Email):</label>
             <input type="email" id="site_email" name="settings[site_email]" class="form-control" value="<?= htmlspecialchars($settingsData['site_email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         </div>
 
-        <!-- مثال 3: حقل رفع شعار الموقع (Image) -->
-        <div class="form-group">
-            <label for="site_logo_path">شعار الموقع (Site Logo):</label>
-            <?php if (!empty($settingsData['site_logo_path'])): ?>
-                <img src="/<?= htmlspecialchars($settingsData['site_logo_path'], ENT_QUOTES, 'UTF-8') ?>" alt="Logo" class="preview-img">
-            <?php endif; ?>
-            <input type="file" id="site_logo_path" name="images[site_logo_path]" class="form-control" accept="image/*">
-            <small style="color: #666;">يُفضل رفع صورة بصيغة WebP أو PNG أو SVG.</small>
+        <!-- 2. قسم الخدمات (Services Section) مع مطابقة أسماء الحقول للـ Controller -->
+        <div class="section-box">
+            <h3>إدارة الخدمات</h3>
+            
+            <div class="form-group">
+                <label>عنوان قسم الخدمات:</label>
+                <input type="text" name="services_title" class="form-control" value="<?= htmlspecialchars($servicesSectionTitle ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label>وصف قسم الخدمات:</label>
+                <textarea name="services_desc" class="form-control"><?= htmlspecialchars($servicesSectionDesc ?? '') ?></textarea>
+            </div>
+
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #cbd5e1;">
+
+            <?php 
+            // افتراض أن الخدمات تأتي في مصفوفة $servicesData
+            $servicesData = $servicesData ?? []; 
+            foreach ($servicesData as $index => $service): 
+            ?>
+                <div style="background: #fff; padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                    <h4 style="margin-top: 0; color: #4f46e5;">الخدمة رقم (<?= $index + 1 ?>)</h4>
+                    
+                    <div class="form-group">
+                        <label>عنوان الخدمة:</label>
+                        <input type="text" name="services[<?= $index ?>][title]" class="form-control" value="<?= htmlspecialchars($service['title'] ?? '') ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>وصف الخدمة:</label>
+                        <textarea name="services[<?= $index ?>][desc]" class="form-control"><?= htmlspecialchars($service['desc'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>صورة الخدمة:</label>
+                        <?php if (!empty($service['img'])): ?>
+                            <img src="/<?= htmlspecialchars($service['img'], ENT_QUOTES, 'UTF-8') ?>" alt="Service Image" class="preview-img">
+                        <?php endif; ?>
+                        
+                        <!-- الحقل المخفي للاحتفاظ بمسار الصورة القديمة في حال لم يتم رفع صورة جديدة -->
+                        <input type="hidden" name="services[<?= $index ?>][old_img]" value="<?= htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        
+                        <!-- حقل رفع الصورة الجديد بالاسم المتطابق تماماً مع الـ Controller: service_img_$index -->
+                        <input type="file" name="service_img_<?= $index ?>" class="form-control" accept="image/*">
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
 
         <button type="submit" class="btn-save" id="saveBtn">حفظ التغييرات</button>
@@ -91,7 +133,7 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
         }
 
         if (!response.ok) {
-            throw new Error(data.message || 'حدث خطأ أثناء تنفيذ الطلب.');
+            throw new Error(data.message || data.error || 'حدث خطأ أثناء تنفيذ الطلب.');
         }
         
         return data;
@@ -102,11 +144,11 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
             alertBox.className = 'alert alert-success';
             alertBox.textContent = data.message;
             setTimeout(() => {
-                location.reload(); // تحديث الصفحة لتظهر الصور أو التعديلات الجديدة
+                location.reload(); 
             }, 1200);
         } else {
             alertBox.className = 'alert alert-error';
-            alertBox.textContent = data.message;
+            alertBox.textContent = data.error || data.message;
             submitBtn.disabled = false;
             submitBtn.textContent = 'حفظ التغييرات';
         }
@@ -116,9 +158,9 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
         alertBox.className = 'alert alert-error';
         alertBox.textContent = err.message;
         submitBtn.disabled = false;
-        submitBtn.textContent = 'حفظ التغييرات؛';
+        submitBtn.textContent = 'حفظ التغييرات';
     });
-});
+د
 </script>
 
 </body>

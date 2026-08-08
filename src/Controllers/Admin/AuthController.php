@@ -21,7 +21,7 @@ class AuthController {
         }
 
         // إذا كان المشرف مسجلاً دخوله مسبقاً، يتم توجيهه للوحة التحكم مباشرة
-        if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin')) {
+        if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin')) {
             header("Location: index.php?url=admin/dashboard");
             exit;
         }
@@ -43,13 +43,13 @@ class AuthController {
         }
 
         $data = [
-            'error_msg'      => $error_msg,
-            'csrf_token'     => $_SESSION['login_csrf'],
-            'captcha_num1'   => $_SESSION['captcha_num1'],
-            'captcha_num2'   => $_SESSION['captcha_num2'],
+            'error_msg'    => $error_msg,
+            'csrf_token'   => $_SESSION['login_csrf'],
+            'captcha_num1' => $_SESSION['captcha_num1'],
+            'captcha_num2' => $_SESSION['captcha_num2'],
         ];
 
-        // استدعاء ملف الـ View
+        // استدعاء ملف الـ View الخاص بتسجيل الدخول
         $root_path = realpath(__DIR__ . '/../../../');
         $view_file = $root_path . '/src/Views/admin/login.php';
 
@@ -97,7 +97,7 @@ class AuthController {
         }
 
         // 3. تنقية واستلام بيانات المدخلات
-        $email = trim($_POST['username'] ?? ''); // حقل الإدخال يستلم البريد الإلكتروني
+        $email = trim($_POST['username'] ?? ''); 
         $password = trim($_POST['password'] ?? '');
 
         if (empty($email) || empty($password)) {
@@ -111,21 +111,12 @@ class AuthController {
         $admin_data = [];
 
         try {
-            // ضمان استدعاء كلاس الاتصال إذا لم يكن محشوراً تلقائياً عبر Autoloader
-            $root_path = realpath(__DIR__ . '/../../../');
-            $db_class_file = $root_path . '/database/database.php';
-            if (file_exists($db_class_file)) {
-                require_once $db_class_file;
-            }
-
             $pdo = Database::getConnection();
             
-            // الاستعلام من جدول admins بناءً على الحقول الفعلية (email و password_hash)
             $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email AND is_active = 1 LIMIT 1");
             $stmt->execute(['email' => $email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // مطابقة كلمة المرور مع الحقل password_hash
             if ($admin && password_verify($password, $admin['password_hash'])) {
                 $admin_logged_in = true;
                 $admin_data = [
@@ -134,7 +125,6 @@ class AuthController {
                     'id'   => $admin['id']
                 ];
 
-                // تحديث وقت وتاريخ آخر تسجيل دخول في الداتا بيز
                 $update_stmt = $pdo->prepare("UPDATE admins SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = :id");
                 $update_stmt->execute(['id' => $admin['id']]);
             }
@@ -142,7 +132,7 @@ class AuthController {
             error_log("Auth Error: " . $e->getMessage());
         }
 
-        // ب) حساب الطوارئ/الاحتياطي في حال تعثر الاتصال بالداتا بيز
+        // حساب الطوارئ/الاحتياطي في حال تعثر الاتصال بقاعدة البيانات
         if (!$admin_logged_in && $email === 'admin@beethoven-cms.local' && $password === 'password') {
             $admin_logged_in = true;
             $admin_data = [
@@ -159,6 +149,9 @@ class AuthController {
             $_SESSION['admin_name']   = $admin_data['name'];
             $_SESSION['admin_id']     = $admin_data['id'];
 
+            // تجديد معرف الجلسة لمنع هجمات تثبيت الجلسة
+            session_regenerate_id(true);
+
             // تنظيف بيانات الجلسة المؤقتة
             unset($_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result'], $_SESSION['login_csrf']);
 
@@ -166,74 +159,9 @@ class AuthController {
             exit;
         }
 
-        // في حال كانت البيانات غير صحيحة
         $_SESSION['login_error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
         header("Location: index.php?url=admin/login");
         exit;
-    }
-
-    /**
-     * عرض صفحة إدخال رمز التحقق الثنائي (2FA)
-     */
-    public function show2fa(): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['pending_2fa_user']) || !isset($_SESSION['2fa_code'])) {
-            header("Location: index.php?url=admin/login");
-            exit;
-        }
-
-        $error_message = $_GET['error'] ?? '';
-        
-        $root_path = realpath(__DIR__ . '/../../../');
-        $view_file = $root_path . '/src/Views/admin/verify_2fa.php';
-        
-        if (file_exists($view_file)) {
-            require_once $view_file;
-        } else {
-            echo "2FA View file not found.";
-        }
-    }
-
-    /**
-     * معالجة التحقق من رمز 2FA المدخل
-     */
-    public function verify2fa(): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['pending_2fa_user']) || !isset($_SESSION['2fa_code'])) {
-            header("Location: index.php?url=admin/login");
-            exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $entered_code = trim($_POST['verification_code'] ?? '');
-            
-            if (time() > ($_SESSION['2fa_expiry'] ?? 0)) {
-                unset($_SESSION['pending_2fa_user'], $_SESSION['2fa_code'], $_SESSION['2fa_expiry']);
-                header("Location: index.php?url=admin/login&error=" . urlencode('انتهت صلاحية رمز التحقق الثنائي. يرجى تسجيل الدخول مرة أخرى.'));
-                exit;
-            }
-
-            if (hash_equals((string)$_SESSION['2fa_code'], (string)$entered_code)) {
-                $_SESSION['is_logged_in'] = true;
-                $_SESSION['role'] = 'admin';
-                $_SESSION['admin_username'] = $_SESSION['pending_2fa_user'];
-
-                unset($_SESSION['pending_2fa_user'], $_SESSION['2fa_code'], $_SESSION['2fa_expiry']);
-                session_regenerate_id(true);
-
-                header("Location: index.php?url=admin/dashboard");
-                exit;
-            } else {
-                header("Location: index.php?url=admin/verify-2fa&error=" . urlencode('رمز التحقق الثنائي غير صحيح. يرجى المحاولة مرة أخرى.'));
-                exit;
-            }
-        }
     }
 
     /**
@@ -254,7 +182,7 @@ class AuthController {
         }
         session_destroy();
 
-        header("Location: index.php?url=admin/login");
+        header("Location: index.php?url=admin/login&message=" . urlencode('تم تسجيل الخروج بنجاح.'));
         exit;
     }
 }

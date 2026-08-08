@@ -25,13 +25,12 @@ class ImageUploader
 
     public function __construct(
         ?string $uploadDir = null,
-        int $maxFileSize = 5 * 1024 * 1024, // الحد الأقصى لحجم الملف: 5 ميجابايت
-        int $maxWidth = 1920,                // الحد الأقصى لعرض الصورة
-        int $maxHeight = 1920,               // الحد الأقصى لارتفاع الصورة
-        int $webpQuality = 85                // درجة جودة ضغط الـ WebP (من 0 إلى 100)
+        int $maxFileSize = 5 * 1024 * 1024, 
+        int $maxWidth = 1920,                
+        int $maxHeight = 1920,               
+        int $webpQuality = 85                
     ) {
-        // الاعتماد على مجلد public/uploads الخاص بالنظام
-        $defaultDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads';
+        $defaultDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'uploads';
         $targetDir = $uploadDir ?? $defaultDir;
 
         $this->uploadDir = rtrim($targetDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -48,7 +47,7 @@ class ImageUploader
     }
 
     /**
-     * رفع ومعالجة الصورة وتخزينها في النظام
+     * رفع ومعالجة ملف مرفوع بالطريقة العادية ($_FILES)
      */
     public function upload(array $file): string
     {
@@ -56,28 +55,28 @@ class ImageUploader
         $this->validateFileSize($file['size'] ?? 0);
         $this->validateFileExtension($file['name'] ?? '');
         
-        // جلب الـ Mime Type الحقيقي والأمن للملف
-        $detectedMime = $this->detectAndValidateMime($file['tmp_name'] ?? '');
+        return $this->processAndUploadFile($file['tmp_name']);
+    }
+
+    /**
+     * دالة عامة ومرنة لمعالجة أي مسار مؤقت لصورة (تستخدمها الكنترولرات مثل SettingsController)
+     */
+    public function processAndUploadFile(string $tmpPath): string
+    {
+        $detectedMime = $this->detectAndValidateMime($tmpPath);
 
         $finalFilename = $this->generateSecureFilename();
         $destinationPath = $this->uploadDir . $finalFilename;
 
-        if (file_exists($destinationPath)) {
+        while (file_exists($destinationPath)) {
             $finalFilename = $this->generateSecureFilename();
             $destinationPath = $this->uploadDir . $finalFilename;
         }
 
         try {
-            // المعالجة والتحويل إلى WebP باستخدام الـ MIME الحقيقي المفحوص
-            $this->processAndConvertToWebP($file['tmp_name'], $destinationPath, $detectedMime);
-            
-            // التخزين عبر كلاس الاتصال الموحد للنظام
+            $this->processAndConvertToWebP($tmpPath, $destinationPath, $detectedMime);
             $this->saveToDatabase($finalFilename);
             
-            if (isset($file['tmp_name']) && is_uploaded_file($file['tmp_name'])) {
-                @unlink($file['tmp_name']);
-            }
-
             return $finalFilename;
         } catch (Exception $e) {
             if (file_exists($destinationPath)) {
@@ -165,13 +164,12 @@ class ImageUploader
             $image = @imagecreatefromwebp($sourcePath);
         }
 
-        // خطة بديلة لقراءة الصور التي تحتوي على تدرجات ألوان أو خصائص معقدة
         if (!$image) {
             $image = @imagecreatefromstring(file_get_contents($sourcePath));
         }
 
         if (!$image) {
-            throw new RuntimeException('فشل في تحميل مورد الصورة أو أن تنسيق الملف غير مدعوم في بيئة السيرفر.');
+            throw new RuntimeException('فشل في تحميل مورد الصورة أو أن تنسيق الملف غير مدعوم.');
         }
 
         if ($mimeType === 'image/png' || $mimeType === 'image/webp') {
@@ -179,7 +177,6 @@ class ImageUploader
             imagesavealpha($image, true);
         }
 
-        // إعادة تحجيم الصورة مع الحفاظ على الأبعاد النسبية إذا تجاوزت الحد الأقصى
         if ($width > $this->maxWidth || $height > $this->maxHeight) {
             $ratio = min($this->maxWidth / $width, $this->maxHeight / $height);
             $newWidth = (int)($width * $ratio);

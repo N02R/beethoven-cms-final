@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Core\Security;
+use App\Services\ImageUploader;
 use Exception;
 use PDO;
 
 class SettingsController
 {
-    /**
-     * حفظ وتحديث الإعدادات مع تحويل الصور وتعديل حجمها تلقائياً إلى WebP
-     */
     public function save(): void
     {
         $this->checkAdminAuth();
@@ -24,7 +22,6 @@ class SettingsController
             exit;
         }
 
-        // التحقق من حماية الـ CSRF للطلبات
         $headers = getallheaders();
         $token = $headers['X-CSRF-Token'] ?? $_POST['csrf_token'] ?? '';
 
@@ -43,6 +40,10 @@ class SettingsController
         }
 
         $root_path = realpath(__DIR__ . '/../../../');
+        $uploadDir = $root_path . '/public/assets/uploads/';
+        
+        // تهيئة خدمة رفع المعالجة الموحدة
+        $imageUploader = new ImageUploader($uploadDir);
 
         try {
             $action = $_POST['action'] ?? '';
@@ -50,15 +51,8 @@ class SettingsController
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-            // جلب الإعدادات الحالية للتمكن من حذف الصور القديمة عند التحديث
             $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
             $currentSettings = $currentSettingsStmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
-
-            // مسار المجلد المطلوب بدقة داخل public/assets/uploads/
-            $uploadDir = $root_path . '/public/assets/uploads/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
 
             // 1. تحديث الشعار
             if ($action === 'update_logo') {
@@ -66,8 +60,8 @@ class SettingsController
                     $oldLogo = $currentSettings['site_logo_path'] ?? '';
                     $this->deleteOldImageFile($root_path, $oldLogo);
 
-                    $filename = 'logo_' . time() . '.webp';
-                    $this->convertToWebpAndSave($_FILES['logo_img']['tmp_name'], $uploadDir . $filename);
+                    // استخدام الخدمة الموحدة مباشرة
+                    $filename = $imageUploader->processAndUploadFile($_FILES['logo_img']['tmp_name']);
                     $logoPath = 'assets/uploads/' . $filename;
                     
                     $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
@@ -83,8 +77,7 @@ class SettingsController
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'social_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $socialData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $socialData[$index]['img'] = $item['old_img'] ?? '';
@@ -121,8 +114,7 @@ class SettingsController
                         $this->deleteOldImageFile($root_path, $oldAdData['image_path']);
                     }
 
-                    $filename = 'ad_' . time() . '.webp';
-                    $this->convertToWebpAndSave($_FILES['ad_image']['tmp_name'], $uploadDir . $filename);
+                    $filename = $imageUploader->processAndUploadFile($_FILES['ad_image']['tmp_name']);
                     $adImage = 'assets/uploads/' . $filename;
                 }
 
@@ -163,8 +155,7 @@ class SettingsController
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'footer_col3_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
@@ -184,8 +175,7 @@ class SettingsController
                         $this->deleteOldImageFile($root_path, $oldHeroData['img']);
                     }
 
-                    $filename = 'hero_' . time() . '.webp';
-                    $this->convertToWebpAndSave($_FILES['hero_img']['tmp_name'], $uploadDir . $filename);
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
                     $heroImg = 'assets/uploads/' . $filename;
                 }
 
@@ -215,8 +205,7 @@ class SettingsController
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'service_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $servicesData[$index]['img'] = $item['old_img'] ?? '';
@@ -243,8 +232,7 @@ class SettingsController
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
-                        $filename = 'member_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $teamData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $teamData[$index]['img'] = $item['old_img'] ?? '';
@@ -275,86 +263,6 @@ class SettingsController
         }
     }
 
-    /**
-     * دالة مساعدة لتحويل الصورة إلى WebP، تعديل حجمها تلقائياً، وحفظها
-     */
-    private function convertToWebpAndSave(string $tmpPath, string $destination, int $maxWidth = 1000, int $maxHeight = 1000, int $quality = 85): void
-    {
-        $imageInfo = @getimagesize($tmpPath);
-        if ($imageInfo === false) {
-            throw new Exception('الملف المرفوع ليس صورة صالحة.');
-        }
-
-        $mimeType = $imageInfo['mime'];
-        $origWidth = $imageInfo[0];
-        $origHeight = $imageInfo[1];
-        $image = null;
-
-        switch ($mimeType) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $image = @imagecreatefromjpeg($tmpPath);
-                break;
-            case 'image/png':
-                $image = @imagecreatefrompng($tmpPath);
-                if ($image) {
-                    imagepalettetotruecolor($image);
-                    imagealphablending($image, true);
-                    imagesavealpha($image, true);
-                }
-                break;
-            case 'image/webp':
-                $image = @imagecreatefromwebp($tmpPath);
-                break;
-            default:
-                throw new Exception('صيغة الصورة غير مدعومة. يرجى رفع JPG, PNG أو WebP.');
-        }
-
-        if (!$image) {
-            throw new Exception('فشل في معالجة وفك تشفير الصورة.');
-        }
-
-        $newWidth = $origWidth;
-        $newHeight = $origHeight;
-
-        if ($origWidth > $maxWidth || $origHeight > $maxHeight) {
-            $ratio = $origWidth / $origHeight;
-            if ($maxWidth / $maxHeight > $ratio) {
-                $newWidth = (int)($maxHeight * $ratio);
-                $newHeight = $maxHeight;
-            } else {
-                $newWidth = $maxWidth;
-                $newHeight = (int)($maxWidth / $ratio);
-            }
-        }
-
-        $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
-        
-        imagealphablending($resizedImage, false);
-        imagesavealpha($resizedImage, true);
-        $transparent = imagecolorallocatealpha($resizedImage, 255, 255, 255, 127);
-        imagefilledrectangle($resizedImage, 0, 0, $newWidth, $newHeight, $transparent);
-
-        imagecopyresampled(
-            $resizedImage, $image,
-            0, 0, 0, 0,
-            $newWidth, $newHeight,
-            $origWidth, $origHeight
-        );
-
-        $success = @imagewebp($resizedImage, $destination, $quality);
-
-        @imagedestroy($image);
-        @imagedestroy($resizedImage);
-
-        if (!$success) {
-            throw new Exception('فشل في حفظ وتعديل حجم الصورة بصيغة WebP.');
-        }
-    }
-
-    /**
-     * دالة مساعدة لحذف الصور القديمة من السيرفر عند رفع صور بديلة
-     */
     private function deleteOldImageFile(string $rootPath, string $imagePath): void
     {
         if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
@@ -371,6 +279,7 @@ class SettingsController
             session_start();
         }
 
+        @session_start();
         if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
             if ($this->isJsonRequest()) {
                 http_response_code(401);

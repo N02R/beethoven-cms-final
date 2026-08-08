@@ -342,42 +342,42 @@
     }
 
     // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
-function addEduWhyRow() {
-    const container = document.getElementById('eduWhyContainer');
-    const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
-    const div = document.createElement('div');
-    div.className = 'card p-3 border-0 edu-why-row-item mb-2';
-    div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-    div.id = 'why_row_' + eduWhyCount;
-    div.innerHTML = `
-        <div class="row g-3 align-items-center">
-            <div class="col-md-6">
-                <label class="small text-muted fw-bold mb-1">العنوان</label>
-                <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
-            </div>
-            <div class="col-md-6">
-                <label class="small text-muted fw-bold mb-1">الوصف</label>
-                <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
-            </div>
-            <div class="col-md-11">
-                <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
-                <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
-            </div>
-            <div class="col-md-1 text-end pt-3">
-                <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف السبب">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>`;
-    container.appendChild(div);
-}
-
-
+    function addEduWhyRow() {
+        const container = document.getElementById('eduWhyContainer');
+        if (!container) return;
+        const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 edu-why-row-item mb-2';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'why_row_' + eduWhyCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">العنوان</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">الوصف</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-11">
+                    <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
+                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف السبب">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
 
     // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
+        if (!container) return;
         const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
@@ -418,6 +418,7 @@ function addEduWhyRow() {
     // 5. دالة إضافة صف جديد لـ "خدمات التعليم"
     function addEduServiceRow() {
         const container = document.getElementById('eduServicesContainer');
+        if (!container) return;
         const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-service-row-item mb-2';
@@ -454,19 +455,18 @@ function addEduWhyRow() {
                 e.preventDefault();
 
                 // إعادة ترقيم "لماذا الدراسة"
-                // إعادة ترقيم "لماذا الدراسة"
-const whyRows = form.querySelectorAll('.edu-why-row-item');
-whyRows.forEach((row, index) => {
-    const titleInput = row.querySelector('input[name*="[title]"]');
-    const descInput = row.querySelector('input[name*="[desc]"]');
-    const fileInput = row.querySelector('input[type="file"]');
-    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                const whyRows = form.querySelectorAll('.edu-why-row-item');
+                whyRows.forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const descInput = row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-    if (titleInput) titleInput.name = `edu_why[${index}][title]`;
-    if (descInput) descInput.name = `edu_why[${index}][desc]`;
-    if (fileInput) fileInput.name = `edu_why_img_${index}`;
-    if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
-});
+                    if (titleInput) titleInput.name = `edu_why[${index}][title]`;
+                    if (descInput) descInput.name = `edu_why[${index}][desc]`;
+                    if (fileInput) fileInput.name = `edu_why_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
+                });
 
                 // إعادة ترقيم "خطوات الرحلة"
                 const stepRows = form.querySelectorAll('.edu-timeline-row-item');
@@ -532,3 +532,4 @@ whyRows.forEach((row, index) => {
         });
     });
 </script>
+

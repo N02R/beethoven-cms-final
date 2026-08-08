@@ -1,9 +1,6 @@
 <?php
 declare(strict_types=1);
 
-// استدعاء ملف الدوال بالرجوع ثلاثة مجلدات للوصول لجذر المشروع
-require_once __DIR__ . '/../../../functions.php';
-
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 

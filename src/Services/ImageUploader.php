@@ -83,8 +83,10 @@ class ImageUploader
             if (file_exists($destinationPath)) {
                 @unlink($destinationPath);
             }
-            throw new RuntimeException('فشلت معالجة الصورة: ' . $e->getMessage());
+            // اطبعي الخطأ الأصلي هنا لنعرف السبب بدقة
+            throw new RuntimeException('خطأ تفصيلي: ' . $e->getMessage() . ' | السطر: ' . $e->getLine());
         }
+
     }
 
     private function validateUploadError(int $error): void

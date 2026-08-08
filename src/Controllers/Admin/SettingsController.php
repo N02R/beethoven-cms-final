@@ -13,7 +13,7 @@ class SettingsController
     /**
      * عرض صفحة إعدادات لوحة التحكم
      */
-    public function index(): void
+      public function index(): void
     {
         $this->checkAdminAuth();
 
@@ -27,17 +27,84 @@ class SettingsController
         $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
         $rawSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 
-        $settings = [
-            'site_title' => $rawSettings['site_title'] ?? 'Beethoven CMS',
-            'site_email' => $rawSettings['site_email'] ?? '',
-            'site_logo'  => $rawSettings['site_logo'] ?? '',
-        ];
-
-        // تجهيز مصفوفة البيانات ($data) لعرض الإعدادات الحالية بما فيها قسم فريق العمل داخل المودلز
+        // مصفوفة $data الشاملة التي تحتوي على كل إعدادات وبيانات الموقع مفكوكة وجاهزة للعرض
         $data = [
-            'team_title'   => $rawSettings['team_title'] ?? 'فريق العمل',
-            'team_desc'    => $rawSettings['team_desc'] ?? '',
-            'team_members' => json_decode($rawSettings['team_items'] ?? '[]', true)
+            // الإعدادات العامة الأساسية
+            'site_title'           => $rawSettings['site_title'] ?? 'Beethoven CMS',
+            'site_email'           => $rawSettings['site_email'] ?? '',
+            'site_logo'            => $rawSettings['site_logo'] ?? '',
+            'site_logo_path'       => $rawSettings['site_logo_path'] ?? '',
+
+            // الروابط والقوائم
+            'social_links'         => json_decode($rawSettings['social_links'] ?? '[]', true),
+            'menu_links'           => json_decode($rawSettings['menu_links'] ?? '[]', true),
+            'languages'            => json_decode($rawSettings['languages'] ?? '[]', true),
+            'announcement'         => json_decode($rawSettings['announcement'] ?? '{}', true),
+
+            // الفوتر
+            'consult_title'        => $rawSettings['consult_title'] ?? '',
+            'consult_desc'         => $rawSettings['consult_desc'] ?? '',
+            'footer_desc'          => $rawSettings['footer_desc'] ?? '',
+            'footer_col2_title'    => $rawSettings['footer_col2_title'] ?? '',
+            'footer_col3_title'    => $rawSettings['footer_col3_title'] ?? '',
+            'footer_col3_links'    => json_decode($rawSettings['footer_col3_links'] ?? '[]', true),
+
+            // الهيرو والخدمات العامة
+            'hero'                 => json_decode($rawSettings['hero'] ?? '{}', true),
+            'services_section_title' => $rawSettings['services_section_title'] ?? '',
+            'services_section_desc'  => $rawSettings['services_section_desc'] ?? '',
+            'services'             => json_decode($rawSettings['services'] ?? '[]', true),
+
+            // المميزات والتقييمات والدليل والأسئلة
+            'choose_title'         => $rawSettings['choose_title'] ?? '',
+            'choose_section_desc'  => $rawSettings['choose_section_desc'] ?? '',
+            'choose_items'         => json_decode($rawSettings['choose_items'] ?? '[]', true),
+            'reviews_title'        => $rawSettings['reviews_title'] ?? '',
+            'reviews_items'        => json_decode($rawSettings['reviews_items'] ?? '[]', true),
+            'guide_title'          => $rawSettings['guide_title'] ?? '',
+            'guide_desc'           => $rawSettings['guide_desc'] ?? '',
+            'guide_items'          => json_decode($rawSettings['guide_items'] ?? '[]', true),
+            'faq_title'            => $rawSettings['faq_title'] ?? '',
+            'faq_items'            => json_decode($rawSettings['faq_items'] ?? '[]', true),
+
+            // من نحن وفريق العمل والإحصائيات والشركاء
+            'about_section'        => json_decode($rawSettings['about_section'] ?? '{}', true),
+            'team_title'           => $rawSettings['team_title'] ?? 'فريق العمل',
+            'team_desc'            => $rawSettings['team_desc'] ?? '',
+            'team_members'         => json_decode($rawSettings['team_items'] ?? '[]', true),
+            'about_counts'         => json_decode($rawSettings['about_counts'] ?? '[]', true),
+            'partners_title'       => $rawSettings['partners_title'] ?? '',
+            'partners_items'       => json_decode($rawSettings['partners_items'] ?? '[]', true),
+
+            // قسم التعليم (Edu)
+            'edu_hero'             => json_decode($rawSettings['edu_hero'] ?? '{}', true),
+            'edu_why_title'        => $rawSettings['edu_why_title'] ?? '',
+            'edu_why_desc'         => $rawSettings['edu_why_desc'] ?? '',
+            'edu_why_items'        => json_decode($rawSettings['edu_why_items'] ?? '[]', true),
+            'edu_timeline_title'   => $rawSettings['edu_timeline_title'] ?? '',
+            'edu_timeline_desc'    => $rawSettings['edu_timeline_desc'] ?? '',
+            'edu_timeline_steps'   => json_decode($rawSettings['edu_timeline_steps'] ?? '[]', true),
+            'edu_services_title'   => $rawSettings['edu_services_title'] ?? '',
+            'edu_services_desc'    => $rawSettings['edu_services_desc'] ?? '',
+            'edu_services_items'   => json_decode($rawSettings['edu_services_items'] ?? '[]', true),
+
+            // أقسام التدريب والتوظيف (Job & Training)
+            'job_hero'             => json_decode($rawSettings['job_hero'] ?? '{}', true),
+            'job_why_title'        => $rawSettings['job_why_title'] ?? '',
+            'job_why_desc'         => $rawSettings['job_why_desc'] ?? '',
+            'job_why_items'        => json_decode($rawSettings['job_why_items'] ?? '[]', true),
+            'job_program_title'    => $rawSettings['job_program_title'] ?? '',
+            'job_program_desc'     => $rawSettings['job_program_desc'] ?? '',
+            'job_program_types'    => json_decode($rawSettings['job_program_types'] ?? '[]', true),
+            'job_timeline_title'   => $rawSettings['job_timeline_title'] ?? '',
+            'job_timeline_desc'    => $rawSettings['job_timeline_desc'] ?? '',
+            'job_timeline_steps'   => json_decode($rawSettings['job_timeline_steps'] ?? '[]', true),
+            'job_services_title'   => $rawSettings['job_services_title'] ?? '',
+            'job_services_desc'    => $rawSettings['job_services_desc'] ?? '',
+            'job_services_items'   => json_decode($rawSettings['job_services_items'] ?? '[]', true),
+            
+            // مرجع خام إضافي إن دعت الحاجة
+            'raw_settings'         => $rawSettings
         ];
 
         $csrf_token = Security::generateCsrfToken();
@@ -51,7 +118,6 @@ class SettingsController
             echo "Settings View file not found.";
         }
     }
-
     /**
      * حفظ وتحديث الإعدادات مع تحويل الصور وتعديل حجمها تلقائياً إلى WebP
      */

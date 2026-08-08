@@ -1,8 +1,4 @@
-<?php
-if (!defined('ALLOWED_ACCESS')) {
-    exit('Direct access not permitted.');
-}
-?>
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -160,7 +156,6 @@ document.getElementById('settingsForm').addEventListener('submit', function(e) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'حفظ التغييرات';
     });
-د
 </script>
 
 </body>

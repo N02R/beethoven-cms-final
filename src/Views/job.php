@@ -217,6 +217,7 @@
 <!-- education services end -->
 
 <?php 
+// تضمين نوافذ التعديل (Modals) الخاصة بصفحة فرص العمل تدريجياً وبشكل آمن
 $job_modals_file = __DIR__ . '/admin/admin_job_modals.php';
 if (!empty($is_admin) && file_exists($job_modals_file)) { 
     include_once $job_modals_file; 

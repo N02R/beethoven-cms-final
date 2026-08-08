@@ -25,10 +25,10 @@ class ImageUploader
 
     public function __construct(
         ?string $uploadDir = null,
-        int $maxFileSize = 5 * 1024 * 1024, // 5 ميجابايت
-        int $maxWidth = 1920,
-        int $maxHeight = 1920,
-        int $webpQuality = 85
+        int $maxFileSize = 5 * 1024 * 1024, // الحد الأقصى لحجم الملف: 5 ميجابايت
+        int $maxWidth = 1920,                // الحد الأقصى لعرض الصورة
+        int $maxHeight = 1920,               // الحد الأقصى لارتفاع الصورة
+        int $webpQuality = 85                // درجة جودة ضغط الـ WebP (من 0 إلى 100)
     ) {
         // الاعتماد على مجلد public/uploads الخاص بالنظام
         $defaultDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'uploads';
@@ -68,7 +68,7 @@ class ImageUploader
         }
 
         try {
-            // المعالجة باستخدام الـ MIME الحقيقي المفحوص
+            // المعالجة والتحويل إلى WebP باستخدام الـ MIME الحقيقي المفحوص
             $this->processAndConvertToWebP($file['tmp_name'], $destinationPath, $detectedMime);
             
             // التخزين عبر كلاس الاتصال الموحد للنظام
@@ -83,10 +83,8 @@ class ImageUploader
             if (file_exists($destinationPath)) {
                 @unlink($destinationPath);
             }
-            // اطبعي الخطأ الأصلي هنا لنعرف السبب بدقة
-            throw new RuntimeException('خطأ تفصيلي: ' . $e->getMessage() . ' | السطر: ' . $e->getLine());
+            throw new RuntimeException('فشلت معالجة الصورة: ' . $e->getMessage());
         }
-
     }
 
     private function validateUploadError(int $error): void
@@ -167,7 +165,7 @@ class ImageUploader
             $image = @imagecreatefromwebp($sourcePath);
         }
 
-        // خطة بديلة في حال فشل القراءة المباشرة بسبب قيود تدرجات الألوان
+        // خطة بديلة لقراءة الصور التي تحتوي على تدرجات ألوان أو خصائص معقدة
         if (!$image) {
             $image = @imagecreatefromstring(file_get_contents($sourcePath));
         }
@@ -181,6 +179,7 @@ class ImageUploader
             imagesavealpha($image, true);
         }
 
+        // إعادة تحجيم الصورة مع الحفاظ على الأبعاد النسبية إذا تجاوزت الحد الأقصى
         if ($width > $this->maxWidth || $height > $this->maxHeight) {
             $ratio = min($this->maxWidth / $width, $this->maxHeight / $height);
             $newWidth = (int)($width * $ratio);
@@ -211,12 +210,10 @@ class ImageUploader
     private function saveToDatabase(string $filename): void
     {
         try {
-            // التعديل هنا ليتطابق مع Database::getConnection() الموجودة في مشروعك
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, created_at) VALUES (:filename, NOW())');
             $stmt->execute(['filename' => $filename]);
         } catch (Exception $e) {
-            // تسجيل الخطأ دون إيقاف عملية الرفع
             error_log('Failed to log uploaded image to database: ' . $e->getMessage());
         }
     }

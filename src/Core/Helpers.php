@@ -50,12 +50,12 @@ if (!function_exists('get_image_url')) {
         // 1. استخراج اسم الملف فقط لو كان المسار يحتوي على مجلدات فرعية
         $filename = basename($path);
 
-        // 2. المسار الفيزيائي للملف على السيرفر (داخل public/uploads)
-        $uploadFilePath = __DIR__ . '/../../public/uploads/' . $filename;
+        // 2. المسار الفيزيائي الصحيح للملف على السيرفر (داخل public/assets/uploads)
+        $uploadFilePath = __DIR__ . '/../../public/assets/uploads/' . $filename;
 
-        // 3. التحقق من وجود الملف داخل مجلد uploads
+        // 3. التحقق من وجود الملف داخل مجلد assets/uploads
         if (file_exists($uploadFilePath)) {
-            return '/uploads/' . $filename;
+            return '/assets/uploads/' . $filename;
         }
 
         // 4. إذا كان المسار القديم يشير إلى assets/img وموجود فعلياً على السيرفر

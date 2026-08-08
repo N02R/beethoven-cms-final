@@ -17,9 +17,10 @@ class ImageUploader
     private int $maxHeight;
     private int $webpQuality;
     private array $allowedMimeTypes = [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/webp' => 'webp',
+        'image/jpeg'  => 'jpg',
+        'image/pjpeg' => 'jpg',
+        'image/png'   => 'png',
+        'image/webp'  => 'webp',
     ];
 
     public function __construct(
@@ -148,17 +149,29 @@ class ImageUploader
 
     private function processAndConvertToWebP(string $sourcePath, string $destinationPath, string $mimeType): void
     {
-        [$width, $height] = getimagesize($sourcePath);
+        $imageInfo = @getimagesize($sourcePath);
+        if ($imageInfo === false) {
+            throw new InvalidArgumentException('الملف المرفوع ليس صورة صالحة أو تالف.');
+        }
+        
+        [$width, $height] = $imageInfo;
 
-        $image = match ($mimeType) {
-            'image/jpeg' => imagecreatefromjpeg($sourcePath),
-            'image/png'  => imagecreatefrompng($sourcePath),
-            'image/webp' => imagecreatefromwebp($sourcePath),
-            default      => throw new InvalidArgumentException('نوع الصورة غير مدعوم للتحويل.'),
-        };
+        $image = null;
+        if ($mimeType === 'image/jpeg' || $mimeType === 'image/pjpeg') {
+            $image = @imagecreatefromjpeg($sourcePath);
+        } elseif ($mimeType === 'image/png') {
+            $image = @imagecreatefrompng($sourcePath);
+        } elseif ($mimeType === 'image/webp') {
+            $image = @imagecreatefromwebp($sourcePath);
+        }
+
+        // خطة بديلة في حال فشل القراءة المباشرة بسبب قيود تدرجات الألوان
+        if (!$image) {
+            $image = @imagecreatefromstring(file_get_contents($sourcePath));
+        }
 
         if (!$image) {
-            throw new RuntimeException('فشل في تحميل مورد الصورة.');
+            throw new RuntimeException('فشل في تحميل مورد الصورة أو أن تنسيق الملف غير مدعوم في بيئة السيرفر.');
         }
 
         if ($mimeType === 'image/png' || $mimeType === 'image/webp') {

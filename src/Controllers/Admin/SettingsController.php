@@ -121,9 +121,13 @@ class SettingsController
             elseif ($action === 'update_social') {
                 $socialData = $_POST['social'] ?? [];
                 foreach ($socialData as $index => $item) {
-                    if (isset($_FILES['social_img_' . $index]) && $_FILES['social_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['social_img_' . $index] ?? ($_FILES['social'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'social_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['social_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $socialData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $socialData[$index]['img'] = $item['old_img'] ?? '';
@@ -197,9 +201,13 @@ class SettingsController
 
                 $footerCol3Data = $_POST['col3'] ?? [];
                 foreach ($footerCol3Data as $index => $item) {
-                    if (isset($_FILES['col3_img_' . $index]) && $_FILES['col3_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['col3_img_' . $index] ?? ($_FILES['col3'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'footer_col3_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['col3_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
@@ -235,7 +243,7 @@ class SettingsController
                 $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 8. تحديث الخدمات (Services)
+            // 8. تحديث الخدمات (Services) - مرن وتلقائي بالكامل
             elseif ($action === 'update_services') {
                 $servTitle = $_POST['services_title'] ?? '';
                 $servDesc  = $_POST['services_desc'] ?? '';
@@ -244,9 +252,15 @@ class SettingsController
 
                 $servicesData = $_POST['services'] ?? [];
                 foreach ($servicesData as $index => $item) {
-                    if (isset($_FILES['service_img_' . $index]) && $_FILES['service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    // البحث الذكي عن ملف الصورة سواء جاء عبر service_img_X أو مصفوفة services[X][img]
+                    $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
+                    
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'service_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $servicesData[$index]['img'] = $item['old_img'] ?? '';
@@ -266,9 +280,13 @@ class SettingsController
 
                 $chooseData = $_POST['choose'] ?? [];
                 foreach ($chooseData as $index => $item) {
-                    if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['choose_img_' . $index] ?? ($_FILES['choose'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'choose_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['choose_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $chooseData[$index]['img'] = $item['old_img'] ?? '';
@@ -298,9 +316,13 @@ class SettingsController
 
                 $guideData = $_POST['guide'] ?? [];
                 foreach ($guideData as $index => $item) {
-                    if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['guide_img_' . $index] ?? ($_FILES['guide'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
                         $filename = 'guide_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['guide_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $guideData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $guideData[$index]['img'] = $item['old_img'] ?? '';
@@ -394,14 +416,14 @@ class SettingsController
 
                 $teamData = $_POST['team'] ?? [];
                 foreach ($teamData as $index => $item) {
-                    $fileKey = 'team_img_' . $index;
+                    $fileToCheck = $_FILES['team_img_' . $index] ?? ($_FILES['team'][$index]['img'] ?? null);
                     
-                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'member_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES[$fileKey]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $teamData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $teamData[$index]['img'] = $item['old_img'] ?? '';
@@ -417,12 +439,13 @@ class SettingsController
             elseif ($action === 'update_about_counts') {
                 $countsData = $_POST['counts'] ?? [];
                 foreach ($countsData as $index => $item) {
-                    if (isset($_FILES['count_img_' . $index]) && $_FILES['count_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['count_img_' . $index] ?? ($_FILES['counts'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'count_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['count_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $countsData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $countsData[$index]['img'] = $item['old_img'] ?? '';
@@ -440,12 +463,13 @@ class SettingsController
 
                 $partnersData = $_POST['partners'] ?? [];
                 foreach ($partnersData as $index => $item) {
-                    if (isset($_FILES['partner_img_' . $index]) && $_FILES['partner_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['partner_img_' . $index] ?? ($_FILES['partners'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'partner_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['partner_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $partnersData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $partnersData[$index]['img'] = $item['old_img'] ?? '';
@@ -490,12 +514,13 @@ class SettingsController
 
                 $whyData = $_POST['edu_why'] ?? [];
                 foreach ($whyData as $index => $item) {
-                    if (isset($_FILES['edu_why_img_' . $index]) && $_FILES['edu_why_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['edu_why_img_' . $index] ?? ($_FILES['edu_why'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'edu_why_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['edu_why_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $whyData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $whyData[$index]['img'] = $item['old_img'] ?? '';
@@ -515,12 +540,13 @@ class SettingsController
 
                 $timelineData = $_POST['edu_timeline'] ?? [];
                 foreach ($timelineData as $index => $item) {
-                    if (isset($_FILES['edu_timeline_icon_' . $index]) && $_FILES['edu_timeline_icon_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['edu_timeline_icon_' . $index] ?? ($_FILES['edu_timeline'][$index]['icon'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_icon'])) {
                             $this->deleteOldImageFile($root_path, $item['old_icon']);
                         }
                         $filename = 'edu_step_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['edu_timeline_icon_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $timelineData[$index]['icon'] = 'assets/uploads/' . $filename;
                     } else {
                         $timelineData[$index]['icon'] = $item['old_icon'] ?? '';
@@ -540,12 +566,13 @@ class SettingsController
 
                 $servicesData = $_POST['edu_services'] ?? [];
                 foreach ($servicesData as $index => $item) {
-                    if (isset($_FILES['edu_service_img_' . $index]) && $_FILES['edu_service_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = $_FILES['edu_service_img_' . $index] ?? ($_FILES['edu_services'][$index]['img'] ?? null);
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
                             $this->deleteOldImageFile($root_path, $item['old_img']);
                         }
                         $filename = 'edu_service_' . $index . '_' . time() . '.webp';
-                        $this->convertToWebpAndSave($_FILES['edu_service_img_' . $index]['tmp_name'], $uploadDir . $filename);
+                        $this->convertToWebpAndSave($fileToCheck['tmp_name'], $uploadDir . $filename);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
                         $servicesData[$index]['img'] = $item['old_img'] ?? '';

@@ -160,6 +160,7 @@ $router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
 $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
 $router->add('GET', 'media/view', [MediaController::class, 'serve']);
 $router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 'save']);
+$router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
 
 
 // ==========================================

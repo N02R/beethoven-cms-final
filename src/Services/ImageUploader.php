@@ -192,16 +192,14 @@ class ImageUploader
             }
 
             imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-            imagedestroy($image);
+            
+            // التعديل هنا: تم إزالة استدعاء imagedestroy() لأنها أصبحت ملغاة (Deprecated) في PHP 8.5
             $image = $newImage;
         }
 
         if (!imagewebp($image, $destinationPath, $this->webpQuality)) {
-            imagedestroy($image);
             throw new RuntimeException('فشل في حفظ صورة WebP.');
         }
-
-        imagedestroy($image);
     }
 
     private function saveToDatabase(string $filename): void

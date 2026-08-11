@@ -17,7 +17,7 @@
       <?php 
       $contact_hero_bg = get_image_url($contact_hero_img ?? null, 'assets/img/contacthero.png');
       ?>
-      <img src="<?php echo htmlspecialchars($contact_hero_bg); ?>" alt="تواصل معنا" class="img-fluid w-100" style="border-radius: 20px;">
+      <img src="<?php echo htmlspecialchars($contact_hero_bg); ?>" alt="تواصل معنا">
     </div>
   </div>
 </section>

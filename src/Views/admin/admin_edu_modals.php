@@ -507,27 +507,31 @@
                 }
 
                 fetch('index.php?url=admin/settings/save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log("Raw Server Response:", text);
+                try {
+                    const data = JSON.parse(text);
                     if (data.success) {
-                        showNotification(data.message || 'تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
-                        console.error('Server Response Error:', data);
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.error || data.message || 'فشل الحفظ'), 'danger');
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                     }
-                })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.', 'danger');
-                });
+                } catch (e) {
+                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });

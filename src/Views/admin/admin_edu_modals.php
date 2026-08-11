@@ -349,7 +349,7 @@
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-why-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'why_row_' + eduWhyCount;
+        div.id = 'why_row_' + Date.now() + '_' + eduWhyCount;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -366,7 +366,7 @@
                     <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_${eduWhyCount}')" title="حذف السبب">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف السبب">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -382,7 +382,7 @@
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'step_row_' + eduStepCount;
+        div.id = 'step_row_' + Date.now() + '_' + eduStepCount;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -407,7 +407,7 @@
                     <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_${eduStepCount}')" title="حذف الخطوة">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخطوة">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -423,7 +423,7 @@
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-service-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'edu_srv_row_' + eduSrvCount;
+        div.id = 'edu_srv_row_' + Date.now() + '_' + eduSrvCount;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -440,7 +440,7 @@
                     <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')" title="حذف الخدمة">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخدمة">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -507,33 +507,35 @@
                 }
 
                 fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
-                } catch (e) {
-                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });
 </script>
+
 

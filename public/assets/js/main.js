@@ -156,29 +156,63 @@ async function initWordPressData() {
   }
 }
 
-// دالة شريط الكوكيز
+// دالة شريط الكوكيز المتوافقة تجارياً مع معايير الشركات الألمانية
 function initCookieBanner() {
   const cookieBanner = document.getElementById('cookie-banner');
   const acceptBtn = document.getElementById('accept-cookies');
   const rejectBtn = document.getElementById('reject-cookies');
 
-  if (!localStorage.getItem('cookie_consent')) {
+  const consent = localStorage.getItem('cookie_consent');
+
+  if (!consent) {
+    // إذا لم يحدد المستخدم قراره بعد، أظهر الشريط واعتبار الكوكيز الاختيارية معطلة افتراضياً
     if (cookieBanner) {
       cookieBanner.style.display = 'block';
     }
+    disableTrackingScripts();
+  } else if (consent === 'accepted') {
+    // إذا وافق مسبقاً، قم بتفعيل السكريبتات
+    enableTrackingScripts();
+  } else {
+    // إذا رفض، تأكد من إبقاء السكريبتات معطلة
+    disableTrackingScripts();
   }
 
+  // عند النقر على "قبول الكل"
   if (acceptBtn) {
     acceptBtn.addEventListener('click', function() {
       localStorage.setItem('cookie_consent', 'accepted');
       if (cookieBanner) cookieBanner.style.display = 'none';
+      enableTrackingScripts(); // تفعيل سكريبتات التتبع فوراً
     });
   }
 
+  // عند النقر على "رفض غير الضروري"
   if (rejectBtn) {
     rejectBtn.addEventListener('click', function() {
       localStorage.setItem('cookie_consent', 'rejected');
       if (cookieBanner) cookieBanner.style.display = 'none';
+      disableTrackingScripts(); // ضمان حظر أي سكريبتات تتبع
     });
   }
+}
+
+// دالة تفعيل أدوات التتبع (مثل Google Analytics أو الإعلانات)
+function enableTrackingScripts() {
+  console.log("تم تفعيل الكوكيز الاختيارية وأدوات التتبع بناءً على موافقة المستخدم الصريحة.");
+  
+  // مثال: إذا كان لديك كود لـ Google Analytics يتم وضعه هنا:
+  /*
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'YOUR-GA-ID');
+  */
+}
+
+// دالة تعطيل/حظر أدوات التتبع
+function disableTrackingScripts() {
+  console.log("تم حظر أدوات التتبع والكوكيز الاختيارية التزاماً بقرار المستخدم وقوانين الخصوصية الألمانية.");
+  
+  // هنا تضمنين عدم الحقن بأي أكواد تسويقية أو تحليلية
 }

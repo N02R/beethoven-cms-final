@@ -179,10 +179,11 @@ if (isset($page_js) && is_array($page_js)) {
     }
 }
 ?>
+<!-- شريط الموافقة على الكوكيز -->
 <div id="cookie-banner" class="cookie-banner" style="display: none;">
     <div class="cookie-content">
         <p>
-            نحن نستخدم ملفات تعريف الارتباط (Cookies) لتحسين تجربة المتجر وتقديم محتوى مخصص وفقاً لسياسة الخصوصية الألمانية (GDPR).
+            نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" style="color: #fff; text-decoration: underline;">سياسة الخصوصية</a>.
         </p>
         <div class="cookie-buttons">
             <button id="accept-cookies" class="btn-accept">قبول الكل</button>
@@ -190,6 +191,7 @@ if (isset($page_js) && is_array($page_js)) {
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>

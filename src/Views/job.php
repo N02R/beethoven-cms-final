@@ -115,11 +115,11 @@
 
   <div class="custom-container">
     <div class="mb-5">
+      <!-- تم التعديل هنا لتتوافق مع متغيرات الـ Job -->
       <h2 class="sec-title"><?php echo htmlspecialchars($job_timeline_title ?? ''); ?></h2>
       <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($job_timeline_desc ?? ''); ?></p>
     </div>
     
-    <!-- الكود الخاص بالـ Timeline هنا متطابق تماماً مع المنطق المتبع في education.php -->
     <div class="map-container d-none d-lg-block">
       <div class="map-box">
         <img src="<?php echo get_image_url('assets/img/vector/Vector.png'); ?>" alt="base" class="line-base">
@@ -127,11 +127,11 @@
         
         <?php 
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-        foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+        // تم التعديل هنا لاستخدام $job_timeline_steps
+        foreach (($job_timeline_steps ?? []) as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
             
-            // تحديد مسار الأيقونة الداخلية وحساب مسار الصورة الخلفية للرقم
             $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
             $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
             $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
@@ -155,7 +155,9 @@
     </div>
 
     <div class="mobile-timeline d-lg-none">
-      <?php foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+      <?php 
+      // تم التعديل هنا أيضاً لاستخدام $job_timeline_steps
+      foreach (($job_timeline_steps ?? []) as $idx => $step): 
           $num = sprintf("%02d", $idx + 1);
           $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
           $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
@@ -180,6 +182,7 @@
   </div>
 </section>
 <!-- time line end -->
+
 
 <!-- 5. job services start -->
 <section class="edu-services py-5" style="position: relative;">

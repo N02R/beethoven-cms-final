@@ -337,10 +337,34 @@
 
 <!-- Dynamic Rows JS Engine -->
 <script>
-    function removeRow(id) {
+        function removeTimelineRow(id) {
         const el = document.getElementById(id);
-        if (el) el.remove();
+        if (el) {
+            el.remove();
+            toggleTimelineAddButton(); // إعادة فحص الزر لإظهاره إذا كان العدد أقل من 6
+        }
     }
+
+    function toggleTimelineAddButton() {
+        const container = document.getElementById('jobTimelineContainer');
+        const currentRows = container.querySelectorAll('.job-step-row-item').length;
+        // البحث عن زر الإضافة الخاص بالخطوات (يمكنك إضافة id للزر لتسهيل الوصول إليه، مثل id="addTimelineBtn")
+        const addBtn = document.querySelector('#jobTimelineForm button[onclick="addJobStepRow()"]');
+        
+        if (addBtn) {
+            if (currentRows >= 6) {
+                addBtn.style.display = 'none'; // إخفاء الزر إذا وصل 6 عناصر
+            } else {
+                addBtn.style.display = 'inline-block'; // إظهار الزر إذا كان أقل من 6
+            }
+        }
+    }
+
+    // تشغيل التحقق مرة واحدة عند تحميل المودل للتأكد من الحالة المبدئية
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleTimelineAddButton();
+    });
+
 
     let jobWhyCount = <?php echo count($job_why_items); ?>;
     function addJobWhyRow() {

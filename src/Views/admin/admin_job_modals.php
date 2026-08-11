@@ -414,9 +414,21 @@
         jobProgCount++;
     }
 
-    let jobStepCount = <?php echo count($job_timeline_steps); ?>;
+        let jobStepCount = <?php echo count($job_timeline_steps); ?>;
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
+        const currentRows = container.querySelectorAll('.job-step-row-item').length;
+        
+        // التحقق من أن العدد أقل من 6
+        if (currentRows >= 6) {
+            if (typeof showNotification === 'function') {
+                showNotification('عذراً، الحد الأقصى للخطوات هو 6 خطوات فقط.', 'warning');
+            } else {
+                alert('الحد الأقصى للخطوات هو 6 خطوات فقط.');
+            }
+            return;
+        }
+
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 mb-2 job-step-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
@@ -433,7 +445,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="small text-muted mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب">
+                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${currentRows}" placeholder="الترتيب">
                 </div>
                 <div class="col-md-3">
                     <label class="small text-muted mb-1">أيقونة الخطوة</label>
@@ -441,15 +453,19 @@
                     <input type="hidden" name="steps[${jobStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button>
                 </div>
                 <div class="col-md-12 mt-2">
                     <label class="small text-muted mb-1">التفاصيل</label>
                     <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
                 </div>
-            </div>`;
+            </div>
+    `;
         container.appendChild(div);
         jobStepCount++;
+
+        // التحقق بعد الإضافة: إذا أصبح العدد 6، قم بإخفاء زر الإضافة
+        toggleTimelineAddButton();
     }
 
     let jobSrvCount = <?php echo count($job_services_items); ?>;

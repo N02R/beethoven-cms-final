@@ -338,13 +338,11 @@
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات الاحترافية بأسلوب Bootstrap
+    // دالة لإنشاء وعرض التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
-        // إزالة أي تنبيه سابق متبقي
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        // تحديد الألوان والأيقونات بناءً على نوع الرسالة
         let bgClass = 'alert-success';
         let icon = 'bi-check-circle-fill';
         let title = 'تم بنجاح!';
@@ -359,7 +357,6 @@
             title = 'تنبيه هام';
         }
 
-        // إنشاء عنصر التنبيه العائم في منتصف الشاشة بالأعلى
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
@@ -378,7 +375,6 @@
 
         document.body.appendChild(alertDiv);
 
-        // إخفاء التنبيه تلقائياً بعد 4 ثواني
         setTimeout(() => {
             if (alertDiv) {
                 alertDiv.classList.remove('show');
@@ -391,26 +387,26 @@
         const container = document.getElementById('teamRowsContainer');
         const teamCount = container.querySelectorAll('.team-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border team-row-item shadow-sm';
-        div.style.cssText = 'background: var(--bg-soft, #f8f9fa); border-radius: 12px;';
+        div.className = 'card p-3 border team-row-item shadow-sm mb-2';
+        div.style.cssText = 'background: var(--bg-soft, #f8f9fa); border-radius: 12px; border: 1px solid var(--border-color) !important;';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="small text-muted fw-bold">الاسم</label>
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">الاسم</label>
                     <input type="text" class="form-control form-control-sm team-name" name="team[${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <label class="small text-muted fw-bold">المسمى الوظيفي</label>
+                    <label class="small text-muted mb-1">المسمى الوظيفي</label>
                     <input type="text" class="form-control form-control-sm team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
-                <div class="col-md-4">
-                    <label class="small text-muted fw-bold">الصورة الشخصية الجديدة</label>
+                <div class="col-md-5">
+                    <label class="small text-muted mb-1">الصورة الشخصية</label>
                     <input type="file" class="form-control form-control-sm team-file" name="team_img_${teamCount}" accept="image/*">
                     <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -466,18 +462,18 @@
         container.appendChild(div);
     }
 
-    // معالج النماذج الموحد الشامل مع التنبيهات المطورة
+    // معالج النماذج الموحد والشامل
     document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم صفوف الفريق بدقة متناهية
+            // إعادة ترقيم صفوف الفريق بدقة
             const teamRows = form.querySelectorAll('.team-row-item');
             teamRows.forEach((row, index) => {
-                const nameInput = row.querySelector('input[name*="[name]"]');
-                const roleInput = row.querySelector('input[name*="[role]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                const nameInput = row.querySelector('.team-name');
+                const roleInput = row.querySelector('.team-role');
+                const fileInput = row.querySelector('.team-file');
+                const oldImgInput = row.querySelector('.team-old-img');
 
                 if(nameInput) nameInput.name = `team[${index}][name]`;
                 if(roleInput) roleInput.name = `team[${index}][role]`;
@@ -485,13 +481,13 @@
                 if(oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
             });
 
-            // إعادة ترقيم صفوف الإحصائيات/العدادات بدقة تامة
+            // إعادة ترقيم صفوف الإحصائيات بدقة
             const countRows = form.querySelectorAll('.count-row-item');
             countRows.forEach((row, index) => {
-                const numInput = row.querySelector('input[name*="[number]"]');
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                const numInput = row.querySelector('.count-number');
+                const titleInput = row.querySelector('.count-title');
+                const fileInput = row.querySelector('.count-file');
+                const oldImgInput = row.querySelector('.count-old-img');
 
                 if(numInput) numInput.name = `counts[${index}][number]`;
                 if(titleInput) titleInput.name = `counts[${index}][title]`;
@@ -502,15 +498,14 @@
             // إعادة ترقيم صفوف الشركاء بدقة
             const partnerRows = form.querySelectorAll('.partner-row-item');
             partnerRows.forEach((row, index) => {
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                const fileInput = row.querySelector('.partner-file');
+                const oldImgInput = row.querySelector('.partner-old-img');
 
                 if(fileInput) fileInput.name = `partner_img_${index}`;
                 if(oldImgInput) oldImgInput.name = `partners[${index}][old_img]`;
             });
 
             const formData = new FormData(this);
-
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             
             if (csrfToken && !formData.has('csrf_token')) {
@@ -531,11 +526,9 @@
                 try {
                     const data = JSON.parse(text);
                     if (data.success) {
-                        // إشعار أخضر جميل عند النجاح ثم إعادة التحميل بعد ثانية
                         showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
-                        // إشعار أحمر إذا كان هناك خطأ مرسل من السيرفر
                         showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                     }
                 } catch (e) {
@@ -549,3 +542,4 @@
         });
     });
 </script>
+

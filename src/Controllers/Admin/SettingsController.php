@@ -244,6 +244,78 @@ class SettingsController
                 $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
+            // 10. تحديث الأسئلة الشائعة (FAQ)
+            elseif ($action === 'update_faq') {
+                $faqTitle = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
+                $stmt->execute(['k' => 'faq_title', 'v' => $faqTitle, 'v_update' => $faqTitle]);
+
+                $faqData = $_POST['faq'] ?? [];
+                $jsonVal = json_encode(array_values($faqData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 11. تحديث التقييمات (Reviews)
+            elseif ($action === 'update_reviews') {
+                $reviewsTitle = $_POST['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+                $stmt->execute(['k' => 'reviews_title', 'v' => $reviewsTitle, 'v_update' => $reviewsTitle]);
+
+                $reviewsData = $_POST['reviews'] ?? [];
+                $jsonVal = json_encode(array_values($reviewsData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 12. تحديث المميزات (Choose)
+            elseif ($action === 'update_choose') {
+                $chooseTitle = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
+                $chooseDesc  = $_POST['choose_desc'] ?? '';
+                $stmt->execute(['k' => 'choose_title', 'v' => $chooseTitle, 'v_update' => $chooseTitle]);
+                $stmt->execute(['k' => 'choose_section_desc', 'v' => $chooseDesc, 'v_update' => $chooseDesc]);
+
+                $chooseData = $_POST['choose'] ?? [];
+                foreach ($chooseData as $index => $item) {
+                    $fileToCheck = $_FILES['choose_img_' . $index] ?? ($_FILES['choose'][$index]['img'] ?? null);
+                    
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $chooseData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($chooseData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($chooseData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 13. تحديث الدليل الشامل (Guide)
+            elseif ($action === 'update_guide') {
+                $guideTitle = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
+                $guideDesc  = $_POST['guide_desc'] ?? '';
+                $stmt->execute(['k' => 'guide_title', 'v' => $guideTitle, 'v_update' => $guideTitle]);
+                $stmt->execute(['k' => 'guide_desc', 'v' => $guideDesc, 'v_update' => $guideDesc]);
+
+                $guideData = $_POST['guide'] ?? [];
+                foreach ($guideData as $index => $item) {
+                    $fileToCheck = $_FILES['guide_img_' . $index] ?? ($_FILES['guide'][$index]['img'] ?? null);
+                    
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_img'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        }
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $guideData[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $guideData[$index]['img'] = $item['old_img'] ?? '';
+                    }
+                    unset($guideData[$index]['old_img']);
+                }
+                $jsonVal = json_encode(array_values($guideData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
             $pdo->commit();
 
             echo json_encode([

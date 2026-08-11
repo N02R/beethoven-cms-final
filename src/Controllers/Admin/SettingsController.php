@@ -789,7 +789,6 @@ class SettingsController
             session_start();
         }
 
-        @session_start();
         if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
             if ($this->isJsonRequest()) {
                 http_response_code(401);
@@ -800,6 +799,7 @@ class SettingsController
             exit;
         }
     }
+
 
     private function isJsonRequest(): bool
     {

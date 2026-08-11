@@ -94,7 +94,7 @@
             <a href="<?php echo htmlspecialchars($p['btn_url'] ?? '#'); ?>" class="btn-info-wrapper mt-4 <?php echo !empty($p['is_dark']) ? 'is-light' : ''; ?>">
               <h3 class="mb-0"><?php echo htmlspecialchars($p['btn_text'] ?? 'اطلب الآن'); ?></h3>
               <div class="arrow-icon">
-                <img src="<?php echo get_image_url('assets/img/home/Arrow.svg'); ?>" alt="سهم">
+                <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" alt="سهم">
               </div>
             </a>
           </div>

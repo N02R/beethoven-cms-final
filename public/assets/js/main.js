@@ -162,37 +162,33 @@ function initCookieBanner() {
   const acceptBtn = document.getElementById('accept-cookies');
   const rejectBtn = document.getElementById('reject-cookies');
 
-  const consent = localStorage.getItem('cookie_consent');
+  // استخدام sessionStorage لضمان ظهور الشريط في كل جلسة جديدة
+  const consent = sessionStorage.getItem('cookie_consent');
 
   if (!consent) {
-    // إذا لم يحدد المستخدم قراره بعد، أظهر الشريط واعتبار الكوكيز الاختيارية معطلة افتراضياً
     if (cookieBanner) {
       cookieBanner.style.display = 'block';
     }
     disableTrackingScripts();
   } else if (consent === 'accepted') {
-    // إذا وافق مسبقاً، قم بتفعيل السكريبتات
     enableTrackingScripts();
   } else {
-    // إذا رفض، تأكد من إبقاء السكريبتات معطلة
     disableTrackingScripts();
   }
 
-  // عند النقر على "قبول الكل"
   if (acceptBtn) {
     acceptBtn.addEventListener('click', function() {
-      localStorage.setItem('cookie_consent', 'accepted');
+      sessionStorage.setItem('cookie_consent', 'accepted');
       if (cookieBanner) cookieBanner.style.display = 'none';
-      enableTrackingScripts(); // تفعيل سكريبتات التتبع فوراً
+      enableTrackingScripts();
     });
   }
 
-  // عند النقر على "رفض غير الضروري"
   if (rejectBtn) {
     rejectBtn.addEventListener('click', function() {
-      localStorage.setItem('cookie_consent', 'rejected');
+      sessionStorage.setItem('cookie_consent', 'rejected');
       if (cookieBanner) cookieBanner.style.display = 'none';
-      disableTrackingScripts(); // ضمان حظر أي سكريبتات تتبع
+      disableTrackingScripts();
     });
   }
 }
@@ -213,6 +209,4 @@ function enableTrackingScripts() {
 // دالة تعطيل/حظر أدوات التتبع
 function disableTrackingScripts() {
   console.log("تم حظر أدوات التتبع والكوكيز الاختيارية التزاماً بقرار المستخدم وقوانين الخصوصية الألمانية.");
-  
-  // هنا تضمنين عدم الحقن بأي أكواد تسويقية أو تحليلية
 }

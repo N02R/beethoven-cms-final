@@ -507,42 +507,57 @@
 
             const formData = new FormData(this);
             
-            // جلب الـ CSRF Token بأمان تام
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            // جلب الـ CSRF Token بأمان ت沒ام
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
 
             fetch('index.php?url=admin/settings/save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(text => {
-                    console.log("Raw Server Response:", text);
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success) {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log("Raw Server Response:", text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        if (typeof showNotification === 'function') {
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                            alert(data.message || 'تم حفظ التعديلات بنجاح');
                         }
-                    } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        const errorMsg = data.message || data.error || 'يرجى التأكد من البيانات المدخلة';
+                        if (typeof showNotification === 'function') {
+                            showNotification('عذراً، لم يتم الحفظ: ' + errorMsg, 'danger');
+                        } else {
+                            alert('خطأ: ' + errorMsg);
+                        }
                     }
-                })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
+                } catch (e) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('خطأ في استجابة السيرفر (انظر الـ Console)', 'danger');
+                    } else {
+                        alert('حدث خطأ غير متوقع.');
+                    }
+                    console.error('JSON Parse Error:', text);
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                if (typeof showNotification === 'function') {
                     showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-                });
+                } else {
+                    alert('حدث خطأ في الاتصال بالشبكة.');
+                }
             });
         });
     });
 </script>
-
-

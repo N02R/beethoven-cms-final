@@ -179,11 +179,21 @@ if (isset($page_js) && is_array($page_js)) {
     }
 }
 ?>
+<div id="cookie-banner" class="cookie-banner" style="display: none;">
+    <div class="cookie-content">
+        <p>
+            نحن نستخدم ملفات تعريف الارتباط (Cookies) لتحسين تجربة المتجر وتقديم محتوى مخصص وفقاً لسياسة الخصوصية الألمانية (GDPR).
+        </p>
+        <div class="cookie-buttons">
+            <button id="accept-cookies" class="btn-accept">قبول الكل</button>
+            <button id="reject-cookies" class="btn-reject">رفض غير الضروري</button>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>
 
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
-
 </body>
 </html>

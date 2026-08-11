@@ -190,7 +190,7 @@
                 <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
                 <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
                   قراءة المزيد
-                  <img src="<?php echo get_image_url('assets/img/home/Arrow..svg'); ?>" alt="arrow" width="18">
+                  <img src="<?php echo get_image_url('assets/img/ArrowLeft.svg.webp'); ?>" alt="arrow" width="18">
                 </a>
               </div>
             </div>

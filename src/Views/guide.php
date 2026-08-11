@@ -25,7 +25,7 @@
       <?php if (!empty($guide_items)): ?>
         <?php foreach ($guide_items as $item): 
             $item_img = get_image_url($item['img'] ?? null);
-            $arrow_img = get_image_url('assets/img/home/Arrow.svg');
+            $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');
             $raw_url = $item['url'] ?? '#';
             $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
         ?>

@@ -39,14 +39,15 @@
       <?php endif; ?>
     </div>
 
-    <div class="contact-info-bar">
+    <!-- تم إضافة تنسيق موحد للون النصوص والروابط هنا -->
+    <div class="contact-info-bar" style="color: inherit;">
       <!-- 1. العنوان -->
       <div class="contact-info-item">
         <div class="contact-info-icon">
           <img src="<?php echo get_image_url($contact_address_icon ?? null, 'assets/img/Location.svg'); ?>" alt="Location" />
         </div>
         <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
-        <span class="text-decoration-none" style="text-decoration: none !important;"><?php echo htmlspecialchars($contact_address ?? ''); ?></span>
+        <span style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($contact_address ?? ''); ?></span>
       </div>
       
       <!-- 2. البريد الإلكتروني -->
@@ -55,7 +56,7 @@
           <img src="<?php echo get_image_url($contact_email_icon ?? null, 'assets/img/Mail.svg'); ?>" alt="Mail" />
         </div>
         <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
-        <a href="mailto:<?php echo htmlspecialchars($contact_email ?? ''); ?>" class="text-decoration-none" style="text-decoration: none !important;"><?php echo htmlspecialchars($contact_email ?? ''); ?></a>
+        <a href="mailto:<?php echo htmlspecialchars($contact_email ?? ''); ?>" style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($contact_email ?? ''); ?></a>
       </div>
       
       <!-- 3. الهاتف -->
@@ -64,12 +65,13 @@
           <img src="<?php echo get_image_url($contact_phone_icon ?? null, 'assets/img/Call.svg'); ?>" alt="Call" />
         </div>
         <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
-        <a href="tel:<?php echo htmlspecialchars($contact_phone ?? ''); ?>" class="text-decoration-none" dir="ltr" style="text-decoration: none !important;"><?php echo htmlspecialchars($contact_phone ?? ''); ?></a>
+        <a href="tel:<?php echo htmlspecialchars($contact_phone ?? ''); ?>" dir="ltr" style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($contact_phone ?? ''); ?></a>
       </div>
     </div>
   </div>
 </section>
 <!-- ===== CONTACT INFO BAR END ===== -->
+
 
 <!-- ===== WHATSAPP SECTION ===== -->
 <section class="whatsapp-section py-5" style="position: relative;">

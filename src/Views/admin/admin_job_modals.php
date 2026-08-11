@@ -141,7 +141,7 @@
                     <hr>
                     <div id="jobProgramContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_program_types as $i => $prog): ?>
-                            <div class="card p-3 border-0 job-program-row-item" id="prog_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-prog-row-item" id="prog_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2">
                                     <div class="col-md-6">
                                         <label class="small text-muted mb-1">اسم البرنامِج</label>
@@ -219,7 +219,7 @@
                     <hr>
                     <div id="jobTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_timeline_steps as $i => $step): ?>
-                            <div class="card p-3 border-0 job-timeline-row-item" id="job_step_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-step-row-item" id="job_step_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <label class="small text-muted mb-1">اسم الخطوة</label>
@@ -242,7 +242,7 @@
                                                     <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="step_icon_<?php echo $i; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm" name="steps_icon_<?php echo $i; ?>" accept="image/*">
                                         </div>
                                         <input type="hidden" name="steps[<?php echo $i; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
@@ -293,7 +293,7 @@
                     <hr>
                     <div id="jobServicesContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($job_services_items as $i => $item): ?>
-                            <div class="card p-3 border-0 job-service-row-item" id="job_srv_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
+                            <div class="card p-3 border-0 job-srv-row-item" id="job_srv_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small text-muted mb-1">اسم الخدمة</label>
@@ -351,13 +351,22 @@
         div.id = 'job_why_row_' + jobWhyCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][desc]" placeholder="الوصف"></div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">العنوان</label>
+                    <input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][title]" placeholder="العنوان">
+                </div>
                 <div class="col-md-4">
+                    <label class="small text-muted mb-1">الوصف</label>
+                    <input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">الصورة / الأيقونة</label>
                     <input type="file" class="form-control form-control-sm" name="why_img_${jobWhyCount}" accept="image/*">
                     <input type="hidden" name="items[${jobWhyCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('job_why_row_${jobWhyCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_why_row_${jobWhyCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         jobWhyCount++;
@@ -372,11 +381,24 @@
         div.id = 'prog_row_' + jobProgCount;
         div.innerHTML = `
             <div class="row g-2">
-                <div class="col-md-6"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][title]" placeholder="اسم البرنامِج"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_text]" value="اطلب الآن" placeholder="نص الزر"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_url]" value="#" placeholder="رابط الزر"></div>
-                <div class="col-md-8"><textarea class="form-control form-control-sm" name="programs[${jobProgCount}][desc]" rows="2" placeholder="تفاصيل البرنامِج"></textarea></div>
+                <div class="col-md-6">
+                    <label class="small text-muted mb-1">اسم البرنامِج</label>
+                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][title]" placeholder="اسم البرنامِج">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">نص الزر</label>
+                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_text]" value="اطلب الآن" placeholder="نص الزر">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">رابط الزر</label>
+                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_url]" value="#" placeholder="رابط الزر">
+                </div>
+                <div class="col-md-8">
+                    <label class="small text-muted mb-1">تفاصيل البرنامِج</label>
+                    <textarea class="form-control form-control-sm" name="programs[${jobProgCount}][desc]" rows="2" placeholder="تفاصيل البرنامِج"></textarea>
+                </div>
                 <div class="col-md-4">
+                    <label class="small text-muted mb-1">الصورة والألوان</label>
                     <input type="file" class="form-control form-control-sm mb-1" name="prog_img_${jobProgCount}" accept="image/*">
                     <input type="hidden" name="programs[${jobProgCount}][old_img]" value="">
                     <div class="form-check form-switch mt-1">
@@ -384,13 +406,15 @@
                         <label class="form-check-label small text-muted" for="prog_dark_${jobProgCount}">تصميم داكن (Highlight)</label>
                     </div>
                 </div>
-                <div class="col-12 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_${jobProgCount}')"><i class="bi bi-trash"></i> حذف البرنامج</button></div>
+                <div class="col-12 text-end">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_${jobProgCount}')"><i class="bi bi-trash"></i> حذف البرنامج</button>
+                </div>
             </div>`;
         container.appendChild(div);
         jobProgCount++;
     }
 
-        let jobStepCount = <?php echo count($job_timeline_steps); ?>;
+    let jobStepCount = <?php echo count($job_timeline_steps); ?>;
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         const div = document.createElement('div');
@@ -399,15 +423,30 @@
         div.id = 'job_step_row_' + jobStepCount;
         div.innerHTML = `
             <div class="row g-2">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][title]" placeholder="اسم الخطوة"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
-                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب"></div>
                 <div class="col-md-3">
-                    <input type="file" class="form-control form-control-sm" name="steps[${jobStepCount}][icon]" accept="image/*">
+                    <label class="small text-muted mb-1">اسم الخطوة</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][title]" placeholder="اسم الخطوة">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">العنوان الفرعي</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                </div>
+                <div class="col-md-2">
+                    <label class="small text-muted mb-1">الترتيب</label>
+                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">أيقونة الخطوة</label>
+                    <input type="file" class="form-control form-control-sm" name="steps_icon_${jobStepCount}" accept="image/*">
                     <input type="hidden" name="steps[${jobStepCount}][old_icon]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button></div>
-                <div class="col-md-12 mt-2"><input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل"></div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button>
+                </div>
+                <div class="col-md-12 mt-2">
+                    <label class="small text-muted mb-1">التفاصيل</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
+                </div>
             </div>`;
         container.appendChild(div);
         jobStepCount++;
@@ -422,13 +461,22 @@
         div.id = 'job_srv_row_' + jobSrvCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][title]" placeholder="اسم الخدمة"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">اسم الخدمة</label>
+                    <input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][title]" placeholder="اسم الخدمة">
+                </div>
                 <div class="col-md-4">
+                    <label class="small text-muted mb-1">الرابط</label>
+                    <input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">صورة الخلفية</label>
                     <input type="file" class="form-control form-control-sm" name="srv_img_${jobSrvCount}" accept="image/*">
                     <input type="hidden" name="services[${jobSrvCount}][old_img]" value="">
                 </div>
-                <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('job_srv_row_${jobSrvCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_srv_row_${jobSrvCount}')"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         jobSrvCount++;
@@ -439,7 +487,7 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم صفوف (لماذا التدريب معنا) إن وجدت لتجنب الفراغات
+            // إعادة ترقيم صفوف (لماذا التدريب معنا) لتجنب الفراغات
             const whyRows = form.querySelectorAll('.job-why-row-item');
             whyRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -453,7 +501,7 @@
                 if(oldImgInput) oldImgInput.name = `items[${index}][old_img]`;
             });
 
-            // إعادة ترقيم صفوف البرامج إن وجدت
+            // إعادة ترقيم صفوف البرامج
             const progRows = form.querySelectorAll('.job-prog-row-item');
             progRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -473,8 +521,7 @@
                 if(darkInput) darkInput.name = `programs[${index}][is_dark]`;
             });
 
-            // إعادة ترقيم صفوف الخطوات إن وجدت
-                        // إعادة ترقيم صفوف الخطوات إن وجدت
+            // إعادة ترقيم صفوف الخطوات
             const stepRows = form.querySelectorAll('.job-step-row-item');
             stepRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -488,10 +535,11 @@
                 if(subInput) subInput.name = `steps[${index}][subtitle]`;
                 if(orderInput) orderInput.name = `steps[${index}][order]`;
                 if(descInput) descInput.name = `steps[${index}][desc]`;
-                if(fileInput) fileInput.name = `steps[${index}][icon]`; // توحيد الاسم داخل المصفوفة
+                if(fileInput) fileInput.name = `steps_icon_${index}`; 
                 if(oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
             });
-            // إعادة ترقيم صفوف الخدمات إن وجدت
+
+            // إعادة ترقيم صفوف الخدمات
             const srvRows = form.querySelectorAll('.job-srv-row-item');
             srvRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -507,7 +555,7 @@
 
             const formData = new FormData(this);
             
-            // جلب الـ CSRF Token بأمان ت沒ام
+            // جلب الـ CSRF Token بأمان
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);

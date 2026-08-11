@@ -121,10 +121,61 @@
     
     <!-- الكود الخاص بالـ Timeline هنا متطابق تماماً مع المنطق المتبع في education.php -->
     <div class="map-container d-none d-lg-block">
-        <!-- (تم الاحتفاظ بنفس بنية education.php) -->
+      <div class="map-box">
+        <img src="<?php echo get_image_url('assets/img/vector/Vector.png'); ?>" alt="base" class="line-base">
+        <img src="<?php echo get_image_url('assets/img/vector/Vector-1.png'); ?>" alt="active" class="line-active">
+        
+        <?php 
+        $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
+        foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+            $num = sprintf("%02d", $idx + 1);
+            $dotClass = $dots[$idx % count($dots)];
+            
+            // تحديد مسار الأيقونة الداخلية وحساب مسار الصورة الخلفية للرقم
+            $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+            $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+            $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
+            
+            $stepNumberClass = 'step-' . ($idx + 1);
+        ?>
+          <div class="step-wrapper <?php echo $stepNumberClass; ?>">
+            <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+            <div class="icon-main">
+              <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
+            </div>
+            <div class="info-content">
+              <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
+              <span class="dot <?php echo $dotClass; ?>"></span>
+              <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
+              <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
     </div>
+
     <div class="mobile-timeline d-lg-none">
-        <!-- (تم الاحتفاظ بنفس بنية education.php) -->
+      <?php foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+          $num = sprintf("%02d", $idx + 1);
+          $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+          $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+      ?>
+        <div class="m-step">
+          <div class="m-number-box">
+            <span class="m-num"><?php echo $num; ?></span>
+          </div>
+          <div class="m-content">
+            <div class="m-header">
+              <div class="m-icon">
+                <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
+              </div>
+              <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
+            </div>
+            <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
+            <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
+          </div>
+        </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>

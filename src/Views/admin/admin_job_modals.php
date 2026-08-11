@@ -177,7 +177,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 text-end">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i> حذف البرنامج</button>
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>

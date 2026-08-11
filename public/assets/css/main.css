@@ -224,3 +224,13 @@ body {
 .btn-reject:hover {
     background-color: #5c636a;
 }
+
+.privacy-page {
+    background-color: #f8f9fa;
+    min-height: 70vh;
+}
+
+.privacy-content section h4 {
+    border-right: 4px solid #0d6efd;
+    padding-right: 10px;
+}

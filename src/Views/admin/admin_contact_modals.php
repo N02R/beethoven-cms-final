@@ -3,13 +3,13 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-image-fill text-primary"></i> تعديل صورة الهيرو (تواصل معنا)</h5>
+                <h5 class="modal-title"><i class="bi bi-image-fill text-primary me-2"></i>تعديل صورة الهيرو (تواصل معنا)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="col-12">
                         <label class="form-label fw-bold d-flex justify-content-between">
@@ -38,22 +38,32 @@
     </div>
 </div>
 
-
 <!-- 2. Contact Info Modal (معلومات والأيقونات الثلاث) -->
 <div class="modal fade custom-modal" id="contactInfoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary"></i> تعديل معلومات وأيقونات التواصل</h5>
+                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary me-2"></i>تعديل معلومات وأيقونات التواصل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactInfoForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">عنوان قسم التواصل</label>
+                            <input type="text" class="form-control" name="contact_info_title" value="<?php echo htmlspecialchars($contact_info_title ?? 'معلومات التواصل'); ?>" placeholder="عنوان القسم">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">الوصف الفرعي لقسم التواصل</label>
+                            <input type="text" class="form-control" name="contact_info_desc" value="<?php echo htmlspecialchars($contact_info_desc ?? ''); ?>" placeholder="الوصف الفرعي للقسم">
+                        </div>
+                    </div>
+
                     <div class="d-flex flex-column gap-3">
-                        <!-- 1. العنوان وأيقونته -->
+                        <!-- 1. العنوان -->
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-geo-alt text-danger me-1"></i> خانة العنوان</h6>
                             <div class="row g-2 align-items-center">
@@ -67,7 +77,7 @@
                                         <?php if (!empty($contact_address_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
                                                 <img src="<?php echo htmlspecialchars(get_image_url($contact_address_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_address_icon); ?></span>
+                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_address_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" class="form-control form-control-sm" name="contact_address_icon" accept="image/*">
@@ -77,7 +87,7 @@
                             </div>
                         </div>
 
-                        <!-- 2. البريد الإلكتروني وأيقونته -->
+                        <!-- 2. البريد الإلكتروني -->
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-envelope text-primary me-1"></i> خانة البريد الإلكتروني</h6>
                             <div class="row g-2 align-items-center">
@@ -91,7 +101,7 @@
                                         <?php if (!empty($contact_email_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
                                                 <img src="<?php echo htmlspecialchars(get_image_url($contact_email_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_email_icon); ?></span>
+                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_email_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" class="form-control form-control-sm" name="contact_email_icon" accept="image/*">
@@ -101,7 +111,7 @@
                             </div>
                         </div>
 
-                        <!-- 3. الهاتف وأيقونته -->
+                        <!-- 3. الهاتف -->
                         <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-telephone text-success me-1"></i> خانة الهاتف</h6>
                             <div class="row g-2 align-items-center">
@@ -115,7 +125,7 @@
                                         <?php if (!empty($contact_phone_icon)): ?>
                                             <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
                                                 <img src="<?php echo htmlspecialchars(get_image_url($contact_phone_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($contact_phone_icon); ?></span>
+                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_phone_icon); ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" class="form-control form-control-sm" name="contact_phone_icon" accept="image/*">
@@ -135,19 +145,18 @@
     </div>
 </div>
 
-
 <!-- 3. WhatsApp Section Modal -->
 <div class="modal fade custom-modal" id="whatsappSectionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-whatsapp text-success"></i> تعديل قسم الواتساب والتواصل المباشر</h5>
+                <h5 class="modal-title"><i class="bi bi-whatsapp text-success me-2"></i>تعديل قسم الواتساب والتواصل المباشر</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="whatsappForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_whatsapp_section">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="row g-3">
                         <div class="col-12">
@@ -156,11 +165,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">رابط المحادثة (URL)</label>
-                            <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>">
+                            <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>" placeholder="https://wa.me/...">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">نص زر الواتساب</label>
-                            <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? ''); ?>">
+                            <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? 'تواصل عبر الواتساب'); ?>">
                         </div>
                     </div>
                 </form>
@@ -173,17 +182,15 @@
     </div>
 </div>
 
-
-<!-- AJAX Submission Engine -->
+<!-- AJAX Submission Engine الموحد الشامل -->
 <script>
-    // معالج النماذج الموحد الخاص بمودلز التواصل
-    document.querySelectorAll('.custom-modal form').forEach(form => {
+    document.querySelectorAll('#contactHeroModal form, #contactInfoModal form, #whatsappSectionModal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             
-            // جلب الـ CSRF Token من الـ Meta Tag أو البديل الاحتياطي الآمن
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            // جلب الـ CSRF Token بأمان
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }
@@ -196,21 +203,43 @@
                 },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message || 'تم حفظ التغييرات بنجاح');
-                    location.reload();
-                } else {
-                    console.error('Server Response Error:', data);
-                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
+            .then(response => response.text())
+            .then(text => {
+                console.log("Raw Server Response:", text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        if (typeof showNotification === 'function') {
+                            showNotification('تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                        } else {
+                            alert(data.message || 'تم حفظ التغييرات بنجاح');
+                        }
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        const errorMsg = data.message || data.error || 'يرجى التأكد من البيانات المدخلة';
+                        if (typeof showNotification === 'function') {
+                            showNotification('عذراً، لم يتم الحفظ: ' + errorMsg, 'danger');
+                        } else {
+                            alert('خطأ: ' + errorMsg);
+                        }
+                    }
+                } catch (e) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('خطأ في استجابة السيرفر (انظر الـ Console)', 'danger');
+                    } else {
+                        alert('حدث خطأ غير متوقع.');
+                    }
+                    console.error('JSON Parse Error:', text);
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر، افتح الـ Console للمزيد من التفاصيل.');
+                if (typeof showNotification === 'function') {
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                } else {
+                    alert('حدث خطأ في الاتصال بالشبكة.');
+                }
             });
         });
     });
 </script>
-

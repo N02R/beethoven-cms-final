@@ -390,7 +390,7 @@
         jobProgCount++;
     }
 
-    let jobStepCount = <?php echo count($job_timeline_steps); ?>;
+        let jobStepCount = <?php echo count($job_timeline_steps); ?>;
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         const div = document.createElement('div');
@@ -403,7 +403,7 @@
                 <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][subtitle]" placeholder="العنوان الفرعي"></div>
                 <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب"></div>
                 <div class="col-md-3">
-                    <input type="file" class="form-control form-control-sm" name="step_icon_${jobStepCount}" accept="image/*">
+                    <input type="file" class="form-control form-control-sm" name="steps[${jobStepCount}][icon]" accept="image/*">
                     <input type="hidden" name="steps[${jobStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button></div>
@@ -474,6 +474,7 @@
             });
 
             // إعادة ترقيم صفوف الخطوات إن وجدت
+                        // إعادة ترقيم صفوف الخطوات إن وجدت
             const stepRows = form.querySelectorAll('.job-step-row-item');
             stepRows.forEach((row, index) => {
                 const titleInput = row.querySelector('input[name*="[title]"]');
@@ -487,10 +488,9 @@
                 if(subInput) subInput.name = `steps[${index}][subtitle]`;
                 if(orderInput) orderInput.name = `steps[${index}][order]`;
                 if(descInput) descInput.name = `steps[${index}][desc]`;
-                if(fileInput) fileInput.name = `step_icon_${index}`;
+                if(fileInput) fileInput.name = `steps[${index}][icon]`; // توحيد الاسم داخل المصفوفة
                 if(oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
             });
-
             // إعادة ترقيم صفوف الخدمات إن وجدت
             const srvRows = form.querySelectorAll('.job-srv-row-item');
             srvRows.forEach((row, index) => {

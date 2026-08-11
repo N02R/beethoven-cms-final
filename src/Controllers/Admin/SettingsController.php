@@ -424,7 +424,8 @@ class SettingsController
                 $jsonVal = json_encode(array_values($guideData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-                        // 17. تحديث هيرو التعليم العالي (Edu Hero)
+
+            // 17. تحديث هيرو التعليم العالي (Edu Hero)
             elseif ($action === 'update_edu_hero') {
                 $oldEduHeroData = json_decode($currentSettings['edu_hero'] ?? '', true) ?: [];
 
@@ -529,6 +530,7 @@ class SettingsController
                 $jsonVal = json_encode(array_values($eduServicesData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+
             // 21. تحديث هيرو فرص العمل والتوظيف (Job Hero)
             elseif ($action === 'update_job_hero') {
                 $oldJobHeroData = json_decode($currentSettings['job_hero'] ?? '', true) ?: [];
@@ -608,7 +610,7 @@ class SettingsController
                 $stmt->execute(['k' => 'job_program_types', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline)
+            // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline) - المحدث لدعم المصفوفات والأيقونات
             elseif ($action === 'update_job_timeline') {
                 $jobTimelineTitle = $_POST['timeline_title'] ?? '';
                 $jobTimelineDesc  = $_POST['timeline_desc'] ?? '';
@@ -621,9 +623,18 @@ class SettingsController
                 });
 
                 foreach ($jobTimelineData as $index => $item) {
-                    $fileToCheck = $_FILES['step_icon_' . $index] ?? null;
-                    
-                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                    $fileToCheck = null;
+                    if (isset($_FILES['steps']['name'][$index]['icon']) && $_FILES['steps']['error'][$index]['icon'] === UPLOAD_ERR_OK) {
+                        $fileToCheck = [
+                            'tmp_name' => $_FILES['steps']['tmp_name'][$index]['icon'],
+                            'error'    => $_FILES['steps']['error'][$index]['icon'],
+                            'name'     => $_FILES['steps']['name'][$index]['icon']
+                        ];
+                    } elseif (isset($_FILES['step_icon_' . $index]) && $_FILES['step_icon_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $fileToCheck = $_FILES['step_icon_' . $index];
+                    }
+
+                    if ($fileToCheck && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_icon'])) {
                             $this->deleteOldImageFile($root_path, $item['old_icon']);
                         }
@@ -663,6 +674,7 @@ class SettingsController
                 $jsonVal = json_encode(array_values($jobServicesData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'job_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+
             // 26. تحديث صورة الهيرو لصفحة تواصل معنا (Contact Hero)
             elseif ($action === 'update_contact_hero') {
                 $oldHeroImg = $_POST['old_contact_hero_img'] ?? ($currentSettings['contact_hero_img'] ?? '');

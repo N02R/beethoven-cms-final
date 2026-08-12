@@ -10,13 +10,14 @@ if (!defined('ALLOWED_ACCESS')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل دخول المشرفين - Beethoven City Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { 
-            background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; 
-            text-align: right; 
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,138 +25,113 @@ if (!defined('ALLOWED_ACCESS')) {
             margin: 0;
         }
 
-        .login-card { 
-            width: 100%;
-            max-width: 420px; 
-            background: #ffffff; 
-            border-radius: 20px; 
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
-            border: none;
+        .main-card-wrapper {
+            width: 900px;
+            border-radius: 24px;
             overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
         }
 
-        .login-header { 
-            background: #090d16; 
-            color: #ffffff; 
-            padding: 35px 25px; 
-            text-align: center; 
+        .img-hero {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            background: url('/assets/img/dashboard.jpeg') no-repeat center center;
+            background-size: cover;
+            position: relative;
         }
 
-        .login-header h4 {
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            font-size: 1.4rem;
+        .img-hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(30, 58, 138, 0.6), rgba(6, 182, 212, 0.3));
         }
 
-        .form-label {
-            font-weight: 600;
-            color: #334155;
-            font-size: 0.85rem;
+        .login-box {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
         }
 
         .form-control {
             padding: 12px 16px;
-            background-color: #f8fafc;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 0 10px 10px 0;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
         }
 
-        .form-control:focus {
-            background-color: #fff;
-            border-color: #0284c7;
-            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border: none;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: 0.3s;
         }
 
-        /* أيقونات بارزة بلون مميز وكاملة الحدود */
-        .input-group-text {
-            background-color: #e0f2fe;
-            border: 1.5px solid #bae6fd;
-            border-right: none;
-            border-radius: 10px 0 0 10px;
-            color: #0284c7;
-            font-size: 1.1rem;
-            padding: 0 15px;
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
         }
 
         .captcha-box {
-            background: #f8fafc;
-            padding: 18px;
+            background: #f1f5f9;
+            padding: 15px;
             border-radius: 12px;
-            border: 1.5px solid #e2e8f0;
-        }
-
-        /* حقل إدخال الكابتشا بحدود كاملة ومحاذاة سليمة */
-        .captcha-input {
-            border-radius: 10px !important;
-            border: 1.5px solid #e2e8f0 !important;
-        }
-
-        .btn-primary-custom { 
-            background: #0284c7; 
-            border: none; 
-            color: #fff; 
-            font-weight: 700; 
-            padding: 14px; 
-            width: 100%; 
-            border-radius: 10px; 
-            transition: all 0.2s ease;
-            font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
-        }
-
-        .btn-primary-custom:hover { 
-            background: #0369a1; 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+            font-size: 0.9rem;
+            color: #475569;
         }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
-    <div class="login-card mx-auto">
-        <div class="login-header">
-            <h4 class="mb-1"><i class="bi bi-cpu text-info"></i> بوابة الإدارة الآمنة</h4>
-            <p class="text-white-50 small mb-0">نظام إدارة المحتوى التجاري (CMS)</p>
-        </div>
-        <div class="p-4 p-md-4">
-            
-            <?php if (!empty($data['error_msg'])): ?>
-                <div class="alert alert-danger py-2 small text-center mb-4 rounded-3 border-0 bg-danger-subtle text-danger-emphasis">
-                    <?php echo htmlspecialchars($data['error_msg'], ENT_QUOTES, 'UTF-8'); ?>
-                </div>
-            <?php endif; ?>
+<div class="container">
+    <div class="main-card-wrapper">
+        <div class="row g-0 align-items-center">
+            <!-- جانب الصورة -->
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="img-hero"></div>
+            </div>
 
-            <form action="index.php?url=admin/login/process" method="POST">
-                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
-                
-                <div class="mb-3">
-                    <label class="form-label">اسم المستخدم أو البريد الإلكتروني</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" class="form-control" name="username" required autocomplete="username">
-                    </div>
-                </div>
+            <!-- جانب النموذج -->
+            <div class="col-lg-6">
+                <div class="login-box">
+                    <h3 class="fw-bold mb-1">تسجيل دخول المشرف</h3>
+                    <p class="text-muted mb-4">أهلاً بك مجدداً، يرجى إدخال بياناتك</p>
 
-                <div class="mb-4">
-                    <label class="form-label">كلمة المرور</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                        <input type="password" class="form-control" name="password" required autocomplete="current-password">
-                    </div>
-                </div>
+                    <?php if (!empty($data['error_msg'])): ?>
+                        <div class="alert alert-danger p-2 small text-center"><?php echo htmlspecialchars($data['error_msg'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <?php endif; ?>
 
-                <div class="mb-4 captcha-box">
-                    <label class="form-label mb-2 d-block">
-                        <i class="bi bi-shield-check text-info"></i> التحقق الأمني: كم الناتج <?php echo $data['captcha_num1']; ?> + <?php echo $data['captcha_num2']; ?>؟
-                    </label>
-                    <input type="number" class="form-control captcha-input" name="captcha_answer" required placeholder="أدخل الناتج الرقمي">
-                </div>
+                    <form action="index.php?url=admin/login/process" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">اسم المستخدم</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
 
-                <button type="submit" class="btn btn-primary-custom mt-2">تسجيل الدخول الآمن</button>
-            </form>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">كلمة المرور</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+
+                        <div class="mb-4 captcha-box">
+                            <i class="fa-solid fa-shield-halved text-primary me-1"></i>
+                            كم الناتج: <strong><?php echo $data['captcha_num1']; ?> + <?php echo $data['captcha_num2']; ?></strong>؟
+                            <input type="number" class="form-control mt-2" name="captcha_answer" required placeholder="أدخل الناتج">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100">دخول اللوحة</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

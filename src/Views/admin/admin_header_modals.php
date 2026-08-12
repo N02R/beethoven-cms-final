@@ -185,42 +185,6 @@
                     <input type="hidden" name="action" value="update_logo">
                     
                     <div class="mb-4">
-                        <div class="p-3 bg-white rounded border d-inline-block">
-                            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? '')); ?>" style="max-height: 100px;">
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
-                    </div>
-
-                    <!-- صندوق لطباعة رسائل الخطأ أو النجاح ديناميكياً -->
-                    <div id="logoAlertBox" class="alert d-none mt-2"></div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
-            </div>
-        </div>
-    </div>
-</div><!-- 2. Logo Modal -->
-<div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تغيير شعار الموقع</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" enctype="multipart/form-data">
-                    <!-- حقل الحماية ضد ثغرات CSRF (مهم جداً ليتطابق مع ما يشترطه الكنترولر) -->
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                    
-                    <!-- متغير الإجراء الذي سيلتقطه الـ Controller -->
-                    <input type="hidden" name="action" value="update_logo">
-                    
-                    <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? ''), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 90px; object-fit: contain;">
                         </div>
@@ -253,54 +217,71 @@
             <div class="modal-body p-4">
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
-                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars($data['announcement']['image_path'] ?? 'assets/img/default-ad.png'); ?>">
+                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars($data['announcement']['image_path'] ?? 'assets/img/default-ad.png', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="card p-3 mb-4 border-0" style="background: #f1f5f9;">
-                        <div class="section-label"><i class="bi bi-gear"></i> حالة الإعلان والتوقيت</div>
+                    <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-gear text-primary me-1"></i> حالة الإعلان والتوقيت</div>
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label class="small fw-bold">حالة العرض</label>
+                                <label class="small fw-bold mb-1">حالة العرض</label>
                                 <select class="form-select" name="status">
                                     <option value="Draft" <?php echo (($data['announcement']['status'] ?? '') == 'Draft' ? 'selected' : ''); ?>>مخفي (مسودة)</option>
                                     <option value="Published" <?php echo (($data['announcement']['status'] ?? '') == 'Published' ? 'selected' : ''); ?>>نشط (يظهر للزوار)</option>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label class="small fw-bold">تاريخ البدء</label><input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['start_date'] ?? ''); ?>"></div>
-                            <div class="col-md-4"><label class="small fw-bold">تاريخ الانتهاء</label><input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['end_date'] ?? ''); ?>"></div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold mb-1">تاريخ البدء</label>
+                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['start_date'] ?? ''); ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold mb-1">تاريخ الانتهاء</label>
+                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['end_date'] ?? ''); ?>">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card p-3 mb-4 border" style="border-color: var(--border-color);">
-                        <div class="section-label"><i class="bi bi-pencil-square"></i> محتوى الإعلان</div>
-                        <label class="small mb-2">نوع الإعلان:</label>
+                    <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-pencil-square text-primary me-1"></i> محتوى الإعلان</div>
+                        <label class="small fw-bold mb-1">نوع الإعلان:</label>
                         <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
                             <option value="text" <?php echo (($data['announcement']['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك (اختر هذا لنص سريع)</option>
                             <option value="image" <?php echo (($data['announcement']['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي كامل)</option>
                         </select>
 
                         <div id="textEditor" class="<?php echo (($data['announcement']['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
-                            <label class="small mb-1">نص الإعلان (الرسالة التي ستظهر للزوار):</label>
-                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars($data['announcement']['announcement_text'] ?? ''); ?></textarea>
+                            <label class="small fw-bold mb-1">نص الإعلان (الرسالة التي ستظهر للزوار):</label>
+                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars($data['announcement']['announcement_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             <div class="row g-2">
-                                <div class="col-4"><label class="small">لون الخلفية</label><input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo $data['announcement']['bg_color'] ?? '#f1f5f9'; ?>"></div>
-                                <div class="col-4"><label class="small">لون الخط</label><input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo $data['announcement']['text_color'] ?? '#1e293b'; ?>"></div>
-                                <div class="col-4"><label class="small">حجم الخط</label><input type="number" class="form-control" name="font_size" value="<?php echo $data['announcement']['font_size'] ?? '16'; ?>"></div>
+                                <div class="col-4">
+                                    <label class="small fw-bold mb-1">لون الخلفية</label>
+                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars($data['announcement']['bg_color'] ?? '#f1f5f9', ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                </div>
+                                <div class="col-4">
+                                    <label class="small fw-bold mb-1">لون الخط</label>
+                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars($data['announcement']['text_color'] ?? '#1e293b', ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                </div>
+                                <div class="col-4">
+                                    <label class="small fw-bold mb-1">حجم الخط</label>
+                                    <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars($data['announcement']['font_size'] ?? '16', ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
                             </div>
                         </div>
 
                         <div id="imageEditor" class="<?php echo (($data['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
-                            <label class="small mb-1">ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):</label>
+                            <label class="small fw-bold mb-1">ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):</label>
                             <?php if (!empty($data['announcement']['image_path'])): ?>
-                                <div class="mb-2">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($data['announcement']['image_path'])); ?>" alt="معاينة الإعلان" class="img-thumbnail" style="max-height: 80px;">
+                                <div class="mb-2 p-2 bg-light rounded border d-inline-block">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($data['announcement']['image_path']), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="ad_image">
+                            <input type="file" class="form-control" name="ad_image" style="height: auto; padding: 10px 16px;">
                         </div>
                     </div>
 
-                    <div class="section-label"><i class="bi bi-link-45deg"></i> رابط التوجيه (اختياري)</div>
-                    <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($data['announcement']['link'] ?? ''); ?>" placeholder="https://">
+                    <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="section-label fw-bold mb-2 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-link-45deg text-primary me-1"></i> رابط التوجيه (اختياري)</div>
+                        <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($data['announcement']['link'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -310,7 +291,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">

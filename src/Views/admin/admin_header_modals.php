@@ -911,15 +911,10 @@
 
     // دالة لإنشاء وعرض التنبيهات بطريقة عصرية باستخدام Bootstrap Toasts/Alerts
     function showNotification(message, type = 'success') {
-        // إزالة أي تنبيه سابق متبقي
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        // تحديد الألوان والأيقونات بناءً على نوع الرسالة (Bootstrap Classes)
-        let bgClass = 'alert-success';
-        let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
-
+        let bgClass = 'alert-success', icon = 'bi-check-circle-fill', title = 'تم بنجاح!';
         if (type === 'danger') {
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
@@ -930,7 +925,6 @@
             title = 'تنبيه هام';
         }
 
-        // إنشاء عنصر التنبيه
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
@@ -938,18 +932,13 @@
         
         alertDiv.innerHTML = `
             <div class="d-flex align-items-center gap-2">
-                <i class="bi ${icon} fs-4"><div></div></i>
-                <div>
-                    <strong>${title}</strong>
-                    <div class="small">${message}</div>
-                </div>
+                <i class="bi ${icon} fs-4"></i>
+                <div><strong>${title}</strong><div class="small">${message}</div></div>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
 
         document.body.appendChild(alertDiv);
-
-        // إخفاء التنبيه تلقائياً بعد 4 ثواني (إذا لم يغلقه المستخدم يدويياً)
         setTimeout(() => {
             if (alertDiv) {
                 alertDiv.classList.remove('show');
@@ -962,21 +951,16 @@
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'row_' + socialCount;
-        div.innerHTML = `<div class="d-flex align-items-start gap-3">
-            <div class="flex-grow-1">
-                <div class="row g-2 mb-2">
-                    <div class="col-4"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="الاسم"></div>
-                    <div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div>
-                </div>
-                <div class="row g-2 align-items-center">
-                    <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div>
-                    <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div>
-                </div>
-            </div>
-        </div>`;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3"><input type="text" class="form-control" name="social[${socialCount}][name]" placeholder="الاسم"></div>
+                <div class="col-md-5"><input type="url" class="form-control" name="social[${socialCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-3"><input type="file" class="form-control" name="social_img_${socialCount}"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('row_${socialCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            </div>`;
         container.appendChild(div);
         socialCount++;
     }
@@ -985,15 +969,15 @@
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'menu_row_' + menuCount;
         div.innerHTML = `
             <div class="row align-items-center g-2">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
-                <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="menu[${menuCount}][order]" value="${menuCount}"></div>
-                <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_${menuCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-4"><input type="text" class="form-control" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
+                <div class="col-md-5"><input type="text" class="form-control" name="menu[${menuCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-2"><input type="number" class="form-control" name="menu[${menuCount}][order]" value="${menuCount}" placeholder="الترتيب"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('menu_row_${menuCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         menuCount++;
@@ -1003,12 +987,15 @@
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
         const div = document.createElement('div');
-        div.className = 'row g-2 mb-2';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'lang_row_' + langCount;
         div.innerHTML = `
-            <div class="col-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
-            <div class="col-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
-            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_${langCount}')"><i class="bi bi-trash"></i></button></div>`;
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
+                <div class="col-md-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('lang_row_${langCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            </div>`;
         container.appendChild(div);
         langCount++;
     }
@@ -1017,15 +1004,15 @@
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'service_row_' + serviceCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="service_img_${serviceCount}"></div>
-                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('service_row_${serviceCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-3"><input type="text" class="form-control" name="services[${serviceCount}][title]" placeholder="العنوان"></div>
+                <div class="col-md-4"><input type="text" class="form-control" name="services[${serviceCount}][url]" placeholder="الرابط"></div>
+                <div class="col-md-4"><input type="file" class="form-control" name="service_img_${serviceCount}"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('service_row_${serviceCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         serviceCount++;
@@ -1035,15 +1022,15 @@
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'choose_row_' + chooseCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][desc]" placeholder="الوصف"></div>
-                <div class="col-md-3"><input type="file" class="form-control form-control-sm" name="choose_img_${chooseCount}"></div>
-                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_${chooseCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-3"><input type="text" class="form-control" name="choose[${chooseCount}][title]" placeholder="العنوان"></div>
+                <div class="col-md-4"><input type="text" class="form-control" name="choose[${chooseCount}][desc]" placeholder="الوصف"></div>
+                <div class="col-md-4"><input type="file" class="form-control" name="choose_img_${chooseCount}"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('choose_row_${chooseCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         chooseCount++;
@@ -1053,13 +1040,13 @@
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'rev_row_' + reviewCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
-                <div class="col-md-10"><input type="text" class="form-control form-control-sm" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
-                <div class="col-md-2 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_${reviewCount}')"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-11"><input type="text" class="form-control" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('rev_row_${reviewCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         reviewCount++;
@@ -1069,16 +1056,16 @@
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'guide_row_' + guideCount;
         div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][title]" placeholder="عنوان المقال"></div>
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][url]" placeholder="رابط الصفحة"></div>
-                <div class="col-6"><input type="file" class="form-control form-control-sm" name="guide_img_${guideCount}"></div>
-                <div class="col-5"><textarea class="form-control form-control-sm" name="guide[${guideCount}][desc]" rows="1" placeholder="الوصف"></textarea></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_${guideCount}')"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6 mb-2"><input type="text" class="form-control" name="guide[${guideCount}][title]" placeholder="عنوان المقال"></div>
+                <div class="col-md-6 mb-2"><input type="text" class="form-control" name="guide[${guideCount}][url]" placeholder="رابط الصفحة"></div>
+                <div class="col-md-6"><input type="file" class="form-control" name="guide_img_${guideCount}"></div>
+                <div class="col-md-5"><textarea class="form-control" name="guide[${guideCount}][desc]" rows="1" placeholder="الوصف"></textarea></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('guide_row_${guideCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         guideCount++;
@@ -1088,14 +1075,14 @@
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'faq_row_' + faqCount;
         div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_${faqCount}')"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5"><input type="text" class="form-control" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
+                <div class="col-md-6"><input type="text" class="form-control" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('faq_row_${faqCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         faqCount++;
@@ -1105,14 +1092,15 @@
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         const div = document.createElement('div');
-        div.className = 'card p-2 mb-2';
+        div.className = 'p-3 shadow-sm mb-3';
+        div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
         div.id = 'col3_' + col3Count;
         div.innerHTML = `
-            <div class="row g-1 align-items-center">
-                <div class="col-3"><input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm"></div>
-                <div class="col-4"><input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm" placeholder="الاسم"></div>
-                <div class="col-4"><input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm" placeholder="الرابط"></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col3_${col3Count}')"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4"><input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white"></div>
+                <div class="col-md-3"><input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white" placeholder="الاسم"></div>
+                <div class="col-md-4"><input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white" placeholder="الرابط"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         col3Count++;
@@ -1125,7 +1113,7 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 
-    // معالج النماذج الموحد مع التنبيهات الجديدة المفهومة لمدير الموقع
+    // معالج النماذج الموحد مع التنبيهات الجديدة
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1150,11 +1138,9 @@
                 try {
                     const data = JSON.parse(text);
                     if (data.success) {
-                        // إشعار أخضر جميل عند النجاح ثم إعادة التحميل بعد ثانية
                         showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
-                        // إشعار أحمر إذا كان هناك خطأ مرسل من السيرفر
                         showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                     }
                 } catch (e) {
@@ -1168,3 +1154,4 @@
         });
     });
 </script>
+

@@ -254,20 +254,6 @@ if (!defined('ALLOWED_ACCESS')) {
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
 
-                    <!-- تعديل الموقع -->
-                    <a href="index.php?url=admin/pages" class="custom-card-btn">
-                        <div class="btn-content">
-                            <div class="btn-icon">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                            <div class="btn-text">
-                                <h5>تعديل الموقع</h5>
-                                <p>إدارة وتعديل محتوى الموقع</p>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-left text-muted"></i>
-                    </a>
-
                     <!-- تسجيل الخروج -->
                     <a href="index.php?url=admin/logout" class="custom-card-btn" style="border-color: #fee2e2;">
                         <div class="btn-content">

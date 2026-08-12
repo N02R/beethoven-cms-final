@@ -24,12 +24,13 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         /* حاوية عرض الصورة كخلفية تملأ الشاشة بالكامل */
-        .bg-container {
-            width: 100vw;
-            height: 100vh;
-            background: url('/public/assets/img/dashboard.png') no-repeat center center;
-            background-size: cover;
-        }
+.bg-container {
+    width: 100vw;
+    height: 100vh;
+    background: url('assets/img/dashboard.png') no-repeat center center;
+    background-size: cover;
+}
+
     </style>
 </head>
 <body>

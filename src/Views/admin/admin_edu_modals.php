@@ -291,16 +291,24 @@
 </div>
 
 <script>
-    // 1. دالة عامة لحذف أي صف بناءً على الـ ID مع فحص زر الـ Timeline
+    // 1. دالة عامة لحذف أي صف (للبقية مثل لماذا الدراسة أو الخدمات)
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) {
             el.remove();
-            toggleEduAddButton(); // تحديث حالة زر الإضافة الخاص بالـ Timeline فور الحذف
         }
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية
+    // 2. دالة مخصصة لحذف خطوات الـ Timeline وإعادة فحص زر الإضافة
+    function removeEduStepRow(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.remove();
+            toggleEduAddButton(); // إعادة إظهار زر الإضافة إذا أصبح العدد أقل من 6
+        }
+    }
+
+    // 3. دالة إظهار التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -345,150 +353,152 @@
         }, 4000);
     }
 
-    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
-    function addEduWhyRow() {
-        const container = document.getElementById('eduWhyContainer');
-        if (!container) return;
-        const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-why-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'why_row_' + Date.now() + '_' + eduWhyCount;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">العنوان</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
-                </div>
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">الوصف</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
-                </div>
-                <div class="col-md-11">
-                    <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
-                </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف السبب">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة" (مع قيد الحد الأقصى 6 عناصر)
-    function addEduStepRow() {
-        const container = document.getElementById('eduTimelineContainer');
-        if (!container) return;
-        
-        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
-        
-        // قيد الـ 6 عناصر وتنبيه المستخدم
-        if (currentRows >= 6) {
-            showNotification('عذراً، الحد الأقصى لخطوات التعليم هو 6 خطوات فقط.', 'warning');
-            return;
-        }
-
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'step_row_' + Date.now() + '_' + currentRows;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][title]" placeholder="اسم الخطوة">
-                </div>
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][subtitle]" placeholder="العنوان الفرعي">
-                </div>
-                <div class="col-md-12">
-                    <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][desc]" placeholder="التفاصيل">
-                </div>
-                <div class="col-md-2">
-                    <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="edu_timeline[${currentRows}][order]" value="${currentRows}" placeholder="الترتيب">
-                </div>
-                <div class="col-md-9">
-                    <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${currentRows}" accept="image/*">
-                    <input type="hidden" name="edu_timeline[${currentRows}][old_icon]" value="">
-                </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخطوة">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-
-        // التحقق وتحديث حالة زر الإضافة فوراً بعد الإضافة
-        toggleEduAddButton();
-    }
-
-    // دالة التحكم بإظهار أو إخفاء زر الإضافة الخاص بالـ Timeline عند الوصول لـ 6 عناصر
+    // التحكم بإظهار أو إخفاء زر إضافة الخطوات حسب الـ 6 عناصر
     function toggleEduAddButton() {
         const container = document.getElementById('eduTimelineContainer');
         if (!container) return;
-        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        const currentRows = container.querySelectorAll('.edu-step-row-item').length;
+        // البحث عن زر الإضافة الخاص بخطوات التعليم داخل النموذج
         const addBtn = document.querySelector('button[onclick="addEduStepRow()"]');
         
         if (addBtn) {
             if (currentRows >= 6) {
-                addBtn.style.display = 'none'; // إخفاء الزر عند الوصول لـ 6 عناصر
+                addBtn.style.display = 'none'; // إخفاء الزر عند الوصول لـ 6
             } else {
-                addBtn.style.display = 'block'; // إظهار الزر إذا كان أقل من 6 عناصر
+                addBtn.style.display = 'inline-block'; // إظهار الزر إذا نقص عن 6
             }
         }
     }
 
-    // 5. دالة إضافة صف جديد لـ "خدمات التعليم"
-    function addEduServiceRow() {
-        const container = document.getElementById('eduServicesContainer');
+    // الفحص التلقائي عند تحميل الصفحة للتأكد من حالة الزر بحسب عدد العناصر المحفوظة مسبقاً
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleEduAddButton();
+    });
+
+    // 4. عداد وعدادات الأقسام المختلفة
+    let eduWhyCount = <?php echo count($edu_why_items ?? []); ?>;
+    function addEduWhyRow() {
+        const container = document.getElementById('eduWhyContainer');
         if (!container) return;
-        const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-service-row-item mb-2';
+        div.className = 'card p-3 border-0 mb-2 edu-why-row-item';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'edu_srv_row_' + Date.now() + '_' + eduSrvCount;
+        div.id = 'edu_why_row_' + eduWhyCount;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">اسم الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">العنوان</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
                 </div>
-                <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">رابط الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">الوصف</label>
+                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
                 </div>
-                <div class="col-md-11">
-                    <label class="small text-muted fw-bold mb-1">صورة الخلفية الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
-                    <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">الصورة / الأيقونة</label>
+                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخدمة">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('edu_why_row_${eduWhyCount}')"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
+        eduWhyCount++;
     }
 
-    // 6. معالج الحفظ وإعادة الترقيم التلقائي عند الضغط على حفظ في أي نموذج
-    document.addEventListener('DOMContentLoaded', function() {
-        // التحقق من حالة زر الـ Timeline عند تحميل الصفحة أول مرة
-        toggleEduAddButton();
+    let eduStepCount = <?php echo count($edu_timeline_steps ?? []); ?>;
+    function addEduStepRow() {
+        const container = document.getElementById('eduTimelineContainer');
+        if (!container) return;
+        const currentRows = container.querySelectorAll('.edu-step-row-item').length;
+        
+        // قيد الـ 6 عناصر
+        if (currentRows >= 6) {
+            if (typeof showNotification === 'function') {
+                showNotification('عذراً، الحد الأقصى لخطوات التعليم هو 6 خطوات فقط.', 'warning');
+            } else {
+                alert('الحد الأقصى لخطوات التعليم هو 6 خطوات فقط.');
+            }
+            return;
+        }
 
-        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2 edu-step-row-item';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'edu_step_row_' + eduStepCount;
+        div.innerHTML = `
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">اسم الخطوة</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][title]" placeholder="اسم الخطوة">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">العنوان الفرعي</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                </div>
+                <div class="col-md-2">
+                    <label class="small text-muted mb-1">الترتيب</label>
+                    <input type="number" class="form-control form-control-sm" name="steps[${eduStepCount}][order]" value="${currentRows}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">أيقونة الخطوة</label>
+                    <input type="file" class="form-control form-control-sm" name="steps_icon_${eduStepCount}" accept="image/*">
+                    <input type="hidden" name="steps[${eduStepCount}][old_icon]" value="">
+                </div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeEduStepRow('edu_step_row_${eduStepCount}')"><i class="bi bi-trash"></i></button>
+                </div>
+                <div class="col-md-12 mt-2">
+                    <label class="small text-muted mb-1">التفاصيل</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${eduStepCount}][desc]" placeholder="التفاصيل">
+                </div>
+            </div>`;
+        container.appendChild(div);
+        eduStepCount++;
+
+        // التحقق وتحديث حالة الزر فور الإضافة
+        toggleEduAddButton();
+    }
+
+    let eduSrvCount = <?php echo count($edu_services_items ?? []); ?>;
+    function addEduServiceRow() {
+        const container = document.getElementById('eduServicesContainer');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'card p-3 border-0 mb-2 edu-srv-row-item';
+        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.id = 'edu_srv_row_' + eduSrvCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <label class="small text-muted mb-1">اسم الخدمة</label>
+                    <input type="text" class="form-control form-control-sm" name="services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">الرابط</label>
+                    <input type="text" class="form-control form-control-sm" name="services[${eduSrvCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted mb-1">صورة الخلفية</label>
+                    <input type="file" class="form-control form-control-sm" name="srv_img_${eduSrvCount}" accept="image/*">
+                    <input type="hidden" name="services[${eduSrvCount}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-end pt-3">
+                    <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_${eduSrvCount}')"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        eduSrvCount++;
+    }
+
+    // 5. معالج النماذج الموحد الشامل والمتوافق مع إرسال البيانات وإعادة الترقيم
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-modal form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // إعادة ترقيم "لماذا الدراسة"
+                // إعادة ترقيم صفوف "لماذا الدراسة"
                 const whyRows = form.querySelectorAll('.edu-why-row-item');
                 whyRows.forEach((row, index) => {
                     const titleInput = row.querySelector('input[name*="[title]"]');
@@ -502,40 +512,42 @@
                     if (oldImgInput) oldImgInput.name = `edu_why[${index}][old_img]`;
                 });
 
-                // إعادة ترقيم "خطوات الرحلة"
-                const stepRows = form.querySelectorAll('.edu-timeline-row-item');
+                // إعادة ترقيم صفوف "خطوات التعليم / الرحلة"
+                const stepRows = form.querySelectorAll('.edu-step-row-item');
                 stepRows.forEach((row, index) => {
                     const titleInput = row.querySelector('input[name*="[title]"]');
-                    const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
+                    const subInput = row.querySelector('input[name*="[subtitle]"]');
                     const orderInput = row.querySelector('input[name*="[order]"]');
                     const descInput = row.querySelector('input[name*="[desc]"]');
                     const fileInput = row.querySelector('input[type="file"]');
                     const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
 
-                    if (titleInput) titleInput.name = `edu_timeline[${index}][title]`;
-                    if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
-                    if (orderInput) orderInput.name = `edu_timeline[${index}][order]`;
-                    if (descInput) descInput.name = `edu_timeline[${index}][desc]`;
-                    if (fileInput) fileInput.name = `edu_timeline_icon_${index}`;
-                    if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
+                    if (titleInput) titleInput.name = `steps[${index}][title]`;
+                    if (subInput) subInput.name = `steps[${index}][subtitle]`;
+                    if (orderInput) orderInput.name = `steps[${index}][order]`;
+                    if (descInput) descInput.name = `steps[${index}][desc]`;
+                    if (fileInput) fileInput.name = `steps_icon_${index}`;
+                    if (oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
                 });
 
-                // إعادة ترقيم "خدمات التعليم"
-                const srvRows = form.querySelectorAll('.edu-service-row-item');
+                // إعادة ترقيم صفوف "خدمات التعليم"
+                const srvRows = form.querySelectorAll('.edu-srv-row-item');
                 srvRows.forEach((row, index) => {
                     const titleInput = row.querySelector('input[name*="[title]"]');
                     const urlInput = row.querySelector('input[name*="[url]"]');
                     const fileInput = row.querySelector('input[type="file"]');
                     const oldImgInput = row.querySelector('input[name*="[old_img]"]');
 
-                    if (titleInput) titleInput.name = `edu_services[${index}][title]`;
-                    if (urlInput) urlInput.name = `edu_services[${index}][url]`;
-                    if (fileInput) fileInput.name = `edu_service_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
+                    if (titleInput) titleInput.name = `services[${index}][title]`;
+                    if (urlInput) urlInput.name = `services[${index}][url]`;
+                    if (fileInput) fileInput.name = `srv_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `services[${index}][old_img]`;
                 });
 
                 const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                
+                // جلب الـ CSRF Token بأمان
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
@@ -554,23 +566,42 @@
                     try {
                         const data = JSON.parse(text);
                         if (data.success) {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            if (typeof showNotification === 'function') {
+                                showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            } else {
+                                alert(data.message || 'تم حفظ التعديلات بنجاح');
+                            }
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                            const errorMsg = data.message || data.error || 'يرجى التأكد من البيانات المدخلة';
+                            if (typeof showNotification === 'function') {
+                                showNotification('عذراً، لم يتم الحفظ: ' + errorMsg, 'danger');
+                            } else {
+                                alert('خطأ: ' + errorMsg);
+                            }
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        if (typeof showNotification === 'function') {
+                            showNotification('خطأ في استجابة السيرفر (انظر الـ Console)', 'danger');
+                        } else {
+                            alert('حدث خطأ غير متوقع.');
+                        }
+                        console.error('JSON Parse Error:', text);
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                    if (typeof showNotification === 'function') {
+                        showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                    } else {
+                        alert('حدث خطأ في الاتصال بالشبكة.');
+                    }
                 });
             });
         });
     });
 </script>
+
 
 
 

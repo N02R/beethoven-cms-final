@@ -544,12 +544,13 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم كافة الصفوف قبل الإرسال
+            // إعادة ترقيم كافة الصفوف قبل الإرسال مع ضبط أسماء حقول الملفات بشكل دقيق
             form.querySelectorAll('.job-why-row-item').forEach((row, index) => {
                 row.querySelector('input[name*="[title]"]')?.setAttribute('name', `items[${index}][title]`);
                 row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `items[${index}][desc]`);
-                row.querySelector('input[type="file"]')?.setAttribute('name', `why_img_${index}`);
                 row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `items[${index}][old_img]`);
+                const fileInput = row.querySelector('input[type="file"]');
+                if (fileInput) fileInput.setAttribute('name', `why_img_${index}`);
             });
 
             form.querySelectorAll('.job-prog-row-item').forEach((row, index) => {
@@ -557,9 +558,10 @@
                 row.querySelector('input[name*="[btn_text]"]')?.setAttribute('name', `programs[${index}][btn_text]`);
                 row.querySelector('input[name*="[btn_url]"]')?.setAttribute('name', `programs[${index}][btn_url]`);
                 row.querySelector('textarea')?.setAttribute('name', `programs[${index}][desc]`);
-                row.querySelector('input[type="file"]')?.setAttribute('name', `prog_img_${index}`);
                 row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `programs[${index}][old_img]`);
                 row.querySelector('input[type="checkbox"]')?.setAttribute('name', `programs[${index}][is_dark]`);
+                const fileInput = row.querySelector('input[type="file"]');
+                if (fileInput) fileInput.setAttribute('name', `prog_img_${index}`);
             });
 
             form.querySelectorAll('.job-step-row-item').forEach((row, index) => {
@@ -567,15 +569,20 @@
                 row.querySelector('input[name*="[subtitle]"]')?.setAttribute('name', `steps[${index}][subtitle]`);
                 row.querySelector('input[name*="[order]"]')?.setAttribute('name', `steps[${index}][order]`);
                 row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `steps[${index}][desc]`);
-                row.querySelector('input[type="file"]')?.setAttribute('name', `steps_icon_${index}`);
                 row.querySelector('input[name*="[old_icon]"]')?.setAttribute('name', `steps[${index}][old_icon]`);
+                
+                const fileInput = row.querySelector('input[type="file"]');
+                if (fileInput) {
+                    fileInput.setAttribute('name', `steps_icon_${index}`);
+                }
             });
 
             form.querySelectorAll('.job-srv-row-item').forEach((row, index) => {
                 row.querySelector('input[name*="[title]"]')?.setAttribute('name', `services[${index}][title]`);
                 row.querySelector('input[name*="[url]"]')?.setAttribute('name', `services[${index}][url]`);
-                row.querySelector('input[type="file"]')?.setAttribute('name', `srv_img_${index}`);
                 row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `services[${index}][old_img]`);
+                const fileInput = row.querySelector('input[type="file"]');
+                if (fileInput) fileInput.setAttribute('name', `srv_img_${index}`);
             });
 
             const formData = new FormData(this);
@@ -599,4 +606,5 @@
         });
     });
 </script>
+
 

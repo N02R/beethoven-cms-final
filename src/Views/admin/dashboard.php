@@ -9,161 +9,338 @@ if (!defined('ALLOWED_ACCESS')) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - Beethoven City Services</title>
+    <title>لوحة التحكم - بيتهوفن سيتي للخدمات الطلابية</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { 
-            background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
-            color: #1e293b; 
-            min-height: 100vh;
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        /* حاوية الخلفية الكاملة */
+        .dashboard-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: url('assets/img/dashboard.png') no-repeat center center;
+            background-size: cover;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0;
-            text-align: right;
+            justify-content: flex-start;
         }
 
-        .welcome-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
-            text-align: center;
-            overflow: hidden;
-        }
-
-        /* حاوية الصورة داخل الـ Container */
-        .dashboard-img-container {
-            width: 100%;
-            height: 160px;
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        }
-
-        .dashboard-img-container img {
+        /* طبقة عتمة خفيفة جداً لزيادة وضوح الحواف إذا لزم الأمر */
+        .dashboard-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
         }
 
-        .logo-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px 20px;
-            border-radius: 14px;
-            display: inline-block;
-            margin-bottom: 20px;
+        /* القوحة أو اللوحة اليسرى التي تحمل محتويات الداشبورد */
+        .sidebar-content {
+            position: relative;
+            z-index: 2;
+            width: 480px;
+            height: 100%;
+            background: linear-gradient(180deg, #071630 0%, #0a224a 100%);
+            padding: 40px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 15px 0 35px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
         }
 
-        .logo-box img {
-            max-height: 40px;
+        /* تخصيص السكرول بار للقائمة اليسرى */
+        .sidebar-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* قسم الشعار العلوي */
+        .brand-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .brand-logo {
+            max-height: 55px;
             object-fit: contain;
         }
 
-        h1 {
+        .brand-title {
+            color: #ffffff;
             font-weight: 800;
-            font-size: 1.7rem;
-            color: #0f172a;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .brand-subtitle {
+            color: #93c5fd;
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* الترحيب */
+        .welcome-section {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-section h1 {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 800;
             margin-bottom: 10px;
         }
 
-        p.description {
-            color: #64748b;
-            font-size: 0.95rem;
+        .welcome-section p {
+            color: #94a3b8;
+            font-size: 0.9rem;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin: 0;
         }
 
-        .btn-custom-primary {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            font-weight: 700;
-            padding: 14px 24px;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            font-size: 1rem;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
-            text-decoration: none;
-            margin-bottom: 12px;
-        }
-
-        .btn-custom-primary:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
-            color: #fff;
-        }
-
-        .btn-custom-outline {
-            background: #f8fafc;
-            border: 1.5px solid #cbd5e1;
-            color: #475569;
+        .welcome-section p span {
+            color: #60a5fa;
             font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            font-size: 0.95rem;
-            text-decoration: none;
         }
 
-        .btn-custom-outline:hover {
-            background: #f1f5f9;
-            border-color: #94a3b8;
-            color: #0f172a;
+        /* الأزرار التفاعلية */
+        .menu-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .action-card.primary {
+            background: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .action-card.primary:hover {
+            background: #1d4ed8;
+        }
+
+        .action-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.2rem;
+        }
+
+        .action-card.primary .action-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-text h4 {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 3px 0;
+        }
+
+        .action-text span {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .action-card.primary .action-text span {
+            color: #bfdbfe;
+        }
+
+        .arrow-icon {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .action-card.primary .arrow-icon {
+            color: #ffffff;
+        }
+
+        /* بوكس الباقة والقيمة السفلي */
+        .footer-badge {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .badge-info h5 {
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-info h5 i {
+            color: #60a5fa;
+        }
+
+        .badge-info span {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .badge-price {
+            text-align: left;
+        }
+
+        .badge-price span.label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+
+        .badge-price span.amount {
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar-content {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="welcome-card mx-auto">
-        
-        <!-- الصورة داخل الـ Container كعنصر مرئي صريح -->
-        <div class="dashboard-img-container">
-            <img src="public/assets/img/dashboard.jpeg" alt="لوحة التحكم الفنية">
-        </div>
+<div class="dashboard-wrapper">
+    <div class="dashboard-overlay"></div>
 
-        <div class="logo-box">
+    <div class="sidebar-content">
+        
+        <!-- الهيدر والشعار -->
+        <div class="brand-section">
             <?php 
                 $site_logo = $data['logo'] ?? 'assets/img/logo.png';
             ?>
-            <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
+            <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع" class="brand-logo">
+            <h2 class="brand-title">BEETHOVEN</h2>
+            <span class="brand-subtitle">بيتهوفن سيتي للخدمات الطلابية</span>
         </div>
 
-        <h1>أهلاً بك، <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?> ✨</h1>
-        <p class="description">
-            أنت الآن مسجل الدخول بصفحة الإدارة. يمكنك الانتقال الفوري للموقع واستعراضه لتعديل أي عنصر تريده بضغطة زر واحدة.
-        </p>
+        <!-- الترحيب بالمشرف -->
+        <div class="welcome-section">
+            <h1>مرحباً بك 👋<br><span style="color: #60a5fa;"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?></span></h1>
+            <p>
+                مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>. من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
+            </p>
+        </div>
 
-        <div class="d-grid gap-2">
-            <a href="index.php?url=home" class="btn-custom-primary">
-                <i class="bi bi-pencil-square fs-5"></i>
-                استعراض الموقع والتعديل عليه فوراً
+        <!-- الأزرار والقوائم -->
+        <div class="menu-actions">
+            <!-- استعراض الموقع -->
+            <a href="index.php?url=home" class="action-card primary">
+                <div class="action-content">
+                    <div class="action-icon">
+                        <i class="bi bi-eye"></i>
+                    </div>
+                    <div class="action-text">
+                        <h4>استعراض الموقع</h4>
+                        <span>عرض الموقع كما يراه الزوار</span>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-left arrow-icon"></i>
             </a>
 
-            <a href="index.php?url=admin/logout" class="btn-custom-outline">
-                <i class="bi bi-box-arrow-right fs-5"></i>
-                تسجيل الخروج الآمن
+            <!-- تعديل الموقع -->
+            <a href="index.php?url=admin/pages" class="action-card">
+                <div class="action-content">
+                    <div class="action-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div class="action-text">
+                        <h4>تعديل الموقع</h4>
+                        <span>إدارة وتعديل محتوى الموقع</span>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-left arrow-icon"></i>
             </a>
+
+            <!-- تسجيل الخروج -->
+            <a href="index.php?url=admin/logout" class="action-card">
+                <div class="action-content">
+                    <div class="action-icon" style="color: #f87171;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+                    <div class="action-text">
+                        <h4>تسجيل الخروج</h4>
+                        <span>الخروج من لوحة التحكم</span>
+                    </div>
+                </div>
+                <i class="bi bi-chevron-left arrow-icon"></i>
+            </a>
+        </div>
+
+        <!-- بطاقة الباقة والقيمة السفليّة -->
+        <div class="footer-badge">
+            <div class="badge-info">
+                <h5><i class="bi bi-bank"></i> الباقة الحالية</h5>
+                <span>الجامعات الألمانية 🇩🇪</span>
+                <div style="color: #94a3b8; font-size: 0.7rem; margin-top: 2px;">
+                    <i class="bi bi-calendar-event"></i> صالحة حتى 24 مايو 2026
+                </div>
+            </div>
+            <div class="badge-price">
+                <span class="label">القيمة الإجمالية</span>
+                <span class="amount">€ 9,000</span>
+            </div>
         </div>
 
     </div>

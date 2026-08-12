@@ -347,7 +347,7 @@
 
 <!-- 5. Lang Edit Modal -->
 <div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -366,15 +366,13 @@
                                 <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row align-items-center g-2">
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 d-md-none">اسم اللغة</label>
-                                            <input type="text" class="form-control form-control-sm" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
+                                            <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
                                         </div>
-                                        <div class="col-md-6 col">
-                                            <label class="small fw-bold mb-1 d-md-none">الرابط</label>
-                                            <input type="text" class="form-control form-control-sm" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                         </div>
-                                        <div class="col-auto ms-auto">
-                                            <button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_<?php echo $index; ?>')">
+                                        <div class="col-md-1 text-center">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>

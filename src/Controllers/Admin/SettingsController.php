@@ -610,54 +610,41 @@ class SettingsController
                 $stmt->execute(['k' => 'job_program_types', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline) - المحدث لدعم المصفوفات والأيقونات
-           // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline)
-elseif ($action === 'update_job_timeline') {
-    $jobTimelineTitle = $_POST['timeline_title'] ?? '';
-    $jobTimelineDesc  = $_POST['timeline_desc'] ?? '';
-    $stmt->execute(['k' => 'job_timeline_title', 'v' => $jobTimelineTitle, 'v_update' => $jobTimelineTitle]);
-    $stmt->execute(['k' => 'job_timeline_desc', 'v' => $jobTimelineDesc, 'v_update' => $jobTimelineDesc]);
+            // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline)
+            elseif ($action === 'update_job_timeline') {
+                // خطوة الفحص لمعرفة كيف يصل الملف
+                error_log("--- FILES DEBUG START ---");
+                error_log(print_r($_FILES, true));
+                error_log("--- FILES DEBUG END ---");
 
-    $jobTimelineData = $_POST['steps'] ?? [];
-    usort($jobTimelineData, function($a, $b) {
-        return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
-    });
+                $jobTimelineTitle = $_POST['timeline_title'] ?? '';
+                $jobTimelineDesc  = $_POST['timeline_desc'] ?? '';
+                $stmt->execute(['k' => 'job_timeline_title', 'v' => $jobTimelineTitle, 'v_update' => $jobTimelineTitle]);
+                $stmt->execute(['k' => 'job_timeline_desc', 'v' => $jobTimelineDesc, 'v_update' => $jobTimelineDesc]);
 
-    foreach ($jobTimelineData as $index => $item) {
-        // التحقق من وجود الملف بأكثر من طريقة لضمان التقاطه
-        $fileToCheck = null;
-        
-        // الاحتمال الأول: إذا كان الـ input في الواجهة يحمل الاسم: name="steps[0][icon]"
-        if (isset($_FILES['steps']['tmp_name'][$index]['icon']) && $_FILES['steps']['error'][$index]['icon'] === UPLOAD_ERR_OK) {
-            $fileToCheck = [
-                'tmp_name' => $_FILES['steps']['tmp_name'][$index]['icon'],
-                'error'    => $_FILES['steps']['error'][$index]['icon']
-            ];
-        } 
-        // الاحتمال الثاني: إذا كان الـ input في الواجهة يحمل اسماً فريداً: name="step_icon_0"
-        elseif (isset($_FILES['step_icon_' . $index]) && $_FILES['step_icon_' . $index]['error'] === UPLOAD_ERR_OK) {
-            $fileToCheck = $_FILES['step_icon_' . $index];
-        }
+                $jobTimelineData = $_POST['steps'] ?? [];
+                usort($jobTimelineData, function($a, $b) {
+                    return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
+                });
 
-        if ($fileToCheck && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-            if (!empty($item['old_icon'])) {
-                $this->deleteOldImageFile($root_path, $item['old_icon']);
+                foreach ($jobTimelineData as $index => $item) {
+                    // التحقق العادي
+                    $fileToCheck = $_FILES['step_icon_' . $index] ?? ($_FILES['steps'][$index]['icon'] ?? null);
+
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($item['old_icon'])) {
+                            $this->deleteOldImageFile($root_path, $item['old_icon']);
+                        }
+                        $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $jobTimelineData[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $jobTimelineData[$index]['icon'] = $item['old_icon'] ?? '';
+                    }
+                    unset($jobTimelineData[$index]['old_icon']);
+                }
+                $jsonVal = json_encode(array_values($jobTimelineData), JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-            $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-            $jobTimelineData[$index]['icon'] = 'assets/uploads/' . $filename;
-        } else {
-            // الاحتفاظ بالصورة القديمة إذا لم يتم رفع صورة جديدة
-            $jobTimelineData[$index]['icon'] = $item['old_icon'] ?? '';
-        }
-        
-        // إزالة الحقل الذي لا نحتاجه في القاعدة
-        unset($jobTimelineData[$index]['old_icon']);
-    }
-    
-    $jsonVal = json_encode(array_values($jobTimelineData), JSON_UNESCAPED_UNICODE);
-    $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-}
-
 
             // 25. تحديث كروت الخدمات المعروضة (Job Services)
             elseif ($action === 'update_job_services') {

@@ -47,7 +47,7 @@ if (!defined('ALLOWED_ACCESS')) {
             width: 100%;
             height: 100%;
             min-height: 600px;
-            background-image: url('public/assets/img/dashboard.jpeg');
+            background-image: url('/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -73,18 +73,13 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .brand-logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1e3a8a;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            display: inline-block;
             margin-bottom: 25px;
         }
 
         .brand-logo-img {
-            max-height: 45px;
+            max-height: 55px;
             object-fit: contain;
         }
 
@@ -226,7 +221,7 @@ if (!defined('ALLOWED_ACCESS')) {
             <div class="col-lg-6">
               <div class="dashboard-card-box">
                 
-                <!-- الشعار المحدث ديناميكياً -->
+                <!-- الشعار (باللوجو فقط بدون نصوص مكررة) -->
                 <?php 
                     $site_logo = $data['logo'] ?? 'assets/img/logo.png';
                 ?>
@@ -236,10 +231,6 @@ if (!defined('ALLOWED_ACCESS')) {
                     <?php else: ?>
                         <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
                     <?php endif; ?>
-                    <div>
-                        <div>BEETHOVEN</div>
-                        <small style="font-size: 10px; letter-spacing: 2px; color: #64748b;">CITY SERVICES</small>
-                    </div>
                 </a>
 
                 <h1 class="welcome-title">مرحباً بك <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?> 👋</h1>

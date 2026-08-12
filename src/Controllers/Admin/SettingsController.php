@@ -612,11 +612,6 @@ class SettingsController
 
             // 24. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline)
             elseif ($action === 'update_job_timeline') {
-                // خطوة الفحص لمعرفة كيف يصل الملف
-                error_log("--- FILES DEBUG START ---");
-                error_log(print_r($_FILES, true));
-                error_log("--- FILES DEBUG END ---");
-
                 $jobTimelineTitle = $_POST['timeline_title'] ?? '';
                 $jobTimelineDesc  = $_POST['timeline_desc'] ?? '';
                 $stmt->execute(['k' => 'job_timeline_title', 'v' => $jobTimelineTitle, 'v_update' => $jobTimelineTitle]);
@@ -628,8 +623,8 @@ class SettingsController
                 });
 
                 foreach ($jobTimelineData as $index => $item) {
-                    // التحقق العادي
-                    $fileToCheck = $_FILES['step_icon_' . $index] ?? ($_FILES['steps'][$index]['icon'] ?? null);
+                    // التقاط الملف بالشكل الصحيح بناءً على ما ظهر في الـ Debug
+                    $fileToCheck = $_FILES['steps_icon_' . $index] ?? null;
 
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_icon'])) {
@@ -638,15 +633,16 @@ class SettingsController
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $jobTimelineData[$index]['icon'] = 'assets/uploads/' . $filename;
                     } else {
+                        // الاحتفاظ بالصورة القديمة إن لم يتم رفع صورة جديدة لهذا العنصر
                         $jobTimelineData[$index]['icon'] = $item['old_icon'] ?? '';
                     }
                     unset($jobTimelineData[$index]['old_icon']);
                 }
+                
                 $jsonVal = json_encode(array_values($jobTimelineData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 25. تحديث كروت الخدمات المعروضة (Job Services)
+            // 25. تحديث كروت الخدمات المعة (Job Services)
             elseif ($action === 'update_job_services') {
                 $jobServicesTitle = $_POST['services_title'] ?? '';
                 $jobServicesDesc  = $_POST['services_desc'] ?? '';

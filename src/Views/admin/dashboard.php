@@ -38,8 +38,7 @@ if (!defined('ALLOWED_ACCESS')) {
             width: 100%;
             height: 100%;
             min-height: 550px;
-            background-image: url('assets/img/dashboard.jpeg');
-
+            background-image: url('<?php echo BASE_URL; ?>/public/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
             border-radius: 20px;

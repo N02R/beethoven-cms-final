@@ -794,6 +794,7 @@
                 <form id="footerForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_footer">
                     
+                    <!-- قسم الاستشارة في الأعلى -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -812,18 +813,18 @@
                         </div>
                     </div>
 
-                    <!-- تم إزالة h-100 لكي يكون طول كل عمود حسب محتواه فقط -->
-                    <div class="row g-4">
-                        <div class="col-md-4">
-                            <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <!-- الصف الأول: العمود الأول (الوصف) والعمود الثاني (الروابط السريعة) -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
                                 <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
                                 <textarea class="form-control" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['footer_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="col-md-6">
+                            <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
                                 <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
                                 <input type="text" class="form-control mb-3" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة', ENT_QUOTES, 'UTF-8'); ?>">
@@ -832,44 +833,55 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-md-4">
+                    <!-- الصف الثاني: العمود الثالث (التواصل) بعرض كامل ومريح جداً -->
+                    <div class="row">
+                        <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
-                                <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                <input type="text" class="form-control mb-3" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="mb-3" style="max-width: 400px;">
+                                    <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
+                                    <input type="text" class="form-control" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
                                     <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
-                                        <!-- كارت وسيلة التواصل مرتب وغير مزدحم -->
                                         <div class="p-3 shadow-sm" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
-                                            
-                                            <!-- الصف الأول: الصورة الحالية وحقل رفع صورة جديدة -->
-                                            <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
-                                                <?php if (!empty($link['img'])): ?>
-                                                    <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(get_image_url($link['img']), ENT_QUOTES, 'UTF-8'); ?>" 
-                                                             alt="Contact Icon" 
-                                                             class="rounded-2" 
-                                                             style="width: 32px; height: 32px; object-fit: cover;">
+                                            <div class="row g-3 align-items-center">
+                                                
+                                                <!-- الأيقونة وحقل الرفع -->
+                                                <div class="col-md-4">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <?php if (!empty($link['img'])): ?>
+                                                            <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                                <img src="<?php echo htmlspecialchars(get_image_url($link['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                                     alt="Contact Icon" 
+                                                                     class="rounded-2" 
+                                                                     style="width: 36px; height: 36px; object-fit: cover;">
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm bg-white">
                                                     </div>
-                                                <?php endif; ?>
-                                                <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm bg-white">
-                                            </div>
+                                                </div>
 
-                                            <!-- الصف الثاني: الاسم والرابط -->
-                                            <div class="mb-2">
-                                                <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm mb-2 bg-white" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
-                                                <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
-                                            </div>
+                                                <!-- الاسم -->
+                                                <div class="col-md-3">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                                                </div>
 
-                                            <!-- زر الحذف في الأسفل بمساحة آمنة ومنفصلة -->
-                                            <div class="text-end mt-2 pt-2 border-top">
-                                                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="removeRow('col3_<?php echo $i; ?>')" style="font-size: 12px; border-radius: 8px;">
-                                                    <i class="bi bi-trash me-1"></i> حذف الوسيلة
-                                                </button>
-                                            </div>
+                                                <!-- الرابط -->
+                                                <div class="col-md-4">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                                </div>
 
+                                                <!-- زر الحذف -->
+                                                <div class="col-md-1 text-center">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                             <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                     <?php endforeach; ?>

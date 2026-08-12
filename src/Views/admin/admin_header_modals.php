@@ -490,17 +490,18 @@
                                         <input type="text" class="form-control" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                     </div>
                                     <div class="col-md-5">
-                                        <!-- معاينة صورة الخدمة الحالية إن وجدت -->
-                                        <?php if (!empty($service['img'])): ?>
-                                            <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded-3 border">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($service['img']), ENT_QUOTES, 'UTF-8'); ?>" 
-                                                     alt="Service Image" 
-                                                     class="rounded-2" 
-                                                     style="width: 36px; height: 36px; object-fit: cover;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo htmlspecialchars(basename($service['img']), ENT_QUOTES, 'UTF-8'); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="service_img_<?php echo $index; ?>">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <!-- معاينة الصورة فقط إن وجدت -->
+                                            <?php if (!empty($service['img'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($service['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                         alt="Service Image" 
+                                                         class="rounded-2" 
+                                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control" name="service_img_<?php echo $index; ?>">
+                                        </div>
                                     </div>
                                     <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center">
@@ -532,50 +533,50 @@
                 <h5 class="modal-title"><i class="bi bi-star text-primary"></i> تعديل المميزات</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form id="chooseForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي'); ?>">
+                    
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div>
+                            <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
+                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['choose_section_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">وصف القسم (اختياري)</label>
-                        <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء"><?php echo htmlspecialchars($data['choose_section_desc'] ?? ''); ?></textarea>
-                    </div>
-                    <hr>
-                    <div id="chooseRowsContainer">
+
+                    <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($data['choose_items'])): ?>
                             <?php foreach ($data['choose_items'] as $index => $item): ?>
-                                <div class="card p-3 border-0 mb-3" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="choose_row_<?php echo $index; ?>">
+                                <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                     <div class="row g-2 align-items-center">
                                         <div class="col-md-3">
-                                            <label class="small text-muted">العنوان</label>
-                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                            <input type="text" class="form-control" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="small text-muted">الوصف</label>
-                                            <input type="text" class="form-control form-control-sm" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? ''); ?>">
+                                            <input type="text" class="form-control" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                         </div>
-                                        <div class="col-md-3">
-                                            <label class="small text-muted">الأيقونة (صورة)</label>
-                                            
-                                            <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
-                                            <?php if (!empty($item['img'])): ?>
-                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" 
-                                                         alt="Choose Item Icon" 
-                                                         class="rounded" 
-                                                         style="width: 28px; height: 28px; object-fit: cover;">
-                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
+                                                <?php if (!empty($item['img'])): ?>
+                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                        <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                             alt="Choose Item Icon" 
+                                                             class="rounded-2" 
+                                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                                    </div>
+                                                <?php endif; ?>
 
-                                            <input type="file" class="form-control form-control-sm" name="choose_img_<?php echo $index; ?>">
-                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                                <input type="file" class="form-control" name="choose_img_<?php echo $index; ?>">
+                                            </div>
+                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <div class="col-md-auto mt-4">
-                                            <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">
+                                        <div class="col-md-1 text-center">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -584,8 +585,9 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addChooseRow()">
-                        <i class="bi bi-plus-circle"></i> إضافة ميزة جديدة
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة ميزة جديدة
                     </button>
                 </form>
             </div>
@@ -596,7 +598,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 9. Reviews Edit Modal -->
 <div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true">

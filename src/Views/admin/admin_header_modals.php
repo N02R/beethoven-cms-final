@@ -1,25 +1,64 @@
 <style>
-    :root {
-        --primary: #3b82f6;
-        --primary-dark: #2563eb;
-        --bg-soft: #f8fafc;
-        --border-color: #dbeafe;
-        --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
-        --radius: 20px;
+    /* Modal Glassmorphism & Custom Styling */
+    .custom-modal .modal-content { 
+        border-radius: 24px; 
+        border: none; 
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); 
+        background: #ffffff;
+        overflow: hidden; 
+    }
+    .custom-modal .modal-header { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 22px 28px; 
+        border-bottom: 1px solid #f1f5f9; 
+        background: #ffffff;
+    }
+    .custom-modal .modal-title { 
+        margin: 0; 
+        display: flex; 
+        align-items: center; 
+        gap: .75rem; 
+        font-weight: 700; 
+        color: #0f172a; 
+        font-size: 1.2rem;
+    }
+    .custom-modal .btn-close { 
+        margin: 0; 
+        flex-shrink: 0; 
+    }
+    
+    .custom-modal .modal-body {
+        background: #f8fafc;
+        padding: 28px;
     }
 
-    /* Modal Structure */
-    .custom-modal .modal-content { border-radius: var(--radius); border: none; box-shadow: var(--shadow-md); overflow: hidden; }
-    .custom-modal .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border-color); }
-    .custom-modal .modal-title { margin: 0; display: flex; align-items: center; gap: .5rem; font-weight: 700; color: #1e293b; }
-    .custom-modal .btn-close { margin: 0; flex-shrink: 0; }
-
     /* Inputs */
-    .custom-modal .form-control, .custom-modal .form-select { border-radius: 12px; border: 1px solid var(--border-color); height: 48px; padding: 0 16px; transition: 0.2s; width: 100%; }
-    .custom-modal .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(59,130,246,0.1); }
+    .custom-modal .form-control, .custom-modal .form-select { 
+        border-radius: 12px; 
+        border: 1px solid #e2e8f0; 
+        height: 46px; 
+        padding: 0 16px; 
+        transition: all 0.2s ease; 
+        width: 100%; 
+        background-color: #ffffff;
+        font-size: 0.95rem;
+    }
+    .custom-modal .form-control:focus, .custom-modal .form-select:focus { 
+        border-color: #3b82f6; 
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
+        background-color: #ffffff;
+    }
     
     /* File Upload */
-    .custom-modal input[type="file"].form-control { padding: 10px 16px; background: #fff; cursor: pointer; width: 100%; }
+    .custom-modal input[type="file"].form-control { 
+        padding: 9px 16px; 
+        background: #ffffff; 
+        cursor: pointer; 
+        width: 100%; 
+        height: auto;
+    }
 
     /* تنسيق الفوتر الموحد */
     .custom-modal .modal-footer {
@@ -27,40 +66,62 @@
         justify-content: center;
         align-items: center;
         gap: 16px;
-        padding: 16px 24px;
-        background: #f8fafc;
+        padding: 20px 28px;
+        background: #ffffff;
+        border-top: 1px solid #f1f5f9;
     }
 
     .custom-modal .modal-footer button {
         flex: 1;
         height: 48px;
         font-size: 15px;
+        font-weight: 600;
+        border-radius: 12px;
     }
 
     /* تنسيق زر الإلغاء */
     .btn-cancel {
-        background-color: #cbd5e1;
-        color: #334155;   
-        border-radius: 12px;
-        border: none;
-        transition: 0.3s;
+        background-color: #f1f5f9;
+        color: #475569;   
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
     }
     .btn-cancel:hover {
-        background-color: #cbd5e1;
+        background-color: #e2e8f0;
         color: #1e293b;
     }
 
     /* تنسيق زر الحفظ */
     .btn-premium { 
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+        background: linear-gradient(135deg, #2563eb, #3b82f6); 
         color: white; 
-        border-radius: 12px; 
         border: none; 
-        transition: 0.3s; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-premium:hover {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-icon-trash { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; }
-    .btn-icon-trash:hover { background: #fecaca; }
+    .btn-icon-trash { 
+        width: 44px; 
+        height: 44px; 
+        border-radius: 12px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background: #fee2e2; 
+        color: #dc2626; 
+        border: none; 
+        transition: all 0.2s ease;
+    }
+    .btn-icon-trash:hover { 
+        background: #fecaca; 
+        transform: translateY(-1px);
+    }
 </style>
 
 <!-- 1. Social Links Modal -->
@@ -76,9 +137,9 @@
                     <input type="hidden" name="action" value="update_social">
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
-                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="row_<?php echo $index; ?>">
+                        <div class="card p-3 border-0 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="d-flex align-items-start gap-3">
-                                <div class="rounded-2 border bg-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                <div class="rounded-3 border bg-light d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; flex-shrink: 0;">
                                     <img src="<?php echo htmlspecialchars(get_image_url($link['img'] ?? '')); ?>" style="width: 28px; height: 28px; object-fit: contain;">
                                 </div>
                                 <div class="flex-grow-1">
@@ -96,7 +157,7 @@
                         </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addSocialRow()"><i class="bi bi-plus-circle me-1"></i> إضافة منصة جديدة</button>
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addSocialRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'"><i class="bi bi-plus-circle me-1"></i> إضافة منصة جديدة</button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -106,7 +167,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">

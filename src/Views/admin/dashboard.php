@@ -14,9 +14,7 @@ if (!defined('ALLOWED_ACCESS')) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body { 
-            /* استخدام الصورة الخلفية المطلوبة مع تغطية خفيفة جداً لضمان ظهور رسومات الأطراف بوضوح */
-            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('assets/img/dashboard.jpeg') no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
             color: #1e293b; 
             min-height: 100vh;
@@ -28,47 +26,60 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .welcome-card {
-            /* تصميم زجاجي فاخر (Glassmorphism) ليظهر جمال الخلفية من خلفه */
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 24px;
-            padding: 50px 40px;
-            max-width: 550px;
+            padding: 40px;
+            max-width: 600px;
             width: 100%;
             box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
             text-align: center;
+            overflow: hidden;
+        }
+
+        /* حاوية الصورة داخل الـ Container */
+        .dashboard-img-container {
+            width: 100%;
+            height: 160px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .dashboard-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo-box {
-            background: #ffffff;
+            background: #f8fafc;
             border: 1px solid #e2e8f0;
-            padding: 15px 25px;
-            border-radius: 16px;
+            padding: 12px 20px;
+            border-radius: 14px;
             display: inline-block;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
         }
 
         .logo-box img {
-            max-height: 45px;
+            max-height: 40px;
             object-fit: contain;
         }
 
         h1 {
             font-weight: 800;
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             color: #0f172a;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            margin-bottom: 10px;
         }
 
         p.description {
             color: #64748b;
             font-size: 0.95rem;
             line-height: 1.6;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .btn-custom-primary {
@@ -98,7 +109,7 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .btn-custom-outline {
-            background: rgba(255, 255, 255, 0.8);
+            background: #f8fafc;
             border: 1.5px solid #cbd5e1;
             color: #475569;
             font-weight: 600;
@@ -126,6 +137,11 @@ if (!defined('ALLOWED_ACCESS')) {
 <div class="container">
     <div class="welcome-card mx-auto">
         
+        <!-- الصورة داخل الـ Container كعنصر مرئي صريح -->
+        <div class="dashboard-img-container">
+            <img src="public/assets/img/dashboard.jpeg" alt="لوحة التحكم الفنية">
+        </div>
+
         <div class="logo-box">
             <?php 
                 $site_logo = $data['logo'] ?? 'assets/img/logo.png';

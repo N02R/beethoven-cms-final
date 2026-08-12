@@ -20,7 +20,6 @@ if (!defined('ALLOWED_ACCESS')) {
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            /* خلفية بتدرج نيون/زجاجي مشرق بدلاً من الكحلي الغامق */
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             color: #333333;
             margin: 0;
@@ -34,28 +33,24 @@ if (!defined('ALLOWED_ACCESS')) {
             align-items: center;
         }
         
-        /* الحاوية الرئيسية التي تجمع الصورتين وتجعلهما ككتاب واحد */
         .main-card-wrapper {
             border-radius: 24px;
-            overflow: hidden; /* هذا السطر هو السر لدمج الحواف */
+            overflow: hidden;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            /* تأثير زجاجي خفيف للحاوية */
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* تنسيق حاوية الصورة */
         .img-hero {
             width: 100%;
             height: 100%;
             min-height: 600px;
-            background-image: url('/assets/img/dashboard.jpeg');
+            background-image: url('public/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
-            /* تمت إزالة الـ border-radius من هنا ليلتصق بالمحتوى */
         }
 
         .img-hero::before {
@@ -65,22 +60,18 @@ if (!defined('ALLOWED_ACCESS')) {
             left: 0;
             width: 100%;
             height: 100%;
-            /* تخفيف التعتيم على الصورة ليتناسب مع النيون */
             background: linear-gradient(to right, rgba(30, 58, 138, 0.4), rgba(6, 182, 212, 0.1));
         }
 
-        /* حاوية المحتوى بخلفية بيضاء */
         .dashboard-card-box {
-            background-color: rgba(255, 255, 255, 0.98); /* أبيض مع شفافية بسيطة جداً */
+            background-color: rgba(255, 255, 255, 0.98);
             padding: 50px 40px;
-            height: 100%; /* لضمان تمدد المحتوى لنفس طول الصورة */
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* تمت إزالة الـ border-radius والظل من هنا */
         }
 
-        /* الشعار والترويسة */
         .brand-logo {
             font-size: 22px;
             font-weight: 700;
@@ -90,6 +81,11 @@ if (!defined('ALLOWED_ACCESS')) {
             align-items: center;
             gap: 15px;
             margin-bottom: 25px;
+        }
+
+        .brand-logo-img {
+            max-height: 45px;
+            object-fit: contain;
         }
 
         .welcome-title {
@@ -111,7 +107,6 @@ if (!defined('ALLOWED_ACCESS')) {
             font-weight: 600;
         }
 
-        /* الأزرار التفاعلية على الخلفية البيضاء */
         .custom-card-btn {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -184,13 +179,12 @@ if (!defined('ALLOWED_ACCESS')) {
             color: #64748b;
         }
 
-        /* بطاقة المعلومات السفلية */
         .info-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             padding: 15px 20px;
-            margin-top: auto; /* يدفع البطاقة للأسفل لترتيب أفضل */
+            margin-top: auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -220,9 +214,7 @@ if (!defined('ALLOWED_ACCESS')) {
   <section class="dashboard-section py-5">
     <div class="container-fluid px-lg-5">
       
-      <!-- الحاوية الزجاجية الجديدة التي تدمج الجانبين -->
       <div class="main-card-wrapper">
-          <!-- لاحظنا استخدام g-0 هنا لإزالة أي مسافة بين العمودين تماماً -->
           <div class="row align-items-stretch g-0">
             
             <!-- عمود الصورة (يمين الشاشة) -->
@@ -234,24 +226,31 @@ if (!defined('ALLOWED_ACCESS')) {
             <div class="col-lg-6">
               <div class="dashboard-card-box">
                 
-                <!-- الشعار -->
+                <!-- الشعار المحدث ديناميكياً -->
+                <?php 
+                    $site_logo = $data['logo'] ?? 'assets/img/logo.png';
+                ?>
                 <a href="#" class="brand-logo">
-                    <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
+                    <?php if (!empty($site_logo)): ?>
+                        <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع" class="brand-logo-img">
+                    <?php else: ?>
+                        <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
+                    <?php endif; ?>
                     <div>
                         <div>BEETHOVEN</div>
                         <small style="font-size: 10px; letter-spacing: 2px; color: #64748b;">CITY SERVICES</small>
                     </div>
                 </a>
 
-                <h1 class="welcome-title">مرحباً بك المشرف 👋</h1>
+                <h1 class="welcome-title">مرحباً بك <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?> 👋</h1>
                 <p class="welcome-desc">
                   مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>، من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
                 </p>
 
                 <!-- الأزرار -->
                 <div class="d-flex flex-column mb-4">
-                    <!-- زر استعراض الموقع -->
-                    <a href="index.php" class="custom-card-btn primary">
+                    <!-- استعراض الموقع -->
+                    <a href="index.php?url=home" class="custom-card-btn primary">
                         <div class="btn-content">
                             <div class="btn-icon">
                                 <i class="fa-solid fa-eye"></i>
@@ -264,8 +263,8 @@ if (!defined('ALLOWED_ACCESS')) {
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
 
-                    <!-- زر تعديل الموقع -->
-                    <a href="edit-content.php" class="custom-card-btn">
+                    <!-- تعديل الموقع -->
+                    <a href="index.php?url=admin/pages" class="custom-card-btn">
                         <div class="btn-content">
                             <div class="btn-icon">
                                 <i class="fa-solid fa-pen-to-square"></i>
@@ -278,8 +277,8 @@ if (!defined('ALLOWED_ACCESS')) {
                         <i class="fa-solid fa-chevron-left text-muted"></i>
                     </a>
 
-                    <!-- زر تسجيل الخروج -->
-                    <a href="logout.php" class="custom-card-btn" style="border-color: #fee2e2;">
+                    <!-- تسجيل الخروج -->
+                    <a href="index.php?url=admin/logout" class="custom-card-btn" style="border-color: #fee2e2;">
                         <div class="btn-content">
                             <div class="btn-icon" style="color: #dc2626; background: #fee2e2;">
                                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -297,7 +296,7 @@ if (!defined('ALLOWED_ACCESS')) {
                 <div class="info-card">
                     <div class="info-item">
                         <h6>الباقة الحالية</h6>
-                        <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية</span>
+                        <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية 🇩🇪</span>
                         <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
                             <i class="fa-regular fa-calendar-days"></i> صالحة حتى 24 مايو 2026
                         </div>

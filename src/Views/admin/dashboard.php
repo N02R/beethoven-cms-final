@@ -14,9 +14,9 @@ if (!defined('ALLOWED_ACCESS')) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body { 
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #020617 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
-            color: #ffffff; 
+            color: #1e293b; 
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -26,25 +26,24 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .welcome-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
             border-radius: 24px;
             padding: 50px 40px;
             max-width: 550px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
             text-align: center;
         }
 
         .logo-box {
-            background: #ffffff;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             padding: 15px 25px;
             border-radius: 16px;
             display: inline-block;
             margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
         }
 
         .logo-box img {
@@ -55,12 +54,13 @@ if (!defined('ALLOWED_ACCESS')) {
         h1 {
             font-weight: 800;
             font-size: 1.8rem;
+            color: #0f172a;
             margin-bottom: 12px;
             letter-spacing: -0.5px;
         }
 
         p.description {
-            color: #94a3b8;
+            color: #64748b;
             font-size: 0.95rem;
             line-height: 1.6;
             margin-bottom: 35px;
@@ -80,7 +80,7 @@ if (!defined('ALLOWED_ACCESS')) {
             gap: 10px;
             width: 100%;
             font-size: 1rem;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
             text-decoration: none;
             margin-bottom: 12px;
         }
@@ -88,14 +88,14 @@ if (!defined('ALLOWED_ACCESS')) {
         .btn-custom-primary:hover {
             background: #1d4ed8;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
             color: #fff;
         }
 
         .btn-custom-outline {
-            background: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            color: #cbd5e1;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            color: #475569;
             font-weight: 600;
             padding: 12px 24px;
             border-radius: 12px;
@@ -110,9 +110,9 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .btn-custom-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.4);
-            color: #fff;
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
         }
     </style>
 </head>
@@ -123,7 +123,6 @@ if (!defined('ALLOWED_ACCESS')) {
         
         <div class="logo-box">
             <?php 
-                // استقبال الشعار القادم من الكونترولر أو الاعتماد على القيمة الافتراضية
                 $site_logo = $data['logo'] ?? 'assets/img/logo.png';
             ?>
             <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
@@ -135,13 +134,11 @@ if (!defined('ALLOWED_ACCESS')) {
         </p>
 
         <div class="d-grid gap-2">
-            <!-- زر استعراض وتعديل الموقع مع التوجيه الصحيح إلى /home -->
             <a href="index.php?url=home" class="btn-custom-primary">
                 <i class="bi bi-pencil-square fs-5"></i>
                 استعراض الموقع والتعديل عليه فوراً
             </a>
 
-            <!-- زر تسجيل الخروج -->
             <a href="index.php?url=admin/logout" class="btn-custom-outline">
                 <i class="bi bi-box-arrow-right fs-5"></i>
                 تسجيل الخروج الآمن

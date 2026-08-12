@@ -38,7 +38,7 @@ if (!defined('ALLOWED_ACCESS')) {
             overflow: hidden;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background-image: url('<?php echo BASE_URL; ?>/public/assets/img/dashboard.jpeg');
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
@@ -248,7 +248,7 @@ if (!defined('ALLOWED_ACCESS')) {
                             </div>
                             <div class="btn-text">
                                 <h5>استعراض الموقع</h5>
-                                <p>عرض الموقع كما يراه الزوار</p>
+                                 <p>تعديل الموقع وإدارته</p>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-left"></i>

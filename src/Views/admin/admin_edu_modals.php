@@ -139,12 +139,11 @@
 </div>
 
 
-<!-- 3. Education Timeline Modal (قسم خطوات التعليم) -->
 <div class="modal fade custom-modal" id="eduTimelineModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-mortarboard-fill text-primary"></i> إدارة خطوات التعليم (Timeline)</h5>
+                <h5 class="modal-title"><i class="bi bi-diagram-3 text-primary"></i> إدارة خطوات الرحلة (Timeline)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -153,7 +152,7 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
+                        <label class="form-label fw-bold">عنوان القسم</label>
                         <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
@@ -163,7 +162,7 @@
 
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_timeline_steps ?? []) as $index => $step): ?>
-                            <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="edu_step_row_<?php echo $index; ?>">
+                            <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
@@ -197,7 +196,7 @@
                                         <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeEduRow('edu_step_row_<?php echo $index; ?>')" title="حذف الخطوة">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -206,7 +205,7 @@
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" id="addEduBtn" class="btn btn-outline-primary w-100 mt-3" onclick="addEduStepRow()">
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addEduStepRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
                     </button>
                 </form>
@@ -217,7 +216,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>  
 
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->

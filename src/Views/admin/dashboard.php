@@ -14,7 +14,8 @@ if (!defined('ALLOWED_ACCESS')) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body { 
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(241, 245, 249, 0.9)), url('assets/img/dashboard.jpeg') no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
             color: #1e293b; 
             min-height: 100vh;
@@ -26,24 +27,25 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .welcome-card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
             border: 1px solid #cbd5e1;
             border-radius: 24px;
             padding: 50px 40px;
             max-width: 550px;
             width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.15);
             text-align: center;
         }
 
         .logo-box {
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px solid #e2e8f0;
             padding: 15px 25px;
             border-radius: 16px;
             display: inline-block;
             margin-bottom: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         }
 
         .logo-box img {

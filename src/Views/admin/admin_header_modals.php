@@ -743,22 +743,35 @@
             <div class="modal-body p-4">
                 <form id="faqForm">
                     <input type="hidden" name="action" value="update_faq">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة'); ?>">
+                    
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة', ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
+
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="faq_row_<?php echo $index; ?>">
+                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
-                                    <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? ''); ?>" placeholder="السؤال"></div>
-                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? ''); ?>" placeholder="الإجابة"></div>
-                                    <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                    </div>
+                                    <div class="col-md-1 text-center">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addFaqRow()"><i class="bi bi-plus-circle"></i> إضافة سؤال جديد</button>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFaqRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة سؤال جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -769,9 +782,8 @@
     </div>
 </div>
 
-
 <!-- 12. Footer Edit Modal -->
-<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1">
+<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -784,70 +796,88 @@
                     
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="card p-3 border-0" style="background:#eff6ff; border-radius: 12px;">
-                                <h6 class="text-primary mb-3"><i class="bi bi-chat-dots"></i> إعدادات قسم الاستشارة</h6>
-                                <div class="row g-2">
-                                    <div class="col-md-4"><input type="text" class="form-control" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? ''); ?>" placeholder="عنوان الاستشارة"></div>
-                                    <div class="col-md-8"><input type="text" class="form-control" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? ''); ?>" placeholder="وصف الاستشارة"></div>
+                            <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary mb-3 fw-bold"><i class="bi bi-chat-dots me-1"></i> إعدادات قسم الاستشارة</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="small fw-bold mb-1 text-secondary">عنوان الاستشارة</label>
+                                        <input type="text" class="form-control" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="small fw-bold mb-1 text-secondary">وصف الاستشارة</label>
+                                        <input type="text" class="form-control" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row g-4">
                         <div class="col-md-4">
-                            <h6 class="text-primary mb-3">العمود الأول</h6>
-                            <label class="small fw-bold">وصف الفوتر:</label>
-                            <textarea class="form-control" name="footer_desc" rows="6"><?php echo htmlspecialchars($data['footer_desc'] ?? ''); ?></textarea>
-                        </div>
-
-                        <div class="col-md-4">
-                            <h6 class="text-primary mb-3">العمود الثاني</h6>
-                            <input type="text" class="form-control mb-3" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?>">
-                            <div class="p-3 bg-light rounded-3 text-muted small">
-                                <i class="bi bi-info-circle"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
+                            <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
+                                <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
+                                <textarea class="form-control" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['footer_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
                         <div class="col-md-4">
-                            <h6 class="text-primary mb-3">العمود الثالث (التواصل)</h6>
-                            <input type="text" class="form-control mb-3" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?>">
-                            <div id="col3LinksContainer">
-                                <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
-                                    <div class="card p-2 mb-3" id="col3_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 10px;">
-                                        <div class="row g-2 align-items-center">
-                                            
-                                            <!-- معاينة أيقونة التواصل الحالية إن وجدت -->
-                                            <div class="col-12">
-                                                <?php if (!empty($link['img'])): ?>
-                                                    <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                        <img src="<?php echo htmlspecialchars(get_image_url($link['img'])); ?>" 
-                                                             alt="Contact Icon" 
-                                                             class="rounded" 
-                                                             style="width: 24px; height: 24px; object-fit: cover;">
-                                                        <span class="small text-muted text-truncate" style="font-size: 11px;"><?php echo basename($link['img']); ?></span>
+                            <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
+                                <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
+                                <input type="text" class="form-control mb-3" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة', ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
+                                    <i class="bi bi-info-circle me-1"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
+                                <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
+                                <input type="text" class="form-control mb-3" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
+                                
+                                <div id="col3LinksContainer" class="d-flex flex-column gap-3">
+                                    <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
+                                        <div class="p-3 shadow-sm" id="col3_<?php echo $i; ?>" style="background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
+                                            <div class="row g-2 align-items-center">
+                                                
+                                                <!-- الصف الأول: الأيقونة وحقل الرفع -->
+                                                <div class="col-12 mb-1">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <?php if (!empty($link['img'])): ?>
+                                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                                <img src="<?php echo htmlspecialchars(get_image_url($link['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                                     alt="Contact Icon" 
+                                                                     class="rounded-2" 
+                                                                     style="width: 36px; height: 36px; object-fit: cover;">
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control">
                                                     </div>
-                                                <?php endif; ?>
-                                            </div>
+                                                </div>
 
-                                            <div class="col-md-3">
-                                                <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm">
+                                                <!-- الصف الثاني: الاسم، الرابط، وزر الحذف -->
+                                                <div class="col-md-6">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                                </div>
+                                                <div class="col-md-1 text-center">
+                                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
+                                                </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm" value="<?php echo htmlspecialchars($link['title'] ?? ''); ?>" placeholder="الاسم">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط">
-                                            </div>
-                                            <div class="col-md-auto">
-                                                <button type="button" class="btn-icon-trash" onclick="removeRow('col3_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
-                                            </div>
+                                            <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? ''); ?>">
-                                    </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                                    <i class="bi bi-plus-circle me-1"></i> إضافة وسيلة تواصل
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addCol3Link()">+ إضافة وسيلة تواصل</button>
                         </div>
                     </div>
                 </form>
@@ -860,35 +890,20 @@
     </div>
 </div>
 
-
 <script>
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات بطريقة عصرية باستخدام Bootstrap Toasts/Alerts
+    // دالة التنبيهات الموحدة
     function showNotification(message, type = 'success') {
-        // إزالة أي تنبيه سابق متبقي
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        // تحديد الألوان والأيقونات بناءً على نوع الرسالة (Bootstrap Classes)
-        let bgClass = 'alert-success';
-        let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
+        let bgClass = 'alert-success', icon = 'bi-check-circle-fill', title = 'تم بنجاح!';
+        if (type === 'danger') { bgClass = 'alert-danger'; icon = 'bi-x-circle-fill'; title = 'عذراً، حدث خطأ!'; }
 
-        if (type === 'danger') {
-            bgClass = 'alert-danger';
-            icon = 'bi-x-circle-fill';
-            title = 'عذراً، حدث خطأ!';
-        } else if (type === 'warning') {
-            bgClass = 'alert-warning';
-            icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
-        }
-
-        // إنشاء عنصر التنبيه
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
@@ -896,233 +911,74 @@
         
         alertDiv.innerHTML = `
             <div class="d-flex align-items-center gap-2">
-                <i class="bi ${icon} fs-4"><div></div></i>
-                <div>
-                    <strong>${title}</strong>
-                    <div class="small">${message}</div>
-                </div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
+                <i class="bi ${icon} fs-4"></i>
+                <div><strong>${title}</strong><div class="small">${message}</div></div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>`;
 
         document.body.appendChild(alertDiv);
-
-        // إخفاء التنبيه تلقائياً بعد 4 ثواني (إذا لم يغلقه المستخدم يدويياً)
-        setTimeout(() => {
-            if (alertDiv) {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 300);
-            }
-        }, 4000);
+        setTimeout(() => { if (alertDiv) { alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); } }, 4000);
     }
 
-    let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
-    function addSocialRow() {
-        const container = document.getElementById('socialRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'row_' + socialCount;
-        div.innerHTML = `<div class="d-flex align-items-start gap-3">
-            <div class="flex-grow-1">
-                <div class="row g-2 mb-2">
-                    <div class="col-4"><input type="text" class="form-control form-control-sm" name="social[${socialCount}][name]" placeholder="الاسم"></div>
-                    <div class="col-8"><input type="url" class="form-control form-control-sm" name="social[${socialCount}][url]" placeholder="الرابط"></div>
-                </div>
-                <div class="row g-2 align-items-center">
-                    <div class="col"><input type="file" class="form-control form-control-sm" name="social_img_${socialCount}"></div>
-                    <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('row_${socialCount}')"><i class="bi bi-trash"></i></button></div>
-                </div>
-            </div>
-        </div>`;
-        container.appendChild(div);
-        socialCount++;
-    }
-
-    let menuCount = <?php echo count($menu_links ?? []); ?>;
-    function addMenuRow() {
-        const container = document.getElementById('menuRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'menu_row_' + menuCount;
-        div.innerHTML = `
-            <div class="row align-items-center g-2">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
-                <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="menu[${menuCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-2"><input type="number" class="form-control form-control-sm" name="menu[${menuCount}][order]" value="${menuCount}"></div>
-                <div class="col-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_${menuCount}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
-        container.appendChild(div);
-        menuCount++;
-    }
-
-    let langCount = <?php echo count($data['languages'] ?? []); ?>;
-    function addLangRow() {
-        const container = document.getElementById('langRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'row g-2 mb-2';
-        div.id = 'lang_row_' + langCount;
-        div.innerHTML = `
-            <div class="col-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
-            <div class="col-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
-            <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_${langCount}')"><i class="bi bi-trash"></i></button></div>`;
-        container.appendChild(div);
-        langCount++;
-    }
-
-    let serviceCount = <?php echo count($data['services'] ?? []); ?>;
-    function addServiceRow() {
-        const container = document.getElementById('servicesRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'service_row_' + serviceCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="services[${serviceCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-4"><input type="file" class="form-control form-control-sm" name="service_img_${serviceCount}"></div>
-                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('service_row_${serviceCount}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
-        container.appendChild(div);
-        serviceCount++;
-    }
-
-    let chooseCount = <?php echo count($data['choose_items'] ?? []); ?>;
-    function addChooseRow() {
-        const container = document.getElementById('chooseRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'choose_row_' + chooseCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control form-control-sm" name="choose[${chooseCount}][desc]" placeholder="الوصف"></div>
-                <div class="col-md-3"><input type="file" class="form-control form-control-sm" name="choose_img_${chooseCount}"></div>
-                <div class="col-md-auto"><button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_${chooseCount}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
-        container.appendChild(div);
-        chooseCount++;
-    }
-
-    let reviewCount = <?php echo count($data['reviews_items'] ?? []); ?>;
-    function addReviewRow() {
-        const container = document.getElementById('reviewsRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'rev_row_' + reviewCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-10"><input type="text" class="form-control form-control-sm" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
-                <div class="col-md-2 text-end"><button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_${reviewCount}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
-        container.appendChild(div);
-        reviewCount++;
-    }
-
-    let guideCount = <?php echo count($data['guide_items'] ?? []); ?>;
-    function addGuideRow() {
-        const container = document.getElementById('guideRowsContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'guide_row_' + guideCount;
-        div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][title]" placeholder="عنوان المقال"></div>
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[${guideCount}][url]" placeholder="رابط الصفحة"></div>
-                <div class="col-6"><input type="file" class="form-control form-control-sm" name="guide_img_${guideCount}"></div>
-                <div class="col-5"><textarea class="form-control form-control-sm" name="guide[${guideCount}][desc]" rows="1" placeholder="الوصف"></textarea></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_${guideCount}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
-        container.appendChild(div);
-        guideCount++;
-    }
-
+    // [تحديث] دالة إضافة سؤال FAQ متوافقة مع التصميم الجديد
     let faqCount = <?php echo count($data['faq_items'] ?? []); ?>;
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'faq_row_' + faqCount;
         div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-5"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
-                <div class="col-6"><input type="text" class="form-control form-control-sm" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('faq_row_${faqCount}')"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5"><input type="text" class="form-control" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
+                <div class="col-md-6"><input type="text" class="form-control" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${faqCount}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         faqCount++;
     }
 
+    // [تحديث] دالة إضافة وسيلة تواصل متوافقة مع تصميم الفوتر الجديد
     let col3Count = <?php echo count($data['footer_col3_links'] ?? []); ?>;
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         const div = document.createElement('div');
-        div.className = 'card p-2 mb-2';
+        div.className = 'p-3 shadow-sm';
+        div.style.cssText = 'background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
         div.id = 'col3_' + col3Count;
         div.innerHTML = `
-            <div class="row g-1 align-items-center">
-                <div class="col-3"><input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm"></div>
-                <div class="col-4"><input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm" placeholder="الاسم"></div>
-                <div class="col-4"><input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm" placeholder="الرابط"></div>
-                <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('col3_${col3Count}')"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-2 align-items-center">
+                <div class="col-12"><input type="file" name="col3_img_${col3Count}" class="form-control"></div>
+                <div class="col-md-6"><input type="text" name="col3[${col3Count}][title]" class="form-control" placeholder="الاسم"></div>
+                <div class="col-md-5"><input type="text" name="col3[${col3Count}][url]" class="form-control" placeholder="الرابط"></div>
+                <div class="col-md-1 text-center"><button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_${col3Count}')"><i class="bi bi-trash"></i></button></div>
             </div>`;
         container.appendChild(div);
         col3Count++;
     }
 
-    function toggleAdContent(val) { 
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
-        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
-    }
-
-    // معالج النماذج الموحد مع التنبيهات الجديدة المفهومة لمدير الموقع
+    // معالج النماذج الموحد (بقي كما هو ليعمل مع كافة المودالات)
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
+            
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
+                headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
                 body: formData
             })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        // إشعار أخضر جميل عند النجاح ثم إعادة التحميل بعد ثانية
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        // إشعار أحمر إذا كان هناك خطأ مرسل من السيرفر
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                    }
-                } catch (e) {
-                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('تم حفظ التعديلات بنجاح، جاري التحديث...', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
                 }
             })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-            });
+            .catch(err => showNotification('خطأ في الاتصال بالسيرفر', 'danger'));
         });
     });
 </script>

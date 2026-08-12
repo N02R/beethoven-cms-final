@@ -615,25 +615,32 @@
             <div class="modal-body p-4">
                 <form id="reviewsForm">
                     <input type="hidden" name="action" value="update_reviews">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="reviews_title" value="<?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'); ?>">
+                    
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                        <input type="text" class="form-control" name="reviews_title" value="<?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
+
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['reviews_items'] ?? []) as $index => $review): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="rev_row_<?php echo $index; ?>">
+                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control form-control-sm" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($review['url'] ?? ''); ?>" placeholder="رابط اليوتيوب (Embed URL)">
+                                    <div class="col">
+                                        <input type="text" class="form-control" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($review['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
                                     </div>
-                                    <div class="col-md-2 text-end">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                    <div class="col-auto">
+                                        <button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addReviewRow()"><i class="bi bi-plus-circle"></i> إضافة فيديو جديد</button>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addReviewRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة فيديو جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -643,7 +650,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 10. Guide Edit Modal -->
 <div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true">

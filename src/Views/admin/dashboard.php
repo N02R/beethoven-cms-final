@@ -14,7 +14,8 @@ if (!defined('ALLOWED_ACCESS')) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body { 
-            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(241, 245, 249, 0.9)), url('assets/img/dashboard.jpeg') no-repeat center center fixed;
+            /* استخدام الصورة الخلفية المطلوبة مع تغطية خفيفة جداً لضمان ظهور رسومات الأطراف بوضوح */
+            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('public/assets/img/dashboard.jpeg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
             color: #1e293b; 
@@ -27,14 +28,16 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .welcome-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            border: 1px solid #cbd5e1;
+            /* تصميم زجاجي فاخر (Glassmorphism) ليظهر جمال الخلفية من خلفه */
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 24px;
             padding: 50px 40px;
             max-width: 550px;
             width: 100%;
-            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
             text-align: center;
         }
 
@@ -95,7 +98,7 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .btn-custom-outline {
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.8);
             border: 1.5px solid #cbd5e1;
             color: #475569;
             font-weight: 600;

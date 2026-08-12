@@ -295,9 +295,9 @@
 <!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header px-4 py-3 border-bottom border-light">
-                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
                     <i class="bi bi-list-nested text-primary"></i> إدارة القائمة الرئيسية
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -308,18 +308,21 @@
                     <input type="hidden" name="action" value="update_menu">
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
-                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="menu_row_<?php echo $index; ?>">
+                        <div class="card p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row align-items-center g-2">
                                 <div class="col-md-3">
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? ''); ?>" placeholder="عنوان الرابط">
+                                    <label class="small fw-bold mb-1 d-md-none">عنوان الرابط</label>
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? ''); ?>" placeholder="الرابط (URL)">
+                                    <label class="small fw-bold mb-1 d-md-none">الرابط (URL)</label>
+                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
                                 </div>
-                                <div class="col-md-2">
-                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index); ?>" placeholder="الترتيب">
+                                <div class="col-md-3 col">
+                                    <label class="small fw-bold mb-1 d-md-none">الترتيب</label>
+                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
                                 </div>
-                                <div class="col-auto">
+                                <div class="col-auto ms-auto">
                                     <button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_<?php echo $index; ?>')">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -328,7 +331,7 @@
                         </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addMenuRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
                     </button>
                 </form>
@@ -341,7 +344,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 5. Lang Edit Modal -->
 <div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">

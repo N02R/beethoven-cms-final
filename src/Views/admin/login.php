@@ -68,13 +68,15 @@ if (!defined('ALLOWED_ACCESS')) {
             box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
         }
 
-        /* جعل الأيقونة على اليمين */
+        /* أيقونات بارزة بلون مميز وكاملة الحدود */
         .input-group-text {
-            background-color: #f8fafc;
-            border: 1.5px solid #e2e8f0;
+            background-color: #e0f2fe;
+            border: 1.5px solid #bae6fd;
             border-right: none;
             border-radius: 10px 0 0 10px;
-            color: #64748b;
+            color: #0284c7;
+            font-size: 1.1rem;
+            padding: 0 15px;
         }
 
         .captcha-box {
@@ -82,6 +84,12 @@ if (!defined('ALLOWED_ACCESS')) {
             padding: 18px;
             border-radius: 12px;
             border: 1.5px solid #e2e8f0;
+        }
+
+        /* حقل إدخال الكابتشا بحدود كاملة ومحاذاة سليمة */
+        .captcha-input {
+            border-radius: 10px !important;
+            border: 1.5px solid #e2e8f0 !important;
         }
 
         .btn-primary-custom { 
@@ -126,7 +134,7 @@ if (!defined('ALLOWED_ACCESS')) {
                 <div class="mb-3">
                     <label class="form-label">اسم المستخدم أو البريد الإلكتروني</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                         <input type="text" class="form-control" name="username" required autocomplete="username">
                     </div>
                 </div>
@@ -134,7 +142,7 @@ if (!defined('ALLOWED_ACCESS')) {
                 <div class="mb-4">
                     <label class="form-label">كلمة المرور</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
                         <input type="password" class="form-control" name="password" required autocomplete="current-password">
                     </div>
                 </div>
@@ -143,7 +151,7 @@ if (!defined('ALLOWED_ACCESS')) {
                     <label class="form-label mb-2 d-block">
                         <i class="bi bi-shield-check text-info"></i> التحقق الأمني: كم الناتج <?php echo $data['captcha_num1']; ?> + <?php echo $data['captcha_num2']; ?>؟
                     </label>
-                    <input type="number" class="form-control rounded-2 border" name="captcha_answer" required placeholder="أدخل الناتج الرقمي">
+                    <input type="number" class="form-control captcha-input" name="captcha_answer" required placeholder="أدخل الناتج الرقمي">
                 </div>
 
                 <button type="submit" class="btn btn-primary-custom mt-2">تسجيل الدخول الآمن</button>

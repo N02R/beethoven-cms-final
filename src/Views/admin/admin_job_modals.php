@@ -337,34 +337,60 @@
 
 <!-- Dynamic Rows JS Engine -->
 <script>
-        function removeTimelineRow(id) {
+    // 1. الدالة العامة للتنبيهات العائمة (لضمان عمل showNotification في أي مكان)
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = type === 'danger' ? 'alert-danger' : (type === 'warning' ? 'alert-warning' : 'alert-success');
+        let icon = type === 'danger' ? 'bi-x-circle-fill' : (type === 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill');
+        let title = type === 'danger' ? 'عذراً، حدث خطأ!' : (type === 'warning' ? 'تنبيه هام' : 'تم بنجاح!');
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div><strong>${title}</strong><div class="small">${message}</div></div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => { if (alertDiv) alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); }, 4000);
+    }
+
+    // دوال الحذف العامة
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function removeTimelineRow(id) {
         const el = document.getElementById(id);
         if (el) {
             el.remove();
-            toggleTimelineAddButton(); // إعادة فحص الزر لإظهاره إذا كان العدد أقل من 6
+            toggleTimelineAddButton(); 
         }
     }
 
+    // دالة التحكم في زر الخطوات
     function toggleTimelineAddButton() {
         const container = document.getElementById('jobTimelineContainer');
+        if (!container) return;
         const currentRows = container.querySelectorAll('.job-step-row-item').length;
-        // البحث عن زر الإضافة الخاص بالخطوات (يمكنك إضافة id للزر لتسهيل الوصول إليه، مثل id="addTimelineBtn")
         const addBtn = document.querySelector('#jobTimelineForm button[onclick="addJobStepRow()"]');
         
         if (addBtn) {
-            if (currentRows >= 6) {
-                addBtn.style.display = 'none'; // إخفاء الزر إذا وصل 6 عناصر
-            } else {
-                addBtn.style.display = 'inline-block'; // إظهار الزر إذا كان أقل من 6
-            }
+            addBtn.style.display = (currentRows >= 6) ? 'none' : 'inline-block';
         }
     }
 
-    // تشغيل التحقق مرة واحدة عند تحميل المودل للتأكد من الحالة المبدئية
     document.addEventListener("DOMContentLoaded", function() {
         toggleTimelineAddButton();
     });
-
 
     let jobWhyCount = <?php echo count($job_why_items); ?>;
     function addJobWhyRow() {
@@ -438,18 +464,13 @@
         jobProgCount++;
     }
 
-        let jobStepCount = <?php echo count($job_timeline_steps); ?>;
+    let jobStepCount = <?php echo count($job_timeline_steps); ?>;
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         const currentRows = container.querySelectorAll('.job-step-row-item').length;
         
-        // التحقق من أن العدد أقل من 6
         if (currentRows >= 6) {
-            if (typeof showNotification === 'function') {
-                showNotification('عذراً، الحد الأقصى للخطوات هو 6 خطوات فقط.', 'warning');
-            } else {
-                alert('الحد الأقصى للخطوات هو 6 خطوات فقط.');
-            }
+            showNotification('عذراً، الحد الأقصى للخطوات هو 6 خطوات فقط.', 'warning');
             return;
         }
 
@@ -483,12 +504,9 @@
                     <label class="small text-muted mb-1">التفاصيل</label>
                     <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
                 </div>
-            </div>
-    `;
+            </div>`;
         container.appendChild(div);
         jobStepCount++;
-
-        // التحقق بعد الإضافة: إذا أصبح العدد 6، قم بإخفاء زر الإضافة
         toggleTimelineAddButton();
     }
 
@@ -522,130 +540,63 @@
         jobSrvCount++;
     }
 
-    // معالج النماذج الموحد الشامل المتوافق مع هيكل المشروع
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // إعادة ترقيم صفوف (لماذا التدريب معنا) لتجنب الفراغات
-            const whyRows = form.querySelectorAll('.job-why-row-item');
-            whyRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const descInput = row.querySelector('input[name*="[desc]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
-
-                if(titleInput) titleInput.name = `items[${index}][title]`;
-                if(descInput) descInput.name = `items[${index}][desc]`;
-                if(fileInput) fileInput.name = `why_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `items[${index}][old_img]`;
+            // إعادة ترقيم كافة الصفوف قبل الإرسال
+            form.querySelectorAll('.job-why-row-item').forEach((row, index) => {
+                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `items[${index}][title]`);
+                row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `items[${index}][desc]`);
+                row.querySelector('input[type="file"]')?.setAttribute('name', `why_img_${index}`);
+                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `items[${index}][old_img]`);
             });
 
-            // إعادة ترقيم صفوف البرامج
-            const progRows = form.querySelectorAll('.job-prog-row-item');
-            progRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const btnTextInput = row.querySelector('input[name*="[btn_text]"]');
-                const btnUrlInput = row.querySelector('input[name*="[btn_url]"]');
-                const descInput = row.querySelector('textarea');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
-                const darkInput = row.querySelector('input[type="checkbox"]');
-
-                if(titleInput) titleInput.name = `programs[${index}][title]`;
-                if(btnTextInput) btnTextInput.name = `programs[${index}][btn_text]`;
-                if(btnUrlInput) btnUrlInput.name = `programs[${index}][btn_url]`;
-                if(descInput) descInput.name = `programs[${index}][desc]`;
-                if(fileInput) fileInput.name = `prog_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `programs[${index}][old_img]`;
-                if(darkInput) darkInput.name = `programs[${index}][is_dark]`;
+            form.querySelectorAll('.job-prog-row-item').forEach((row, index) => {
+                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `programs[${index}][title]`);
+                row.querySelector('input[name*="[btn_text]"]')?.setAttribute('name', `programs[${index}][btn_text]`);
+                row.querySelector('input[name*="[btn_url]"]')?.setAttribute('name', `programs[${index}][btn_url]`);
+                row.querySelector('textarea')?.setAttribute('name', `programs[${index}][desc]`);
+                row.querySelector('input[type="file"]')?.setAttribute('name', `prog_img_${index}`);
+                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `programs[${index}][old_img]`);
+                row.querySelector('input[type="checkbox"]')?.setAttribute('name', `programs[${index}][is_dark]`);
             });
 
-            // إعادة ترقيم صفوف الخطوات
-            const stepRows = form.querySelectorAll('.job-step-row-item');
-            stepRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const subInput = row.querySelector('input[name*="[subtitle]"]');
-                const orderInput = row.querySelector('input[name*="[order]"]');
-                const descInput = row.querySelector('input[name*="[desc]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
-
-                if(titleInput) titleInput.name = `steps[${index}][title]`;
-                if(subInput) subInput.name = `steps[${index}][subtitle]`;
-                if(orderInput) orderInput.name = `steps[${index}][order]`;
-                if(descInput) descInput.name = `steps[${index}][desc]`;
-                if(fileInput) fileInput.name = `steps_icon_${index}`; 
-                if(oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
+            form.querySelectorAll('.job-step-row-item').forEach((row, index) => {
+                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `steps[${index}][title]`);
+                row.querySelector('input[name*="[subtitle]"]')?.setAttribute('name', `steps[${index}][subtitle]`);
+                row.querySelector('input[name*="[order]"]')?.setAttribute('name', `steps[${index}][order]`);
+                row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `steps[${index}][desc]`);
+                row.querySelector('input[type="file"]')?.setAttribute('name', `steps_icon_${index}`);
+                row.querySelector('input[name*="[old_icon]"]')?.setAttribute('name', `steps[${index}][old_icon]`);
             });
 
-            // إعادة ترقيم صفوف الخدمات
-            const srvRows = form.querySelectorAll('.job-srv-row-item');
-            srvRows.forEach((row, index) => {
-                const titleInput = row.querySelector('input[name*="[title]"]');
-                const urlInput = row.querySelector('input[name*="[url]"]');
-                const fileInput = row.querySelector('input[type="file"]');
-                const oldImgInput = row.querySelector('input[name*="[old_img]"]');
-
-                if(titleInput) titleInput.name = `services[${index}][title]`;
-                if(urlInput) urlInput.name = `services[${index}][url]`;
-                if(fileInput) fileInput.name = `srv_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `services[${index}][old_img]`;
+            form.querySelectorAll('.job-srv-row-item').forEach((row, index) => {
+                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `services[${index}][title]`);
+                row.querySelector('input[name*="[url]"]')?.setAttribute('name', `services[${index}][url]`);
+                row.querySelector('input[type="file"]')?.setAttribute('name', `srv_img_${index}`);
+                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `services[${index}][old_img]`);
             });
 
             const formData = new FormData(this);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ""); ?>';
             
-            // جلب الـ CSRF Token بأمان
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
             fetch('index.php?url=admin/settings/save', {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
+                headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
                 body: formData
             })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        if (typeof showNotification === 'function') {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        } else {
-                            alert(data.message || 'تم حفظ التعديلات بنجاح');
-                        }
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        const errorMsg = data.message || data.error || 'يرجى التأكد من البيانات المدخلة';
-                        if (typeof showNotification === 'function') {
-                            showNotification('عذراً، لم يتم الحفظ: ' + errorMsg, 'danger');
-                        } else {
-                            alert('خطأ: ' + errorMsg);
-                        }
-                    }
-                } catch (e) {
-                    if (typeof showNotification === 'function') {
-                        showNotification('خطأ في استجابة السيرفر (انظر الـ Console)', 'danger');
-                    } else {
-                        alert('حدث خطأ غير متوقع.');
-                    }
-                    console.error('JSON Parse Error:', text);
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('تم حفظ التعديلات بنجاح', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
                 }
             })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                if (typeof showNotification === 'function') {
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-                } else {
-                    alert('حدث خطأ في الاتصال بالشبكة.');
-                }
-            });
+            .catch(() => showNotification('خطأ في الاتصال بالسيرفر', 'danger'));
         });
     });
 </script>
+

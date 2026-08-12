@@ -38,7 +38,7 @@ if (!defined('ALLOWED_ACCESS')) {
             overflow: hidden;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             background: rgba(255, 255, 255, 0.1);
-            background-image: url('<?php echo BASE_URL; ?>/public/assets/img/dashboard.jpeg');
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
@@ -47,7 +47,7 @@ if (!defined('ALLOWED_ACCESS')) {
             width: 100%;
             height: 100%;
             min-height: 600px;
-            background-image: url('/assets/img/dashboard.jpeg');
+            background-image: url('public/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -248,12 +248,11 @@ if (!defined('ALLOWED_ACCESS')) {
                             </div>
                             <div class="btn-text">
                                 <h5>استعراض الموقع</h5>
-                                 <p>تعديل الموقع وإدارته</p>
+<p>إدارة وتعديل محتوى الموقع</p>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
-
                     <!-- تسجيل الخروج -->
                     <a href="index.php?url=admin/logout" class="custom-card-btn" style="border-color: #fee2e2;">
                         <div class="btn-content">

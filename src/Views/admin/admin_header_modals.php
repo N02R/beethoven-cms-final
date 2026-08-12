@@ -933,7 +933,7 @@
         setTimeout(() => { if (alertDiv) { alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); } }, 4000);
     }
 
-    // [تحديث] دالة إضافة سؤال FAQ متوافقة مع التصميم الجديد
+    // دالة إضافة سؤال FAQ المتوافقة
     let faqCount = <?php echo count($data['faq_items'] ?? []); ?>;
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
@@ -951,26 +951,44 @@
         faqCount++;
     }
 
-    // [تحديث] دالة إضافة وسيلة تواصل متوافقة مع تصميم الفوتر الجديد
+    // [مُحدّث] دالة إضافة وسيلة تواصل متوافقة تماماً مع التصميم الأخير للفوتر
     let col3Count = <?php echo count($data['footer_col3_links'] ?? []); ?>;
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
+        if (!container) return;
+        
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm';
-        div.style.cssText = 'background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
+        div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
         div.id = 'col3_' + col3Count;
+        
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-12"><input type="file" name="col3_img_${col3Count}" class="form-control"></div>
-                <div class="col-md-6"><input type="text" name="col3[${col3Count}][title]" class="form-control" placeholder="الاسم"></div>
-                <div class="col-md-5"><input type="text" name="col3[${col3Count}][url]" class="form-control" placeholder="الرابط"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_${col3Count}')"><i class="bi bi-trash"></i></button></div>
-            </div>`;
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white" placeholder="الرابط">
+                </div>
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <input type="hidden" name="col3[${col3Count}][old_img]" value="">
+        `;
+        
         container.appendChild(div);
         col3Count++;
     }
 
-    // معالج النماذج الموحد (بقي كما هو ليعمل مع كافة المودالات)
+    // معالج النماذج الموحد
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();

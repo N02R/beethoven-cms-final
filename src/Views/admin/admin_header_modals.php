@@ -662,46 +662,65 @@
             <div class="modal-body p-4">
                 <form id="guideForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل'); ?>">
+                    
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div>
+                            <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea class="form-control" name="guide_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['guide_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="guide_desc" rows="2"><?php echo htmlspecialchars($data['guide_desc'] ?? ''); ?></textarea>
-                    </div>
-                    <hr>
+
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
-                            <div class="card p-3 border-0" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;" id="guide_row_<?php echo $index; ?>">
+                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
+                                <!-- الصف الأول: العنوان والرابط -->
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                    </div>
+                                </div>
+                                
+                                <!-- الصف الثاني: الصورة، الوصف، وزر الحذف -->
                                 <div class="row g-2 align-items-center">
-                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="عنوان المقال"></div>
-                                    <div class="col-6"><input type="text" class="form-control form-control-sm" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="رابط الصفحة"></div>
-                                    
-                                    <div class="col-6">
-                                        <?php if (!empty($item['img'])): ?>
-                                            <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" 
-                                                     alt="Guide Item Image" 
-                                                     class="rounded" 
-                                                     style="width: 32px; height: 32px; object-fit: cover;">
-                                                <span class="small text-muted text-truncate" style="max-width: 120px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control form-control-sm" name="guide_img_<?php echo $index; ?>">
+                                    <div class="col-md-5">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                         alt="Guide Item Image" 
+                                                         class="rounded-2" 
+                                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control" name="guide_img_<?php echo $index; ?>">
+                                        </div>
                                     </div>
                                     
-                                    <div class="col-5"><textarea class="form-control form-control-sm" name="guide[<?php echo $index; ?>][desc]" rows="1" placeholder="الوصف"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></textarea></div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                    </div>
                                     
-                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
+                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     
-                                    <div class="col-1"><button type="button" class="btn-icon-trash" onclick="removeRow('guide_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button></div>
+                                    <div class="col-md-1 text-center">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addGuideRow()">
-                        <i class="bi bi-plus-circle"></i> إضافة مقال جديد
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addGuideRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة مقال جديد
                     </button>
                 </form>
             </div>
@@ -712,7 +731,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 11. FAQ Edit Modal -->
 <div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">

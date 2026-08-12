@@ -123,11 +123,22 @@ if (!defined('ALLOWED_ACCESS')) {
         
         <div class="logo-box">
             <?php 
-                // جلب الشعار المعتمد تماماً مثل الهيدر (سواء من الداتا بيز عبر متغيرات الـ data أو الصورة الافتراضية)
-                $site_logo = $data['logo'] ?? $data['current_logo'] ?? 'assets/img/logo.png';
+                // جلب الشعار مباشرة من جدول الإعدادات في قاعدة البيانات لضمان عرضه دائماً
+                $logo_path = 'assets/img/logo.png'; // القيمة الافتراضية
+                if (isset($pdo)) {
+                    $stmtLogo = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'logo'");
+                    $stmtLogo->execute();
+                    $dbLogo = $stmtLogo->fetchColumn();
+                    if (!empty($dbLogo)) {
+                        $logo_path = $dbLogo;
+                    }
+                } elseif (isset($data['logo'])) {
+                    $logo_path = $data['logo'];
+                }
             ?>
-            <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
+            <img src="<?php echo htmlspecialchars(get_image_url($logo_path), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
         </div>
+
 
         <h1>أهلاً بك، <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?> ✨</h1>
         <p class="description">

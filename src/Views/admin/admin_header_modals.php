@@ -408,39 +408,42 @@
                 <form id="heroEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
                     <?php $h = $data['hero'] ?? ['title'=>'', 'desc'=>'', 'btn_text'=>'', 'btn_url'=>'', 'img'=>'assets/img/hero-bg.jpg']; ?>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-bold small">العنوان</label>
-                            <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold small">النص الوصفي</label>
-                            <textarea class="form-control" name="hero_desc" rows="3" style="height: auto;"><?php echo htmlspecialchars($h['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small">نص الزر</label>
-                            <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small">رابط الزر</label>
-                            <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold small">صورة الخلفية</label>
-                            
-                            <!-- معاينة الصورة الحالية -->
-                            <?php if (!empty($h['img'])): ?>
-                                <div class="mb-2 p-3 shadow-sm bg-white rounded-4 border text-center" style="border-color: #e2e8f0 !important;">
-                                    <span class="d-block small text-muted mb-2">الصورة الحالية:</span>
-                                    <img src="<?php echo htmlspecialchars(get_image_url($h['img']), ENT_QUOTES, 'UTF-8'); ?>" 
-                                         alt="Current Hero Image" 
-                                         class="img-thumbnail rounded-3 border-0 bg-transparent" 
-                                         style="max-height: 120px; object-fit: cover;">
-                                </div>
-                            <?php endif; ?>
+                    
+                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">النص الوصفي</label>
+                                <textarea class="form-control" name="hero_desc" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($h['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
+                                <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">رابط الزر</label>
+                                <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">صورة الخلفية</label>
+                                
+                                <!-- معاينة الصورة الحالية -->
+                                <?php if (!empty($h['img'])): ?>
+                                    <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
+                                        <span class="d-block small text-muted mb-2">الصورة الحالية:</span>
+                                        <img src="<?php echo htmlspecialchars(get_image_url($h['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                             alt="Current Hero Image" 
+                                             class="img-thumbnail rounded-3 border-0 bg-transparent" 
+                                             style="max-height: 120px; object-fit: cover;">
+                                    </div>
+                                <?php endif; ?>
 
-                            <input type="file" class="form-control" name="hero_img" accept="image/*" style="padding: 10px 16px;">
-                            <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($h['img'] ?? 'assets/img/hero-bg.jpg', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="file" class="form-control" name="hero_img" accept="image/*">
+                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($h['img'] ?? 'assets/img/hero-bg.jpg', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
                         </div>
                     </div>
                 </form>

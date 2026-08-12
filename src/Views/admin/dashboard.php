@@ -20,7 +20,8 @@ if (!defined('ALLOWED_ACCESS')) {
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0b1c3c; /* خلفية الصفحة الخارجية داكنة */
+            /* خلفية بتدرج نيون/زجاجي مشرق بدلاً من الكحلي الغامق */
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             color: #333333;
             margin: 0;
             padding: 0;
@@ -33,6 +34,18 @@ if (!defined('ALLOWED_ACCESS')) {
             align-items: center;
         }
         
+        /* الحاوية الرئيسية التي تجمع الصورتين وتجعلهما ككتاب واحد */
+        .main-card-wrapper {
+            border-radius: 24px;
+            overflow: hidden; /* هذا السطر هو السر لدمج الحواف */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            /* تأثير زجاجي خفيف للحاوية */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
         /* تنسيق حاوية الصورة */
         .img-hero {
             width: 100%;
@@ -41,8 +54,8 @@ if (!defined('ALLOWED_ACCESS')) {
             background-image: url('/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
-            border-radius: 20px;
             position: relative;
+            /* تمت إزالة الـ border-radius من هنا ليلتصق بالمحتوى */
         }
 
         .img-hero::before {
@@ -52,24 +65,26 @@ if (!defined('ALLOWED_ACCESS')) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(11, 28, 60, 0.1);
-            border-radius: 20px;
+            /* تخفيف التعتيم على الصورة ليتناسب مع النيون */
+            background: linear-gradient(to right, rgba(30, 58, 138, 0.4), rgba(6, 182, 212, 0.1));
         }
 
-        /* حاوية المحتوى بخلفية بيضاء (شكل الكتاب) */
+        /* حاوية المحتوى بخلفية بيضاء */
         .dashboard-card-box {
-            background-color: #ffffff;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            color: #1e293b;
+            background-color: rgba(255, 255, 255, 0.98); /* أبيض مع شفافية بسيطة جداً */
+            padding: 50px 40px;
+            height: 100%; /* لضمان تمدد المحتوى لنفس طول الصورة */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* تمت إزالة الـ border-radius والظل من هنا */
         }
 
         /* الشعار والترويسة */
         .brand-logo {
             font-size: 22px;
             font-weight: 700;
-            color: #0b1c3c;
+            color: #1e3a8a;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -80,7 +95,7 @@ if (!defined('ALLOWED_ACCESS')) {
         .welcome-title {
             font-size: 2.1rem;
             font-weight: 700;
-            color: #0b1c3c;
+            color: #0f172a;
             margin-bottom: 15px;
         }
 
@@ -88,11 +103,11 @@ if (!defined('ALLOWED_ACCESS')) {
             color: #64748b;
             font-size: 0.95rem;
             line-height: 1.6;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .welcome-desc span {
-            color: #2563eb;
+            color: #3b82f6;
             font-weight: 600;
         }
 
@@ -112,25 +127,26 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .custom-card-btn.primary {
-            background: #1d4ed8;
-            border-color: #1d4ed8;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border: none;
             color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
         }
 
         .custom-card-btn.primary .btn-text p {
-            color: #93c5fd;
+            color: #bfdbfe;
         }
 
         .custom-card-btn:hover {
             transform: translateY(-2px);
             background: #f1f5f9;
             color: #1e293b;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .custom-card-btn.primary:hover {
-            background: #1e40af;
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
             color: #ffffff;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
         }
 
         .btn-content {
@@ -143,7 +159,7 @@ if (!defined('ALLOWED_ACCESS')) {
             width: 42px;
             height: 42px;
             background: #e2e8f0;
-            color: #1e293b;
+            color: #475569;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -174,7 +190,7 @@ if (!defined('ALLOWED_ACCESS')) {
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             padding: 15px 20px;
-            margin-top: 20px;
+            margin-top: auto; /* يدفع البطاقة للأسفل لترتيب أفضل */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -189,7 +205,7 @@ if (!defined('ALLOWED_ACCESS')) {
         .info-item span {
             font-size: 0.95rem;
             font-weight: 700;
-            color: #0b1c3c;
+            color: #0f172a;
         }
 
         .info-item .price {
@@ -203,95 +219,101 @@ if (!defined('ALLOWED_ACCESS')) {
   <!-- dashboard section start -->
   <section class="dashboard-section py-5">
     <div class="container-fluid px-lg-5">
-      <div class="row align-items-stretch g-4">
-        
-        <!-- عمود الصورة (يمين الشاشة) -->
-        <div class="col-lg-6">
-          <div class="img-hero"></div>
-        </div>
-
-        <!-- عمود المحتوى بخلفية بيضاء (يسار الشاشة) -->
-        <div class="col-lg-6 d-flex flex-column justify-content-center">
-          <div class="dashboard-card-box">
+      
+      <!-- الحاوية الزجاجية الجديدة التي تدمج الجانبين -->
+      <div class="main-card-wrapper">
+          <!-- لاحظنا استخدام g-0 هنا لإزالة أي مسافة بين العمودين تماماً -->
+          <div class="row align-items-stretch g-0">
             
-            <!-- الشعار -->
-            <a href="#" class="brand-logo">
-                <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
-                <div>
-                    <div>BEETHOVEN</div>
-                    <small style="font-size: 10px; letter-spacing: 2px; color: #64748b;">CITY SERVICES</small>
-                </div>
-            </a>
-
-            <h1 class="welcome-title">مرحباً بك المشرف 👋</h1>
-            <p class="welcome-desc">
-              مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>، من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
-            </p>
-
-            <!-- الأزرار -->
-            <div class="d-flex flex-column">
-                <!-- زر استعراض الموقع -->
-                <a href="index.php" class="custom-card-btn primary">
-                    <div class="btn-content">
-                        <div class="btn-icon">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5>استعراض الموقع</h5>
-                            <p>عرض الموقع كما يراه الزوار</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-
-                <!-- زر تعديل الموقع -->
-                <a href="edit-content.php" class="custom-card-btn">
-                    <div class="btn-content">
-                        <div class="btn-icon">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5>تعديل الموقع</h5>
-                            <p>إدارة وتعديل محتوى الموقع</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left text-muted"></i>
-                </a>
-
-                <!-- زر تسجيل الخروج -->
-                <a href="logout.php" class="custom-card-btn" style="border-color: #fee2e2;">
-                    <div class="btn-content">
-                        <div class="btn-icon" style="color: #dc2626; background: #fee2e2;">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5 style="color: #dc2626;">تسجيل الخروج</h5>
-                            <p>الخروج من لوحة التحكم</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left text-danger"></i>
-                </a>
+            <!-- عمود الصورة (يمين الشاشة) -->
+            <div class="col-lg-6">
+              <div class="img-hero"></div>
             </div>
 
-            <!-- بطاقة المعلومات السفلية -->
-            <div class="info-card">
-                <div class="info-item">
-                    <h6>الباقة الحالية</h6>
-                    <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية</span>
-                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                        <i class="fa-regular fa-calendar-days"></i> صالحة حتى 24 مايو 2026
+            <!-- عمود المحتوى بخلفية بيضاء (يسار الشاشة) -->
+            <div class="col-lg-6">
+              <div class="dashboard-card-box">
+                
+                <!-- الشعار -->
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
+                    <div>
+                        <div>BEETHOVEN</div>
+                        <small style="font-size: 10px; letter-spacing: 2px; color: #64748b;">CITY SERVICES</small>
+                    </div>
+                </a>
+
+                <h1 class="welcome-title">مرحباً بك المشرف 👋</h1>
+                <p class="welcome-desc">
+                  مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>، من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
+                </p>
+
+                <!-- الأزرار -->
+                <div class="d-flex flex-column mb-4">
+                    <!-- زر استعراض الموقع -->
+                    <a href="index.php" class="custom-card-btn primary">
+                        <div class="btn-content">
+                            <div class="btn-icon">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5>استعراض الموقع</h5>
+                                <p>عرض الموقع كما يراه الزوار</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+
+                    <!-- زر تعديل الموقع -->
+                    <a href="edit-content.php" class="custom-card-btn">
+                        <div class="btn-content">
+                            <div class="btn-icon">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5>تعديل الموقع</h5>
+                                <p>إدارة وتعديل محتوى الموقع</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-muted"></i>
+                    </a>
+
+                    <!-- زر تسجيل الخروج -->
+                    <a href="logout.php" class="custom-card-btn" style="border-color: #fee2e2;">
+                        <div class="btn-content">
+                            <div class="btn-icon" style="color: #dc2626; background: #fee2e2;">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5 style="color: #dc2626;">تسجيل الخروج</h5>
+                                <p>الخروج من لوحة التحكم</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left text-danger"></i>
+                    </a>
+                </div>
+
+                <!-- بطاقة المعلومات السفلية -->
+                <div class="info-card">
+                    <div class="info-item">
+                        <h6>الباقة الحالية</h6>
+                        <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية</span>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
+                            <i class="fa-regular fa-calendar-days"></i> صالحة حتى 24 مايو 2026
+                        </div>
+                    </div>
+                    <div class="info-item text-start border-start border-2 ps-4">
+                        <h6>القيمة الإجمالية</h6>
+                        <span class="price">€ 9,000</span>
                     </div>
                 </div>
-                <div class="info-item text-start border-start border-2 ps-4">
-                    <h6>القيمة الإجمالية</h6>
-                    <span class="price">€ 9,000</span>
-                </div>
+
+              </div>
             </div>
 
           </div>
-        </div>
-
       </div>
+      
     </div>
   </section>
   <!-- dashboard section end -->

@@ -27,7 +27,7 @@ if (!defined('ALLOWED_ACCESS')) {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: url('assets/img/dashboard.png') no-repeat center center;
+            background: url('public/assets/img/dashboard.png') no-repeat center center;
             background-size: cover;
             display: flex;
             align-items: center;

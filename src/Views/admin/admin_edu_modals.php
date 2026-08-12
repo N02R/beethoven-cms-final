@@ -139,12 +139,12 @@
 </div>
 
 
-<!-- 3. Edu Timeline Modal (قسم خطوات الرحلة) -->
+<!-- 3. Education Timeline Modal (قسم خطوات التعليم) -->
 <div class="modal fade custom-modal" id="eduTimelineModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-diagram-3 text-primary"></i> إدارة خطوات الرحلة (Timeline)</h5>
+                <h5 class="modal-title"><i class="bi bi-mortarboard-fill text-primary"></i> إدارة خطوات التعليم (Timeline)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -153,7 +153,7 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم</label>
+                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
                         <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
@@ -163,7 +163,7 @@
 
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_timeline_steps ?? []) as $index => $step): ?>
-                            <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
+                            <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="edu_step_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
@@ -197,7 +197,7 @@
                                         <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
+                                        <button type="button" class="btn-icon-trash" onclick="removeEduRow('edu_step_row_<?php echo $index; ?>')" title="حذف الخطوة">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -206,7 +206,7 @@
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addEduStepRow()">
+                    <button type="button" id="addEduBtn" class="btn btn-outline-primary w-100 mt-3" onclick="addEduStepRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
                     </button>
                 </form>
@@ -218,6 +218,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">
@@ -290,10 +291,13 @@
 </div>
 
 <script>
-    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID مع فحص زر الـ Timeline
     function removeRow(id) {
         const el = document.getElementById(id);
-        if (el) el.remove();
+        if (el) {
+            el.remove();
+            toggleEduAddButton(); // تحديث حالة زر الإضافة الخاص بالـ Timeline فور الحذف
+        }
     }
 
     // 2. دالة إظهار التنبيهات الاحترافية
@@ -374,37 +378,45 @@
         container.appendChild(div);
     }
 
-    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة"
+    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة" (مع قيد الحد الأقصى 6 عناصر)
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         if (!container) return;
-        const eduStepCount = container.querySelectorAll('.edu-timeline-row-item').length;
+        
+        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        
+        // قيد الـ 6 عناصر وتنبيه المستخدم
+        if (currentRows >= 6) {
+            showNotification('عذراً، الحد الأقصى لخطوات التعليم هو 6 خطوات فقط.', 'warning');
+            return;
+        }
+
         const div = document.createElement('div');
         div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'step_row_' + Date.now() + '_' + eduStepCount;
+        div.id = 'step_row_' + Date.now() + '_' + currentRows;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة">
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][title]" placeholder="اسم الخطوة">
                 </div>
                 <div class="col-md-6">
                     <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][subtitle]" placeholder="العنوان الفرعي">
                 </div>
                 <div class="col-md-12">
                     <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل">
+                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${currentRows}][desc]" placeholder="التفاصيل">
                 </div>
                 <div class="col-md-2">
                     <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب">
+                    <input type="number" class="form-control form-control-sm" name="edu_timeline[${currentRows}][order]" value="${currentRows}" placeholder="الترتيب">
                 </div>
                 <div class="col-md-9">
                     <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
-                    <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
+                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${currentRows}" accept="image/*">
+                    <input type="hidden" name="edu_timeline[${currentRows}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
                     <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخطوة">
@@ -413,6 +425,25 @@
                 </div>
             </div>`;
         container.appendChild(div);
+
+        // التحقق وتحديث حالة زر الإضافة فوراً بعد الإضافة
+        toggleEduAddButton();
+    }
+
+    // دالة التحكم بإظهار أو إخفاء زر الإضافة الخاص بالـ Timeline عند الوصول لـ 6 عناصر
+    function toggleEduAddButton() {
+        const container = document.getElementById('eduTimelineContainer');
+        if (!container) return;
+        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        const addBtn = document.querySelector('button[onclick="addEduStepRow()"]');
+        
+        if (addBtn) {
+            if (currentRows >= 6) {
+                addBtn.style.display = 'none'; // إخفاء الزر عند الوصول لـ 6 عناصر
+            } else {
+                addBtn.style.display = 'block'; // إظهار الزر إذا كان أقل من 6 عناصر
+            }
+        }
     }
 
     // 5. دالة إضافة صف جديد لـ "خدمات التعليم"
@@ -450,6 +481,9 @@
 
     // 6. معالج الحفظ وإعادة الترقيم التلقائي عند الضغط على حفظ في أي نموذج
     document.addEventListener('DOMContentLoaded', function() {
+        // التحقق من حالة زر الـ Timeline عند تحميل الصفحة أول مرة
+        toggleEduAddButton();
+
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -537,5 +571,6 @@
         });
     });
 </script>
+
 
 

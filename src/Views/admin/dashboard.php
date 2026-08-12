@@ -122,17 +122,21 @@ if (!defined('ALLOWED_ACCESS')) {
     <div class="welcome-card mx-auto">
         
         <div class="logo-box">
-            <img src="<?php echo htmlspecialchars($data['current_logo'] ?? 'assets/img/logo.png', ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
+            <?php 
+                // جلب الشعار المعتمد تماماً مثل الهيدر (سواء من الداتا بيز عبر متغيرات الـ data أو الصورة الافتراضية)
+                $site_logo = $data['logo'] ?? $data['current_logo'] ?? 'assets/img/logo.png';
+            ?>
+            <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع">
         </div>
 
         <h1>أهلاً بك، <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?> ✨</h1>
         <p class="description">
-            أنت الآن مسجل الدخول بصفة مشرف النظام. يمكنك الانتقال الفوري للموقع واستعراضه لتعديل أي عنصر تريده بضغطة زر واحدة.
+            أنت الآن مسجل الدخول بصفحة الإدارة. يمكنك الانتقال الفوري للموقع واستعراضه لتعديل أي عنصر تريده بضغطة زر واحدة.
         </p>
 
         <div class="d-grid gap-2">
-            <!-- زر استعراض وتعديل الموقع -->
-            <a href="index.php" target="_blank" class="btn-custom-primary">
+            <!-- زر استعراض وتعديل الموقع مع التوجيه الصحيح إلى /home -->
+            <a href="index.php?url=home" class="btn-custom-primary">
                 <i class="bi bi-pencil-square fs-5"></i>
                 استعراض الموقع والتعديل عليه فوراً
             </a>

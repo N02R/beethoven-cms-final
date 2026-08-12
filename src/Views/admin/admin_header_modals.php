@@ -348,9 +348,9 @@
 <!-- 5. Lang Edit Modal -->
 <div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header px-4 py-3 border-bottom">
-                <h5 class="modal-title fw-bold">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
                     <i class="bi bi-translate text-primary"></i> إدارة اللغات
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -360,27 +360,31 @@
                 <form id="langEditForm">
                     <input type="hidden" name="action" value="update_languages">
                     
-                    <div id="langRowsContainer" class="d-flex flex-column gap-2">
+                    <div id="langRowsContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($data['languages'])): ?>
                             <?php foreach ($data['languages'] as $index => $lang): ?>
-                                <div class="row g-2" id="lang_row_<?php echo $index; ?>">
-                                    <div class="col-5">
-                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? ''); ?>" placeholder="اسم اللغة">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? ''); ?>" placeholder="الرابط">
-                                    </div>
-                                    <div class="col-1">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_<?php echo $index; ?>')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
+                                    <div class="row align-items-center g-2">
+                                        <div class="col-md-5">
+                                            <label class="small fw-bold mb-1 d-md-none">اسم اللغة</label>
+                                            <input type="text" class="form-control form-control-sm" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
+                                        </div>
+                                        <div class="col-md-6 col">
+                                            <label class="small fw-bold mb-1 d-md-none">الرابط</label>
+                                            <input type="text" class="form-control form-control-sm" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        </div>
+                                        <div class="col-auto ms-auto">
+                                            <button type="button" class="btn-icon-trash" onclick="removeRow('lang_row_<?php echo $index; ?>')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addLangRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة لغة جديدة
                     </button>
                 </form>
@@ -393,7 +397,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 6. Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">

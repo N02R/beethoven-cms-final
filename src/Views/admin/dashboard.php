@@ -15,7 +15,7 @@ if (!defined('ALLOWED_ACCESS')) {
     <style>
         body { 
             /* استخدام الصورة الخلفية المطلوبة مع تغطية خفيفة جداً لضمان ظهور رسومات الأطراف بوضوح */
-            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('public/assets/img/dashboard.jpeg') no-repeat center center fixed;
+            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('assets/img/dashboard.jpeg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
             color: #1e293b; 

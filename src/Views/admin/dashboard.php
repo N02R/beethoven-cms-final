@@ -37,7 +37,7 @@ if (!defined('ALLOWED_ACCESS')) {
         /* القسم الأيمن (الخلفية الجامعية) */
         .university-section {
             flex: 0 0 55%; /* يأخذ 55% من العرض */
-            background-image: url('https://i.ibb.co/Y8y64yW/university-bg.jpg'); /* رابط مباشر لصورة الجامعة من الصورة الأصلية */
+            background-image: url('assets/img/413d735a-84d2-4a08-a4c7-325ad579df85.jpeg'); /* رابط مباشر لصورة الجامعة من الصورة الأصلية */
             background-size: cover;
             background-position: center;
             position: relative;

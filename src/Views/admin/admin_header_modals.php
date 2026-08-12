@@ -552,16 +552,21 @@
                         <?php if (!empty($data['choose_items'])): ?>
                             <?php foreach ($data['choose_items'] as $index => $item): ?>
                                 <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
-                                    <div class="row g-2 align-items-center">
-                                        <div class="col-md-3">
+                                    <!-- الصف الأول: حقول العنوان والوصف -->
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-md-5">
                                             <input type="text" class="form-control" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-7">
                                             <input type="text" class="form-control" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                         </div>
-                                        <div class="col-md-4">
+                                    </div>
+
+                                    <!-- الصف الثاني: الصورة الحالية، حقل الرفع، وزر الحذف -->
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col">
                                             <div class="d-flex align-items-center gap-2">
-                                                <!-- معاينة الأيقونة/الصورة الحالية للميزة إن وجدت -->
+                                                <!-- معاينة الصورة الحالية إن وجدت -->
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                         <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
@@ -575,8 +580,8 @@
                                             </div>
                                             <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <div class="col-md-1 text-center">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')">
+                                        <div class="col-auto">
+                                            <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>

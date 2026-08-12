@@ -206,58 +206,65 @@
             <div class="modal-body p-4">
                 <form id="jobTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_timeline">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($job_timeline_title); ?>">
+                        <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($job_timeline_title ?? ''); ?>">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">الوصف العام للقسم</label>
-                        <textarea class="form-control" name="timeline_desc" rows="2" style="height: auto;"><?php echo htmlspecialchars($job_timeline_desc); ?></textarea>
+                        <textarea class="form-control" name="timeline_desc" rows="2"><?php echo htmlspecialchars($job_timeline_desc ?? ''); ?></textarea>
                     </div>
-                    <hr>
+
                     <div id="jobTimelineContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($job_timeline_steps as $i => $step): ?>
-                            <div class="card p-3 border-0 job-step-row-item" id="job_step_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
-                                <div class="row g-2">
-                                    <div class="col-md-3">
-                                        <label class="small text-muted mb-1">اسم الخطوة</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>">
+                        <?php foreach (($job_timeline_steps ?? []) as $index => $step): ?>
+                            <div class="card p-3 border-0 job-step-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="job_step_row_<?php echo $index; ?>">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
+                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
                                     </div>
-                                    <div class="col-md-3">
-                                        <label class="small text-muted mb-1">العنوان الفرعي</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $i; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>">
+                                    <div class="col-md-6">
+                                        <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
+                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
                                     </div>
+
+                                    <div class="col-md-12">
+                                        <label class="small text-muted fw-bold mb-1">التفاصيل</label>
+                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
+                                    </div>
+
                                     <div class="col-md-2">
-                                        <label class="small text-muted mb-1">الترتيب</label>
-                                        <input type="number" class="form-control form-control-sm" name="steps[<?php echo $i; ?>][order]" value="<?php echo ($step['order'] ?? $i); ?>">
+                                        <label class="small text-muted fw-bold mb-1">الترتيب</label>
+                                        <input type="number" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
                                     </div>
-                                    <div class="col-md-3">
-                                        <label class="small text-muted mb-1">أيقونة الخطوة</label>
+                                    <div class="col-md-9">
+                                        <label class="small text-muted fw-bold mb-1">الأيقونة الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
-                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" alt="Icon" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
-                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($step['icon']); ?></span>
+                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;" alt="icon">
+                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($step['icon']); ?></span>
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="steps_icon_<?php echo $i; ?>" accept="image/*">
+                                            <input type="file" class="form-control form-control-sm" name="steps_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="steps[<?php echo $i; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
+                                        <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('job_step_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                    <div class="col-md-12 mt-2">
-                                        <label class="small text-muted mb-1">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $i; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>">
+                                        <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('job_step_row_<?php echo $index; ?>')" title="حذف الخطوة">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addJobStepRow()">+ إضافة خطوة جديدة</button>
+
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addJobStepRow()">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -337,14 +344,30 @@
 
 <!-- Dynamic Rows JS Engine -->
 <script>
-    // 1. الدالة العامة للتنبيهات العائمة (لضمان عمل showNotification في أي مكان)
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    // 2. دالة إظهار التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        let bgClass = type === 'danger' ? 'alert-danger' : (type === 'warning' ? 'alert-warning' : 'alert-success');
-        let icon = type === 'danger' ? 'bi-x-circle-fill' : (type === 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill');
-        let title = type === 'danger' ? 'عذراً، حدث خطأ!' : (type === 'warning' ? 'تنبيه هام' : 'تم بنجاح!');
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
 
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
@@ -354,18 +377,34 @@
         alertDiv.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <i class="bi ${icon} fs-4"></i>
-                <div><strong>${title}</strong><div class="small">${message}</div></div>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
+
         document.body.appendChild(alertDiv);
-        setTimeout(() => { if (alertDiv) alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); }, 4000);
+
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
     }
 
-    // دوال الحذف العامة
-    function removeRow(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
+    // دالة التحكم في زر الإضافة وإخفائه عند الوصول إلى 6 عناصر
+    function toggleTimelineAddButton() {
+        const container = document.getElementById('jobTimelineContainer');
+        if (!container) return;
+        const currentRows = container.querySelectorAll('.job-step-row-item').length;
+        const addBtn = document.querySelector('#jobTimelineForm button[onclick="addJobStepRow()"]');
+        
+        if (addBtn) {
+            addBtn.style.display = (currentRows >= 6) ? 'none' : 'block';
+        }
     }
 
     function removeTimelineRow(id) {
@@ -376,233 +415,117 @@
         }
     }
 
-    // دالة التحكم في زر الخطوات
-    function toggleTimelineAddButton() {
-        const container = document.getElementById('jobTimelineContainer');
-        if (!container) return;
-        const currentRows = container.querySelectorAll('.job-step-row-item').length;
-        const addBtn = document.querySelector('#jobTimelineForm button[onclick="addJobStepRow()"]');
-        
-        if (addBtn) {
-            addBtn.style.display = (currentRows >= 6) ? 'none' : 'inline-block';
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         toggleTimelineAddButton();
     });
 
-    let jobWhyCount = <?php echo count($job_why_items); ?>;
-    function addJobWhyRow() {
-        const container = document.getElementById('jobWhyContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 job-why-row-item';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'job_why_row_' + jobWhyCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">العنوان</label>
-                    <input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][title]" placeholder="العنوان">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted mb-1">الوصف</label>
-                    <input type="text" class="form-control form-control-sm" name="items[${jobWhyCount}][desc]" placeholder="الوصف">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted mb-1">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control form-control-sm" name="why_img_${jobWhyCount}" accept="image/*">
-                    <input type="hidden" name="items[${jobWhyCount}][old_img]" value="">
-                </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_why_row_${jobWhyCount}')"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-        jobWhyCount++;
-    }
-
-    let jobProgCount = <?php echo count($job_program_types); ?>;
-    function addJobProgramRow() {
-        const container = document.getElementById('jobProgramContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 job-prog-row-item';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'prog_row_' + jobProgCount;
-        div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-md-6">
-                    <label class="small text-muted mb-1">اسم البرنامِج</label>
-                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][title]" placeholder="اسم البرنامِج">
-                </div>
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">نص الزر</label>
-                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_text]" value="اطلب الآن" placeholder="نص الزر">
-                </div>
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">رابط الزر</label>
-                    <input type="text" class="form-control form-control-sm" name="programs[${jobProgCount}][btn_url]" value="#" placeholder="رابط الزر">
-                </div>
-                <div class="col-md-8">
-                    <label class="small text-muted mb-1">تفاصيل البرنامِج</label>
-                    <textarea class="form-control form-control-sm" name="programs[${jobProgCount}][desc]" rows="2" placeholder="تفاصيل البرنامِج"></textarea>
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted mb-1">الصورة والألوان</label>
-                    <input type="file" class="form-control form-control-sm mb-1" name="prog_img_${jobProgCount}" accept="image/*">
-                    <input type="hidden" name="programs[${jobProgCount}][old_img]" value="">
-                    <div class="form-check form-switch mt-1">
-                        <input class="form-check-input" type="checkbox" name="programs[${jobProgCount}][is_dark]" value="1" id="prog_dark_${jobProgCount}">
-                        <label class="form-check-label small text-muted" for="prog_dark_${jobProgCount}">تصميم داكن (Highlight)</label>
-                    </div>
-                </div>
-                <div class="col-12 text-end">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_${jobProgCount}')"><i class="bi bi-trash"></i> حذف البرنامج</button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-        jobProgCount++;
-    }
-
-    let jobStepCount = <?php echo count($job_timeline_steps); ?>;
+    // 3. دالة إضافة صف جديد لـ "خطوات التدريب والتوظيف" مع قيد الـ 6 عناصر
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
+        if (!container) return;
+        
         const currentRows = container.querySelectorAll('.job-step-row-item').length;
         
         if (currentRows >= 6) {
-            showNotification('عذراً، الحد الأقصى للخطوات هو 6 خطوات فقط.', 'warning');
+            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
             return;
         }
 
+        const jobStepCount = currentRows;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 job-step-row-item';
+        div.className = 'card p-3 border-0 job-step-row-item mb-2';
         div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'job_step_row_' + jobStepCount;
+        div.id = 'job_step_row_' + Date.now() + '_' + jobStepCount;
         div.innerHTML = `
-            <div class="row g-2">
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">اسم الخطوة</label>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
                     <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][title]" placeholder="اسم الخطوة">
                 </div>
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">العنوان الفرعي</label>
+                <div class="col-md-6">
+                    <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
                     <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][subtitle]" placeholder="العنوان الفرعي">
                 </div>
-                <div class="col-md-2">
-                    <label class="small text-muted mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${currentRows}" placeholder="الترتيب">
+                <div class="col-md-12">
+                    <label class="small text-muted fw-bold mb-1">التفاصيل</label>
+                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
                 </div>
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">أيقونة الخطوة</label>
+                <div class="col-md-2">
+                    <label class="small text-muted fw-bold mb-1">الترتيب</label>
+                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-9">
+                    <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
                     <input type="file" class="form-control form-control-sm" name="steps_icon_${jobStepCount}" accept="image/*">
                     <input type="hidden" name="steps[${jobStepCount}][old_icon]" value="">
                 </div>
                 <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('job_step_row_${jobStepCount}')"><i class="bi bi-trash"></i></button>
-                </div>
-                <div class="col-md-12 mt-2">
-                    <label class="small text-muted mb-1">التفاصيل</label>
-                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
+                    <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('${div.id}')" title="حذف الخطوة">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>`;
         container.appendChild(div);
-        jobStepCount++;
         toggleTimelineAddButton();
     }
 
-    let jobSrvCount = <?php echo count($job_services_items); ?>;
-    function addJobServiceRow() {
-        const container = document.getElementById('jobServicesContainer');
-        const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 job-srv-row-item';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'job_srv_row_' + jobSrvCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3">
-                    <label class="small text-muted mb-1">اسم الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][title]" placeholder="اسم الخدمة">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted mb-1">الرابط</label>
-                    <input type="text" class="form-control form-control-sm" name="services[${jobSrvCount}][url]" placeholder="الرابط">
-                </div>
-                <div class="col-md-4">
-                    <label class="small text-muted mb-1">صورة الخلفية</label>
-                    <input type="file" class="form-control form-control-sm" name="srv_img_${jobSrvCount}" accept="image/*">
-                    <input type="hidden" name="services[${jobSrvCount}][old_img]" value="">
-                </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('job_srv_row_${jobSrvCount}')"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-        jobSrvCount++;
-    }
+    // 4. معالج الحفظ وإعادة الترقيم التلقائي
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-    document.querySelectorAll('.custom-modal form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+                // إعادة ترقيم "خطوات التدريب والتوظيف"
+                const stepRows = form.querySelectorAll('.job-step-row-item');
+                stepRows.forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
+                    const orderInput = row.querySelector('input[name*="[order]"]');
+                    const descInput = row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('input[type="file"]');
+                    const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
 
-            // إعادة ترقيم كافة الصفوف قبل الإرسال مع ضبط أسماء حقول الملفات بشكل دقيق
-            form.querySelectorAll('.job-why-row-item').forEach((row, index) => {
-                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `items[${index}][title]`);
-                row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `items[${index}][desc]`);
-                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `items[${index}][old_img]`);
-                const fileInput = row.querySelector('input[type="file"]');
-                if (fileInput) fileInput.setAttribute('name', `why_img_${index}`);
-            });
+                    if (titleInput) titleInput.name = `steps[${index}][title]`;
+                    if (subtitleInput) subtitleInput.name = `steps[${index}][subtitle]`;
+                    if (orderInput) orderInput.name = `steps[${index}][order]`;
+                    if (descInput) descInput.name = `steps[${index}][desc]`;
+                    if (fileInput) fileInput.name = `steps_icon_${index}`;
+                    if (oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
+                });
 
-            form.querySelectorAll('.job-prog-row-item').forEach((row, index) => {
-                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `programs[${index}][title]`);
-                row.querySelector('input[name*="[btn_text]"]')?.setAttribute('name', `programs[${index}][btn_text]`);
-                row.querySelector('input[name*="[btn_url]"]')?.setAttribute('name', `programs[${index}][btn_url]`);
-                row.querySelector('textarea')?.setAttribute('name', `programs[${index}][desc]`);
-                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `programs[${index}][old_img]`);
-                row.querySelector('input[type="checkbox"]')?.setAttribute('name', `programs[${index}][is_dark]`);
-                const fileInput = row.querySelector('input[type="file"]');
-                if (fileInput) fileInput.setAttribute('name', `prog_img_${index}`);
-            });
-
-            form.querySelectorAll('.job-step-row-item').forEach((row, index) => {
-                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `steps[${index}][title]`);
-                row.querySelector('input[name*="[subtitle]"]')?.setAttribute('name', `steps[${index}][subtitle]`);
-                row.querySelector('input[name*="[order]"]')?.setAttribute('name', `steps[${index}][order]`);
-                row.querySelector('input[name*="[desc]"]')?.setAttribute('name', `steps[${index}][desc]`);
-                row.querySelector('input[name*="[old_icon]"]')?.setAttribute('name', `steps[${index}][old_icon]`);
-                
-                const fileInput = row.querySelector('input[type="file"]');
-                if (fileInput) {
-                    fileInput.setAttribute('name', `steps_icon_${index}`);
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
                 }
-            });
 
-            form.querySelectorAll('.job-srv-row-item').forEach((row, index) => {
-                row.querySelector('input[name*="[title]"]')?.setAttribute('name', `services[${index}][title]`);
-                row.querySelector('input[name*="[url]"]')?.setAttribute('name', `services[${index}][url]`);
-                row.querySelector('input[name*="[old_img]"]')?.setAttribute('name', `services[${index}][old_img]`);
-                const fileInput = row.querySelector('input[type="file"]');
-                if (fileInput) fileInput.setAttribute('name', `srv_img_${index}`);
+                fetch('index.php?url=admin/settings/save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
-
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ""); ?>';
-            
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification('تم حفظ التعديلات بنجاح', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
-                }
-            })
-            .catch(() => showNotification('خطأ في الاتصال بالسيرفر', 'danger'));
         });
     });
 </script>

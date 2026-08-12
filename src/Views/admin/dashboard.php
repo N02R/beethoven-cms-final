@@ -11,7 +11,7 @@ if (!defined('ALLOWED_ACCESS')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - بيتهوفن سيتي للخدمات الطلابية</title>
     <!-- Bootstrap 5 RTL CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css5/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Google Fonts (Cairo) -->
@@ -25,22 +25,47 @@ if (!defined('ALLOWED_ACCESS')) {
             overflow-x: hidden;
             margin: 0;
             padding: 0;
+            height: 100vh;
         }
         
-        .dashboard-container {
-            min-height: 100vh;
+        .dashboard-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* القسم الأيمن (الخلفية الجامعية) */
+        .university-section {
+            flex: 0 0 55%; /* يأخذ 55% من العرض */
+            background-image: url('https://i.ibb.co/Y8y64yW/university-bg.jpg'); /* رابط مباشر لصورة الجامعة من الصورة الأصلية */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* تأثير التعتيم الأزرق الشفاف فوق الصورة */
+        .university-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(11, 28, 60, 0.2), #0b1c3c 95%);
+        }
+
+        /* القسم الأيسر (لوحة التحكم) */
+        .control-section {
+            flex: 0 0 45%; /* يأخذ 45% من العرض */
+            background-color: #0b1c3c;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
-            background: linear-gradient(135deg, #0b1c3c 0%, #050d1a 100%);
+            padding: 40px;
+            z-index: 1;
         }
 
         /* الشعار والترويسة */
-        .brand-section {
-            padding: 40px;
-        }
-
         .brand-logo {
             font-size: 24px;
             font-weight: 700;
@@ -49,6 +74,7 @@ if (!defined('ALLOWED_ACCESS')) {
             display: flex;
             align-items: center;
             gap: 15px;
+            margin-bottom: 60px;
         }
 
         .brand-logo img {
@@ -56,10 +82,10 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         /* محتوى لوحة التحكم */
-        .content-section {
-            padding: 0 40px 40px 40px;
-            max-width: 600px;
-            z-index: 2;
+        .content-area {
+            max-width: 500px;
+            margin-top: auto;
+            margin-bottom: auto;
         }
 
         .welcome-title {
@@ -148,12 +174,11 @@ if (!defined('ALLOWED_ACCESS')) {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 15px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 450px;
         }
 
         .info-item h6 {
@@ -163,97 +188,117 @@ if (!defined('ALLOWED_ACCESS')) {
         }
 
         .info-item span {
-            font-size: 1.1rem;
+            font-size: 1.0rem;
             font-weight: 700;
         }
 
         .info-item .price {
             color: #60a5fa;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
+        }
+
+        /* تجاوب التصميم مع الشاشات الصغيرة */
+        @media (max-width: 992px) {
+            .university-section {
+                display: none; /* إخفاء الصورة في الشاشات الصغيرة */
+            }
+            .control-section {
+                flex: 0 0 100%; /* أخذ كامل العرض */
+                padding: 20px;
+            }
+            .welcome-title { font-size: 2rem; }
+            .brand-logo { margin-bottom: 30px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard-container">
+    <div class="dashboard-wrapper">
         
-        <!-- الترويسة والشعار -->
-        <div class="brand-section">
-            <a href="#" class="brand-logo">
-                <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
-                <div>
-                    <div>BEETHOVEN</div>
-                    <small style="font-size: 11px; letter-spacing: 2px; color: #94a3b8;">CITY SERVICES</small>
-                </div>
-            </a>
+        <!-- القسم الأيمن: صورة الجامعة -->
+        <div class="university-section">
+            <!-- يمكن إضافة محتوى هنا إذا لزم الأمر، مثل شعار الجامعة -->
         </div>
 
-        <!-- المحتوى الرئيسي -->
-        <div class="content-section">
-            <h1 class="welcome-title">مرحباً بك المشرف 👋</h1>
-            <p class="welcome-desc">
-                مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>، من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
-            </p>
-
-            <!-- الأزرار -->
-            <div class="d-flex flex-column">
-                <!-- زر استعراض الموقع -->
-                <a href="index.php" class="custom-card-btn primary">
-                    <div class="btn-content">
-                        <div class="btn-icon">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5>استعراض الموقع</h5>
-                            <p>عرض الموقع كما يراه الزوار</p>
-                        </div>
+        <!-- القسم الأيسر: لوحة التحكم -->
+        <div class="control-section">
+            <!-- الترويسة والشعار -->
+            <div>
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap fa-2x text-primary"></i>
+                    <div>
+                        <div>BEETHOVEN</div>
+                        <small style="font-size: 11px; letter-spacing: 2px; color: #94a3b8;">CITY SERVICES</small>
                     </div>
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-
-                <!-- زر تعديل الموقع -->
-                <a href="edit-content.php" class="custom-card-btn">
-                    <div class="btn-content">
-                        <div class="btn-icon">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5>تعديل الموقع</h5>
-                            <p>إدارة وتعديل محتوى الموقع</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-
-                <!-- زر تسجيل الخروج -->
-                <a href="logout.php" class="custom-card-btn" style="border-color: rgba(239, 68, 68, 0.2);">
-                    <div class="btn-content">
-                        <div class="btn-icon" style="color: #f87171; background: rgba(239, 68, 68, 0.1);">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </div>
-                        <div class="btn-text">
-                            <h5 style="color: #f87171;">تسجيل الخروج</h5>
-                            <p>الخروج من لوحة التحكم</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-left" style="color: #f87171;"></i>
                 </a>
             </div>
 
-            <!-- معلومات إضافية أسفل القائمة -->
-            <div class="info-card">
-                <div class="info-item">
-                    <h6>الباقة الحالية</h6>
-                    <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية</span>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
-                        <i class="fa-regular fa-calendar-days"></i> صالحة حتى 24 مايو 2026
+            <!-- المحتوى الرئيسي -->
+            <div class="content-area">
+                <h1 class="welcome-title">مرحباً بك المشرف 👋</h1>
+                <p class="welcome-desc">
+                    مرحباً بك في لوحة التحكم الخاصة بموقع <span>بيتهوفن سيتي للخدمات الطلابية</span>، من هنا يمكنك إدارة محتوى الموقع بكل سهولة.
+                </p>
+
+                <!-- الأزرار -->
+                <div class="d-flex flex-column">
+                    <!-- زر استعراض الموقع -->
+                    <a href="index.php" class="custom-card-btn primary">
+                        <div class="btn-content">
+                            <div class="btn-icon">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5>استعراض الموقع</h5>
+                                <p>عرض الموقع كما يراه الزوار</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+
+                    <!-- زر تعديل الموقع -->
+                    <a href="edit-content.php" class="custom-card-btn">
+                        <div class="btn-content">
+                            <div class="btn-icon">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5>تعديل الموقع</h5>
+                                <p>إدارة وتعديل محتوى الموقع</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+
+                    <!-- زر تسجيل الخروج -->
+                    <a href="logout.php" class="custom-card-btn" style="border-color: rgba(239, 68, 68, 0.2);">
+                        <div class="btn-content">
+                            <div class="btn-icon" style="color: #f87171; background: rgba(239, 68, 68, 0.1);">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+                            <div class="btn-text">
+                                <h5 style="color: #f87171;">تسجيل الخروج</h5>
+                                <p>الخروج من لوحة التحكم</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color: #f87171;"></i>
+                    </a>
+                </div>
+
+                <!-- بطاقة المعلومات السفلية -->
+                <div class="info-card">
+                    <div class="info-item">
+                        <h6>الباقة الحالية</h6>
+                        <span><i class="fa-solid fa-landmark text-primary ms-1"></i> الجامعات الألمانية</span>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
+                            <i class="fa-regular fa-calendar-days"></i> صالحة حتى 24 مايو 2026
+                        </div>
                     </div>
                 </div>
-                <div class="info-item text-start border-start border-secondary ps-4">
-                    <h6>القيمة الإجمالية</h6>
-                    <span class="price">€ 9,000</span>
-                </div>
             </div>
+            
+            <!-- مسافة فارغة أسفل المحتوى -->
+            <div></div> 
 
         </div>
 

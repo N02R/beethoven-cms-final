@@ -1,13 +1,14 @@
-
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle text-primary"></i> تعديل قسم من نحن</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+            <div class="modal-header px-4 py-3 border-bottom-0">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-info-circle text-primary fs-4"></i> تعديل قسم من نحن
+                </h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body p-4 pt-0">
                 <form id="aboutSectionForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_section">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
@@ -15,104 +16,110 @@
                     <div class="row g-3">
                         <!-- العنوان والوصف -->
                         <div class="col-12">
-                            <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="about_title" value="<?php echo htmlspecialchars($ab['title'] ?? 'من نحن'); ?>">
+                            <label class="form-label fw-bold text-secondary small">عنوان القسم الرئيسي</label>
+                            <input type="text" class="form-control" name="about_title" value="<?php echo htmlspecialchars($ab['title'] ?? 'من نحن'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-bold">نص الوصف</label>
-                            <textarea class="form-control" name="about_desc" rows="4"><?php echo htmlspecialchars($ab['desc'] ?? ''); ?></textarea>
+                            <label class="form-label fw-bold text-secondary small">نص الوصف</label>
+                            <textarea class="form-control" name="about_desc" rows="4" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;"><?php echo htmlspecialchars($ab['desc'] ?? ''); ?></textarea>
                         </div>
 
                         <!-- أزرار التوجيه -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">نص الزر</label>
-                            <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد'); ?>">
+                            <label class="form-label fw-bold text-secondary small">نص الزر</label>
+                            <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">رابط الزر الحالي</label>
-                            <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#'); ?>">
+                            <label class="form-label fw-bold text-secondary small">رابط الزر الحالي</label>
+                            <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
                         </div>
 
                         <!-- الصور الرئيسية والمعاينة -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold d-flex justify-content-between">
+                            <label class="form-label fw-bold text-secondary small d-flex justify-content-between align-items-center">
                                 <span>الصورة الرئيسية الحالية</span>
                                 <?php if (!empty($ab['main_img'])): ?>
-                                    <span class="badge bg-light text-dark border">موجودة</span>
+                                    <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
                                 <?php endif; ?>
                             </label>
                             <?php if (!empty($ab['main_img'])): ?>
-                                <div class="mb-2 p-1 border rounded bg-white text-center">
+                                <div class="mb-2 p-2 bg-white text-center" style="border-radius: 12px; border: 1px solid #e2e8f0;">
                                     <img src="<?php echo htmlspecialchars(get_image_url($ab['main_img'])); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
                                     <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['main_img']); ?></div>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="about_main_img" accept="image/*">
+                            <input type="file" class="form-control" name="about_main_img" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
                             <input type="hidden" name="old_about_main_img" value="<?php echo htmlspecialchars($ab['main_img'] ?? ''); ?>">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-bold d-flex justify-content-between">
+                            <label class="form-label fw-bold text-secondary small d-flex justify-content-between align-items-center">
                                 <span>الصورة الفرعية الحالية</span>
                                 <?php if (!empty($ab['sub_img'])): ?>
-                                    <span class="badge bg-light text-dark border">موجودة</span>
+                                    <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
                                 <?php endif; ?>
                             </label>
                             <?php if (!empty($ab['sub_img'])): ?>
-                                <div class="mb-2 p-1 border rounded bg-white text-center">
+                                <div class="mb-2 p-2 bg-white text-center" style="border-radius: 12px; border: 1px solid #e2e8f0;">
                                     <img src="<?php echo htmlspecialchars(get_image_url($ab['sub_img'])); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
                                     <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['sub_img']); ?></div>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="about_sub_img" accept="image/*">
+                            <input type="file" class="form-control" name="about_sub_img" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
                             <input type="hidden" name="old_about_sub_img" value="<?php echo htmlspecialchars($ab['sub_img'] ?? ''); ?>">
                         </div>
 
-                        <hr class="my-4">
+                        <div class="col-12"><hr class="my-3 text-muted opacity-25"></div>
 
                         <!-- رؤية الشركة -->
-                        <div class="col-md-6">
-                            <h6 class="text-primary fw-bold mb-3">رؤية الشركة</h6>
-                            <label class="small text-muted">العنوان</label>
-                            <input type="text" class="form-control mb-2" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?>">
-                            <label class="small text-muted">الوصف</label>
-                            <textarea class="form-control mb-2" name="vision_desc" rows="2"><?php echo htmlspecialchars($ab['vision_desc'] ?? ''); ?></textarea>
+                        <div class="col-md-6 p-3 bg-light rounded-4 border border-light">
+                            <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-eye"></i> رؤية الشركة
+                            </h6>
+                            <label class="small text-muted fw-bold mb-1">العنوان</label>
+                            <input type="text" class="form-control mb-2 bg-white" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة'); ?>" style="border-radius: 10px; border: 1px solid #e2e8f0;">
                             
-                            <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
+                            <label class="small text-muted fw-bold mb-1">الوصف</label>
+                            <textarea class="form-control mb-2 bg-white" name="vision_desc" rows="2" style="border-radius: 10px; border: 1px solid #e2e8f0;"><?php echo htmlspecialchars($ab['vision_desc'] ?? ''); ?></textarea>
+                            
+                            <label class="small text-muted fw-bold mb-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['vision_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
+                                <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-white rounded-3 border border-light">
                                     <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="about_vision_icon" accept="image/*">
+                            <input type="file" class="form-control bg-white" name="about_vision_icon" accept="image/*" style="border-radius: 10px; border: 1px solid #e2e8f0;">
                             <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? ''); ?>">
                         </div>
 
                         <!-- رسالة الشركة -->
-                        <div class="col-md-6">
-                            <h6 class="text-primary fw-bold mb-3">رسالة الشركة</h6>
-                            <label class="small text-muted">العنوان</label>
-                            <input type="text" class="form-control mb-2" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?>">
-                            <label class="small text-muted">الوصف</label>
-                            <textarea class="form-control mb-2" name="message_desc" rows="2"><?php echo htmlspecialchars($ab['message_desc'] ?? ''); ?></textarea>
+                        <div class="col-md-6 p-3 bg-light rounded-4 border border-light">
+                            <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-chat-square-text"></i> رسالة الشركة
+                            </h6>
+                            <label class="small text-muted fw-bold mb-1">العنوان</label>
+                            <input type="text" class="form-control mb-2 bg-white" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة'); ?>" style="border-radius: 10px; border: 1px solid #e2e8f0;">
                             
-                            <label class="small text-muted fw-bold mt-1">الأيقونة الحالية</label>
+                            <label class="small text-muted fw-bold mb-1">الوصف</label>
+                            <textarea class="form-control mb-2 bg-white" name="message_desc" rows="2" style="border-radius: 10px; border: 1px solid #e2e8f0;"><?php echo htmlspecialchars($ab['message_desc'] ?? ''); ?></textarea>
+                            
+                            <label class="small text-muted fw-bold mb-1">الأيقونة الحالية</label>
                             <?php if (!empty($ab['message_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-1 border rounded bg-white">
+                                <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-white rounded-3 border border-light">
                                     <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
                                     <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['message_icon']); ?></span>
                                 </div>
                             <?php endif; ?>
-                            <input type="file" class="form-control" name="about_message_icon" accept="image/*">
+                            <input type="file" class="form-control bg-white" name="about_message_icon" accept="image/*" style="border-radius: 10px; border: 1px solid #e2e8f0;">
                             <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? ''); ?>">
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="submit" form="aboutSectionForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            <div class="modal-footer px-4 py-3 border-top-0">
+                <button type="submit" form="aboutSectionForm" class="btn-premium px-4 py-2" style="border-radius: 10px;">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel px-4 py-2" data-bs-dismiss="modal" style="border-radius: 10px;">إلغاء</button>
             </div>
         </div>
     </div>

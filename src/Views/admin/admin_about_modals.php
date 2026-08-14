@@ -69,13 +69,15 @@
                                         <input type="text" class="form-control" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية</label>
-                                        <?php if (!empty($ab['vision_icon'])): ?>
-                                            <div class="mb-2 p-2 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="about_vision_icon" accept="image/*">
+                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية ورفع أيقونة جديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($ab['vision_icon'])): ?>
+                                                <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 38px; border-color: #e2e8f0 !important;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control flex-grow-1" name="about_vision_icon" accept="image/*">
+                                        </div>
                                         <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-12">
@@ -96,13 +98,15 @@
                                         <input type="text" class="form-control" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية</label>
-                                        <?php if (!empty($ab['message_icon'])): ?>
-                                            <div class="mb-2 p-2 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="about_message_icon" accept="image/*">
+                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية ورفع أيقونة جديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($ab['message_icon'])): ?>
+                                                <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 38px; border-color: #e2e8f0 !important;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control flex-grow-1" name="about_message_icon" accept="image/*">
+                                        </div>
                                         <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-12">

@@ -1,131 +1,131 @@
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-            <div class="modal-header px-4 py-3 border-bottom-0">
-                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="bi bi-info-circle text-primary fs-4"></i> تعديل قسم من نحن
-                </h5>
-                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-info-circle text-primary"></i> تعديل قسم من نحن</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 pt-0">
+            <div class="modal-body p-4">
                 <form id="aboutSectionForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_section">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="row g-3">
-                        <!-- العنوان والوصف -->
-                        <div class="col-12">
-                            <label class="form-label fw-bold small text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="about_title" value="<?php echo htmlspecialchars($ab['title'] ?? 'من نحن', ENT_QUOTES, 'UTF-8'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold small text-secondary">نص الوصف</label>
-                            <textarea class="form-control" name="about_desc" rows="4" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px; height: auto;"><?php echo htmlspecialchars($ab['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
+                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <!-- العنوان والوصف -->
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                                <input type="text" class="form-control" name="about_title" value="<?php echo htmlspecialchars($ab['title'] ?? 'من نحن', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">نص الوصف</label>
+                                <textarea class="form-control" name="about_desc" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
 
-                        <!-- أزرار التوجيه -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary">نص الزر</label>
-                            <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد', ENT_QUOTES, 'UTF-8'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary">رابط الزر الحالي</label>
-                            <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                        </div>
+                            <!-- أزرار التوجيه -->
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
+                                <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">رابط الزر الحالي</label>
+                                <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                        <!-- الصور الرئيسية والمعاينة -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary d-flex justify-content-between align-items-center">
-                                <span>الصورة الرئيسية الحالية</span>
+                            <!-- الصور الرئيسية والمعاينة -->
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary d-flex justify-content-between align-items-center">
+                                    <span>الصورة الرئيسية الحالية</span>
+                                    <?php if (!empty($ab['main_img'])): ?>
+                                        <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
+                                    <?php endif; ?>
+                                </label>
                                 <?php if (!empty($ab['main_img'])): ?>
-                                    <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
+                                    <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
+                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['main_img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Main Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
+                                        <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['main_img'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    </div>
                                 <?php endif; ?>
-                            </label>
-                            <?php if (!empty($ab['main_img'])): ?>
-                                <div class="mb-2 p-2 bg-white text-center shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['main_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 80px; object-fit: contain;" alt="Main Preview">
-                                    <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['main_img'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control" name="about_main_img" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            <input type="hidden" name="old_about_main_img" value="<?php echo htmlspecialchars($ab['main_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
+                                <input type="file" class="form-control" name="about_main_img" accept="image/*">
+                                <input type="hidden" name="old_about_main_img" value="<?php echo htmlspecialchars($ab['main_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary d-flex justify-content-between align-items-center">
-                                <span>الصورة الفرعية الحالية</span>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary d-flex justify-content-between align-items-center">
+                                    <span>الصورة الفرعية الحالية</span>
+                                    <?php if (!empty($ab['sub_img'])): ?>
+                                        <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
+                                    <?php endif; ?>
+                                </label>
                                 <?php if (!empty($ab['sub_img'])): ?>
-                                    <span class="badge bg-light text-dark border px-2 py-1" style="border-radius: 8px;">موجودة</span>
+                                    <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
+                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['sub_img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Sub Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
+                                        <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['sub_img'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    </div>
                                 <?php endif; ?>
-                            </label>
-                            <?php if (!empty($ab['sub_img'])): ?>
-                                <div class="mb-2 p-2 bg-white text-center shadow-sm" style="border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['sub_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 80px; object-fit: contain;" alt="Sub Preview">
-                                    <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['sub_img'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control" name="about_sub_img" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            <input type="hidden" name="old_about_sub_img" value="<?php echo htmlspecialchars($ab['sub_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
+                                <input type="file" class="form-control" name="about_sub_img" accept="image/*">
+                                <input type="hidden" name="old_about_sub_img" value="<?php echo htmlspecialchars($ab['sub_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                        <div class="col-12"><hr class="my-3 text-muted opacity-25"></div>
+                            <div class="col-12"><hr class="my-3 text-muted opacity-25"></div>
 
-                        <!-- رؤية الشركة -->
-                        <div class="col-md-6 p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                            <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
-                                <i class="bi bi-eye"></i> رؤية الشركة
-                            </h6>
-                            <div class="mb-2">
-                                <label class="small text-muted fw-bold mb-1">العنوان</label>
-                                <input type="text" class="form-control" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة', ENT_QUOTES, 'UTF-8'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            </div>
-                            <div class="mb-2">
-                                <label class="small text-muted fw-bold mb-1">الوصف</label>
-                                <textarea class="form-control" name="vision_desc" rows="2" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px; height: auto;"><?php echo htmlspecialchars($ab['vision_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                            </div>
-                            
-                            <label class="small text-muted fw-bold mb-1">الأيقونة الحالية</label>
-                            <?php if (!empty($ab['vision_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded-3 border">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                    <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['vision_icon'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <!-- رؤية الشركة -->
+                            <div class="col-md-6 p-3 shadow-sm" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-eye"></i> رؤية الشركة
+                                </h6>
+                                <div class="mb-2">
+                                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                    <input type="text" class="form-control" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control" name="about_vision_icon" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
+                                <div class="mb-2">
+                                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                    <textarea class="form-control" name="vision_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['vision_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                </div>
+                                
+                                <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية</label>
+                                <?php if (!empty($ab['vision_icon'])): ?>
+                                    <div class="mb-2 p-2 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
+                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                        <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['vision_icon'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" class="form-control" name="about_vision_icon" accept="image/*">
+                                <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                        <!-- رسالة الشركة -->
-                        <div class="col-md-6 p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                            <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
-                                <i class="bi bi-chat-square-text"></i> رسالة الشركة
-                            </h6>
-                            <div class="mb-2">
-                                <label class="small text-muted fw-bold mb-1">العنوان</label>
-                                <input type="text" class="form-control" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة', ENT_QUOTES, 'UTF-8'); ?>" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            </div>
-                            <div class="mb-2">
-                                <label class="small text-muted fw-bold mb-1">الوصف</label>
-                                <textarea class="form-control" name="message_desc" rows="2" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px; height: auto;"><?php echo htmlspecialchars($ab['message_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                            </div>
-                            
-                            <label class="small text-muted fw-bold mb-1">الأيقونة الحالية</label>
-                            <?php if (!empty($ab['message_icon'])): ?>
-                                <div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded-3 border">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                    <span class="small text-muted text-truncate dir-ltr"><?php echo htmlspecialchars($ab['message_icon'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <!-- رسالة الشركة -->
+                            <div class="col-md-6 p-3 shadow-sm" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-chat-square-text"></i> رسالة الشركة
+                                </h6>
+                                <div class="mb-2">
+                                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                    <input type="text" class="form-control" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control" name="about_message_icon" accept="image/*" style="border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px 14px;">
-                            <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="mb-2">
+                                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                    <textarea class="form-control" name="message_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['message_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                </div>
+                                
+                                <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية</label>
+                                <?php if (!empty($ab['message_icon'])): ?>
+                                    <div class="mb-2 p-2 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
+                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                        <div class="small text-muted mt-1 dir-ltr text-truncate"><?php echo htmlspecialchars($ab['message_icon'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" class="form-control" name="about_message_icon" accept="image/*">
+                                <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer px-4 py-3 border-top-0 gap-2">
-                <button type="submit" form="aboutSectionForm" class="btn-premium px-4 py-2" style="border-radius: 12px; font-weight: 600;">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel px-4 py-2" data-bs-dismiss="modal" style="border-radius: 12px; font-weight: 600; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569;">إلغاء</button>
+            <div class="modal-footer">
+                <button type="submit" form="aboutSectionForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>

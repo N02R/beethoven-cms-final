@@ -1,7 +1,7 @@
 <!-- 1. About Section Modal (قسم من نحن) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+        <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
             <div class="modal-header px-4 py-3 border-bottom-0">
                 <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2">
                     <i class="bi bi-info-circle text-primary fs-4"></i> تعديل قسم من نحن
@@ -123,9 +123,9 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer px-4 py-3 border-top-0">
-                <button type="submit" form="aboutSectionForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            <div class="modal-footer px-4 py-3 border-top-0 gap-2">
+                <button type="submit" form="aboutSectionForm" class="btn-premium px-4 py-2" style="border-radius: 12px; font-weight: 600;">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel px-4 py-2" data-bs-dismiss="modal" style="border-radius: 12px; font-weight: 600; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569;">إلغاء</button>
             </div>
         </div>
     </div>

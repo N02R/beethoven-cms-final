@@ -319,33 +319,34 @@
             </div>
             
             <div class="modal-body p-4">
-                <form id="menuLinksForm">
+                <form id="menuLinksForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_menu">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($menu_links ?? []) as $index => $link): ?>
-                        <div class="card p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
-                            <div class="row align-items-center g-2">
-                                <div class="col-md-3">
-                                    <label class="small fw-bold mb-1 d-md-none">عنوان الرابط</label>
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
-                                </div>
+                        <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
+                            <div class="row g-3 align-items-center">
                                 <div class="col-md-5">
-                                    <label class="small fw-bold mb-1 d-md-none">الرابط (URL)</label>
-                                    <input type="text" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
+                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
+                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
                                 </div>
-                                <div class="col-md-3 col">
-                                    <label class="small fw-bold mb-1 d-md-none">الترتيب</label>
-                                    <input type="number" class="form-control form-control-sm" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                <div class="col-md-4">
+                                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
                                 </div>
-                                <div class="col-auto ms-auto">
-                                    <button type="button" class="btn-icon-trash" onclick="removeRow('menu_row_<?php echo $index; ?>')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
+                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                </div>
+                                <div class="col-md-1 text-center pt-3">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
                     </button>

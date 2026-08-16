@@ -135,6 +135,7 @@
     </div>
 </div>
 
+<!-- 5. Edu Timeline Modal (قسم خطوات الرحلة) -->
 <div class="modal fade custom-modal" id="eduTimelineModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -145,63 +146,75 @@
             <div class="modal-body p-4">
                 <form id="eduTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_timeline">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title ?? ''); ?>">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="edu_timeline_desc" rows="2"><?php echo htmlspecialchars($edu_timeline_desc ?? ''); ?></textarea>
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label for="edu_timeline_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="edu_timeline_title_input" class="form-control" name="edu_timeline_title" value="<?php echo htmlspecialchars($edu_timeline_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="mb-0">
+                            <label for="edu_timeline_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="edu_timeline_desc_input" class="form-control" name="edu_timeline_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_timeline_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
 
+                    <!-- قائمة خطوات الرحلة -->
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_timeline_steps ?? []) as $index => $step): ?>
-                            <div class="card p-3 border-0 edu-timeline-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="step_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
+                            <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="step_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
+                                <div class="row g-2 mb-3">
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
+                                        <label for="edu_step_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                        <input type="text" id="edu_step_title_<?php echo $index; ?>" class="form-control edu-step-title" name="edu_timeline[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                                        <input type="number" class="form-control form-control-sm" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
-                                    </div>
-                                    <div class="col-md-9">
-                                        <label class="small text-muted fw-bold mb-1">الأيقونة الحالية / الجديدة</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($step['icon'])): ?>
-                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;" alt="icon">
-                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($step['icon']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
-                                        </div>
-                                        <input type="hidden" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
-                                    </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <label for="edu_step_subtitle_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                                        <input type="text" id="edu_step_subtitle_<?php echo $index; ?>" class="form-control edu-step-subtitle" name="edu_timeline[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                 </div>
+
+                                <!-- السطر الثاني: التفاصيل والترتيب -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-9">
+                                        <label for="edu_step_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                                        <input type="text" id="edu_step_desc_<?php echo $index; ?>" class="form-control edu-step-desc" name="edu_timeline[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="edu_step_order_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الترتيب</label>
+                                        <input type="number" id="edu_step_order_<?php echo $index; ?>" class="form-control edu-step-order" name="edu_timeline[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                    </div>
+                                </div>
+
+                                <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
+                                        <label for="edu_step_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($step['icon'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" id="edu_step_file_<?php echo $index; ?>" class="form-control edu-step-file" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" class="edu-step-old-icon" name="edu_timeline[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addEduStepRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
                     </button>
                 </form>
@@ -212,8 +225,7 @@
             </div>
         </div>
     </div>
-</div>  
-
+</div>
 
 <!-- 4. Edu Services Modal (قسم خدمات التعليم العالي) -->
 <div class="modal fade custom-modal" id="eduServicesModal" tabindex="-1" aria-hidden="true">
@@ -226,53 +238,63 @@
             <div class="modal-body p-4">
                 <form id="eduServicesForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_services">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="edu_services_title" value="<?php echo htmlspecialchars($edu_services_title ?? ''); ?>">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">وصف القسم</label>
-                        <textarea class="form-control" name="edu_services_desc" rows="2"><?php echo htmlspecialchars($edu_services_desc ?? ''); ?></textarea>
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label for="edu_services_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="edu_services_title_input" class="form-control" name="edu_services_title" value="<?php echo htmlspecialchars($edu_services_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="mb-0">
+                            <label for="edu_services_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="edu_services_desc_input" class="form-control" name="edu_services_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_services_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
 
+                    <!-- قائمة خدمات التعليم -->
                     <div id="eduServicesContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_services_items ?? []) as $index => $item): ?>
-                            <div class="card p-3 border-0 edu-service-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="edu_srv_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
+                            <div class="p-3 shadow-sm edu-service-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="edu_srv_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: اسم الخدمة والرابط -->
+                                <div class="row g-2 mb-3">
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">اسم الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>" placeholder="اسم الخدمة">
+                                        <label for="edu_srv_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
+                                        <input type="text" id="edu_srv_title_<?php echo $index; ?>" class="form-control edu-srv-title" name="edu_services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">رابط الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="edu_services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" placeholder="الرابط">
-                                    </div>
-                                    <div class="col-md-11">
-                                        <label class="small text-muted fw-bold mb-1">صورة الخلفية الحالية / الجديدة</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
-                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px;" alt="icon">
-                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 150px;"><?php echo basename($item['img']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="edu_service_img_<?php echo $index; ?>" accept="image/*">
-                                        </div>
-                                        <input type="hidden" name="edu_services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
-                                    </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')" title="حذف الخدمة">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <label for="edu_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">رابط الخدمة</label>
+                                        <input type="text" id="edu_srv_url_<?php echo $index; ?>" class="form-control edu-srv-url" name="edu_services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                     </div>
                                 </div>
+
+                                <!-- السطر الثاني: الصورة + زر الرفع + زر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
+                                        <label for="edu_srv_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">صورة الخلفية الحالية / الجديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="service image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" id="edu_srv_file_<?php echo $index; ?>" class="form-control edu-srv-file" name="edu_service_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" class="edu-srv-old-img" name="edu_services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addEduServiceRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خدمة جديدة
                     </button>
                 </form>
@@ -284,6 +306,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     // 1. دالة عامة لحذف أي صف بناءً على الـ ID

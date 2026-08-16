@@ -162,7 +162,7 @@
                                 foreach ($team_items as $index => $member): 
                             ?>
                                 <div class="p-3 shadow-sm team-row-item" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;" id="team_row_<?php echo $index; ?>">
-                                    <div class="row g-2 align-items-center">
+                                    <div class="row g-2 align-items-end">
                                         <div class="col-md-3">
                                             <label class="small fw-bold mb-1 text-secondary">الاسم</label>
                                             <input type="text" class="form-control team-name" name="team[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
@@ -183,8 +183,8 @@
                                             </div>
                                             <input type="hidden" class="team-old-img" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <div class="col-md-1 text-end pt-3">
-                                            <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                                        <div class="col-md-1 d-flex align-items-center">
+                                            <button type="button" class="btn-icon-trash w-100" style="height: 38px;" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>

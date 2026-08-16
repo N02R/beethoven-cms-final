@@ -919,7 +919,7 @@
                                     <?php endforeach; ?>
                                 </div>
 
-                                <button type="button" class="btn btn-outline-primary w-100 mt-3 py-2 fw-bold" style="border-radius: 12px; border-style: dashed; border-width: 2px;" onclick="addCol3Link()">
+                                <button type="button" class="btn  w-100 mt-3 py-2" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()">
                                     <i class="bi bi-plus-circle me-1"></i> إضافة وسيلة تواصل
                                 </button>
                             </div>

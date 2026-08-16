@@ -373,24 +373,25 @@
             </div>
             
             <div class="modal-body p-4">
-                <form id="langEditForm">
+                <form id="langEditForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_languages">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="langRowsContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($data['languages'])): ?>
                             <?php foreach ($data['languages'] as $index => $lang): ?>
-                                <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
-                                    <div class="row align-items-center g-2">
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
-                                        </div>
+                                <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
+                                    <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <input type="text" class="form-control" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
                                         </div>
-                                        <div class="col-md-1 text-center">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                        <div class="col-md-5">
+                                            <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        </div>
+                                        <div class="col-md-1 text-center pt-3">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -411,6 +412,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 6. Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">

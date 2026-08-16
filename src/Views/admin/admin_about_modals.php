@@ -381,26 +381,25 @@
         const container = document.getElementById('teamRowsContainer');
         const teamCount = container.querySelectorAll('.team-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border team-row-item shadow-sm mb-2';
-        div.style.cssText = 'background: var(--bg-soft, #f8f9fa); border-radius: 12px; border: 1px solid var(--border-color) !important;';
+        div.className = 'p-3 shadow-sm team-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
-                    <label class="small text-muted mb-1">الاسم</label>
-                    <input type="text" class="form-control form-control-sm team-name" name="team[${teamCount}][name]" placeholder="الاسم">
+                    <input type="text" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <label class="small text-muted mb-1">المسمى الوظيفي</label>
-                    <input type="text" class="form-control form-control-sm team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <input type="text" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
-                    <label class="small text-muted mb-1">الصورة الشخصية</label>
-                    <input type="file" class="form-control form-control-sm team-file" name="team_img_${teamCount}" accept="image/*">
-                    <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
+                    </div>
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -410,26 +409,25 @@
         const container = document.getElementById('countsRowsContainer');
         const countsCount = container.querySelectorAll('.count-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 count-row-item';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm count-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
-                    <label class="small text-muted">الرقم</label>
-                    <input type="text" class="form-control form-control-sm count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
+                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
                 </div>
                 <div class="col-md-4">
-                    <label class="small text-muted">الوصف</label>
-                    <input type="text" class="form-control form-control-sm count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
+                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
-                    <label class="small text-muted">أيقونة جديدة</label>
-                    <input type="file" class="form-control form-control-sm count-file" name="count_img_${countsCount}" accept="image/*">
-                    <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
+                    </div>
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -439,18 +437,19 @@
         const container = document.getElementById('partnersRowsContainer');
         const partnerCount = container.querySelectorAll('.partner-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 mb-2 partner-row-item';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm partner-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-11">
-                    <label class="small text-muted mb-1">صورة الشريك الجديدة</label>
-                    <input type="file" class="form-control form-control-sm partner-file" name="partner_img_${partnerCount}" accept="image/*">
-                    <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                    </div>
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -500,7 +499,7 @@
             });
 
             const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
             
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
@@ -536,4 +535,3 @@
         });
     });
 </script>
-

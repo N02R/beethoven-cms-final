@@ -223,27 +223,40 @@
                             foreach ($counts_items as $index => $c): 
                         ?>
                             <div class="p-3 shadow-sm count-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="count_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
+                                <div class="row g-2 align-items-end">
+                                    
+                                    <!-- الرقم -->
                                     <div class="col-md-3">
-                                        <input type="text" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرقم">
+                                        <label for="count_number_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                                        <input type="text" id="count_number_<?php echo $index; ?>" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: +500">
                                     </div>
+                                    
+                                    <!-- الوصف -->
                                     <div class="col-md-4">
-                                        <input type="text" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                        <label for="count_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                                        <input type="text" id="count_title_<?php echo $index; ?>" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: مشروع مكتمل">
                                     </div>
+                                    
+                                    <!-- الصورة -->
                                     <div class="col-md-4">
+                                        <label for="count_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                     <img src="<?php echo htmlspecialchars(get_image_url($c['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" id="count_file_<?php echo $index; ?>" class="form-control count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
+                                    
                                     <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center">
+                                    
+                                    <!-- زر الحذف -->
+                                    <div class="col-md-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_<?php echo $index; ?>')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                                     </div>
+                                    
                                 </div>
                             </div>
                         <?php 
@@ -264,6 +277,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 4. Partners Edit Modal (قسم الشركاء) -->
 <div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">

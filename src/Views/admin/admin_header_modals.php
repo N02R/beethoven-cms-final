@@ -481,15 +481,18 @@
 
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['services'] ?? []) as $index => $service): ?>
-                            <div class="p-3 shadow-sm" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-md-3">
-                                        <input type="text" class="form-control" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                            <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                     </div>
-                                    <div class="col-md-3">
-                                        <input type="text" class="form-control" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-11">
+                                        <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <!-- معاينة الصورة فقط إن وجدت -->
                                             <?php if (!empty($service['img'])): ?>
@@ -500,12 +503,12 @@
                                                          style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control" name="service_img_<?php echo $index; ?>">
+                                            <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>

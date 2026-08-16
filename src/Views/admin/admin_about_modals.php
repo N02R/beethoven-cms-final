@@ -211,7 +211,7 @@
             <div class="modal-body p-4">
                 <form id="countsForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_counts">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
@@ -219,33 +219,27 @@
                         if (!empty($counts_items)):
                             foreach ($counts_items as $index => $c): 
                         ?>
-                            <div class="card p-3 border-0 count-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="count_row_<?php echo $index; ?>">
+                            <div class="p-3 shadow-sm count-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="count_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-3">
-                                        <label class="small text-muted">الرقم</label>
-                                        <input type="text" class="form-control form-control-sm count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? ''); ?>" placeholder="الرقم">
+                                        <input type="text" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرقم">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted">الوصف</label>
-                                        <input type="text" class="form-control form-control-sm count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? ''); ?>" placeholder="الوصف">
+                                        <input type="text" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="small text-muted d-flex justify-content-between">
-                                            <span>الأيقونة الحالية / الجديدة</span>
-                                            <?php if (!empty($c['img'])): ?>
-                                                <span class="badge bg-light text-dark border" style="font-size: 10px;">موجودة</span>
-                                            <?php endif; ?>
-                                        </label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
-                                                <img src="<?php echo htmlspecialchars(get_image_url($c['img'])); ?>" style="width: 30px; height: 30px; object-fit: contain;">
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($c['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? ''); ?>">
                                     </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('count_row_<?php echo $index; ?>')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-1 text-center">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_<?php echo $index; ?>')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -255,7 +249,7 @@
                         ?>
                     </div>
 
-                    <button type="button" class="btn btn-light w-100 mt-3 py-2 border-dashed" style="border: 2px dashed #cbd5e1; color: var(--primary); font-weight: 600;" onclick="addCountRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCountRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة عداد جديد
                     </button>
                 </form>

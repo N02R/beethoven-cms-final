@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<!-- 2. Edu Why Modal (قسم لماذا الدراسة) - مع Label علوي -->
+<!-- 2. Edu Why Modal (قسم لماذا الدراسة) -->
 <div class="modal fade custom-modal" id="eduWhyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -68,44 +68,56 @@
                     <input type="hidden" name="action" value="update_edu_why">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="edu_why_title" value="<?php echo htmlspecialchars($edu_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label for="edu_why_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="edu_why_title_input" class="form-control" name="edu_why_title" value="<?php echo htmlspecialchars($edu_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0">
-                            <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="edu_why_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="edu_why_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="edu_why_desc_input" class="form-control" name="edu_why_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
+                    <!-- قائمة الأسباب -->
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
                             <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="why_row_<?php echo $index; ?>">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control edu-why-title" name="edu_why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="row g-2 align-items-end">
+                                    
+                                    <!-- العنوان -->
+                                    <div class="col-md-3">
+                                        <label for="edu_why_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
+                                        <input type="text" id="edu_why_title_<?php echo $index; ?>" class="form-control edu-why-title" name="edu_why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: جودة التعليم">
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <input type="text" class="form-control edu-why-desc" name="edu_why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    
+                                    <!-- الوصف -->
+                                    <div class="col-md-4">
+                                        <label for="edu_why_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                                        <input type="text" id="edu_why_desc_<?php echo $index; ?>" class="form-control edu-why-desc" name="edu_why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="شرح بسيط للسبب">
                                     </div>
-                                    <div class="col-md-11">
-                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                                    
+                                    <!-- الصورة / الأيقونة -->
+                                    <div class="col-md-4">
+                                        <label for="edu_why_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                     <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control edu-why-file" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" id="edu_why_file_<?php echo $index; ?>" class="form-control edu-why-file" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-md-1 d-flex align-items-end justify-content-center pb-2">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف السبب"><i class="bi bi-trash"></i></button>
+
+                                    <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    
+                                    <!-- زر الحذف -->
+                                    <div class="col-md-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف السبب"><i class="bi bi-trash"></i></button>
                                     </div>
+                                    
                                 </div>
                             </div>
                         <?php endforeach; ?>

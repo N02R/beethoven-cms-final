@@ -555,8 +555,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="chooseForm" enctype="multipart/form-data">
+                <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
@@ -572,20 +573,19 @@
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($data['choose_items'])): ?>
                             <?php foreach ($data['choose_items'] as $index => $item): ?>
-                                <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
-                                    <!-- الصف الأول: حقول العنوان والوصف -->
-                                    <div class="row g-2 mb-2">
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                         </div>
-                                        <div class="col-md-7">
-                                            <input type="text" class="form-control" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                         </div>
-                                    </div>
 
-                                    <!-- الصف الثاني: الصورة الحالية، حقل الرفع، وزر الحذف -->
-                                    <div class="row g-2 align-items-center">
-                                        <div class="col">
+                                        <div class="col-md-11">
+                                            <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <!-- معاينة الصورة الحالية إن وجدت -->
                                                 <?php if (!empty($item['img'])): ?>
@@ -597,12 +597,12 @@
                                                     </div>
                                                 <?php endif; ?>
 
-                                                <input type="file" class="form-control" name="choose_img_<?php echo $index; ?>">
+                                                <input type="file" class="form-control choose-file" name="choose_img_<?php echo $index; ?>" accept="image/*">
                                             </div>
-                                            <input type="hidden" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="choose-old-img" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <div class="col-auto">
-                                            <button type="button" class="btn-icon-trash" onclick="removeRow('choose_row_<?php echo $index; ?>')">
+                                        <div class="col-md-1 text-center pt-3">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف الميزة">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>

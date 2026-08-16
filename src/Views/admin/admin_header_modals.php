@@ -634,8 +634,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="reviewsForm">
+                <form id="reviewsForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_reviews">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
@@ -644,13 +645,14 @@
 
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['reviews_items'] ?? []) as $index => $review): ?>
-                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col">
-                                        <input type="text" class="form-control" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($review['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
+                            <div class="p-3 shadow-sm review-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-11">
+                                        <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
+                                        <input type="text" class="form-control review-url" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($review['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
                                     </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('rev_row_<?php echo $index; ?>')">
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="حذف الفيديو">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -681,8 +683,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="guideForm" enctype="multipart/form-data">
+                <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
@@ -697,20 +700,24 @@
 
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
-                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
-                                <!-- الصف الأول: العنوان والرابط -->
-                                <div class="row g-2 mb-2">
+                            <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
+                                <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
+                                        <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                                        <input type="text" class="form-control guide-title" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                        <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                                        <input type="text" class="form-control guide-url" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
                                     </div>
-                                </div>
-                                
-                                <!-- الصف الثاني: الصورة، الوصف، وزر الحذف -->
-                                <div class="row g-2 align-items-center">
+                                    
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                        <input type="text" class="form-control guide-desc" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                    </div>
+
                                     <div class="col-md-5">
+                                        <label class="small fw-bold mb-1 text-secondary">الصورة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -720,18 +727,13 @@
                                                          style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control" name="guide_img_<?php echo $index; ?>">
+                                            <input type="file" class="form-control guide-file" name="guide_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
+                                        <input type="hidden" class="guide-old-img" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
-                                    </div>
-                                    
-                                    <input type="hidden" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    
-                                    <div class="col-md-1 text-center">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')">
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="حذف المقال">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -753,6 +755,7 @@
     </div>
 </div>
 
+
 <!-- 11. FAQ Edit Modal -->
 <div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -762,8 +765,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="faqForm">
+                <form id="faqForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_faq">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
@@ -772,16 +776,18 @@
 
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
-                            <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-md-5">
-                                        <input type="text" class="form-control" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
-                                    </div>
+                            <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
+                                <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                        <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                                        <input type="text" class="form-control faq-question" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
                                     </div>
-                                    <div class="col-md-1 text-center">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')">
+                                    <div class="col-md-5">
+                                        <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                                        <input type="text" class="form-control faq-answer" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                    </div>
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="حذف السؤال">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -803,6 +809,7 @@
     </div>
 </div>
 
+
 <!-- 12. Footer Edit Modal -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -812,8 +819,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="footerForm" enctype="multipart/form-data">
+                <form id="footerForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_footer">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <!-- قسم الاستشارة في الأعلى -->
                     <div class="row mb-4">
@@ -823,11 +831,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label class="small fw-bold mb-1 text-secondary">عنوان الاستشارة</label>
-                                        <input type="text" class="form-control" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control consult-title" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-8">
                                         <label class="small fw-bold mb-1 text-secondary">وصف الاستشارة</label>
-                                        <input type="text" class="form-control" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control consult-desc" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -840,7 +848,7 @@
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
                                 <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
-                                <textarea class="form-control" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['footer_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control footer-desc" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['footer_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
@@ -848,7 +856,7 @@
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
                                 <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                <input type="text" class="form-control mb-3" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control mb-3 footer-col2-title" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة', ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
                                     <i class="bi bi-info-circle me-1"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
                                 </div>
@@ -863,16 +871,29 @@
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
                                 <div class="mb-3" style="max-width: 400px;">
                                     <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                    <input type="text" class="form-control" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="text" class="form-control footer-col3-title" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
                                     <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
-                                        <div class="p-3 shadow-sm" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
+                                        <div class="p-3 shadow-sm footer-col3-item" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
                                             <div class="row g-3 align-items-center">
                                                 
-                                                <!-- الأيقونة وحقل الرفع -->
+                                                <!-- الاسم -->
                                                 <div class="col-md-4">
+                                                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                                                </div>
+
+                                                <!-- الرابط -->
+                                                <div class="col-md-4">
+                                                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                                </div>
+
+                                                <!-- الأيقونة وحقل الرفع -->
+                                                <div class="col-md-3">
+                                                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <?php if (!empty($link['img'])): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -882,28 +903,18 @@
                                                                      style="width: 36px; height: 36px; object-fit: cover;">
                                                             </div>
                                                         <?php endif; ?>
-                                                        <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm bg-white">
+                                                        <input type="file" name="col3_img_<?php echo $i; ?>" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                                                     </div>
                                                 </div>
 
-                                                <!-- الاسم -->
-                                                <div class="col-md-3">
-                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
-                                                </div>
-
-                                                <!-- الرابط -->
-                                                <div class="col-md-4">
-                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
-                                                </div>
-
                                                 <!-- زر الحذف -->
-                                                <div class="col-md-1 text-center">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;">
+                                                <div class="col-md-1 text-center pt-3">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;" title="حذف وسيلة التواصل">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="footer-col3-old-img" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -972,15 +983,27 @@
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 social-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'row_' + socialCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control" name="social[${socialCount}][name]" placeholder="الاسم"></div>
-                <div class="col-md-5"><input type="url" class="form-control" name="social[${socialCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-3"><input type="file" class="form-control" name="social_img_${socialCount}"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('row_${socialCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
+                    <input type="text" class="form-control social-name" name="social[${socialCount}][name]" placeholder="الاسم">
+                </div>
+                <div class="col-md-8">
+                    <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
+                    <input type="url" class="form-control social-url" name="social[${socialCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
+                    <input type="file" class="form-control social-file" name="social_img_${socialCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="social-old-img" name="social[${socialCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_${socialCount}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         socialCount++;
@@ -990,15 +1013,26 @@
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 menu-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'menu_row_' + menuCount;
         div.innerHTML = `
-            <div class="row align-items-center g-2">
-                <div class="col-md-4"><input type="text" class="form-control" name="menu[${menuCount}][title]" placeholder="عنوان الرابط"></div>
-                <div class="col-md-5"><input type="text" class="form-control" name="menu[${menuCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-2"><input type="number" class="form-control" name="menu[${menuCount}][order]" value="${menuCount}" placeholder="الترتيب"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('menu_row_${menuCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
+                    <input type="text" class="form-control menu-title" name="menu[${menuCount}][title]" placeholder="عنوان الرابط">
+                </div>
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                    <input type="text" class="form-control menu-url" name="menu[${menuCount}][url]" placeholder="الرابط (URL)">
+                </div>
+                <div class="col-md-2">
+                    <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
+                    <input type="number" class="form-control menu-order" name="menu[${menuCount}][order]" value="${menuCount}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${menuCount}')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         menuCount++;
@@ -1008,14 +1042,22 @@
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 lang-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'lang_row_' + langCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-5"><input type="text" class="form-control" name="lang[${langCount}][name]" placeholder="اسم اللغة"></div>
-                <div class="col-md-6"><input type="text" class="form-control" name="lang[${langCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('lang_row_${langCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <input type="text" class="form-control lang-name" name="lang[${langCount}][name]" placeholder="اسم اللغة">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control lang-url" name="lang[${langCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${langCount}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         langCount++;
@@ -1043,15 +1085,27 @@
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 choose-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'choose_row_' + chooseCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control" name="choose[${chooseCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control" name="choose[${chooseCount}][desc]" placeholder="الوصف"></div>
-                <div class="col-md-4"><input type="file" class="form-control" name="choose_img_${chooseCount}"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('choose_row_${chooseCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control choose-title" name="choose[${chooseCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control choose-desc" name="choose[${chooseCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <input type="file" class="form-control choose-file" name="choose_img_${chooseCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="choose-old-img" name="choose[${chooseCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${chooseCount}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         chooseCount++;
@@ -1061,13 +1115,18 @@
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 review-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'rev_row_' + reviewCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-11"><input type="text" class="form-control" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('rev_row_${reviewCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
+                    <input type="text" class="form-control review-url" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب (Embed URL)">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${reviewCount}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         reviewCount++;
@@ -1077,16 +1136,31 @@
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 guide-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'guide_row_' + guideCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-6 mb-2"><input type="text" class="form-control" name="guide[${guideCount}][title]" placeholder="عنوان المقال"></div>
-                <div class="col-md-6 mb-2"><input type="text" class="form-control" name="guide[${guideCount}][url]" placeholder="رابط الصفحة"></div>
-                <div class="col-md-6"><input type="file" class="form-control" name="guide_img_${guideCount}"></div>
-                <div class="col-md-5"><textarea class="form-control" name="guide[${guideCount}][desc]" rows="1" placeholder="الوصف"></textarea></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('guide_row_${guideCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                    <input type="text" class="form-control guide-title" name="guide[${guideCount}][title]" placeholder="عنوان المقال">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                    <input type="text" class="form-control guide-url" name="guide[${guideCount}][url]" placeholder="رابط الصفحة">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${guideCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                    <input type="file" class="form-control guide-file" name="guide_img_${guideCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="guide-old-img" name="guide[${guideCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${guideCount}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         guideCount++;
@@ -1096,14 +1170,22 @@
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 faq-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'faq_row_' + faqCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-5"><input type="text" class="form-control" name="faq[${faqCount}][question]" placeholder="السؤال"></div>
-                <div class="col-md-6"><input type="text" class="form-control" name="faq[${faqCount}][answer]" placeholder="الإجابة"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('faq_row_${faqCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                    <input type="text" class="form-control faq-question" name="faq[${faqCount}][question]" placeholder="السؤال">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${faqCount}][answer]" placeholder="الإجابة">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${faqCount}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         faqCount++;
@@ -1113,15 +1195,27 @@
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
         div.id = 'col3_' + col3Count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
-                <div class="col-md-4"><input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white"></div>
-                <div class="col-md-3"><input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white" placeholder="الاسم"></div>
-                <div class="col-md-4"><input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white" placeholder="الرابط"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
+                    <input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                </div>
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
+                </div>
+                <input type="hidden" class="footer-col3-old-img" name="col3[${col3Count}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         col3Count++;

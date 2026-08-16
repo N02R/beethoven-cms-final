@@ -278,7 +278,6 @@
     </div>
 </div>
 
-
 <!-- 4. Partners Edit Modal (قسم الشركاء) -->
 <div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -292,13 +291,15 @@
                     <input type="hidden" name="action" value="update_about_partners">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- عنوان القسم -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label for="partners_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="partners_title_input" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
+                    <!-- قائمة الشركاء -->
                     <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
                         $partners_items = $data['partners_items'] ?? [];
@@ -306,21 +307,28 @@
                             foreach ($partners_items as $index => $partner): 
                         ?>
                             <div class="p-3 shadow-sm partner-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="partner_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
+                                <div class="row g-2 align-items-end">
+                                    
+                                    <!-- رفع شعار الشريك -->
                                     <div class="col-md-11">
+                                        <label for="partner_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($partner['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                     <img src="<?php echo htmlspecialchars(get_image_url($partner['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Partner Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control partner-file" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" id="partner_file_<?php echo $index; ?>" class="form-control partner-file" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
+
                                     <input type="hidden" class="partner-old-img" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center">
+                                    
+                                    <!-- زر الحذف -->
+                                    <div class="col-md-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                                     </div>
+                                    
                                 </div>
                             </div>
                         <?php 
@@ -402,20 +410,23 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
+            <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <input type="text" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
+                    <label for="team_name_${teamCount}" class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
+                    <input type="text" id="team_name_${teamCount}" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <label for="team_role_${teamCount}" class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
+                    <input type="text" id="team_role_${teamCount}" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
+                    <label for="team_file_${teamCount}" class="form-label fw-semibold small text-secondary">صورة العضو</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
+                        <input type="file" id="team_file_${teamCount}" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
-                <div class="col-md-1 text-center">
+                <div class="col-md-1 text-center pb-1">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
@@ -430,20 +441,23 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
+            <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
+                    <label for="count_number_${countsCount}" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                    <input type="text" id="count_number_${countsCount}" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
+                    <label for="count_title_${countsCount}" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                    <input type="text" id="count_title_${countsCount}" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
+                    <label for="count_file_${countsCount}" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
+                        <input type="file" id="count_file_${countsCount}" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
-                <div class="col-md-1 text-center">
+                <div class="col-md-1 text-center pb-1">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
@@ -458,14 +472,15 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
+            <div class="row g-2 align-items-end">
                 <div class="col-md-11">
+                    <label for="partner_file_${partnerCount}" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                        <input type="file" id="partner_file_${partnerCount}" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
-                <div class="col-md-1 text-center">
+                <div class="col-md-1 text-center pb-1">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;

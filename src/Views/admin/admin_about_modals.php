@@ -158,14 +158,17 @@
                             foreach ($team_items as $index => $member): 
                         ?>
                             <div class="p-3 shadow-sm team-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="team_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-center">
+                                <div class="row g-3 align-items-center">
                                     <div class="col-md-3">
+                                        <label class="small fw-bold mb-1 text-secondary">الاسم</label>
                                         <input type="text" class="form-control team-name" name="team[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
                                     </div>
                                     <div class="col-md-3">
+                                        <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
                                         <input type="text" class="form-control team-role" name="team[<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="المسمى الوظيفي">
                                     </div>
                                     <div class="col-md-5">
+                                        <label class="small fw-bold mb-1 text-secondary">الصورة الشخصية</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($member['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -176,7 +179,7 @@
                                         </div>
                                     </div>
                                     <input type="hidden" class="team-old-img" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center">
+                                    <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
@@ -187,7 +190,7 @@
                         ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addTeamRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn btn-outline-primary w-100 mt-3 py-2 fw-bold" style="border-radius: 12px; border-style: dashed; border-width: 2px;" onclick="addTeamRow()">
                         <i class="bi bi-plus-circle me-1"></i> إضافة عضو جديد
                     </button>
                 </form>

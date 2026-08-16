@@ -1,9 +1,3 @@
-<?php
-/**
- * نافذة مودلز تعديل قسم الدراسة في ألمانيا - Admin Education Modals
- */
-?>
-
 <!-- 1. Edu Hero Modal (قسم الهيرو) -->
 <div class="modal fade custom-modal" id="eduHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -15,43 +9,40 @@
             <div class="modal-body p-4">
                 <form id="eduHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-bold">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="edu_hero_title" value="<?php echo htmlspecialchars($edu_hero['title'] ?? ''); ?>">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold">الوصف</label>
-                            <textarea class="form-control" name="edu_hero_desc" rows="4"><?php echo htmlspecialchars($edu_hero['desc'] ?? ''); ?></textarea>
-                        </div>
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">العنوان الرئيسي</label>
+                                <input type="text" class="form-control" name="edu_hero_title" value="<?php echo htmlspecialchars($edu_hero['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                <textarea class="form-control" name="edu_hero_desc" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_hero['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">نص الزر</label>
-                            <input type="text" class="form-control" name="edu_hero_btn_text" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن'); ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">رابط الزر</label>
-                            <input type="text" class="form-control" name="edu_hero_btn_url" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#'); ?>">
-                        </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
+                                <input type="text" class="form-control" name="edu_hero_btn_text" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">رابط الزر</label>
+                                <input type="text" class="form-control" name="edu_hero_btn_url" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                        <div class="col-12">
-                            <label class="form-label fw-bold d-flex justify-content-between">
-                                <span>الصورة الرئيسية الحالية</span>
-                                <?php if (!empty($edu_hero['img'])): ?>
-                                    <span class="badge bg-light text-dark border">موجودة</span>
-                                <?php endif; ?>
-                            </label>
-                            <?php if (!empty($edu_hero['img'])): ?>
-                                <div class="mb-2 p-2 border rounded bg-light text-center">
-                                    <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
-                                    <img src="<?php echo htmlspecialchars(get_image_url($edu_hero['img'])); ?>" style="max-height: 80px; object-fit: contain;" alt="Hero Preview">
-                                    <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($edu_hero['img']); ?></div>
+                            <div class="col-12">
+                                <label class="small fw-bold mb-1 text-secondary">الصورة الرئيسية</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <?php if (!empty($edu_hero['img'])): ?>
+                                        <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                            <img src="<?php echo htmlspecialchars(get_image_url($edu_hero['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        </div>
+                                    <?php endif; ?>
+                                    <input type="file" class="form-control" name="edu_hero_img" accept="image/*">
                                 </div>
-                            <?php endif; ?>
-                            <input type="file" class="form-control" name="edu_hero_img" accept="image/*">
-                            <input type="hidden" name="old_edu_hero_img" value="<?php echo htmlspecialchars($edu_hero['img'] ?? ''); ?>">
+                                <input type="hidden" name="old_edu_hero_img" value="<?php echo htmlspecialchars($edu_hero['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
                         </div>
                     </div>
                 </form>

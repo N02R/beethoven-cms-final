@@ -84,22 +84,22 @@
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
                             <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="why_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-end">
-                                    
-                                    <!-- العنوان -->
-                                    <div class="col-md-3">
+                                
+                                <!-- السطر الأول: العنوان والوصف -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6">
                                         <label for="edu_why_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
                                         <input type="text" id="edu_why_title_<?php echo $index; ?>" class="form-control edu-why-title" name="edu_why[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: جودة التعليم">
                                     </div>
-                                    
-                                    <!-- الوصف -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label for="edu_why_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
                                         <input type="text" id="edu_why_desc_<?php echo $index; ?>" class="form-control edu-why-desc" name="edu_why[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="شرح بسيط للسبب">
                                     </div>
-                                    
-                                    <!-- الصورة / الأيقونة -->
-                                    <div class="col-md-4">
+                                </div>
+
+                                <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
                                         <label for="edu_why_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
@@ -112,13 +112,12 @@
                                     </div>
 
                                     <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    
-                                    <!-- زر الحذف -->
-                                    <div class="col-md-1 text-center pb-1">
+
+                                    <div class="col-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف السبب"><i class="bi bi-trash"></i></button>
                                     </div>
-                                    
                                 </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>

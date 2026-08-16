@@ -307,7 +307,6 @@
     </div>
 </div>
 
-
 <script>
     // 1. دالة عامة لحذف أي صف بناءً على الـ ID
     function removeRow(id) {
@@ -315,7 +314,7 @@
         if (el) el.remove();
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية (مُعدلة لتظهر فوق المودال بـ z-index أعلى)
+    // 2. دالة إظهار التنبيهات الاحترافية فوق المودال
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -337,7 +336,6 @@
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
-        // زيادة z-index لضمان ظهوره فوق المودال (الذي غالباً يكون z-index الخاص به 1050)
         alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
         
         alertDiv.innerHTML = `
@@ -361,32 +359,36 @@
         }, 4000);
     }
 
-    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
+    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة" (الأيقونة وزر الرفع والحذف في سطر واحد)
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
         if (!container) return;
         const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-why-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm edu-why-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'why_row_' + Date.now() + '_' + eduWhyCount;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">العنوان</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][title]" placeholder="العنوان">
+                    <label for="edu_why_title_${eduWhyCount}" class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <input type="text" id="edu_why_title_${eduWhyCount}" class="form-control edu-why-title" name="edu_why[${eduWhyCount}][title]" placeholder="مثال: جودة التعليم">
                 </div>
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">الوصف</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_why[${eduWhyCount}][desc]" placeholder="الوصف">
+                    <label for="edu_why_desc_${eduWhyCount}" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                    <input type="text" id="edu_why_desc_${eduWhyCount}" class="form-control edu-why-desc" name="edu_why[${eduWhyCount}][desc]" placeholder="شرح بسيط للسبب">
                 </div>
-                <div class="col-md-11">
-                    <label class="small text-muted fw-bold mb-1">الصورة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                    <input type="hidden" name="edu_why[${eduWhyCount}][old_img]" value="">
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="edu_why_file_${eduWhyCount}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="edu_why_file_${eduWhyCount}" class="form-control edu-why-file" name="edu_why_img_${eduWhyCount}" accept="image/*">
+                    </div>
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف السبب">
+                <input type="hidden" class="edu-why-old-img" name="edu_why[${eduWhyCount}][old_img]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف السبب">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -394,14 +396,12 @@
         container.appendChild(div);
     }
 
-    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة" مع قيد الـ 6 عناصر وإظهار تنبيه مضمون
+    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة" مع قيد الـ 6 عناصر
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         if (!container) return;
         
         const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
-        
-        // التحقق إذا وصل العدد إلى 6 عناصر أو أكثر
         if (currentRows >= 6) {
             showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
             return;
@@ -409,34 +409,40 @@
 
         const eduStepCount = currentRows;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-timeline-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm edu-timeline-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'step_row_' + Date.now() + '_' + eduStepCount;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة">
+                    <label for="edu_step_title_${eduStepCount}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                    <input type="text" id="edu_step_title_${eduStepCount}" class="form-control edu-step-title" name="edu_timeline[${eduStepCount}][title]" placeholder="اسم الخطوة">
                 </div>
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                    <label for="edu_step_subtitle_${eduStepCount}" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                    <input type="text" id="edu_step_subtitle_${eduStepCount}" class="form-control edu-step-subtitle" name="edu_timeline[${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
                 </div>
-                <div class="col-md-12">
-                    <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل">
-                </div>
-                <div class="col-md-2">
-                    <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب">
-                </div>
+            </div>
+            <div class="row g-2 mb-3">
                 <div class="col-md-9">
-                    <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
-                    <input type="hidden" name="edu_timeline[${eduStepCount}][old_icon]" value="">
+                    <label for="edu_step_desc_${eduStepCount}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                    <input type="text" id="edu_step_desc_${eduStepCount}" class="form-control edu-step-desc" name="edu_timeline[${eduStepCount}][desc]" placeholder="التفاصيل">
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخطوة">
+                <div class="col-md-3">
+                    <label for="edu_step_order_${eduStepCount}" class="form-label fw-semibold small text-secondary">الترتيب</label>
+                    <input type="number" id="edu_step_order_${eduStepCount}" class="form-control edu-step-order" name="edu_timeline[${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب">
+                </div>
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="edu_step_file_${eduStepCount}" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="edu_step_file_${eduStepCount}" class="form-control edu-step-file" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="edu-step-old-icon" name="edu_timeline[${eduStepCount}][old_icon]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخطوة">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -450,26 +456,30 @@
         if (!container) return;
         const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 edu-service-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
+        div.className = 'p-3 shadow-sm edu-service-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'edu_srv_row_' + Date.now() + '_' + eduSrvCount;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">اسم الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
+                    <label for="edu_srv_title_${eduSrvCount}" class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
+                    <input type="text" id="edu_srv_title_${eduSrvCount}" class="form-control edu-srv-title" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
                 </div>
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">رابط الخدمة</label>
-                    <input type="text" class="form-control form-control-sm" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
+                    <label for="edu_srv_url_${eduSrvCount}" class="form-label fw-semibold small text-secondary">رابط الخدمة</label>
+                    <input type="text" id="edu_srv_url_${eduSrvCount}" class="form-control edu-srv-url" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
                 </div>
-                <div class="col-md-11">
-                    <label class="small text-muted fw-bold mb-1">صورة الخلفية الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="edu_service_img_${eduSrvCount}" accept="image/*">
-                    <input type="hidden" name="edu_services[${eduSrvCount}][old_img]" value="">
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="edu_srv_file_${eduSrvCount}" class="form-label fw-semibold small text-secondary">صورة الخلفية الحالية / الجديدة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="edu_srv_file_${eduSrvCount}" class="form-control edu-srv-file" name="edu_service_img_${eduSrvCount}" accept="image/*">
+                    </div>
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="حذف الخدمة">
+                <input type="hidden" class="edu-srv-old-img" name="edu_services[${eduSrvCount}][old_img]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -477,7 +487,7 @@
         container.appendChild(div);
     }
 
-    // 6. معالج الحفظ وإعادة الترقيم التلقائي عند الضغط على حفظ في أي نموذج
+    // 6. معالج الحفظ وإعادة الترقيم التلقائي عند الحفظ عبر AJAX
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -486,10 +496,10 @@
                 // إعادة ترقيم "لماذا الدراسة"
                 const whyRows = form.querySelectorAll('.edu-why-row-item');
                 whyRows.forEach((row, index) => {
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    const descInput = row.querySelector('input[name*="[desc]"]');
-                    const fileInput = row.querySelector('input[type="file"]');
-                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                    const titleInput = row.querySelector('.edu-why-title') || row.querySelector('input[name*="[title]"]');
+                    const descInput = row.querySelector('.edu-why-desc') || row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('.edu-why-file') || row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('.edu-why-old-img') || row.querySelector('input[name*="[old_img]"]');
 
                     if (titleInput) titleInput.name = `edu_why[${index}][title]`;
                     if (descInput) descInput.name = `edu_why[${index}][desc]`;
@@ -500,12 +510,12 @@
                 // إعادة ترقيم "خطوات الرحلة"
                 const stepRows = form.querySelectorAll('.edu-timeline-row-item');
                 stepRows.forEach((row, index) => {
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
-                    const orderInput = row.querySelector('input[name*="[order]"]');
-                    const descInput = row.querySelector('input[name*="[desc]"]');
-                    const fileInput = row.querySelector('input[type="file"]');
-                    const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
+                    const titleInput = row.querySelector('.edu-step-title') || row.querySelector('input[name*="[title]"]');
+                    const subtitleInput = row.querySelector('.edu-step-subtitle') || row.querySelector('input[name*="[subtitle]"]');
+                    const orderInput = row.querySelector('.edu-step-order') || row.querySelector('input[name*="[order]"]');
+                    const descInput = row.querySelector('.edu-step-desc') || row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('.edu-step-file') || row.querySelector('input[type="file"]');
+                    const oldIconInput = row.querySelector('.edu-step-old-icon') || row.querySelector('input[name*="[old_icon]"]');
 
                     if (titleInput) titleInput.name = `edu_timeline[${index}][title]`;
                     if (subtitleInput) subtitleInput.name = `edu_timeline[${index}][subtitle]`;
@@ -518,10 +528,10 @@
                 // إعادة ترقيم "خدمات التعليم"
                 const srvRows = form.querySelectorAll('.edu-service-row-item');
                 srvRows.forEach((row, index) => {
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    const urlInput = row.querySelector('input[name*="[url]"]');
-                    const fileInput = row.querySelector('input[type="file"]');
-                    const oldImgInput = row.querySelector('input[name*="[old_img]"]');
+                    const titleInput = row.querySelector('.edu-srv-title') || row.querySelector('input[name*="[title]"]');
+                    const urlInput = row.querySelector('.edu-srv-url') || row.querySelector('input[name*="[url]"]');
+                    const fileInput = row.querySelector('.edu-srv-file') || row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('.edu-srv-old-img') || row.querySelector('input[name*="[old_img]"]');
 
                     if (titleInput) titleInput.name = `edu_services[${index}][title]`;
                     if (urlInput) urlInput.name = `edu_services[${index}][url]`;

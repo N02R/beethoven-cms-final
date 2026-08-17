@@ -418,6 +418,7 @@
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
+        toggleTimelineAddButton(); // تحديث حالة الزر عند الحذف
     }
 
     // 2. دالة إظهار التنبيهات الاحترافية
@@ -465,7 +466,7 @@
         }, 4000);
     }
 
-    // دالة التحكم في زر الإضافة وإخفائه عند الوصول إلى 6 عناصر
+    // دالة التحكم في زر الإضافة للـ Timeline وإخفائه عند الوصول إلى 6 عناصر
     function toggleTimelineAddButton() {
         const container = document.getElementById('jobTimelineContainer');
         if (!container) return;
@@ -477,83 +478,232 @@
         }
     }
 
-    function removeTimelineRow(id) {
-        const el = document.getElementById(id);
-        if (el) {
-            el.remove();
-            toggleTimelineAddButton(); 
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         toggleTimelineAddButton();
     });
 
-    // 3. دالة إضافة صف جديد لـ "خطوات التدريب والتوظيف" مع قيد الـ 6 عناصر
+    // 3. دالة إضافة صف جديد لـ "لماذا التدريب معنا؟" (Modal 2)
+    function addJobWhyRow() {
+        const container = document.getElementById('jobWhyContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.job-why-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm job-why-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'job_why_row_' + Date.now() + '_' + count;
+        div.innerHTML = `
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <input type="text" class="form-control job-why-title" name="items[${count}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">الوصف</label>
+                    <input type="text" class="form-control job-why-desc" name="items[${count}][desc]" placeholder="الوصف">
+                </div>
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label class="form-label fw-semibold small text-secondary">الصورة / الأيقونة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control job-why-file" name="why_img_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="job-why-old-img" name="items[${count}][old_img]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العنصر"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    // 4. دالة إضافة صف جديد لـ "برامج وأنواع التدريب المهني" (Modal 3)
+    function addJobProgramRow() {
+        const container = document.getElementById('jobProgramContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.job-prog-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm job-prog-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'prog_row_' + Date.now() + '_' + count;
+        div.innerHTML = `
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">اسم البرنامج</label>
+                    <input type="text" class="form-control prog-title" name="programs[${count}][title]" placeholder="اسم البرنامِج">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-secondary">نص الزر</label>
+                    <input type="text" class="form-control prog-btn-text" name="programs[${count}][btn_text]" value="اطلب الآن" placeholder="اطلب الآن">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-secondary">رابط الزر</label>
+                    <input type="text" class="form-control prog-btn-url" name="programs[${count}][btn_url]" value="#" placeholder="#">
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-12">
+                    <label class="form-label fw-semibold small text-secondary">تفاصيل البرنامج</label>
+                    <textarea class="form-control prog-desc" name="programs[${count}][desc]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="تفاصيل البرنامِج"></textarea>
+                </div>
+            </div>
+            <div class="row g-2 align-items-end mb-3">
+                <div class="col-11">
+                    <label class="form-label fw-semibold small text-secondary">صورة البرنامج</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control prog-file" name="prog_img_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="prog-old-img" name="programs[${count}][old_img]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف البرنامج"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+            <div class="row g-2">
+                <div class="col-12">
+                    <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" name="programs[${count}][is_dark]" value="1">
+                        <label class="form-check-label small text-secondary fw-semibold cursor-pointer">تصميم داكن (Highlight)</label>
+                    </div>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    // 5. دالة إضافة صف جديد لـ "خطوات التدريب والتوظيف" (Modal 4 - Timeline)
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         if (!container) return;
         
         const currentRows = container.querySelectorAll('.job-step-row-item').length;
-        
         if (currentRows >= 6) {
             showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
             return;
         }
 
-        const jobStepCount = currentRows;
+        const count = currentRows;
         const div = document.createElement('div');
-        div.className = 'card p-3 border-0 job-step-row-item mb-2';
-        div.style.cssText = 'background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);';
-        div.id = 'job_step_row_' + Date.now() + '_' + jobStepCount;
+        div.className = 'p-3 shadow-sm job-step-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'job_step_row_' + Date.now() + '_' + count;
         div.innerHTML = `
-            <div class="row g-3 align-items-center">
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][title]" placeholder="اسم الخطوة">
+                    <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                    <input type="text" class="form-control job-step-title" name="steps[${count}][title]" placeholder="اسم الخطوة">
                 </div>
                 <div class="col-md-6">
-                    <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                    <label class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                    <input type="text" class="form-control job-step-subtitle" name="steps[${count}][subtitle]" placeholder="العنوان الفرعي">
                 </div>
-                <div class="col-md-12">
-                    <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                    <input type="text" class="form-control form-control-sm" name="steps[${jobStepCount}][desc]" placeholder="التفاصيل">
-                </div>
-                <div class="col-md-2">
-                    <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                    <input type="number" class="form-control form-control-sm" name="steps[${jobStepCount}][order]" value="${jobStepCount}" placeholder="الترتيب">
-                </div>
+            </div>
+            <div class="row g-2 mb-3">
                 <div class="col-md-9">
-                    <label class="small text-muted fw-bold mb-1">الأيقونة الجديدة</label>
-                    <input type="file" class="form-control form-control-sm" name="steps_icon_${jobStepCount}" accept="image/*">
-                    <input type="hidden" name="steps[${jobStepCount}][old_icon]" value="">
+                    <label class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                    <input type="text" class="form-control job-step-desc" name="steps[${count}][desc]" placeholder="التفاصيل">
                 </div>
-                <div class="col-md-1 text-end pt-3">
-                    <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('${div.id}')" title="حذف الخطوة">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-secondary">الترتيب</label>
+                    <input type="number" class="form-control job-step-order" name="steps[${count}][order]" value="${count}" placeholder="الترتيب">
+                </div>
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control job-step-file" name="steps_icon_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="job-step-old-icon" name="steps[${count}][old_icon]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
         toggleTimelineAddButton();
     }
 
-    // 4. معالج الحفظ وإعادة الترقيم التلقائي
+    // 6. دالة إضافة صف جديد لـ "كروت الخدمات المعروضة" (Modal 5)
+    function addJobServiceRow() {
+        const container = document.getElementById('jobServicesContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.job-srv-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm job-srv-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'job_srv_row_' + Date.now() + '_' + count;
+        div.innerHTML = `
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
+                    <input type="text" class="form-control job-srv-title" name="services[${count}][title]" placeholder="اسم الخدمة">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">الرابط</label>
+                    <input type="text" class="form-control job-srv-url" name="services[${count}][url]" placeholder="الرابط">
+                </div>
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label class="form-label fw-semibold small text-secondary">صورة الخلفية</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control job-srv-file" name="srv_img_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="job-srv-old-img" name="services[${count}][old_img]" value="">
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    // 7. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // إعادة ترقيم "خطوات التدريب والتوظيف"
-                const stepRows = form.querySelectorAll('.job-step-row-item');
-                stepRows.forEach((row, index) => {
-                    const titleInput = row.querySelector('input[name*="[title]"]');
-                    const subtitleInput = row.querySelector('input[name*="[subtitle]"]');
-                    const orderInput = row.querySelector('input[name*="[order]"]');
-                    const descInput = row.querySelector('input[name*="[desc]"]');
-                    const fileInput = row.querySelector('input[type="file"]');
-                    const oldIconInput = row.querySelector('input[name*="[old_icon]"]');
+                // إعادة ترقيم "لماذا التدريب معنا"
+                form.querySelectorAll('.job-why-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.job-why-title') || row.querySelector('input[name*="[title]"]');
+                    const descInput = row.querySelector('.job-why-desc') || row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('.job-why-file') || row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('.job-why-old-img') || row.querySelector('input[name*="[old_img]"]');
+
+                    if (titleInput) titleInput.name = `items[${index}][title]`;
+                    if (descInput) descInput.name = `items[${index}][desc]`;
+                    if (fileInput) fileInput.name = `why_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `items[${index}][old_img]`;
+                });
+
+                // إعادة ترقيم "برامج وأنواع التدريب المهني"
+                form.querySelectorAll('.job-prog-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.prog-title') || row.querySelector('input[name*="[title]"]');
+                    const btnTextInput = row.querySelector('.prog-btn-text') || row.querySelector('input[name*="[btn_text]"]');
+                    const btnUrlInput = row.querySelector('.prog-btn-url') || row.querySelector('input[name*="[btn_url]"]');
+                    const descInput = row.querySelector('.prog-desc') || row.querySelector('textarea[name*="[desc]"]');
+                    const fileInput = row.querySelector('.prog-file') || row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('.prog-old-img') || row.querySelector('input[name*="[old_img]"]');
+                    const darkInput = row.querySelector('input[type="checkbox"]');
+
+                    if (titleInput) titleInput.name = `programs[${index}][title]`;
+                    if (btnTextInput) btnTextInput.name = `programs[${index}][btn_text]`;
+                    if (btnUrlInput) btnUrlInput.name = `programs[${index}][btn_url]`;
+                    if (descInput) descInput.name = `programs[${index}][desc]`;
+                    if (fileInput) fileInput.name = `prog_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `programs[${index}][old_img]`;
+                    if (darkInput) darkInput.name = `programs[${index}][is_dark]`;
+                });
+
+                // إعادة ترقيم "خطوات التدريب والتوظيف" (Timeline)
+                form.querySelectorAll('.job-step-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.job-step-title') || row.querySelector('input[name*="[title]"]');
+                    const subtitleInput = row.querySelector('.job-step-subtitle') || row.querySelector('input[name*="[subtitle]"]');
+                    const orderInput = row.querySelector('.job-step-order') || row.querySelector('input[name*="[order]"]');
+                    const descInput = row.querySelector('.job-step-desc') || row.querySelector('input[name*="[desc]"]');
+                    const fileInput = row.querySelector('.job-step-file') || row.querySelector('input[type="file"]');
+                    const oldIconInput = row.querySelector('.job-step-old-icon') || row.querySelector('input[name*="[old_icon]"]');
 
                     if (titleInput) titleInput.name = `steps[${index}][title]`;
                     if (subtitleInput) subtitleInput.name = `steps[${index}][subtitle]`;
@@ -561,6 +711,19 @@
                     if (descInput) descInput.name = `steps[${index}][desc]`;
                     if (fileInput) fileInput.name = `steps_icon_${index}`;
                     if (oldIconInput) oldIconInput.name = `steps[${index}][old_icon]`;
+                });
+
+                // إعادة ترقيم "كروت الخدمات المعروضة"
+                form.querySelectorAll('.job-srv-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.job-srv-title') || row.querySelector('input[name*="[title]"]');
+                    const urlInput = row.querySelector('.job-srv-url') || row.querySelector('input[name*="[url]"]');
+                    const fileInput = row.querySelector('.job-srv-file') || row.querySelector('input[type="file"]');
+                    const oldImgInput = row.querySelector('.job-srv-old-img') || row.querySelector('input[name*="[old_img]"]');
+
+                    if (titleInput) titleInput.name = `services[${index}][title]`;
+                    if (urlInput) urlInput.name = `services[${index}][url]`;
+                    if (fileInput) fileInput.name = `srv_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `services[${index}][old_img]`;
                 });
 
                 const formData = new FormData(this);
@@ -599,5 +762,3 @@
         });
     });
 </script>
-
-

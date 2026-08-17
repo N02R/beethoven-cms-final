@@ -190,10 +190,10 @@
                                     </div>
                                 </div>
 
-                                <!-- السطر الثالث: الصورة، التصميم الداكن، وزر الحذف بتوزيع متناسق -->
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-md-7">
-                                        <label for="prog_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الصورة والألوان</label>
+                                <!-- السطر الثالث: الصورة وزر الحذف -->
+                                <div class="row g-2 align-items-end mb-3">
+                                    <div class="col-11">
+                                        <label for="prog_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">صورة البرنامج</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($prog['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -204,17 +204,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <div class="form-check form-switch pt-md-4">
-                                            <input class="form-check-input" type="checkbox" id="prog_dark_<?php echo $index; ?>" name="programs[<?php echo $index; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
-                                            <label class="form-check-label small text-secondary fw-semibold" for="prog_dark_<?php echo $index; ?>">تصميم داكن (Highlight)</label>
-                                        </div>
-                                    </div>
-
                                     <input type="hidden" name="programs[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($prog['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
-                                    <div class="col-md-1 text-center pb-1">
+                                    <div class="col-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="حذف البرنامج"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
+                                <!-- السطر الرابع: التصميم الداكن لوحده في سطر -->
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
+                                            <input class="form-check-input ms-0 me-2" type="checkbox" id="prog_dark_<?php echo $index; ?>" name="programs[<?php echo $index; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label small text-secondary fw-semibold cursor-pointer" for="prog_dark_<?php echo $index; ?>">تصميم داكن (Highlight)</label>
+                                        </div>
                                     </div>
                                 </div>
 

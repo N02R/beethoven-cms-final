@@ -9,36 +9,42 @@
             <div class="modal-body p-4">
                 <form id="jobHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">العنوان الرئيسي</label>
-                        <input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($job_hero['title'] ?? ''); ?>">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف</label>
-                        <textarea class="form-control" name="desc" rows="4" style="height: auto;"><?php echo htmlspecialchars($job_hero['desc'] ?? ''); ?></textarea>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label fw-bold">نص الزر</label>
-                            <input type="text" class="form-control" name="btn_text" value="<?php echo htmlspecialchars($job_hero['btn_text'] ?? ''); ?>">
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="small fw-bold mb-1 text-secondary">العنوان الرئيسي</label>
+                            <input type="text" class="form-control" name="title" value="<?php echo htmlspecialchars($job_hero['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
-                        <div class="col-6">
-                            <label class="form-label fw-bold">رابط الزر</label>
-                            <input type="text" class="form-control" name="btn_url" value="<?php echo htmlspecialchars($job_hero['btn_url'] ?? ''); ?>">
+                        <div class="mb-0">
+                            <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                            <textarea class="form-control" name="desc" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_hero['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold d-block">الصورة الحالية</label>
+
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
+                                <input type="text" class="form-control" name="btn_text" value="<?php echo htmlspecialchars($job_hero['btn_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold mb-1 text-secondary">رابط الزر</label>
+                                <input type="text" class="form-control" name="btn_url" value="<?php echo htmlspecialchars($job_hero['btn_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <label class="small fw-bold mb-2 text-secondary d-block">الصورة الحالية</label>
                         <?php if (!empty($job_hero['img'])): ?>
-                            <div class="p-2 border rounded bg-light mb-2 text-center">
-                                <img src="<?php echo htmlspecialchars(get_image_url($job_hero['img'])) . '?' . time(); ?>" style="max-height: 100px; object-fit: contain;">
+                            <div class="p-2 border rounded-3 bg-light mb-3 text-center" style="max-width: 200px;">
+                                <img src="<?php echo htmlspecialchars(get_image_url($job_hero['img']), ENT_QUOTES, 'UTF-8') . '?' . time(); ?>" alt="Job Hero Image" class="rounded-2" style="max-height: 100px; object-fit: contain;">
                             </div>
                         <?php endif; ?>
-                        <label class="form-label fw-bold">تغيير الصورة</label>
+                        <label class="small fw-bold mb-1 text-secondary">تغيير الصورة</label>
                         <input type="file" class="form-control" name="hero_img" accept="image/*">
-                        <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($job_hero['img'] ?? ''); ?>">
+                        <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($job_hero['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
                 </form>
             </div>

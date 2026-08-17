@@ -147,62 +147,81 @@
             <div class="modal-body p-4">
                 <form id="jobProgramForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_program">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="program_title" value="<?php echo htmlspecialchars($job_program_title); ?>">
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label for="job_program_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" id="job_program_title_input" class="form-control" name="program_title" value="<?php echo htmlspecialchars($job_program_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="mb-0">
+                            <label for="job_program_desc_input" class="form-label small fw-bold mb-1 text-secondary">الوصف العام للقسم</label>
+                            <textarea id="job_program_desc_input" class="form-control" name="program_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_program_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">الوصف العام للقسم</label>
-                        <textarea class="form-control" name="program_desc" rows="2" style="height: auto;"><?php echo htmlspecialchars($job_program_desc); ?></textarea>
-                    </div>
-                    <hr>
+
+                    <!-- قائمة البرامج -->
                     <div id="jobProgramContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($job_program_types as $i => $prog): ?>
-                            <div class="card p-3 border-0 job-prog-row-item" id="prog_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
-                                <div class="row g-2">
+                        <?php foreach (($job_program_types ?? []) as $index => $prog): ?>
+                            <div class="p-3 shadow-sm job-prog-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="prog_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: اسم البرنامج، نص الزر، رابط الزر -->
+                                <div class="row g-2 mb-3">
                                     <div class="col-md-6">
-                                        <label class="small text-muted mb-1">اسم البرنامِج</label>
-                                        <input type="text" class="form-control form-control-sm" name="programs[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($prog['title'] ?? ''); ?>">
+                                        <label for="prog_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم البرنامج</label>
+                                        <input type="text" id="prog_title_<?php echo $index; ?>" class="form-control" name="programs[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($prog['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم البرنامِج">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="small text-muted mb-1">نص الزر</label>
-                                        <input type="text" class="form-control form-control-sm" name="programs[<?php echo $i; ?>][btn_text]" value="<?php echo htmlspecialchars($prog['btn_text'] ?? 'اطلب الآن'); ?>">
+                                        <label for="prog_btn_text_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">نص الزر</label>
+                                        <input type="text" id="prog_btn_text_<?php echo $index; ?>" class="form-control" name="programs[<?php echo $index; ?>][btn_text]" value="<?php echo htmlspecialchars($prog['btn_text'] ?? 'اطلب الآن', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اطلب الآن">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="small text-muted mb-1">رابط الزر</label>
-                                        <input type="text" class="form-control form-control-sm" name="programs[<?php echo $i; ?>][btn_url]" value="<?php echo htmlspecialchars($prog['btn_url'] ?? '#'); ?>">
-                                    </div>
-                                    <div class="col-md-8">
-                                        <label class="small text-muted mb-1">تفاصيل البرنامِج</label>
-                                        <textarea class="form-control form-control-sm" name="programs[<?php echo $i; ?>][desc]" rows="2" style="height: auto;"><?php echo htmlspecialchars($prog['desc'] ?? ''); ?></textarea>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="small text-muted mb-1">الصورة والألوان</label>
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <?php if (!empty($prog['img'])): ?>
-                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($prog['img'])); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
-                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($prog['img']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="prog_img_<?php echo $i; ?>" accept="image/*">
-                                        </div>
-                                        <input type="hidden" name="programs[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($prog['img'] ?? ''); ?>">
-                                        <div class="form-check form-switch mt-1">
-                                            <input class="form-check-input" type="checkbox" name="programs[<?php echo $i; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
-                                            <label class="form-check-label small text-muted">تصميم داكن (Highlight)</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 text-end">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('prog_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
+                                        <label for="prog_btn_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">رابط الزر</label>
+                                        <input type="text" id="prog_btn_url_<?php echo $index; ?>" class="form-control" name="programs[<?php echo $index; ?>][btn_url]" value="<?php echo htmlspecialchars($prog['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="#">
                                     </div>
                                 </div>
+
+                                <!-- السطر الثاني: تفاصيل البرنامج -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-12">
+                                        <label for="prog_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">تفاصيل البرنامج</label>
+                                        <textarea id="prog_desc_<?php echo $index; ?>" class="form-control" name="programs[<?php echo $index; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="تفاصيل البرنامِج"><?php echo htmlspecialchars($prog['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- السطر الثالث: الصورة، التصميم الداكن، زر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-8">
+                                        <label for="prog_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الصورة والألوان</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($prog['img'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($prog['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Img" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" id="prog_file_<?php echo $index; ?>" class="form-control" name="prog_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" id="prog_dark_<?php echo $index; ?>" name="programs[<?php echo $index; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
+                                            <label class="form-check-label small text-secondary fw-semibold" for="prog_dark_<?php echo $index; ?>">تصميم داكن (Highlight)</label>
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" name="programs[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($prog['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-md-4 text-end pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto ms-md-auto me-md-0" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="حذف البرنامج"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addJobProgramRow()">+ إضافة برنامج جديد</button>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobProgramRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة برنامج جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -212,7 +231,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 4. Job Timeline Modal (خطوات التدريب والتوظيف) -->
 <div class="modal fade custom-modal" id="jobTimelineModal" tabindex="-1" aria-hidden="true">

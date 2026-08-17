@@ -14,20 +14,15 @@
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary d-flex justify-content-between align-items-center">
-                                <span>الصورة الرئيسية الحالية</span>
-                                <?php if (!empty($contact_hero_img)): ?>
-                                    <span class="badge bg-light text-dark border">موجودة</span>
-                                <?php endif; ?>
+                            <label class="form-label fw-semibold small text-secondary d-block mb-3">
+                                الصورة الرئيسية الحالية
                             </label>
 
                             <?php if (!empty($contact_hero_img)): ?>
                                 <div class="mb-3 p-3 bg-light rounded-3 border text-center">
-                                    <span class="d-block small text-muted mb-2">معاينة الصورة الحالية:</span>
                                     <div class="p-1 bg-white rounded-3 border d-inline-flex align-items-center justify-content-center shadow-sm">
                                         <img src="<?php echo htmlspecialchars(get_image_url($contact_hero_img), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Preview" class="rounded-2" style="max-height: 120px; object-fit: contain;">
                                     </div>
-                                    <div class="small text-muted mt-2 dir-ltr"><?php echo htmlspecialchars($contact_hero_img, ENT_QUOTES, 'UTF-8'); ?></div>
                                 </div>
                             <?php endif; ?>
 

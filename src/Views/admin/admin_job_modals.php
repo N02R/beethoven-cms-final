@@ -190,9 +190,9 @@
                                     </div>
                                 </div>
 
-                                <!-- السطر الثالث: الصورة، التصميم الداكن، زر الحذف -->
+                                <!-- السطر الثالث: الصورة، التصميم الداكن، وزر الحذف بتوزيع متناسق -->
                                 <div class="row g-2 align-items-end">
-                                    <div class="col-md-8">
+                                    <div class="col-md-7">
                                         <label for="prog_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الصورة والألوان</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($prog['img'])): ?>
@@ -202,7 +202,10 @@
                                             <?php endif; ?>
                                             <input type="file" id="prog_file_<?php echo $index; ?>" class="form-control" name="prog_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <div class="form-check form-switch mt-2">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-check form-switch pt-md-4">
                                             <input class="form-check-input" type="checkbox" id="prog_dark_<?php echo $index; ?>" name="programs[<?php echo $index; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
                                             <label class="form-check-label small text-secondary fw-semibold" for="prog_dark_<?php echo $index; ?>">تصميم داكن (Highlight)</label>
                                         </div>
@@ -210,8 +213,8 @@
 
                                     <input type="hidden" name="programs[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($prog['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
-                                    <div class="col-md-4 text-end pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto ms-md-auto me-md-0" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="حذف البرنامج"><i class="bi bi-trash"></i></button>
+                                    <div class="col-md-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="حذف البرنامج"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
 

@@ -317,7 +317,7 @@
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- زر إضافة خطوة جديدة بنفس الستايل الموحد -->
+                    <!-- زر إضافة خطوة جديدة (يبقى ظاهراً دائماً مع تنبيه عائم عند الحد الأقصى) -->
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
                     </button>
@@ -418,7 +418,6 @@
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
-        toggleTimelineAddButton(); // تحديث حالة الزر عند الحذف
     }
 
     // 2. دالة إظهار التنبيهات الاحترافية
@@ -465,22 +464,6 @@
             }
         }, 4000);
     }
-
-    // دالة التحكم في زر الإضافة للـ Timeline وإخفائه عند الوصول إلى 6 عناصر
-    function toggleTimelineAddButton() {
-        const container = document.getElementById('jobTimelineContainer');
-        if (!container) return;
-        const currentRows = container.querySelectorAll('.job-step-row-item').length;
-        const addBtn = document.querySelector('#jobTimelineForm button[onclick="addJobStepRow()"]');
-        
-        if (addBtn) {
-            addBtn.style.display = (currentRows >= 6) ? 'none' : 'block';
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        toggleTimelineAddButton();
-    });
 
     // 3. دالة إضافة صف جديد لـ "لماذا التدريب معنا؟" (Modal 2)
     function addJobWhyRow() {
@@ -570,14 +553,14 @@
         container.appendChild(div);
     }
 
-    // 5. دالة إضافة صف جديد لـ "خطوات التدريب والتوظيف" (Modal 4 - Timeline)
+    // 5. دالة إضافة صف جديد لـ "خطوات التدريب والتوظيف" (Modal 4 - Timeline) مع تنبيه عائم عند تجاوز 6 عناصر
     function addJobStepRow() {
         const container = document.getElementById('jobTimelineContainer');
         if (!container) return;
         
         const currentRows = container.querySelectorAll('.job-step-row-item').length;
         if (currentRows >= 6) {
-            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
+            showNotification('عذراً، الحد الأقصى المسموح به هو 6 عناصر فقط في خط الزمن (Timeline).', 'warning');
             return;
         }
 
@@ -620,7 +603,6 @@
                 </div>
             </div>`;
         container.appendChild(div);
-        toggleTimelineAddButton();
     }
 
     // 6. دالة إضافة صف جديد لـ "كروت الخدمات المعروضة" (Modal 5)
@@ -762,3 +744,4 @@
         });
     });
 </script>
+

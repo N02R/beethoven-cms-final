@@ -19,9 +19,6 @@
     <div class="row align-items-stretch g-5">
       <!-- تم تعديل الترتيب ليطابق education.php (الصورة أولاً ثم النص) -->
       <div class="col-lg-6">
-        <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($hero_bg); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
-      </div>
-      <div class="col-lg-6">
         <div class="job-info pt-2">
           <h2 class="sec-title"><?php echo htmlspecialchars($job_hero['title'] ?? ''); ?></h2>
           <p class="main-p"><?php echo nl2br(htmlspecialchars($job_hero['desc'] ?? '')); ?></p>
@@ -29,6 +26,9 @@
             <?php echo htmlspecialchars($job_hero['btn_text'] ?? 'ابدأ الآن'); ?>
           </a>
         </div>
+      </div>
+        <div class="col-lg-6">
+        <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($hero_bg); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
       </div>
     </div>
   </div>

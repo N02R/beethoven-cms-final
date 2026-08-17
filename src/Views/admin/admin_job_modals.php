@@ -69,52 +69,61 @@
                     <input type="hidden" name="action" value="update_job_why">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="why_title" value="<?php echo htmlspecialchars($job_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label for="job_why_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" id="job_why_title_input" class="form-control" name="why_title" value="<?php echo htmlspecialchars($job_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0">
-                            <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="why_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="job_why_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="job_why_desc_input" class="form-control" name="why_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
+                    <!-- قائمة الأسباب -->
                     <div id="jobWhyContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($job_why_items ?? []) as $i => $item): ?>
-                            <div class="p-3 shadow-sm job-why-row-item" id="job_why_row_<?php echo $i; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-3">
-                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control" name="items[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                        <?php foreach (($job_why_items ?? []) as $index => $item): ?>
+                            <div class="p-3 shadow-sm job-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_why_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: العنوان والوصف -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="job_why_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
+                                        <input type="text" id="job_why_title_<?php echo $index; ?>" class="form-control" name="items[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <input type="text" class="form-control" name="items[<?php echo $i; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                    <div class="col-md-6">
+                                        <label for="job_why_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الوصف</label>
+                                        <input type="text" id="job_why_desc_<?php echo $index; ?>" class="form-control" name="items[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                                </div>
+
+                                <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
+                                        <label for="job_why_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الصورة / الأيقونة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 36px; height: 36px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control" name="why_img_<?php echo $i; ?>" accept="image/*">
+                                            <input type="file" id="job_why_file_<?php echo $index; ?>" class="form-control" name="why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="items[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('job_why_row_<?php echo $i; ?>')" style="border-radius: 8px;" title="حذف العنصر">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+
+                                    <input type="hidden" name="items[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_why_row_<?php echo $index; ?>')" title="حذف العنصر"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3 py-2 fw-bold" style="border-radius: 12px; border-style: dashed; border-width: 2px;" onclick="addJobWhyRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobWhyRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة سبب جديد
                     </button>
                 </form>

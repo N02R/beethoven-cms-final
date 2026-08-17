@@ -46,94 +46,94 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary me-2"></i>تعديل معلومات وأيقونات التواصل</h5>
+                <h5 class="modal-title"><i class="bi bi-info-circle-fill text-primary"></i> تعديل معلومات وأيقونات التواصل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactInfoForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_info">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">عنوان قسم التواصل</label>
-                            <input type="text" class="form-control" name="contact_info_title" value="<?php echo htmlspecialchars($contact_info_title ?? 'معلومات التواصل'); ?>" placeholder="عنوان القسم">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">الوصف الفرعي لقسم التواصل</label>
-                            <input type="text" class="form-control" name="contact_info_desc" value="<?php echo htmlspecialchars($contact_info_desc ?? ''); ?>" placeholder="الوصف الفرعي للقسم">
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small text-secondary">عنوان قسم التواصل</label>
+                                <input type="text" class="form-control" name="contact_info_title" value="<?php echo htmlspecialchars($contact_info_title ?? 'معلومات التواصل', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small text-secondary">الوصف الفرعي لقسم التواصل</label>
+                                <input type="text" class="form-control" name="contact_info_desc" value="<?php echo htmlspecialchars($contact_info_desc ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف الفرعي للقسم">
+                            </div>
                         </div>
                     </div>
 
                     <div class="d-flex flex-column gap-3">
                         <!-- 1. العنوان -->
-                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-geo-alt text-danger me-1"></i> خانة العنوان</h6>
-                            <div class="row g-2 align-items-center">
+                            <div class="row g-3 align-items-end">
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">نص العنوان</label>
-                                    <input type="text" class="form-control form-control-sm" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? ''); ?>" placeholder="العنوان">
+                                    <label class="form-label fw-semibold small text-secondary mb-1">نص العنوان</label>
+                                    <input type="text" class="form-control" name="contact_address" value="<?php echo htmlspecialchars($contact_address ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">أيقونة العنوان الحالية / الجديدة</label>
+                                    <label class="form-label fw-semibold small text-secondary mb-1">أيقونة العنوان الحالية / الجديدة</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_address_icon)): ?>
-                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_address_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_address_icon); ?></span>
+                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_address_icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                             </div>
                                         <?php endif; ?>
-                                        <input type="file" class="form-control form-control-sm" name="contact_address_icon" accept="image/*">
+                                        <input type="file" class="form-control" name="contact_address_icon" accept="image/*">
                                     </div>
-                                    <input type="hidden" name="old_contact_address_icon" value="<?php echo htmlspecialchars($contact_address_icon ?? ''); ?>">
+                                    <input type="hidden" name="old_contact_address_icon" value="<?php echo htmlspecialchars($contact_address_icon ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>
 
                         <!-- 2. البريد الإلكتروني -->
-                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-envelope text-primary me-1"></i> خانة البريد الإلكتروني</h6>
-                            <div class="row g-2 align-items-center">
+                            <div class="row g-3 align-items-end">
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">البريد الإلكتروني</label>
-                                    <input type="email" class="form-control form-control-sm" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? ''); ?>" placeholder="البريد الإلكتروني">
+                                    <label class="form-label fw-semibold small text-secondary mb-1">البريد الإلكتروني</label>
+                                    <input type="email" class="form-control" name="contact_email" value="<?php echo htmlspecialchars($contact_email ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="البريد الإلكتروني">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">أيقونة البريد الحالية / الجديدة</label>
+                                    <label class="form-label fw-semibold small text-secondary mb-1">أيقونة البريد الحالية / الجديدة</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_email_icon)): ?>
-                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_email_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_email_icon); ?></span>
+                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_email_icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                             </div>
                                         <?php endif; ?>
-                                        <input type="file" class="form-control form-control-sm" name="contact_email_icon" accept="image/*">
+                                        <input type="file" class="form-control" name="contact_email_icon" accept="image/*">
                                     </div>
-                                    <input type="hidden" name="old_contact_email_icon" value="<?php echo htmlspecialchars($contact_email_icon ?? ''); ?>">
+                                    <input type="hidden" name="old_contact_email_icon" value="<?php echo htmlspecialchars($contact_email_icon ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>
 
                         <!-- 3. الهاتف -->
-                        <div class="card p-3 border-0" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-telephone text-success me-1"></i> خانة الهاتف</h6>
-                            <div class="row g-2 align-items-center">
+                            <div class="row g-3 align-items-end">
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">رقم الهاتف</label>
-                                    <input type="text" class="form-control form-control-sm" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? ''); ?>" placeholder="رقم الهاتف">
+                                    <label class="form-label fw-semibold small text-secondary mb-1">رقم الهاتف</label>
+                                    <input type="text" class="form-control" name="contact_phone" value="<?php echo htmlspecialchars($contact_phone ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رقم الهاتف">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="small text-muted mb-1">أيقونة الهاتف الحالية / الجديدة</label>
+                                    <label class="form-label fw-semibold small text-secondary mb-1">أيقونة الهاتف الحالية / الجديدة</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($contact_phone_icon)): ?>
-                                            <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_phone_icon)); ?>" style="width: 30px; height: 30px; object-fit: contain;">
-                                                <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 100px;"><?php echo basename($contact_phone_icon); ?></span>
+                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($contact_phone_icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                             </div>
                                         <?php endif; ?>
-                                        <input type="file" class="form-control form-control-sm" name="contact_phone_icon" accept="image/*">
+                                        <input type="file" class="form-control" name="contact_phone_icon" accept="image/*">
                                     </div>
-                                    <input type="hidden" name="old_contact_phone_icon" value="<?php echo htmlspecialchars($contact_phone_icon ?? ''); ?>">
+                                    <input type="hidden" name="old_contact_phone_icon" value="<?php echo htmlspecialchars($contact_phone_icon ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>

@@ -153,26 +153,29 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-whatsapp text-success me-2"></i>تعديل قسم الواتساب والتواصل المباشر</h5>
+                <h5 class="modal-title"><i class="bi bi-whatsapp text-success"></i> تعديل قسم الواتساب والتواصل المباشر</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="whatsappForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_whatsapp_section">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label fw-bold">النص الترويجي للواتساب</label>
-                            <textarea class="form-control" name="whatsapp_text" rows="3"><?php echo htmlspecialchars($whatsapp_text ?? ''); ?></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">رابط المحادثة (URL)</label>
-                            <input type="text" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? ''); ?>" placeholder="https://wa.me/...">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">نص زر الواتساب</label>
-                            <input type="text" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? 'تواصل عبر الواتساب'); ?>">
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="whatsapp_text_input" class="form-label fw-semibold small text-secondary">النص الترويجي للواتساب</label>
+                                <textarea id="whatsapp_text_input" class="form-control" name="whatsapp_text" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($whatsapp_text ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="whatsapp_url_input" class="form-label fw-semibold small text-secondary">رابط المحادثة (URL)</label>
+                                <input type="text" id="whatsapp_url_input" class="form-control" name="whatsapp_url" value="<?php echo htmlspecialchars($whatsapp_url ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://wa.me/...">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="whatsapp_btn_txt_input" class="form-label fw-semibold small text-secondary">نص زر الواتساب</label>
+                                <input type="text" id="whatsapp_btn_txt_input" class="form-control" name="whatsapp_btn_txt" value="<?php echo htmlspecialchars($whatsapp_btn_txt ?? 'تواصل عبر الواتساب', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -193,7 +196,7 @@
             const formData = new FormData(this);
             
             // جلب الـ CSRF Token بأمان
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? ''); ?>';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || form.querySelector('input[name="csrf_token"]')?.value || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
             if (csrfToken && !formData.has('csrf_token')) {
                 formData.append('csrf_token', csrfToken);
             }

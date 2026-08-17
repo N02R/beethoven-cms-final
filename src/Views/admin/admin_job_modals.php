@@ -272,11 +272,11 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
                                         <label for="job_step_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
-                                        <input type="text" id="job_step_title_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
+                                        <input type="text" id="job_step_title_<?php echo $index; ?>" class="form-control job-step-title" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="job_step_subtitle_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
-                                        <input type="text" id="job_step_subtitle_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
+                                        <input type="text" id="job_step_subtitle_<?php echo $index; ?>" class="form-control job-step-subtitle" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                 </div>
 
@@ -284,11 +284,11 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-9">
                                         <label for="job_step_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">التفاصيل</label>
-                                        <input type="text" id="job_step_desc_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                        <input type="text" id="job_step_desc_<?php echo $index; ?>" class="form-control job-step-desc" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="job_step_order_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الترتيب</label>
-                                        <input type="number" id="job_step_order_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                        <input type="number" id="job_step_order_<?php echo $index; ?>" class="form-control job-step-order" name="steps[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
                                     </div>
                                 </div>
 
@@ -302,11 +302,11 @@
                                                     <img src="<?php echo htmlspecialchars(get_image_url($step['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" id="job_step_file_<?php echo $index; ?>" class="form-control" name="steps_icon_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" id="job_step_file_<?php echo $index; ?>" class="form-control job-step-file" name="steps_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
 
-                                    <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="job-step-old-icon" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_step_row_<?php echo $index; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>

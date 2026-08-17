@@ -3,30 +3,38 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-image-fill text-primary me-2"></i>تعديل صورة الهيرو (تواصل معنا)</h5>
+                <h5 class="modal-title"><i class="bi bi-image-fill text-primary"></i> تعديل صورة الهيرو (تواصل معنا)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="contactHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_contact_hero">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="col-12">
-                        <label class="form-label fw-bold d-flex justify-content-between">
-                            <span>الصورة الرئيسية الحالية</span>
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary d-flex justify-content-between align-items-center">
+                                <span>الصورة الرئيسية الحالية</span>
+                                <?php if (!empty($contact_hero_img)): ?>
+                                    <span class="badge bg-light text-dark border">موجودة</span>
+                                <?php endif; ?>
+                            </label>
+
                             <?php if (!empty($contact_hero_img)): ?>
-                                <span class="badge bg-light text-dark border">موجودة</span>
+                                <div class="mb-3 p-3 bg-light rounded-3 border text-center">
+                                    <span class="d-block small text-muted mb-2">معاينة الصورة الحالية:</span>
+                                    <div class="p-1 bg-white rounded-3 border d-inline-flex align-items-center justify-content-center shadow-sm">
+                                        <img src="<?php echo htmlspecialchars(get_image_url($contact_hero_img), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Preview" class="rounded-2" style="max-height: 120px; object-fit: contain;">
+                                    </div>
+                                    <div class="small text-muted mt-2 dir-ltr"><?php echo htmlspecialchars($contact_hero_img, ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
                             <?php endif; ?>
-                        </label>
-                        <?php if (!empty($contact_hero_img)): ?>
-                            <div class="mb-2 p-2 border rounded bg-light text-center">
-                                <span class="d-block small text-muted mb-1">الصورة الحالية:</span>
-                                <img src="<?php echo htmlspecialchars(get_image_url($contact_hero_img)); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
-                                <div class="small text-muted mt-1 dir-ltr"><?php echo htmlspecialchars($contact_hero_img); ?></div>
-                            </div>
-                        <?php endif; ?>
-                        <input type="file" class="form-control" name="contact_hero_img" accept="image/*">
-                        <input type="hidden" name="old_contact_hero_img" value="<?php echo htmlspecialchars($contact_hero_img ?? ''); ?>">
+
+                            <label for="contact_hero_file_input" class="form-label fw-semibold small text-secondary mt-2">رفع صورة جديدة</label>
+                            <input type="file" id="contact_hero_file_input" class="form-control" name="contact_hero_img" accept="image/*">
+                            <input type="hidden" name="old_contact_hero_img" value="<?php echo htmlspecialchars($contact_hero_img ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                 </form>
             </div>

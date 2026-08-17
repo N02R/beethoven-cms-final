@@ -249,63 +249,75 @@
             <div class="modal-body p-4">
                 <form id="jobTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_timeline">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($job_timeline_title ?? ''); ?>">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">الوصف العام للقسم</label>
-                        <textarea class="form-control" name="timeline_desc" rows="2"><?php echo htmlspecialchars($job_timeline_desc ?? ''); ?></textarea>
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label for="job_timeline_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" id="job_timeline_title_input" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($job_timeline_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="mb-0">
+                            <label for="job_timeline_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم العام</label>
+                            <textarea id="job_timeline_desc_input" class="form-control" name="timeline_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_timeline_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
 
+                    <!-- قائمة خطوات الرحلة -->
                     <div id="jobTimelineContainer" class="d-flex flex-column gap-3">
                         <?php foreach (($job_timeline_steps ?? []) as $index => $step): ?>
-                            <div class="card p-3 border-0 job-step-row-item" style="background: var(--bg-soft); border-radius: 12px; border: 1px solid var(--border-color);" id="job_step_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
+                            <div class="p-3 shadow-sm job-step-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_step_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
+                                <div class="row g-2 mb-3">
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">اسم الخطوة</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? ''); ?>" placeholder="اسم الخطوة">
+                                        <label for="job_step_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                        <input type="text" id="job_step_title_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="small text-muted fw-bold mb-1">العنوان الفرعي</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? ''); ?>" placeholder="العنوان الفرعي">
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <label class="small text-muted fw-bold mb-1">التفاصيل</label>
-                                        <input type="text" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? ''); ?>" placeholder="التفاصيل">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="small text-muted fw-bold mb-1">الترتيب</label>
-                                        <input type="number" class="form-control form-control-sm" name="steps[<?php echo $index; ?>][order]" value="<?php echo ($step['order'] ?? $index); ?>" placeholder="الترتيب">
-                                    </div>
-                                    <div class="col-md-9">
-                                        <label class="small text-muted fw-bold mb-1">الأيقونة الحالية / الجديدة</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($step['icon'])): ?>
-                                                <div class="d-flex align-items-center gap-2 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon'])); ?>" style="width: 28px; height: 28px; object-fit: contain;" alt="icon">
-                                                    <span class="small text-muted text-truncate" style="font-size: 11px; max-width: 120px;"><?php echo basename($step['icon']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="steps_icon_<?php echo $index; ?>" accept="image/*">
-                                        </div>
-                                        <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? ''); ?>">
-                                    </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeTimelineRow('job_step_row_<?php echo $index; ?>')" title="حذف الخطوة">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <label for="job_step_subtitle_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                                        <input type="text" id="job_step_subtitle_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                 </div>
+
+                                <!-- السطر الثاني: التفاصيل والترتيب -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-9">
+                                        <label for="job_step_desc_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                                        <input type="text" id="job_step_desc_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="job_step_order_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الترتيب</label>
+                                        <input type="number" id="job_step_order_<?php echo $index; ?>" class="form-control" name="steps[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                    </div>
+                                </div>
+
+                                <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
+                                        <label for="job_step_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($step['icon'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" id="job_step_file_<?php echo $index; ?>" class="form-control" name="steps_icon_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" name="steps[<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeTimelineRow('job_step_row_<?php echo $index; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3" onclick="addJobStepRow()">
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
                     </button>
                 </form>
@@ -317,7 +329,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- 5. Job Services Modal -->
 <div class="modal fade custom-modal" id="jobServicesModal" tabindex="-1" aria-hidden="true">
@@ -383,7 +394,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Dynamic Rows JS Engine -->
 <script>

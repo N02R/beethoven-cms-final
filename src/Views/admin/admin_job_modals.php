@@ -342,50 +342,66 @@
             <div class="modal-body p-4">
                 <form id="jobServicesForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_job_services">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم الرئيسي</label>
-                        <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($job_services_title); ?>">
+                    <!-- عنوان ووصف القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label for="job_services_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
+                            <input type="text" id="job_services_title_input" class="form-control" name="services_title" value="<?php echo htmlspecialchars($job_services_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="mb-0">
+                            <label for="job_services_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم العام</label>
+                            <textarea id="job_services_desc_input" class="form-control" name="services_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($job_services_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">الوصف العام للقسم</label>
-                        <textarea class="form-control" name="services_desc" rows="2" style="height: auto;"><?php echo htmlspecialchars($job_services_desc); ?></textarea>
-                    </div>
-                    <hr>
+
+                    <!-- قائمة كروت الخدمات -->
                     <div id="jobServicesContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($job_services_items as $i => $item): ?>
-                            <div class="card p-3 border-0 job-srv-row-item" id="job_srv_row_<?php echo $i; ?>" style="background: var(--bg-soft); border: 1px solid var(--border-color); border-radius: 12px;">
-                                <div class="row g-2 align-items-center">
-                                    <div class="col-md-3">
-                                        <label class="small text-muted mb-1">اسم الخدمة</label>
-                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                        <?php foreach (($job_services_items ?? []) as $index => $item): ?>
+                            <div class="p-3 shadow-sm job-srv-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_srv_row_<?php echo $index; ?>">
+                                
+                                <!-- السطر الأول: اسم الخدمة والرابط -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="job_srv_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
+                                        <input type="text" id="job_srv_title_<?php echo $index; ?>" class="form-control" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="small text-muted mb-1">الرابط</label>
-                                        <input type="text" class="form-control form-control-sm" name="services[<?php echo $i; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ''); ?>">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="small text-muted mb-1">صورة الخلفية</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
-                                                <div class="d-flex align-items-center gap-2 mb-1 p-1 bg-white border rounded">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img'])); ?>" alt="Img" class="rounded" style="width: 28px; height: 28px; object-fit: cover;">
-                                                    <span class="small text-muted text-truncate" style="max-width: 100px; font-size: 11px;"><?php echo basename($item['img']); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control form-control-sm" name="srv_img_<?php echo $i; ?>" accept="image/*">
-                                        </div>
-                                        <input type="hidden" name="services[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? ''); ?>">
-                                    </div>
-                                    <div class="col-md-1 text-end pt-3">
-                                        <button type="button" class="btn-icon-trash" onclick="removeRow('job_srv_row_<?php echo $i; ?>')"><i class="bi bi-trash"></i></button>
+                                    <div class="col-md-6">
+                                        <label for="job_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الرابط</label>
+                                        <input type="text" id="job_srv_url_<?php echo $index; ?>" class="form-control" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                     </div>
                                 </div>
+
+                                <!-- السطر الثاني: صورة الخلفية وزر الحذف -->
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11">
+                                        <label for="job_srv_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">صورة الخلفية</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($item['img'])): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Img" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" id="job_srv_file_<?php echo $index; ?>" class="form-control" name="srv_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_srv_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-3" onclick="addJobServiceRow()">+ إضافة خدمة جديدة</button>
+
+                    <!-- زر إضافة خدمة جديدة -->
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة خدمة جديدة
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">

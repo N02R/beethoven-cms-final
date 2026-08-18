@@ -578,7 +578,6 @@
                     </div>
 
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?>
                         <?php 
                         $chooseItemsData = is_array($data['choose_items'] ?? null) ? $data['choose_items'] : [];
                         if (!empty($chooseItemsData)): 
@@ -792,7 +791,6 @@
                     </div>
 
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
-                        <?>
                         <?php 
                         $faqItemsData = is_array($data['faq_items'] ?? null) ? $data['faq_items'] : [];
                         foreach ($faqItemsData as $index => $item): 
@@ -893,8 +891,6 @@
                                 </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
-                                    <?>
-                                    <?>
                                     <?php 
                                     $footerCol3LinksData = is_array($data['footer_col3_links'] ?? null) ? $data['footer_col3_links'] : [];
                                     foreach($footerCol3LinksData as $i => $link): 

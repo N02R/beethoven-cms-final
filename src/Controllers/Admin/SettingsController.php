@@ -828,6 +828,92 @@ class SettingsController
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
+            // ==========================================
+            // 35-40. قسم تحديث صفحة السيرة الذاتية (CV Page)
+            // ==========================================
+
+            // 35. تحديث مسار التنقل (Breadcrumb) للسيرة الذاتية
+            elseif ($action === 'update_cv_breadcrumb') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                $oldCvData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $oldCvData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 36. تحديث صورة الهيرو (Hero Image) لصفحة السيرة الذاتية
+            elseif ($action === 'update_cv_hero') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                $heroImg = $_POST['old_img'] ?? ($oldCvData['hero_img'] ?? '');
+
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldCvData['hero_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldCvData['hero_img']);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $oldCvData['hero_img'] = $heroImg;
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 37. تحديث العنوان والوصف الرئيسي (Main Title & Description) للسيرة الذاتية
+            elseif ($action === 'update_cv_main') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                $oldCvData['main_title'] = $_POST['main_title'] ?? '';
+                $oldCvData['main_desc'] = $_POST['main_desc'] ?? '';
+
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 38. تحديث نقاط النصائح (Advice Points) للسيرة الذاتية
+            elseif ($action === 'update_cv_advice') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                $oldCvData['advice_title'] = $_POST['advice_title'] ?? '';
+                $oldCvData['advice_points'] = $_POST['advice_points'] ?? [];
+
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 39. تحديث الملاحظات الهامة (Important Notes) للسيرة الذاتية
+            elseif ($action === 'update_cv_notes') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                $oldCvData['note_title'] = $_POST['note_title'] ?? '';
+                $oldCvData['notes'] = $_POST['notes'] ?? [];
+
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 40. تحديث نماذج التحميل المتاحة (Download Items) للسيرة الذاتية
+            elseif ($action === 'update_cv_downloads') {
+                $oldCvData = json_decode($currentSettings['cv'] ?? '', true) ?: [];
+                
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'PDF',
+                        'title' => $titles[$i] ?? '',
+                        'sub'   => $subs[$i] ?? '',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+
+                $oldCvData['download_items'] = $downloadItems;
+                $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'cv', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
             $pdo->commit();
 
             echo json_encode([

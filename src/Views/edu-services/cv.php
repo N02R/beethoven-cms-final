@@ -1,11 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {$path_prefix = '/';
-}
-
-$cv_data =$data['cv_page'] ?? [];
-?>
-
 <!-- Breadcrumb start-->
 <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -72,7 +64,7 @@ $cv_data =$data['cv_page'] ?? [];
 
         <h5 class="advice-text"><?php echo htmlspecialchars($cv_data['advice_title'] ?? 'نصائح سريعة لكتابة CV فعّال'); ?></h5>
         <div class="row star-list mt-4">
-          <?php foreach (($cv_data['advice_points'] ?? []) as$point): ?>
+          <?php foreach (($cv_data['advice_points'] ?? []) as $point): ?>
             <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
               <div class="d-flex align-items-center">
                 <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" class="ms-2" alt="نجمة" width="25">
@@ -107,9 +99,9 @@ $cv_data =$data['cv_page'] ?? [];
           </button>
         <?php endif; ?>
 
-        <?php foreach (($cv_data['download_items'] ?? []) as$item): 
+        <?php foreach (($cv_data['download_items'] ?? []) as $item): 
             $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-            $icon =$is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+            $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
         ?>
           <div class="col-lg-12">
             <div class="download-card mb-3">

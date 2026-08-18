@@ -66,7 +66,7 @@ class CoverLetterController {
         }
 
         // 3. استدعاء مودالات الأدمن إن وجدت
-        $admin_modals = $root_path . '/src/Views/partials/admin_cover_modals.php';
+        $admin_modals = $root_path . '/src/Views/edu-services/includes/admin_cover_modals.php';
         if (!empty($is_admin) && file_exists($admin_modals)) {
             require_once $admin_modals;
         }

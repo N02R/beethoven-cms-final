@@ -623,7 +623,6 @@ class SettingsController
                 });
 
                 foreach ($jobTimelineData as $index => $item) {
-                    // التقاط الملف بالشكل الصحيح بناءً على ما ظهر في الـ Debug
                     $fileToCheck = $_FILES['steps_icon_' . $index] ?? null;
 
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
@@ -633,7 +632,6 @@ class SettingsController
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $jobTimelineData[$index]['icon'] = 'assets/uploads/' . $filename;
                     } else {
-                        // الاحتفاظ بالصورة القديمة إن لم يتم رفع صورة جديدة لهذا العنصر
                         $jobTimelineData[$index]['icon'] = $item['old_icon'] ?? '';
                     }
                     unset($jobTimelineData[$index]['old_icon']);
@@ -642,7 +640,8 @@ class SettingsController
                 $jsonVal = json_encode(array_values($jobTimelineData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'job_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-            // 25. تحديث كروت الخدمات المعة (Job Services)
+
+            // 25. تحديث كروت الخدمات المهتمة (Job Services)
             elseif ($action === 'update_job_services') {
                 $jobServicesTitle = $_POST['services_title'] ?? '';
                 $jobServicesDesc  = $_POST['services_desc'] ?? '';
@@ -686,7 +685,6 @@ class SettingsController
 
             // 27. تحديث معلومات وأيقونات التواصل (Contact Info & Icons)
             elseif ($action === 'update_contact_info') {
-                // حفظ النصوص والعناوين
                 $title = $_POST['contact_info_title'] ?? 'معلومات التواصل';
                 $desc  = $_POST['contact_info_desc'] ?? '';
                 $addr  = $_POST['contact_address'] ?? '';
@@ -699,7 +697,6 @@ class SettingsController
                 $stmt->execute(['k' => 'contact_email', 'v' => $email, 'v_update' => $email]);
                 $stmt->execute(['k' => 'contact_phone', 'v' => $phone, 'v_update' => $phone]);
 
-                // 1) أيقونة العنوان
                 $oldAddrIcon = $_POST['old_contact_address_icon'] ?? ($currentSettings['contact_address_icon'] ?? '');
                 $addrIcon = $oldAddrIcon;
                 if (isset($_FILES['contact_address_icon']) && $_FILES['contact_address_icon']['error'] === UPLOAD_ERR_OK) {
@@ -711,7 +708,6 @@ class SettingsController
                 }
                 $stmt->execute(['k' => 'contact_address_icon', 'v' => $addrIcon, 'v_update' => $addrIcon]);
 
-                // 2) أيقونة البريد
                 $oldEmailIcon = $_POST['old_contact_email_icon'] ?? ($currentSettings['contact_email_icon'] ?? '');
                 $emailIcon = $oldEmailIcon;
                 if (isset($_FILES['contact_email_icon']) && $_FILES['contact_email_icon']['error'] === UPLOAD_ERR_OK) {
@@ -723,7 +719,6 @@ class SettingsController
                 }
                 $stmt->execute(['k' => 'contact_email_icon', 'v' => $emailIcon, 'v_update' => $emailIcon]);
 
-                // 3) أيقونة الهاتف
                 $oldPhoneIcon = $_POST['old_contact_phone_icon'] ?? ($currentSettings['contact_phone_icon'] ?? '');
                 $phoneIcon = $oldPhoneIcon;
                 if (isset($_FILES['contact_phone_icon']) && $_FILES['contact_phone_icon']['error'] === UPLOAD_ERR_OK) {
@@ -745,6 +740,92 @@ class SettingsController
                 $stmt->execute(['k' => 'whatsapp_text', 'v' => $waText, 'v_update' => $waText]);
                 $stmt->execute(['k' => 'whatsapp_url', 'v' => $waUrl, 'v_update' => $waUrl]);
                 $stmt->execute(['k' => 'whatsapp_btn_txt', 'v' => $waBtnTxt, 'v_update' => $waBtnTxt]);
+            }
+
+            // ==========================================
+            // 29-34. قسم تحديث صفحة خطاب الطلب (Cover Letter)
+            // ==========================================
+
+            // 29. تحديث مسار التنقل (Breadcrumb)
+            elseif ($action === 'update_cover_breadcrumb') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                $oldCoverData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $oldCoverData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 30. تحديث صورة الهيرو (Hero Image) لصفحة خطاب الطلب
+            elseif ($action === 'update_cover_hero') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                $heroImg = $_POST['old_img'] ?? ($oldCoverData['hero_img'] ?? '');
+
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldCoverData['hero_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldCoverData['hero_img']);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $oldCoverData['hero_img'] = $heroImg;
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 31. تحديث العنوان والوصف الرئيسي (Main Title & Description)
+            elseif ($action === 'update_cover_main') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                $oldCoverData['main_title'] = $_POST['main_title'] ?? '';
+                $oldCoverData['main_desc'] = $_POST['main_desc'] ?? '';
+
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 32. تحديث نقاط النصائح (Advice Points)
+            elseif ($action === 'update_cover_advice') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                $oldCoverData['advice_title'] = $_POST['advice_title'] ?? '';
+                $oldCoverData['advice_points'] = $_POST['advice_points'] ?? [];
+
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 33. تحديث الملاحظات الهامة (Important Notes)
+            elseif ($action === 'update_cover_notes') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                $oldCoverData['note_title'] = $_POST['note_title'] ?? '';
+                $oldCoverData['notes'] = $_POST['notes'] ?? [];
+
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // 34. تحديث نماذج التحميل المتاحة (Download Items)
+            elseif ($action === 'update_cover_downloads') {
+                $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
+                
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'PDF',
+                        'title' => $titles[$i] ?? '',
+                        'sub'   => $subs[$i] ?? '',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+
+                $oldCoverData['download_items'] = $downloadItems;
+                $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             $pdo->commit();
@@ -792,7 +873,6 @@ class SettingsController
             exit;
         }
     }
-
 
     private function isJsonRequest(): bool
     {

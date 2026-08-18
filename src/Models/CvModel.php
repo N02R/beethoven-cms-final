@@ -4,12 +4,12 @@
 class CvModel {
     
     public static function getCvData($db) {
-        $stmt = $db->prepare("SELECT content_data FROM site_pages WHERE page_key = 'cv'");
+        $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = 'cv_page' LIMIT 1");
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($result && !empty($result['content_data'])) {
-            $decoded = json_decode($result['content_data'], true);
+        if ($result && !empty($result['setting_value'])) {
+            $decoded = json_decode($result['setting_value'], true);
             if (is_array($decoded)) {
                 return $decoded;
             }

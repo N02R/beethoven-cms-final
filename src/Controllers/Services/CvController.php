@@ -109,11 +109,11 @@ class CvController {
 
                 $encodedData = json_encode($currentData, JSON_UNESCAPED_UNICODE);
                 
-                // حفظ البيانات المحدثة في جدول إعدادات أو صفحة الموقع
+                // حفظ البيانات المحدثة في جدول الإعدادات
                 if (method_exists('App\Models\SiteModel', 'updateSetting')) {
                     SiteModel::updateSetting('cv_page', $encodedData);
                 } else {
-                    $stmt = $db->prepare("UPDATE site_pages SET content_data = ? WHERE page_key = 'cv'");
+                    $stmt = $db->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = 'cv_page'");
                     $stmt->execute([$encodedData]);
                 }
 
@@ -131,7 +131,7 @@ class CvController {
             exit;
         }
 
-        // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel باستخدام getSettings المعتمدة في المشروع
+        // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel
         $global_data = SiteModel::getSettings();
         
         $cv_data = isset($global_data['cv_page']) ? json_decode($global_data['cv_page'], true) : [

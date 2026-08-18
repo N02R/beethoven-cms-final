@@ -1,3 +1,7 @@
+<?php 
+// توحيد اسم المتغير ليتوافق مع صفحة coverletter.php
+$cover_data = $cover ?? ($data['coverletter_page'] ?? []);
+?>
 
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="coverBreadcrumbModal" tabindex="-1" aria-hidden="true">
@@ -8,7 +12,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverBreadcrumbForm" method="POST">
+                <form id="coverBreadcrumbForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_breadcrumb">
                     <div class="mb-3">
                         <label class="form-label fw-bold">اسم الصفحة في المسار</label>
@@ -37,11 +42,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverHeroForm" method="POST" enctype="multipart/form-data">
+                <form id="coverHeroForm" method="POST" action="index.php?url=admin/settings/save" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_hero">
                     <?php if (!empty($cover_data['hero_img'])): ?>
                         <div class="mb-3 p-2 border rounded bg-light text-center">
-                            <img src="<?php echo $path_prefix . htmlspecialchars($cover_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                            <img src="<?php echo htmlspecialchars(get_image_url($cover_data['hero_img'])); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
                         </div>
                     <?php endif; ?>
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cover_data['hero_img'] ?? ''); ?>">
@@ -68,7 +74,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverMainForm" method="POST">
+                <form id="coverMainForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_main">
                     <div class="mb-3">
                         <label class="form-label fw-bold">العنوان الرئيسي</label>
@@ -97,7 +104,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverAdviceForm" method="POST">
+                <form id="coverAdviceForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_advice">
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان القسم</label>
@@ -136,7 +144,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverNotesForm" method="POST">
+                <form id="coverNotesForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_notes">
                     <div class="mb-3">
                         <label class="form-label fw-bold">عنوان الملاحظات</label>
@@ -175,7 +184,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="coverDownloadForm" method="POST">
+                <form id="coverDownloadForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_downloads">
                     <label class="form-label fw-bold">قائمة الملفات (تعديل / إضافة / حذف)</label>
                     <div id="coverDownloadContainer" class="d-flex flex-column gap-3 mb-3">
@@ -186,8 +196,8 @@
                                         <div class="col-md-4">
                                             <label class="form-label small fw-bold">نوع الملف</label>
                                             <select class="form-select form-select-sm" name="download_types[]">
-                                                <option value="pdf" <?php echo (strtolower($item['type']) === 'pdf') ? 'selected' : ''; ?>>PDF</option>
-                                                <option value="word" <?php echo (strtolower($item['type']) === 'word') ? 'selected' : ''; ?>>Word</option>
+                                                <option value="pdf" <?php echo (strtolower($item['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($item['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
                                             </select>
                                         </div>
                                         <div class="col-md-8">
@@ -223,13 +233,11 @@
 
 <!-- JavaScript Engine -->
 <script>
-    // دالة عامة لحذف أي صف أو عنصر ديناميكي
     function removeCoverRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // إدارة صفوف نقاط النصائح
     let adviceIndex = <?php echo count($cover_data['advice_points'] ?? []); ?>;
     function addCoverAdviceRow() {
         const container = document.getElementById('coverAdviceContainer');
@@ -244,7 +252,6 @@
         adviceIndex++;
     }
 
-    // إدارة صفوف الملاحظات الهامة
     let noteIndex = <?php echo count($cover_data['notes'] ?? []); ?>;
     function addCoverNoteRow() {
         const container = document.getElementById('coverNotesContainer');
@@ -259,7 +266,6 @@
         noteIndex++;
     }
 
-    // إدارة صفوف نماذج التحميل الديناميكية (PDF & Word)
     let coverDownloadIndex = <?php echo count($cover_data['download_items'] ?? []); ?>;
     function addCoverDownloadRow() {
         const container = document.getElementById('coverDownloadContainer');
@@ -294,14 +300,14 @@
         coverDownloadIndex++;
     }
 
-    // ربط كافة النماذج بـ SettingsController عبر AJAX للإرسال الفوري وتحديث الصفحة
+    // ربط كافة النماذج بـ SettingsController عبر AJAX وإرسال الـ action والـ URL الصحيح
     document.querySelectorAll('#coverBreadcrumbForm, #coverHeroForm, #coverMainForm, #coverAdviceForm, #coverNotesForm, #coverDownloadForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            const actionUrl = this.getAttribute('action');
 
-            // تم تغيير المسار هنا ليطابق مسار المتحكم المطلوب
-            fetch('../Controllers/Admin/SettingsController.php', {
+            fetch(actionUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -311,7 +317,7 @@
                     alert('تم الحفظ بنجاح');
                     location.reload();
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    alert('خطأ: ' + (data.message || data.error || 'فشل الحفظ'));
                 }
             })
             .catch(err => {

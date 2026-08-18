@@ -124,3 +124,9 @@
       </div>
     </div>
 </section>
+
+   <?php 
+    $cover_modals_file = __DIR__ . '/includes/admin_cover_modals.php';
+    if (!empty($is_admin) && file_exists($cover_modals_file)) { 
+        include_once $cover_modals_file; }
+?>

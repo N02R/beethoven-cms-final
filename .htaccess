@@ -1,10 +1,10 @@
 <IfModule mod_rewrite.h>
     RewriteEngine On
     
-    # منع تصفح المجلدات
+    # منع تصفح المجلدات لأسباب أمنية
     Options -Indexes
 
-    # توجيه جميع الطلبات إلى مجلد public وملف index.php داخله
+    # توجيه جميع الطلبات إلى مجلد public وملف index.php داخله دون كسر مسارات الملفات الثابتة
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>

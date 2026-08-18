@@ -155,8 +155,18 @@
     
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
       <?php foreach (($edu_services_items ?? []) as $item): 
-          $raw_url = $item['url'] ?? '#';
-          $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
+          $raw_url = trim($item['url'] ?? '#');
+          
+          if ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) {
+              $slug = ltrim($raw_url, '/');
+              if (!str_starts_with($slug, 'edu-services/')) {
+                  $slug = 'edu-services/' . $slug;
+              }
+              $final_url = ($path_prefix ?? '') . $slug;
+          } else {
+              $final_url = $raw_url;
+          }
+          
           $bg_img = get_image_url($item['img'] ?? null);
       ?>
         <div class="col">
@@ -176,6 +186,7 @@
   </div>
 </section>
 <!-- education services end -->
+
 
 <?php 
 $edu_modals_file = __DIR__ . '/admin/admin_edu_modals.php';

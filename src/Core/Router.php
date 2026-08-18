@@ -20,6 +20,7 @@ class Router {
         $segments = explode('/', $uri);
         $lang = 'de';
         
+        // التحقق من لغة الموقع في بداية الرابط
         if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
             $lang = array_shift($segments);
             $uri = implode('/', $segments);
@@ -28,35 +29,55 @@ class Router {
         $uri = trim($uri, '/');
 
         // ==========================================
-        // 🔍 سطر التشخيص المؤقت (قم بإلغاء التعليق لرؤية المسار المستلم)
+        // 🔍 مطابقة المسارات الثابتة أولاً
         // ==========================================
-        // echo "<div style='background:#222; color:#0ff; padding:10px; font-family:monospace; z-index:99999; position:relative;'>الرابط المستلم بعد التنقية: [<strong>{$uri}</strong>] | الطريقة: [<strong>{$method}</strong>]</div>";
-
         if (isset($this->routes[$method][$uri])) {
             [$controllerClass, $action] = $this->routes[$method][$uri];
-            
-            if (class_exists($controllerClass)) {
-                $controller = new $controllerClass();
-                if (method_exists($controller, $action)) {
-                    $reflection = new ReflectionMethod($controller, $action);
-                    if ($reflection->getNumberOfParameters() > 0) {
-                        $controller->$action($lang);
-                    } else {
-                        $controller->$action();
-                    }
-                    return;
-                } else {
-                    echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الدالة (Method) <code>{$action}</code> غير موجودة داخل الكلاس <code>{$controllerClass}</code></div>";
-                    exit;
-                }
-            } else {
-                echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الكلاس (Controller) <code>{$controllerClass}</code> غير موجود أو مساره خاطئ!</div>";
-                exit;
+            $this->executeController($controllerClass, $action, $lang, []);
+            return;
+        }
+
+        // ==========================================
+        // 🔍 دعم المسارات الديناميكية (الروابط الفرعية مثل الحزم والخدمات)
+        // ==========================================
+        foreach ($this->routes[$method] ?? [] as $routePath => [$controllerClass, $action]) {
+            $pattern = preg_replace('/\{([a-zA-Z0-9_-]+)\}/', '([a-zA-Z0-9_-]+)', $routePath);
+            $pattern = "#^" . $pattern . "$#";
+
+            if (preg_match($pattern, $uri, $matches)) {
+                array_shift($matches); // إزالة المطابقة الكاملة
+                $this->executeController($controllerClass, $action, $lang, $matches);
+                return;
             }
         }
 
-        // إذا لم يتم العثور على المسار، عرض صفحة 404 الأصلية للنظام
+        // إذا لم يتم العثور على المسار، عرض صفحة 404
         $this->sendError(404, "Page Not Found");
+    }
+
+    private function executeController(string $controllerClass, string $action, string $lang, array $params): void {
+        if (class_exists($controllerClass)) {
+            $controller = new $controllerClass();
+            if (method_exists($controller, $action)) {
+                $reflection = new ReflectionMethod($controller, $action);
+                $paramCount = $reflection->getNumberOfParameters();
+
+                if ($paramCount > 0) {
+                    $callParams = array_merge([$lang], $params);
+                    $callParams = array_slice($callParams, 0, $paramCount);
+                    call_user_func_array([$controller, $action], $callParams);
+                } else {
+                    $controller->$action();
+                }
+                return;
+            } else {
+                echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الدالة (Method) <code>{$action}</code> غير موجودة داخل الكلاس <code>{$controllerClass}</code></div>";
+                exit;
+            }
+        } else {
+            echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الكلاس (Controller) <code>{$controllerClass}</code> غير موجود أو مساره خاطئ!</div>";
+            exit;
+        }
     }
 
     private function sendError(int $code, string $message): void {

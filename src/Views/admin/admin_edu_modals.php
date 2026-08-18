@@ -264,8 +264,8 @@
                                         <input type="text" id="edu_srv_title_<?php echo $index; ?>" class="form-control edu-srv-title" name="edu_services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="edu_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">رابط الخدمة</label>
-                                        <input type="text" id="edu_srv_url_<?php echo $index; ?>" class="form-control edu-srv-url" name="edu_services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        <label for="edu_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">رابط الخدمة (اسم الصفحة فقط)</label>
+                                        <input type="text" id="edu_srv_url_<?php echo $index; ?>" class="form-control edu-srv-url" name="edu_services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: bachelor-package">
                                     </div>
                                 </div>
 
@@ -306,6 +306,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     // 1. دالة عامة لحذف أي صف بناءً على الـ ID
@@ -466,8 +467,8 @@
                     <input type="text" id="edu_srv_title_${eduSrvCount}" class="form-control edu-srv-title" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
                 </div>
                 <div class="col-md-6">
-                    <label for="edu_srv_url_${eduSrvCount}" class="form-label fw-semibold small text-secondary">رابط الخدمة</label>
-                    <input type="text" id="edu_srv_url_${eduSrvCount}" class="form-control edu-srv-url" name="edu_services[${eduSrvCount}][url]" placeholder="الرابط">
+                    <label for="edu_srv_url_${eduSrvCount}" class="form-label fw-semibold small text-secondary">رابط الخدمة (اسم الصفحة فقط)</label>
+                    <input type="text" id="edu_srv_url_${eduSrvCount}" class="form-control edu-srv-url" name="edu_services[${eduSrvCount}][url]" placeholder="مثال: bachelor-package">
                 </div>
             </div>
             <div class="row g-2 align-items-end">
@@ -662,7 +663,7 @@
                     if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
                 });
 
-                // إعادة ترقيم "خدمات التعليم"
+                // إعادة ترقيم "خدمات التعليم" (محدث لضمان حفظ الرابط بشكل نظيف وسليم)
                 form.querySelectorAll('.edu-service-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.edu-srv-title') || row.querySelector('input[name*="[title]"]');
                     const urlInput = row.querySelector('.edu-srv-url') || row.querySelector('input[name*="[url]"]');

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Services;
 
+use App\Models\SiteModel;
+
 class CoverLetterController {
     
     public function index(string $lang = 'de'): void {
@@ -18,10 +20,11 @@ class CoverLetterController {
         }
 
         $root_path = realpath(__DIR__ . '/../../../');
-        $config_file = $root_path . '/announcement_config.json';
-        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+        // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel
+        $global_data = SiteModel::getAllSettings();
         
-        $cover_data = $global_data['coverletter_page'] ?? [
+        $cover_data = isset($global_data['coverletter_page']) ? json_decode($global_data['coverletter_page'], true) : [
             'page_breadcrumb'     => 'خطاب الطلب',
             'page_breadcrumb_url' => '#',
             'hero_img'            => 'assets/img/education/servicesimg1.jpg',
@@ -37,21 +40,21 @@ class CoverLetterController {
         $data = $global_data;
         $data['coverletter_page'] = $cover_data;
 
-        $is_admin = !empty($_SESSION['is_admin']);
+        $is_admin = !empty($_SESSION['is_logged_in']); // توحيد التحقق من جلسة الأدمن
         $path_prefix = '/';
 
         // ملفات الـ CSS والـ JS الخاصة بالخدمة
         $page_css = [
-            '/edu-services/css/edu-services.css'
+            'assets/css/edu-services.css'
         ]; 
 
         $page_js = [];
         $custom_script = '';
 
         // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/includes/header.php';
+        $header_file = $root_path . '/src/Views/partials/header.php';
         if (file_exists($header_file)) {
-            include_once $header_file;
+            require_once $header_file;
         }
 
         // 2. استدعاء الـ View الخاص بالصفحة
@@ -63,15 +66,15 @@ class CoverLetterController {
         }
 
         // 3. استدعاء مودالات الأدمن إن وجدت
-        $admin_modals = $root_path . '/includes/admin_cover_modals.php';
+        $admin_modals = $root_path . '/src/Views/partials/admin_cover_modals.php';
         if (!empty($is_admin) && file_exists($admin_modals)) {
-            include_once $admin_modals;
+            require_once $admin_modals;
         }
 
         // 4. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/includes/footer.php';
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
-            include_once $footer_file;
+            require_once $footer_file;
         }
     }
 }

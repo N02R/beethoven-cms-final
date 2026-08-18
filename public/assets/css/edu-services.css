@@ -39,7 +39,7 @@ li {
     padding-left: 1rem;
     padding-right: 1rem;
     /* المسار الصحيح بعد تعديل المجلدات */
-    background-image: url('../../assets/img/Arrow Chevron Forward.svg');
+    background-image: url('/assets/img/ArrowChevronForward.webp');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;

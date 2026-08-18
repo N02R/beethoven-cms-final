@@ -211,13 +211,13 @@
 
 <!-- JavaScript Engine -->
 <script>
-    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
-    function removeCvRow(id) {
+    // 1. دالة عامة لحذف أي صف
+    function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
+    // 2. دالة إظهار التنبيهات الاحترافية (موحدة)
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -241,7 +241,7 @@
         setTimeout(() => { if (alertDiv) { alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); } }, 4000);
     }
 
-    // 3. دالة إضافة صف نصيحة جديد بالستايل الموحد
+    // 3. وظائف إضافة الصفوف (CV Modals)
     function addCvAdviceRow() {
         const container = document.getElementById('cvAdviceContainer');
         const div = document.createElement('div');
@@ -250,12 +250,24 @@
         div.id = 'cv_advice_' + Date.now();
         div.innerHTML = `
             <input type="text" class="form-control" name="advice_points[]" placeholder="اكتب النصيحة هنا...">
-            <button type="button" class="btn-icon-trash mx-auto" onclick="removeCvRow('${div.id}')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
         `;
         container.appendChild(div);
     }
 
-    // 4. دالة إضافة صف تحميل جديد بالستايل الموحد
+    function addCvNoteRow() {
+        const container = document.getElementById('cvNotesContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm note-item d-flex align-items-center gap-2';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'cv_note_' + Date.now();
+        div.innerHTML = `
+            <input type="text" class="form-control" name="notes[]" placeholder="اكتب الملاحظة هنا...">
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الملاحظة"><i class="bi bi-trash"></i></button>
+        `;
+        container.appendChild(div);
+    }
+
     function addCvDownloadRow() {
         const container = document.getElementById('cvDownloadContainer');
         const div = document.createElement('div');
@@ -285,7 +297,7 @@
                 </div>
             </div>
             <div class="mt-3 pt-3 border-top d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;" onclick="removeCvRow('${div.id}')">
+                <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;" onclick="removeRow('${div.id}')">
                     <i class="bi bi-trash me-1"></i> حذف هذا النموذج
                 </button>
             </div>
@@ -293,30 +305,35 @@
         container.appendChild(div);
     }
 
-    // 5. ربط كافة النماذج عبر AJAX وإرسال البيانات مع التنبيهات الموحدة
-    document.querySelectorAll('#cvBreadcrumbForm, #cvHeroForm, #cvMainForm, #cvAdviceForm, #cvDownloadForm').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            fetch('../admin/api/save_config.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification('تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+    // 4. معالج الحفظ الموحد لكل الفورمات عبر AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
+                
+                fetch(this.getAttribute('action') || '../admin/api/save_config.php', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification(data.message || 'عذراً، لم يتم الحفظ', 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('خطأ في الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });
 </script>
+
 

@@ -1,7 +1,3 @@
-<?php 
-// توحيد اسم المتغير ليتوافق مع صفحة coverletter.php
-$cover_data = $cover ?? ($data['coverletter_page'] ?? []);
-?>
 
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="coverBreadcrumbModal" tabindex="-1" aria-hidden="true">

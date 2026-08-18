@@ -82,12 +82,9 @@
           </button>
         <?php endif; ?>
 
-        <?php 
-          $download_items = $cv_data['download_items'] ?? [];
-          foreach ($download_items as $index => $item):
-              $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-              $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              $is_last = ($index === count($download_items) - 1);
+        <?php foreach (($cover['download_items'] ?? []) as $item): 
+            $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
+            $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
         ?>
           <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">

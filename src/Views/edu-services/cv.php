@@ -6,10 +6,14 @@
       </button>
     <?php endif; ?>
 
+    <?php 
+      $cv_data = $data['cv_page'] ?? [];
+    ?>
+
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($cv_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($cv_data['page_breadcrumb'] ?? 'السيرة الذاتية CV'); ?>

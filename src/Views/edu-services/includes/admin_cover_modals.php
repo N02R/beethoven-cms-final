@@ -90,13 +90,17 @@ $cover_data = $cover ?? ($data['coverletter_page'] ?? []);
                 <form id="coverMainForm" method="POST" action="index.php?url=admin/settings/save">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_main">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">العنوان الرئيسي</label>
-                        <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($cover_data['main_title'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف التفصيلي</label>
-                        <textarea class="form-control" name="main_desc" rows="4" required><?php echo htmlspecialchars($cover_data['main_desc'] ?? ''); ?></textarea>
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($cover_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
+                            <textarea class="form-control" name="main_desc" rows="4" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($cover_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
                 </form>
             </div>

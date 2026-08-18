@@ -128,7 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-md-6 col-lg-3">
                 <h5><?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة'); ?></h5>
                 <div class="quick-link">
-                    <?php foreach(($data['menu_links'] ?? []) as $link): ?>
+                    <?php 
+                    // معالجة وحماية آمنة لمتغير روابط القائمة السريعة
+                    $menu_links = $data['menu_links'] ?? [];
+                    if (is_string($menu_links)) {
+                        $menu_links = json_decode($menu_links, true) ?? [];
+                    }
+                    foreach((is_array($menu_links) ? $menu_links : []) as $link): 
+                    ?>
                         <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>"><?php echo htmlspecialchars($link['title'] ?? ''); ?></a>
                     <?php endforeach; ?>
                 </div>
@@ -137,7 +144,13 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-md-6 col-lg-4">
                 <h5><?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?></h5>
                 <div class="contact-link">
-                    <?php foreach(($data['footer_col3_links'] ?? []) as $link): 
+                    <?php 
+                    // معالجة وحماية آمنة لمتغير روابط التواصل
+                    $footer_col3_links = $data['footer_col3_links'] ?? [];
+                    if (is_string($footer_col3_links)) {
+                        $footer_col3_links = json_decode($footer_col3_links, true) ?? [];
+                    }
+                    foreach((is_array($footer_col3_links) ? $footer_col3_links : []) as $link): 
                         $icon_img = get_image_url($link['img'] ?? null);
                     ?>
                         <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" class="d-flex align-items-center gap-2">

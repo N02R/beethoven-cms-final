@@ -21,8 +21,8 @@ class CoverLetterController {
 
         $root_path = realpath(__DIR__ . '/../../../');
 
-        // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel
-        $global_data = SiteModel::getAllSettings();
+        // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel باستخدام getSettings المعتمدة في المشروع
+        $global_data = SiteModel::getSettings();
         
         $cover_data = isset($global_data['coverletter_page']) ? json_decode($global_data['coverletter_page'], true) : [
             'page_breadcrumb'     => 'خطاب الطلب',

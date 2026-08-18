@@ -7,7 +7,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="cvBreadcrumbForm" method="POST">
+                <form id="cvBreadcrumbForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cv_breadcrumb">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
@@ -40,15 +41,19 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="cvHeroForm" method="POST" enctype="multipart/form-data">
+                <form id="cvHeroForm" method="POST" action="index.php?url=admin/settings/save" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cv_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cv_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($cv_data['hero_img'])): ?>
-                            <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($cv_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                            <div class="mb-3 p-3 bg-light rounded-3 border text-center">
+                                <span class="d-block small text-muted mb-2">معاينة الصورة الحالية:</span>
+                                <div class="p-1 bg-white rounded-3 border d-inline-flex align-items-center justify-content-center shadow-sm">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($cv_data['hero_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain;" class="rounded-2" alt="Hero Preview">
+                                </div>
                             </div>
                         <?php endif; ?>
                         
@@ -76,7 +81,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="cvMainForm" method="POST">
+                <form id="cvMainForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cv_main">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
@@ -109,23 +115,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="cvAdviceForm" method="POST">
+                <form id="cvAdviceForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cv_advice">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
-                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
                             <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($cv_data['advice_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                     
-                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة النصائح (تعديل / إضافة / حذف)</label>
+                    <label class="form-label fw-semibold small text-secondary mb-2">قائمة النصائح (تعديل / إضافة / حذف)</label>
                     <div id="cvAdviceContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php if (!empty($cv_data['advice_points'])): ?>
                             <?php foreach ($cv_data['advice_points'] as $index => $point): ?>
                                 <div class="p-3 shadow-sm advice-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cv_advice_<?php echo $index; ?>">
-                                    <input type="text" class="form-control" name="advice_points[]" value="<?php echo htmlspecialchars($point, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النقطة هنا...">
+                                    <input type="text" class="form-control" name="advice_points[]" value="<?php echo htmlspecialchars($point, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النصيحة هنا...">
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('cv_advice_<?php echo $index; ?>')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
                                 </div>
                             <?php endforeach; ?>
@@ -146,7 +153,54 @@
     </div>
 </div>
 
-<!-- 5. Download Files Modal -->
+<!-- 5. Important Notes Modal -->
+<div class="modal fade custom-modal" id="cvNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-exclamation-octagon text-primary"></i> تعديل الملاحظات الهامة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="cvNotesForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
+                    <input type="hidden" name="action" value="update_cv_notes">
+                    
+                    <!-- حاوية عنوان الملاحظات -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">عنوان الملاحظات</label>
+                            <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($cv_data['note_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                    </div>
+
+                    <label class="form-label fw-semibold small text-secondary mb-2">قائمة الملاحظات (تعديل / إضافة / حذف)</label>
+                    <div id="cvNotesContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($cv_data['notes'])): ?>
+                            <?php foreach ($cv_data['notes'] as $index => $note): ?>
+                                <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cv_note_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="notes[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="نص الملاحظة">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('cv_note_<?php echo $index; ?>')" title="حذف الملاحظة"><i class="bi bi-trash"></i></button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- زر إضافة ملاحظة جديدة -->
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCvNoteRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="cvNotesForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Download Files Modal -->
 <div class="modal fade custom-modal" id="cvDownloadModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -155,7 +209,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="cvDownloadForm" method="POST">
+                <form id="cvDownloadForm" method="POST" action="index.php?url=admin/settings/save">
+                    <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cv_downloads">
                     
                     <label class="form-label fw-semibold small text-secondary mb-3">قائمة الملفات (تعديل / إضافة / حذف)</label>
@@ -194,7 +249,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- زر إضافة نموذج تحميل جديد بنفس الستايل الموحد -->
+                    <!-- زر إضافة نموذج تحميل جديد -->
                     <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCvDownloadRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نموذج تحميل جديد
                     </button>
@@ -207,7 +262,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- JavaScript Engine -->
 <script>
@@ -313,7 +367,7 @@
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
                 
-                fetch(this.getAttribute('action') || '../admin/api/save_config.php', {
+                fetch(this.getAttribute('action') || 'index.php?url=admin/settings/save', {
                     method: 'POST',
                     headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
                     body: formData
@@ -321,7 +375,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                        showNotification('تم حفظ التعديلات بنجاح...', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         showNotification(data.message || 'عذراً، لم يتم الحفظ', 'danger');
@@ -335,5 +389,3 @@
         });
     });
 </script>
-
-

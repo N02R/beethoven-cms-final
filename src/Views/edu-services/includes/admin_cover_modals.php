@@ -49,15 +49,24 @@ $cover_data = $cover ?? ($data['coverletter_page'] ?? []);
                 <form id="coverHeroForm" method="POST" action="index.php?url=admin/settings/save" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_hero">
-                    <?php if (!empty($cover_data['hero_img'])): ?>
-                        <div class="mb-3 p-2 border rounded bg-light text-center">
-                            <img src="<?php echo htmlspecialchars(get_image_url($cover_data['hero_img'])); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <?php if (!empty($cover_data['hero_img'])): ?>
+                            <div class="mb-3 p-3 bg-light rounded-3 border text-center">
+                                <span class="d-block small text-muted mb-2">معاينة الصورة الحالية:</span>
+                                <div class="p-1 bg-white rounded-3 border d-inline-flex align-items-center justify-content-center shadow-sm">
+                                    <img src="<?php echo htmlspecialchars(get_image_url($cover_data['hero_img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Preview" class="rounded-2" style="max-height: 120px; object-fit: contain;">
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cover_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
                         </div>
-                    <?php endif; ?>
-                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cover_data['hero_img'] ?? ''); ?>">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رفع صورة جديدة</label>
-                        <input type="file" class="form-control" name="hero_img" accept="image/*">
                     </div>
                 </form>
             </div>

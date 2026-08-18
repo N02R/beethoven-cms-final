@@ -467,8 +467,8 @@
                     <input type="text" id="edu_srv_title_${eduSrvCount}" class="form-control edu-srv-title" name="edu_services[${eduSrvCount}][title]" placeholder="اسم الخدمة">
                 </div>
                 <div class="col-md-6">
-                    <label for="edu_srv_url_${eduSrvCount}" class="form-label fw-semibold small text-secondary">رابط الخدمة (اسم الصفحة فقط)</label>
-                    <input type="text" id="edu_srv_url_${eduSrvCount}" class="form-control edu-srv-url" name="edu_services[${eduSrvCount}][url]" placeholder="مثال: bachelor-package">
+                    <label for="edu_srv_url_${eduSrvCount}" class="form-label fw-semibold small text-secondary">رابط الخدمة</label>
+                    <input type="text" id="edu_srv_url_${eduSrvCount}" class="form-control edu-srv-url" name="edu_services[${eduSrvCount}][url]" placeholder="مثال: coverletter أو bachelor-package">
                 </div>
             </div>
             <div class="row g-2 align-items-end">
@@ -663,7 +663,7 @@
                     if (oldIconInput) oldIconInput.name = `edu_timeline[${index}][old_icon]`;
                 });
 
-                // إعادة ترقيم "خدمات التعليم" (محدث لضمان حفظ الرابط بشكل نظيف وسليم)
+                // إعادة ترقيم "خدمات التعليم" وتعديل الرابط تلقائياً ليتوافق مع الـ Router
                 form.querySelectorAll('.edu-service-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.edu-srv-title') || row.querySelector('input[name*="[title]"]');
                     const urlInput = row.querySelector('.edu-srv-url') || row.querySelector('input[name*="[url]"]');
@@ -671,7 +671,16 @@
                     const oldImgInput = row.querySelector('.edu-srv-old-img') || row.querySelector('input[name*="[old_img]"]');
 
                     if (titleInput) titleInput.name = `edu_services[${index}][title]`;
-                    if (urlInput) urlInput.name = `edu_services[${index}][url]`;
+                    
+                    if (urlInput) {
+                        let val = urlInput.value.trim();
+                        if (val && !val.startsWith('http') && !val.includes('edu-services/') && !val.includes('job-services/')) {
+                            val = 'edu-services/' + val;
+                        }
+                        urlInput.value = val;
+                        urlInput.name = `edu_services[${index}][url]`;
+                    }
+
                     if (fileInput) fileInput.name = `edu_service_img_${index}`;
                     if (oldImgInput) oldImgInput.name = `edu_services[${index}][old_img]`;
                 });
@@ -762,3 +771,4 @@
         });
     });
 </script>
+

@@ -84,15 +84,17 @@
 
         <?php 
           $download_items = $cv_data['download_items'] ?? [];
+          $total_items = count($download_items);
           foreach ($download_items as $index => $item):
               $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-              $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              $is_last = ($index === count($download_items) - 1);
+              // استخدمنا نفس طريقة الـ cover تماماً مع مسار الصور الخاص بك
+              $icon = $is_pdf ? 'assets/img/education/Grouppdf.png' : 'assets/img/education/Groupword.png';
+              $is_last = ($index === $total_items - 1);
         ?>
           <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
               <div class="download-row">
-                <img src="<?php echo htmlspecialchars($icon); ?>" alt="" />
+                <img src="<?php echo get_image_url($icon); ?>" alt="icon" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'السيرة الذاتية "CV"'); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
@@ -105,7 +107,6 @@
           </div>
         <?php endforeach; ?>
       </div>
-
 
     </div>
   </section>

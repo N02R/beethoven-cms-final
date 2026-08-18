@@ -15,13 +15,17 @@ $cover_data = $cover ?? ($data['coverletter_page'] ?? []);
                 <form id="coverBreadcrumbForm" method="POST" action="index.php?url=admin/settings/save">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
                     <input type="hidden" name="action" value="update_cover_breadcrumb">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">اسم الصفحة في المسار</label>
-                        <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($cover_data['page_breadcrumb'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رابط الصفحة (URL)</label>
-                        <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($cover_data['page_breadcrumb_url'] ?? '#'); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($cover_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($cover_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                 </form>
             </div>

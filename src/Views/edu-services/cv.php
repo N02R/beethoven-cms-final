@@ -1,14 +1,10 @@
-<!-- Breadcrumb start-->
-<div class="custom-container pt-5" style="position: relative;">
+  <!-- Breadcrumb start-->
+  <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
-
-    <?php 
-      $cv_data = $data['cv_page'] ?? [];
-    ?>
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
@@ -21,11 +17,11 @@
         </li>
       </ol>
     </nav>
-</div>
-<!-- Breadcrumb end-->
+  </div>
+  <!-- Breadcrumb end-->
 
-<!-- custom-services start -->
-<section class="custom-services py-5" style="position: relative;">
+  <!-- custom-services start -->
+  <section class="custom-services py-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
           <i class="bi bi-pencil-fill"></i>
@@ -37,11 +33,11 @@
         style="background-image: url('<?php echo htmlspecialchars(get_image_url($cv_data['hero_img'] ?? null, 'assets/img/education/servicesimg2.jpg')); ?>'); background-position: center -30px;">
       </div>
     </div>
-</section>
-<!-- custom-services end -->
+  </section>
+  <!-- custom-services end -->
 
-<!-- custom-services-info start -->
-<section class="custom-services-info py-5">
+  <!-- custom-services-info start -->
+  <section class="custom-services-info py-5">
     <div class="custom-container">
       
       <!-- 1. العنوان والوصف -->
@@ -52,12 +48,12 @@
           </button>
         <?php endif; ?>
 
-        <h2 class="main-text"><?php echo htmlspecialchars($cv_data['main_title'] ?? 'السيرة الذاتية CV'); ?></h2>
+        <h2 class="main-text"><?php echo htmlspecialchars($cv_data['main_title'] ?? 'السيرة الذاتية "CV"'); ?></h2>
         <?php if (!empty($cv_data['main_desc'])): ?>
             <p class="par-text"><?php echo nl2br(htmlspecialchars($cv_data['main_desc'])); ?></p>
         <?php endif; ?>
       </div>
-      
+
       <!-- 2. النصائح -->
       <div class="advice-stars my-4 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
@@ -90,7 +86,9 @@
         <h5 class="note-text mb-4"><?php echo htmlspecialchars($cv_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <div class="row">
           <?php foreach (($cv_data['notes'] ?? []) as $note): ?>
-            <div class="col-lg-4 col-md-6 col-sm-6 mb-2"><p>✅ <?php echo htmlspecialchars($note); ?></p></div>
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-2">
+              <p>✅ <?php echo htmlspecialchars($note); ?></p>
+            </div>
           <?php endforeach; ?>
         </div>
       </div>
@@ -98,7 +96,7 @@
       <!-- 4. التحميل (PDF & Word) -->
       <div class="row pt-2" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل النماذج وملفات التحميل">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل نماذج التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
@@ -115,7 +113,7 @@
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
                 </div>
-                <span class="leader d-lg-block d-md-none d-sm-none">................................................................................................................</span>
+                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
                 <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
               </div>
             </div>
@@ -124,8 +122,8 @@
       </div>
 
     </div>
-</section>
-<!-- custom-services-info end -->
+  </section>
+  <!-- custom-services-info end -->
 
 <?php 
     $cv_modals_file = __DIR__ . '/includes/admin_cv_modals.php';

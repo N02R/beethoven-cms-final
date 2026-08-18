@@ -138,7 +138,10 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['social_links'] ?? []) as $index => $link): ?>
+                        <?php 
+                        $socialLinksData = is_array($data['social_links'] ?? null) ? $data['social_links'] : [];
+                        foreach ($socialLinksData as $index => $link): 
+                        ?>
                         <div class="p-3 shadow-sm social-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-4">
@@ -193,10 +196,7 @@
             </div>
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
-                    <!-- حقل الحماية ضد ثغرات CSRF (مهم جداً ليتطابق مع ما يشترطه الكنترولر) -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                    
-                    <!-- متغير الإجراء الذي سيلتقطه الـ Controller -->
                     <input type="hidden" name="action" value="update_logo">
                     
                     <div class="mb-4">
@@ -209,7 +209,6 @@
                         <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
                     </div>
 
-                    <!-- صندوق لطباعة رسائل الخطأ أو النجاح ديناميكياً -->
                     <div id="logoAlertBox" class="alert d-none mt-2 rounded-3 border-0"></div>
                 </form>
             </div>
@@ -324,7 +323,10 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($menu_links ?? []) as $index => $link): ?>
+                        <?php 
+                        $menuLinksData = is_array($menu_links ?? null) ? $menu_links : [];
+                        foreach ($menuLinksData as $index => $link): 
+                        ?>
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-5">
@@ -378,8 +380,11 @@
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="langRowsContainer" class="d-flex flex-column gap-3">
-                        <?php if (!empty($data['languages'])): ?>
-                            <?php foreach ($data['languages'] as $index => $lang): ?>
+                        <?php 
+                        $languagesData = is_array($data['languages'] ?? null) ? $data['languages'] : [];
+                        if (!empty($languagesData)): 
+                            foreach ($languagesData as $index => $lang): 
+                        ?>
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
@@ -395,8 +400,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                            <?php endforeach; 
+                        endif; 
+                        ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
@@ -448,7 +454,6 @@
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary">صورة الخلفية</label>
                                 
-                                <!-- معاينة الصورة الحالية -->
                                 <?php if (!empty($h['img'])): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
                                         <span class="d-block small text-muted mb-2">الصورة الحالية:</span>
@@ -498,7 +503,10 @@
                     </div>
 
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['services'] ?? []) as $index => $service): ?>
+                        <?php 
+                        $servicesData = is_array($data['services'] ?? null) ? $data['services'] : [];
+                        foreach ($servicesData as $index => $service): 
+                        ?>
                             <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
@@ -512,7 +520,6 @@
                                     <div class="col-md-11">
                                         <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <!-- معاينة الصورة فقط إن وجدت -->
                                             <?php if (!empty($service['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                     <img src="<?php echo htmlspecialchars(get_image_url($service['img']), ENT_QUOTES, 'UTF-8'); ?>" 
@@ -571,8 +578,12 @@
                     </div>
 
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?php if (!empty($data['choose_items'])): ?>
-                            <?php foreach ($data['choose_items'] as $index => $item): ?>
+                        <?>
+                        <?php 
+                        $chooseItemsData = is_array($data['choose_items'] ?? null) ? $data['choose_items'] : [];
+                        if (!empty($chooseItemsData)): 
+                            foreach ($chooseItemsData as $index => $item): 
+                        ?>
                                 <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
@@ -587,7 +598,6 @@
                                         <div class="col-md-11">
                                             <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                                             <div class="d-flex align-items-center gap-2">
-                                                <!-- معاينة الصورة الحالية إن وجدت -->
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                         <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
@@ -608,8 +618,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                            <?php endforeach; 
+                        endif; 
+                        ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
@@ -644,7 +655,10 @@
                     </div>
 
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['reviews_items'] ?? []) as $index => $review): ?>
+                        <?php 
+                        $reviewsItemsData = is_array($data['reviews_items'] ?? null) ? $data['reviews_items'] : [];
+                        foreach ($reviewsItemsData as $index => $review): 
+                        ?>
                             <div class="p-3 shadow-sm review-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-11">
@@ -699,7 +713,10 @@
                     </div>
 
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['guide_items'] ?? []) as $index => $item): ?>
+                        <?php 
+                        $guideItemsData = is_array($data['guide_items'] ?? null) ? $data['guide_items'] : [];
+                        foreach ($guideItemsData as $index => $item): 
+                        ?>
                             <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
@@ -775,7 +792,11 @@
                     </div>
 
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
+                        <?>
+                        <?php 
+                        $faqItemsData = is_array($data['faq_items'] ?? null) ? $data['faq_items'] : [];
+                        foreach ($faqItemsData as $index => $item): 
+                        ?>
                             <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
@@ -823,7 +844,6 @@
                     <input type="hidden" name="action" value="update_footer">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- قسم الاستشارة في الأعلى -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -842,7 +862,6 @@
                         </div>
                     </div>
 
-                    <!-- الصف الأول: العمود الأول (الوصف) والعمود الثاني (الروابط السريعة) -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -864,7 +883,6 @@
                         </div>
                     </div>
 
-                    <!-- الصف الثاني: العمود الثالث (التواصل) بعرض كامل ومريح جداً -->
                     <div class="row">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -875,23 +893,25 @@
                                 </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
-                                    <?php foreach(($data['footer_col3_links'] ?? []) as $i => $link): ?>
+                                    <?>
+                                    <?>
+                                    <?php 
+                                    $footerCol3LinksData = is_array($data['footer_col3_links'] ?? null) ? $data['footer_col3_links'] : [];
+                                    foreach($footerCol3LinksData as $i => $link): 
+                                    ?>
                                         <div class="p-3 shadow-sm footer-col3-item" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
                                             <div class="row g-3 align-items-center">
                                                 
-                                                <!-- الاسم -->
                                                 <div class="col-md-4">
                                                     <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
                                                     <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
                                                 </div>
 
-                                                <!-- الرابط -->
                                                 <div class="col-md-4">
                                                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
                                                     <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                                 </div>
 
-                                                <!-- الأيقونة وحقل الرفع -->
                                                 <div class="col-md-3">
                                                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                                                     <div class="d-flex align-items-center gap-2">
@@ -907,7 +927,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- زر الحذف -->
                                                 <div class="col-md-1 text-center pt-3">
                                                     <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;" title="حذف وسيلة التواصل">
                                                         <i class="bi bi-trash"></i>
@@ -919,7 +938,7 @@
                                     <?php endforeach; ?>
                                 </div>
 
-                                <button type="button" class="btn  w-100 mt-3 py-2" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()">
+                                <button type="button" class="btn w-100 mt-3 py-2" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()">
                                     <i class="bi bi-plus-circle me-1"></i> إضافة وسيلة تواصل
                                 </button>
                             </div>
@@ -941,7 +960,6 @@
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات بطريقة عصرية باستخدام Bootstrap Toasts/Alerts
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -979,7 +997,7 @@
         }, 4000);
     }
 
-    let socialCount = <?php echo count($data['social_links'] ?? []); ?>;
+    let socialCount = <?php echo is_array($data['social_links'] ?? null) ? count($data['social_links']) : 0; ?>;
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         const div = document.createElement('div');
@@ -1009,7 +1027,7 @@
         socialCount++;
     }
 
-    let menuCount = <?php echo count($menu_links ?? []); ?>;
+    let menuCount = <?php echo is_array($menu_links ?? null) ? count($menu_links) : 0; ?>;
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         const div = document.createElement('div');
@@ -1038,7 +1056,7 @@
         menuCount++;
     }
 
-    let langCount = <?php echo count($data['languages'] ?? []); ?>;
+    let langCount = <?php echo is_array($data['languages'] ?? null) ? count($data['languages']) : 0; ?>;
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
         const div = document.createElement('div');
@@ -1063,7 +1081,7 @@
         langCount++;
     }
 
-    let serviceCount = <?php echo count($data['services'] ?? []); ?>;
+    let serviceCount = <?php echo is_array($data['services'] ?? null) ? count($data['services']) : 0; ?>;
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         const div = document.createElement('div');
@@ -1081,7 +1099,7 @@
         serviceCount++;
     }
 
-    let chooseCount = <?php echo count($data['choose_items'] ?? []); ?>;
+    let chooseCount = <?php echo is_array($data['choose_items'] ?? null) ? count($data['choose_items']) : 0; ?>;
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         const div = document.createElement('div');
@@ -1111,7 +1129,7 @@
         chooseCount++;
     }
 
-    let reviewCount = <?php echo count($data['reviews_items'] ?? []); ?>;
+    let reviewCount = <?php echo is_array($data['reviews_items'] ?? null) ? count($data['reviews_items']) : 0; ?>;
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         const div = document.createElement('div');
@@ -1132,7 +1150,7 @@
         reviewCount++;
     }
 
-    let guideCount = <?php echo count($data['guide_items'] ?? []); ?>;
+    let guideCount = <?php echo is_array($data['guide_items'] ?? null) ? count($data['guide_items']) : 0; ?>;
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         const div = document.createElement('div');
@@ -1166,7 +1184,7 @@
         guideCount++;
     }
 
-    let faqCount = <?php echo count($data['faq_items'] ?? []); ?>;
+    let faqCount = <?php echo is_array($data['faq_items'] ?? null) ? count($data['faq_items']) : 0; ?>;
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         const div = document.createElement('div');
@@ -1191,7 +1209,7 @@
         faqCount++;
     }
 
-    let col3Count = <?php echo count($data['footer_col3_links'] ?? []); ?>;
+    let col3Count = <?php echo is_array($data['footer_col3_links'] ?? null) ? count($data['footer_col3_links']) : 0; ?>;
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         const div = document.createElement('div');
@@ -1228,7 +1246,6 @@
         if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
     }
 
-    // معالج النماذج الموحد مع التنبيهات الجديدة
     document.querySelectorAll('.custom-modal form').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();

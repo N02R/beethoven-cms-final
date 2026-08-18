@@ -45,7 +45,7 @@
     <div class="custom-container">
       
       <!-- 1. العنوان والوصف -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان">
               <i class="bi bi-pencil-fill"></i>
@@ -59,7 +59,7 @@
       </div>
 
       <!-- 2. النصائح -->
-      <div class="advice-stars my-4 pb-4 border-bottom" style="position: relative;">
+      <div class="advice-stars my-4 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverAdviceModal" style="position: absolute; top: 0; right: 0; z-index: 10;">
               <i class="bi bi-pencil-fill"></i>
@@ -71,7 +71,7 @@
           <?php foreach (($cover['advice_points'] ?? []) as $point): ?>
             <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
               <div class="d-flex align-items-center">
-                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" class="ms-2" alt="نجمة">
+                <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" class="ms-2" alt="نجمة">
                 <p class="mb-0"><?php echo htmlspecialchars($point); ?></p>
               </div>
             </div>
@@ -80,7 +80,7 @@
       </div>
 
       <!-- 3. ملاحظات -->
-      <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-check py-4 mb-4 " style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;">
               <i class="bi bi-pencil-fill"></i>

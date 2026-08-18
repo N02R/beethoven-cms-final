@@ -105,7 +105,7 @@
 
         <?php foreach (($cover['download_items'] ?? []) as $item): 
             $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-            $icon = $is_pdf ? 'assets/img/education/Grouppdf.png' : 'assets/img/education/Groupword.png';
+            $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
         ?>
           <div class="col-lg-12">
             <div class="download-card mb-3">
@@ -115,7 +115,7 @@
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
                 </div>
-                <span class="leader d-lg-block d-md-none d-sm-none">........................</span>
+                <span class="leader d-lg-block d-md-none d-sm-none">................................................................................................................</span>
                 <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
               </div>
             </div>

@@ -1,4 +1,3 @@
-
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="cvBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -10,13 +9,17 @@
             <div class="modal-body p-4">
                 <form id="cvBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_cv_breadcrumb">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">اسم الصفحة في المسار</label>
-                        <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($cv_data['page_breadcrumb'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رابط الصفحة (URL)</label>
-                        <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($cv_data['page_breadcrumb_url'] ?? '#'); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($cv_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($cv_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -39,15 +42,20 @@
             <div class="modal-body p-4">
                 <form id="cvHeroForm" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_cv_hero">
-                    <?php if (!empty($cv_data['hero_img'])): ?>
-                        <div class="mb-3 p-2 border rounded bg-light text-center">
-                            <img src="<?php echo $path_prefix . htmlspecialchars($cv_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cv_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <?php if (!empty($cv_data['hero_img'])): ?>
+                            <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($cv_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
                         </div>
-                    <?php endif; ?>
-                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($cv_data['hero_img'] ?? ''); ?>">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رفع صورة جديدة</label>
-                        <input type="file" class="form-control" name="hero_img" accept="image/*">
                     </div>
                 </form>
             </div>
@@ -70,13 +78,17 @@
             <div class="modal-body p-4">
                 <form id="cvMainForm" method="POST">
                     <input type="hidden" name="action" value="update_cv_main">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">العنوان الرئيسي</label>
-                        <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($cv_data['main_title'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف التفصيلي</label>
-                        <textarea class="form-control" name="main_desc" rows="4" required><?php echo htmlspecialchars($cv_data['main_desc'] ?? ''); ?></textarea>
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($cv_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
+                            <textarea class="form-control" name="main_desc" rows="4" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($cv_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -99,22 +111,29 @@
             <div class="modal-body p-4">
                 <form id="cvAdviceForm" method="POST">
                     <input type="hidden" name="action" value="update_cv_advice">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($cv_data['advice_title'] ?? ''); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
+                            <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($cv_data['advice_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
-                    <label class="form-label fw-bold">قائمة النصائح (تعديل / إضافة / حذف)</label>
-                    <div id="cvAdviceContainer" class="d-flex flex-column gap-2 mb-3">
+                    
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة النصائح (تعديل / إضافة / حذف)</label>
+                    <div id="cvAdviceContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php if (!empty($cv_data['advice_points'])): ?>
                             <?php foreach ($cv_data['advice_points'] as $index => $point): ?>
-                                <div class="input-group advice-item" id="cv_advice_<?php echo $index; ?>">
-                                    <input type="text" class="form-control" name="advice_points[]" value="<?php echo htmlspecialchars($point); ?>">
-                                    <button type="button" class="btn btn-outline-danger" onclick="removeCvRow('cv_advice_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                <div class="p-3 shadow-sm advice-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cv_advice_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="advice_points[]" value="<?php echo htmlspecialchars($point, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النقطة هنا...">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('cv_advice_<?php echo $index; ?>')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addCvAdviceRow()">
+
+                    <!-- زر إضافة نصيحة جديدة بنفس الستايل الموحد -->
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCvAdviceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نصيحة جديدة
                     </button>
                 </form>
@@ -138,38 +157,45 @@
             <div class="modal-body p-4">
                 <form id="cvDownloadForm" method="POST">
                     <input type="hidden" name="action" value="update_cv_downloads">
-                    <label class="form-label fw-bold">قائمة الملفات (تعديل / إضافة / حذف)</label>
+                    
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الملفات (تعديل / إضافة / حذف)</label>
                     <div id="cvDownloadContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php if (!empty($cv_data['download_items'])): ?>
                             <?php foreach ($cv_data['download_items'] as $index => $item): ?>
-                                <div class="p-3 border rounded bg-light position-relative download-item-box" id="cv_download_<?php echo $index; ?>">
-                                    <div class="row g-2">
+                                <div class="p-4 shadow-sm position-relative download-item-box" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cv_download_<?php echo $index; ?>">
+                                    <div class="row g-3">
                                         <div class="col-md-4">
-                                            <label class="form-label small fw-bold">نوع الملف</label>
-                                            <select class="form-select form-select-sm" name="download_types[]">
-                                                <option value="pdf" <?php echo (strtolower($item['type']) === 'pdf') ? 'selected' : ''; ?>>PDF</option>
-                                                <option value="word" <?php echo (strtolower($item['type']) === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
+                                            <select class="form-select" name="download_types[]">
+                                                <option value="pdf" <?php echo (strtolower($item['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($item['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
                                             </select>
                                         </div>
                                         <div class="col-md-8">
-                                            <label class="form-label small fw-bold">عنوان البطاقة</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_titles[]" value="<?php echo htmlspecialchars($item['title'] ?? ''); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">عنوان البطاقة</label>
+                                            <input type="text" class="form-control" name="download_titles[]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان البطاقة">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_subs[]" value="<?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">النوع الفرعي (Sub)</label>
+                                            <input type="text" class="form-control" name="download_subs[]" value="<?php echo htmlspecialchars($item['sub'] ?? 'Example', ENT_QUOTES, 'UTF-8'); ?>" placeholder="النوع الفرعي">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small fw-bold">مسار الملف (URL)</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_files[]" value="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">مسار الملف (URL)</label>
+                                            <input type="text" class="form-control" name="download_files[]" value="<?php echo htmlspecialchars($item['file'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مسار الملف">
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeCvRow('cv_download_<?php echo $index; ?>')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+                                    <div class="mt-3 pt-3 border-top d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;" onclick="removeRow('cv_download_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash me-1"></i> حذف هذا النموذج
+                                        </button>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addCvDownloadRow()">
+
+                    <!-- زر إضافة نموذج تحميل جديد بنفس الستايل الموحد -->
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCvDownloadRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نموذج تحميل جديد
                     </button>
                 </form>
@@ -182,62 +208,92 @@
     </div>
 </div>
 
+
 <!-- JavaScript Engine -->
 <script>
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
     function removeCvRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    let adviceIndex = <?php echo count($cv_data['advice_points'] ?? []); ?>;
+    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = (type === 'danger') ? 'alert-danger' : (type === 'warning') ? 'alert-warning' : 'alert-success';
+        let icon = (type === 'danger') ? 'bi-x-circle-fill' : (type === 'warning') ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill';
+        let title = (type === 'danger') ? 'عذراً، حدث خطأ!' : (type === 'warning') ? 'تنبيه هام' : 'تم بنجاح!';
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div><strong>${title}</strong><div class="small">${message}</div></div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => { if (alertDiv) { alertDiv.classList.remove('show'); setTimeout(() => alertDiv.remove(), 300); } }, 4000);
+    }
+
+    // 3. دالة إضافة صف نصيحة جديد بالستايل الموحد
     function addCvAdviceRow() {
         const container = document.getElementById('cvAdviceContainer');
         const div = document.createElement('div');
-        div.className = 'input-group advice-item';
-        div.id = 'cv_advice_' + adviceIndex;
+        div.className = 'p-3 shadow-sm advice-item d-flex align-items-center gap-2';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'cv_advice_' + Date.now();
         div.innerHTML = `
             <input type="text" class="form-control" name="advice_points[]" placeholder="اكتب النصيحة هنا...">
-            <button type="button" class="btn btn-outline-danger" onclick="removeCvRow('cv_advice_${adviceIndex}')"><i class="bi bi-trash"></i></button>
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeCvRow('${div.id}')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
         `;
         container.appendChild(div);
-        adviceIndex++;
     }
 
-    let downloadIndex = <?php echo count($cv_data['download_items'] ?? []); ?>;
+    // 4. دالة إضافة صف تحميل جديد بالستايل الموحد
     function addCvDownloadRow() {
         const container = document.getElementById('cvDownloadContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 border rounded bg-light position-relative download-item-box';
-        div.id = 'cv_download_' + downloadIndex;
+        div.className = 'p-4 shadow-sm position-relative download-item-box';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'cv_download_' + Date.now();
         div.innerHTML = `
-            <div class="row g-2">
+            <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold">نوع الملف</label>
-                    <select class="form-select form-select-sm" name="download_types[]">
+                    <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
+                    <select class="form-select" name="download_types[]">
                         <option value="pdf">PDF</option>
                         <option value="word" selected>Word</option>
                     </select>
                 </div>
                 <div class="col-md-8">
-                    <label class="form-label small fw-bold">عنوان البطاقة</label>
-                    <input type="text" class="form-control form-control-sm" name="download_titles[]" value="السيرة الذاتية \"CV\"">
+                    <label class="form-label fw-semibold small text-secondary">عنوان البطاقة</label>
+                    <input type="text" class="form-control" name="download_titles[]" value="السيرة الذاتية \"CV\"" placeholder="عنوان البطاقة">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
-                    <input type="text" class="form-control form-control-sm" name="download_subs[]" value="Example">
+                    <label class="form-label fw-semibold small text-secondary">النوع الفرعي (Sub)</label>
+                    <input type="text" class="form-control" name="download_subs[]" value="Example" placeholder="النوع الفرعي">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label small fw-bold">مسار الملف (URL)</label>
-                    <input type="text" class="form-control form-control-sm" name="download_files[]" value="#">
+                    <label class="form-label fw-semibold small text-secondary">مسار الملف (URL)</label>
+                    <input type="text" class="form-control" name="download_files[]" value="#" placeholder="مسار الملف">
                 </div>
             </div>
-            <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeCvRow('cv_download_${downloadIndex}')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+            <div class="mt-3 pt-3 border-top d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;" onclick="removeCvRow('${div.id}')">
+                    <i class="bi bi-trash me-1"></i> حذف هذا النموذج
+                </button>
+            </div>
         `;
         container.appendChild(div);
-        downloadIndex++;
     }
 
-    // ربط كافة النماذج عبر AJAX
+    // 5. ربط كافة النماذج عبر AJAX وإرسال البيانات مع التنبيهات الموحدة
     document.querySelectorAll('#cvBreadcrumbForm, #cvHeroForm, #cvMainForm, #cvAdviceForm, #cvDownloadForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -250,16 +306,17 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('تم الحفظ بنجاح');
-                    location.reload();
+                    showNotification('تم حفظ التغييرات بنجاح، جاري تحديث الصفحة...', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                    showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                 }
             })
             .catch(err => {
                 console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+                showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });
 </script>
+

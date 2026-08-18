@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
+use App\Services\ImageUploader;
+use PDO;
+use Exception;
 
 class CoverLetterController {
     
@@ -20,6 +23,113 @@ class CoverLetterController {
         }
 
         $root_path = realpath(__DIR__ . '/../../../');
+        $is_admin = !empty($_SESSION['is_logged_in']); // توحيد التحقق من جلسة الأدمن
+
+        // استدعاء قاعدة البيانات إن وجدت لطريقة المعالجة والتحديث
+        $db = null;
+        if (class_exists('App\Core\Database') && method_exists('App\Core\Database', 'getConnection')) {
+            $db = \App\Core\Database::getConnection();
+        } elseif (isset($GLOBALS['db'])) {
+            $db = $GLOBALS['db'];
+        }
+
+        // معالجة طلبات التحديث المرسلة من أدمن الموقع
+        if ($db && $is_admin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_coverletter') {
+            
+            // التحقق من رمز الـ CSRF إن وجد في المشروع
+            if (function_exists('verify_csrf_token') && !verify_csrf_token($_POST['csrf_token'] ?? '')) {
+                $_SESSION['error_message'] = 'غير مسموح بهذا الإجراء أو انتهت صلاحية الجلسة.';
+                header('Location: ' . $_SERVER['HTTP_REFERER']);
+                exit;
+            }
+
+            try {
+                $db->beginTransaction();
+
+                $global_data = SiteModel::getSettings();
+                $currentData = isset($global_data['coverletter_page']) ? json_decode($global_data['coverletter_page'], true) : [];
+                $section = $_POST['section_type'] ?? '';
+
+                // 1. تحديث صورة الهيرو
+                if ($section === 'hero' && !empty($_FILES['hero_img']['name'])) {
+                    if (class_exists('App\Services\ImageUploader') || class_exists('ImageUploader')) {
+                        $uploaderClass = class_exists('App\Services\ImageUploader') ? 'App\Services\ImageUploader' : 'ImageUploader';
+                        $uploadedImage = $uploaderClass::upload($_FILES['hero_img'], 'assets/img/education/', ['jpg', 'jpeg', 'png', 'webp']);
+                        if ($uploadedImage) {
+                            if (!empty($currentData['hero_img']) && method_exists($uploaderClass, 'delete')) {
+                                $uploaderClass::delete($currentData['hero_img']);
+                            }
+                            $currentData['hero_img'] = $uploadedImage;
+                        }
+                    }
+                } 
+                // 2. تحديث مسار التنقل (Breadcrumb)
+                elseif ($section === 'breadcrumb') {
+                    $currentData['page_breadcrumb'] = trim($_POST['page_breadcrumb'] ?? '');
+                    $currentData['page_breadcrumb_url'] = trim($_POST['page_breadcrumb_url'] ?? '');
+                } 
+                // 3. تحديث العنوان والوصف الرئيسي
+                elseif ($section === 'main') {
+                    $currentData['main_title'] = trim($_POST['main_title'] ?? '');
+                    $currentData['main_desc'] = trim($_POST['main_desc'] ?? '');
+                } 
+                // 4. تحديث النصائح
+                elseif ($section === 'advice') {
+                    $currentData['advice_title'] = trim($_POST['advice_title'] ?? '');
+                    $raw_points = $_POST['advice_points'] ?? [];
+                    if (is_string($raw_points)) {
+                        $raw_points = explode("\n", $raw_points);
+                    }
+                    $currentData['advice_points'] = array_values(array_filter(array_map('trim', $raw_points)));
+                } 
+                // 5. تحديث الملاحظات
+                elseif ($section === 'notes') {
+                    $currentData['note_title'] = trim($_POST['note_title'] ?? '');
+                    $raw_notes = $_POST['notes'] ?? [];
+                    if (is_string($raw_notes)) {
+                        $raw_notes = explode("\n", $raw_notes);
+                    }
+                    $currentData['notes'] = array_values(array_filter(array_map('trim', $raw_notes)));
+                }
+                // 6. تحديث ملفات التحميل
+                elseif ($section === 'download') {
+                    $items = [];
+                    if (!empty($_POST['dl_title']) && is_array($_POST['dl_title'])) {
+                        for ($i = 0; $i < count($_POST['dl_title']); $i++) {
+                            $items[] = [
+                                'title' => trim($_POST['dl_title'][$i] ?? ''),
+                                'sub' => trim($_POST['dl_sub'][$i] ?? ''),
+                                'type' => trim($_POST['dl_type'][$i] ?? 'pdf'),
+                                'file' => trim($_POST['dl_file'][$i] ?? '#')
+                            ];
+                        }
+                    }
+                    $currentData['download_items'] = $items;
+                }
+
+                $encodedData = json_encode($currentData, JSON_UNESCAPED_UNICODE);
+                
+                // حفظ البيانات المحدثة في جدول إعدادات أو صفحة الموقع
+                if (method_exists('App\Models\SiteModel', 'updateSetting')) {
+                    SiteModel::updateSetting('coverletter_page', $encodedData);
+                } else {
+                    $stmt = $db->prepare("UPDATE site_pages SET content_data = ? WHERE page_key = 'coverletter'");
+                    $stmt->execute([$encodedData]);
+                }
+
+                $db->commit();
+                $_SESSION['success_message'] = 'تم تحديث بيانات الصفحة بنجاح.';
+                
+            } catch (Exception $e) {
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
+                $_SESSION['error_message'] = 'حدث خطأ أثناء الحفظ: ' . $e->getMessage();
+            }
+
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            exit;
+        }
 
         // جلب البيانات والإعدادات العامة من قاعدة البيانات عبر SiteModel باستخدام getSettings المعتمدة في المشروع
         $global_data = SiteModel::getSettings();
@@ -40,7 +150,6 @@ class CoverLetterController {
         $data = $global_data;
         $data['coverletter_page'] = $cover_data;
 
-        $is_admin = !empty($_SESSION['is_logged_in']); // توحيد التحقق من جلسة الأدمن
         $path_prefix = '/';
 
         // ملفات الـ CSS والـ JS الخاصة بالخدمة

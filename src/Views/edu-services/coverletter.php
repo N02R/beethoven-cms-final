@@ -71,7 +71,7 @@
           <?php foreach (($cover['advice_points'] ?? []) as $point): ?>
             <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
               <div class="d-flex align-items-center">
-                <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" class="ms-2" alt="نجمة">
+                <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" class="ms-2" alt="نجمة" width="35">
                 <p class="mb-0"><?php echo htmlspecialchars($point); ?></p>
               </div>
             </div>

@@ -3,34 +3,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use PDO;
-use Exception;
-use App\Core\Database;
+use App\Models\SiteModel;
 
 class MotivationModel {
-    
     /**
-     * جلب بيانات صفحة خطاب الدافع والتحفيز من جدول site_settings
+     * جلب وتجهيز بيانات صفحة خطاب الدافع / التحفيز من الإعدادات المركزية
      */
     public static function getMotivationData(): array {
-        try {
-            $db = Database::getConnection();
-            $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = 'motivation_page' LIMIT 1");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($result && !empty($result['setting_value'])) {
-                $decoded = json_decode($result['setting_value'], true);
-                if (is_array($decoded)) {
-                    return $decoded;
-                }
-            }
-        } catch (Exception $e) {
-            // يمكن تسجيل الخطأ أو تجاهله لضمان عمل الموقع بالقيم الافتراضية
-        }
+        // جلب كافة الإعدادات باستخدام المودل المركزي SiteModel
+        $settings = SiteModel::getSettings();
         
-        // القيم الافتراضية الآمنة في حال عدم وجود سجل أو حدوث خطأ
-        return [
+        $motivationData = isset($settings['motivation_page']) ? json_decode($settings['motivation_page'], true) : [];
+
+        // دمج القيم المعطاة مع القيم الافتراضية لضمان عدم حدوث أخطاء إذا لم يتم حفظ البيانات بعد
+        return array_merge([
             'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
             'page_breadcrumb_url' => '#',
             'hero_img'            => 'assets/img/education/servicesimg3.png',
@@ -53,28 +39,15 @@ class MotivationModel {
                     'type'  => 'pdf',
                     'title' => 'خطاب الدافع / التحفيز',
                     'sub'   => 'Example (PDF)',
-                    'file'  => '#'
+                    'file'  => 'assets/files/motivation_letter.pdf'
                 ],
                 [
                     'type'  => 'word',
                     'title' => 'خطاب الدافع / التحفيز',
                     'sub'   => 'Example (Word)',
-                    'file'  => '#'
+                    'file'  => 'assets/files/motivation_letter.docx'
                 ]
             ]
-        ];
-    }
-
-    /**
-     * تحديث بيانات صفحة خطاب الدافع
-     */
-    public static function updateMotivationData(string $jsonData): bool {
-        try {
-            $db = Database::getConnection();
-            $stmt = $db->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = 'motivation_page'");
-            return $stmt->execute([$jsonData]);
-        } catch (Exception $e) {
-            return false;
-        }
+        ], is_array($motivationData) ? $motivationData : []);
     }
 }

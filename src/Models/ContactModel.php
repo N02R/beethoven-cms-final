@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\SiteModel; // <-- أضفنا هذا السطر لضمان عمل الـ Namespace بشكل صحيح
+
 class ContactModel {
     /**
      * جلب إعدادات صفحة التواصل من قاعدة البيانات عبر SiteModel

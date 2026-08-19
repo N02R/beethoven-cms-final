@@ -1,44 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$motivation_data = $data['motivation_page'] ?? [
-    'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg3.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'خطاب دافع احترافي يعزز طلبك الأكاديمي أو المهني',
-    'main_desc'           => "خطاب الدافع/التحفيز هي وثيقة من صفحة واحدة كحد أقصى. تكتُب فيها عن نفسك وتُظهر إهتمامك بالطلب الذي تتقدم إليه و الهدف الذي تريد تحقيقه مثل: (دورة لغة ألمانية، سنة تحضيرية بهدف دخول الجامعة، درجة البكالوريوس أو الماجستير، التدريب أو الزمالة الطبية، إلخ).\nإضافة الى ذلك، يتركز الأمر أكثر على دراستك المستقبلية وخططك المهنية وكيف أن درجة البكالوريوس مثلا التي تتقدم إليها ستساعدك على تحقيق أهدافك المستقبلية. أيضا يمكنك أن تشرح بها الأسباب التي تجعل منك المرشح المثالي لهذا المنصب.",
-    'advice_section'      => [
-        'title' => 'نصائح سريعة لكتابة خطاب الدافع',
-        'items' => [
-            'ابدأ بمقدمة تلخّص دوافعك',
-            'اذكر أمثلة ملموسة (دراسة، تدريب، تجربة)',
-            'اربط خبراتك بأهدافك القادمة',
-            'استخدم لغة واضحة وشخصية',
-            'احصل على مراجعة من مختص أو ناطق أصلي.',
-            'راجع الأخطاء اللغوية جيدًا.'
-        ]
-    ],
-    'download_items'      => [
-        [
-            'type'  => 'pdf',
-            'title' => 'خطاب الدافع / التحفيز',
-            'sub'   => 'Example (PDF)',
-            'file'  => 'assets/files/motivation_letter.pdf'
-        ],
-        [
-            'type'  => 'word',
-            'title' => 'خطاب الدافع / التحفيز',
-            'sub'   => 'Example (Word)',
-            'file'  => 'assets/files/motivation_letter.docx'
-        ]
-    ]
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -154,3 +113,10 @@ $motivation_data = $data['motivation_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+<?php
+    $motivation_modals_file = __DIR__ . '/includes/admin_motivation_modals.php';
+    if (!empty($is_admin) && file_exists($motivation_modals_file)) { 
+        include_once $motivation_modals_file; 
+    }
+?>

@@ -247,7 +247,6 @@ class SettingsController
             elseif ($action === 'update_about_section') {
                 $oldAboutData = json_decode($currentSettings['about_section'] ?? '', true) ?: [];
 
-                // معالجة الصور (Main Image)
                 $mainImg = $_POST['old_about_main_img'] ?? ($oldAboutData['main_img'] ?? '');
                 if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['main_img'])) {
@@ -257,7 +256,6 @@ class SettingsController
                     $mainImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة الصور (Sub Image)
                 $subImg = $_POST['old_about_sub_img'] ?? ($oldAboutData['sub_img'] ?? '');
                 if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['sub_img'])) {
@@ -267,7 +265,6 @@ class SettingsController
                     $subImg = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرؤية (Vision Icon)
                 $visionIcon = $_POST['old_vision_icon'] ?? ($oldAboutData['vision_icon'] ?? '');
                 if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['vision_icon'])) {
@@ -277,7 +274,6 @@ class SettingsController
                     $visionIcon = 'assets/uploads/' . $filename;
                 }
 
-                // معالجة أيقونة الرسالة (Message Icon)
                 $messageIcon = $_POST['old_message_icon'] ?? ($oldAboutData['message_icon'] ?? '');
                 if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldAboutData['message_icon'])) {
@@ -602,7 +598,6 @@ class SettingsController
                         $jobProgramData[$index]['img'] = $item['old_img'] ?? '';
                     }
                     
-                    // معالجة خانة التحقق التصميم الداكن (Highlight)
                     $jobProgramData[$index]['is_dark'] = isset($item['is_dark']) ? 1 : 0;
                     unset($jobProgramData[$index]['old_img']);
                 }
@@ -745,8 +740,6 @@ class SettingsController
             // ==========================================
             // 29-34. قسم تحديث صفحة خطاب الطلب (Cover Letter)
             // ==========================================
-
-            // 29. تحديث مسار التنقل (Breadcrumb)
             elseif ($action === 'update_cover_breadcrumb') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 $oldCoverData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -755,8 +748,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 30. تحديث صورة الهيرو (Hero Image) لصفحة خطاب الطلب
             elseif ($action === 'update_cover_hero') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 $heroImg = $_POST['old_img'] ?? ($oldCoverData['hero_img'] ?? '');
@@ -773,8 +764,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 31. تحديث العنوان والوصف الرئيسي (Main Title & Description)
             elseif ($action === 'update_cover_main') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 $oldCoverData['main_title'] = $_POST['main_title'] ?? '';
@@ -783,8 +772,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 32. تحديث نقاط النصائح (Advice Points)
             elseif ($action === 'update_cover_advice') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 $oldCoverData['advice_title'] = $_POST['advice_title'] ?? '';
@@ -793,8 +780,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 33. تحديث الملاحظات الهامة (Important Notes)
             elseif ($action === 'update_cover_notes') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 $oldCoverData['note_title'] = $_POST['note_title'] ?? '';
@@ -803,8 +788,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCoverData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'coverletter_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 34. تحديث نماذج التحميل المتاحة (Download Items)
             elseif ($action === 'update_cover_downloads') {
                 $oldCoverData = json_decode($currentSettings['coverletter_page'] ?? '', true) ?: [];
                 
@@ -829,10 +812,8 @@ class SettingsController
             }
 
             // ==========================================
-            // 35-40. قسم تحديث صفحة السيرة الذاتية (CV Page) - [معتمدة على المفتاح cv_page بالكامل]
+            // 35-40. قسم تحديث صفحة السيرة الذاتية (CV Page)
             // ==========================================
-
-            // 35. تحديث مسار التنقل (Breadcrumb) للسيرة الذاتية
             elseif ($action === 'update_cv_breadcrumb') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 $oldCvData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -841,8 +822,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 36. تحديث صورة الهيرو (Hero Image) لصفحة السيرة الذاتية
             elseif ($action === 'update_cv_hero') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 $heroImg = $_POST['old_img'] ?? ($oldCvData['hero_img'] ?? '');
@@ -859,8 +838,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 37. تحديث العنوان والوصف الرئيسي (Main Title & Description) للسيرة الذاتية
             elseif ($action === 'update_cv_main') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 $oldCvData['main_title'] = $_POST['main_title'] ?? '';
@@ -869,8 +846,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 38. تحديث نقاط النصائح (Advice Points) للسيرة الذاتية
             elseif ($action === 'update_cv_advice') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 $oldCvData['advice_title'] = $_POST['advice_title'] ?? '';
@@ -879,8 +854,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 39. تحديث الملاحظات الهامة (Important Notes) للسيرة الذاتية
             elseif ($action === 'update_cv_notes') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 $oldCvData['note_title'] = $_POST['note_title'] ?? '';
@@ -889,8 +862,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 40. تحديث نماذج التحميل المتاحة (Download Items) للسيرة الذاتية
             elseif ($action === 'update_cv_downloads') {
                 $oldCvData = json_decode($currentSettings['cv_page'] ?? '', true) ?: [];
                 
@@ -912,6 +883,85 @@ class SettingsController
                 $oldCvData['download_items'] = $downloadItems;
                 $jsonVal = json_encode($oldCvData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'cv_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
+            // ==========================================
+            // 41-46. قسم تحديث صفحة خطاب الدافع (Motivation Page)
+            // ==========================================
+            elseif ($action === 'update_motivation_breadcrumb') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                $oldMotivData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $oldMotivData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_motivation_hero') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                $heroImg = $_POST['old_img'] ?? ($oldMotivData['hero_img'] ?? '');
+
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldMotivData['hero_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldMotivData['hero_img']);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $oldMotivData['hero_img'] = $heroImg;
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_motivation_main') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                $oldMotivData['main_title'] = $_POST['main_title'] ?? '';
+                $oldMotivData['main_desc'] = $_POST['main_desc'] ?? '';
+
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_motivation_advice') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                $adviceTitle = $_POST['advice_title'] ?? '';
+                $adviceItems = $_POST['advice_items'] ?? [];
+
+                $oldMotivData['advice_section'] = [
+                    'title' => $adviceTitle,
+                    'items' => is_array($adviceItems) ? $adviceItems : []
+                ];
+
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_motivation_notes') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                $oldMotivData['note_title'] = $_POST['note_title'] ?? '';
+                $oldMotivData['notes'] = $_POST['notes'] ?? [];
+
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_motivation_downloads') {
+                $oldMotivData = json_decode($currentSettings['motivation_page'] ?? '', true) ?: [];
+                
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'PDF',
+                        'title' => $titles[$i] ?? '',
+                        'sub'   => $subs[$i] ?? '',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+
+                $oldMotivData['download_items'] = $downloadItems;
+                $jsonVal = json_encode($oldMotivData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'motivation_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             $pdo->commit();

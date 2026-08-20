@@ -89,7 +89,7 @@
           if (!empty($downloads)):
             foreach ($downloads as $dl):
               $is_pdf = (strtolower($dl['type'] ?? 'pdf') === 'pdf');
-              $icon_img = $is_pdf ? 'assets/img/education/Grouppdf.png' : 'assets/img/education/Groupword.png';
+              $icon_img = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
         ?>
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card">

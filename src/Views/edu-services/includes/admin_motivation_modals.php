@@ -1,11 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
-$motivation_data = $data['motivation_page'] ?? [];
-?>
-
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="motivationBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -17,13 +9,17 @@ $motivation_data = $data['motivation_page'] ?? [];
             <div class="modal-body p-4">
                 <form id="motivationBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_motivation_breadcrumb">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">اسم الصفحة في المسار</label>
-                        <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($motivation_data['page_breadcrumb'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رابط الصفحة (URL)</label>
-                        <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($motivation_data['page_breadcrumb_url'] ?? '#'); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($motivation_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($motivation_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -46,19 +42,25 @@ $motivation_data = $data['motivation_page'] ?? [];
             <div class="modal-body p-4">
                 <form id="motivationHeroForm" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_motivation_hero">
-                    <?php if (!empty($motivation_data['hero_img'])): ?>
-                        <div class="mb-3 p-2 border rounded bg-light text-center">
-                            <img src="<?php echo $path_prefix . htmlspecialchars($motivation_data['hero_img']); ?>" style="max-height: 120px; object-fit: contain;" alt="Hero Preview">
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($motivation_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <?php if (!empty($motivation_data['hero_img'])): ?>
+                            <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($motivation_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
                         </div>
-                    <?php endif; ?>
-                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($motivation_data['hero_img'] ?? ''); ?>">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">رفع صورة جديدة</label>
-                        <input type="file" class="form-control" name="hero_img" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">موضع الخلفية (Background Position)</label>
-                        <input type="text" class="form-control" name="hero_position" value="<?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>">
+                        
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">موضع الخلفية (Background Position)</label>
+                            <input type="text" class="form-control" name="hero_position" value="<?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center', ENT_QUOTES, 'UTF-8'); ?>" placeholder="center center">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -81,13 +83,17 @@ $motivation_data = $data['motivation_page'] ?? [];
             <div class="modal-body p-4">
                 <form id="motivationMainForm" method="POST">
                     <input type="hidden" name="action" value="update_motivation_main">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">العنوان الرئيسي</label>
-                        <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($motivation_data['main_title'] ?? ''); ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">الوصف التفصيلي</label>
-                        <textarea class="form-control" name="main_desc" rows="5" required><?php echo htmlspecialchars($motivation_data['main_desc'] ?? ''); ?></textarea>
+                    
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($motivation_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
+                            <textarea class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($motivation_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -110,27 +116,34 @@ $motivation_data = $data['motivation_page'] ?? [];
             <div class="modal-body p-4">
                 <form id="motivationAdviceForm" method="POST">
                     <input type="hidden" name="action" value="update_motivation_advice">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">عنوان القسم</label>
-                        <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($motivation_data['advice_section']['title'] ?? 'نصائح سريعة لكتابة خطاب الدافع'); ?>">
+                    
+                    <!-- حاوية العنوان بنفس الستايل الموحد -->
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
+                            <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($motivation_data['advice_section']['title'] ?? 'نصائح سريعة لكتابة خطاب الدافع', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
-                    <label class="form-label fw-bold">قائمة النصائح (تعديل / إضافة / حذف)</label>
-                    <div id="motivationAdviceContainer" class="d-flex flex-column gap-2 mb-3">
+                    
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة النصائح (تعديل / إضافة / حذف)</label>
+                    <div id="motivationAdviceContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php 
                           $advice_items = $motivation_data['advice_section']['items'] ?? [];
                           if (!empty($advice_items)): 
                             foreach ($advice_items as $index => $item): 
                         ?>
-                                <div class="input-group advice-item" id="motivation_advice_<?php echo $index; ?>">
-                                    <input type="text" class="form-control" name="advice_items[]" value="<?php echo htmlspecialchars($item); ?>">
-                                    <button type="button" class="btn btn-outline-danger" onclick="removeMotivationRow('motivation_advice_<?php echo $index; ?>')"><i class="bi bi-trash"></i></button>
+                                <div class="p-3 shadow-sm advice-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="motivation_advice_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="advice_items[]" value="<?php echo htmlspecialchars($item, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النصيحة هنا...">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('motivation_advice_<?php echo $index; ?>')" title="حذف النصيحة"><i class="bi bi-trash"></i></button>
                                 </div>
                         <?php 
                             endforeach; 
                           endif; 
                         ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addMotivationAdviceRow()">
+
+                    <!-- زر إضافة نصيحة جديدة بنفس الستايل الموحد -->
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMotivationAdviceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نصيحة جديدة
                     </button>
                 </form>
@@ -154,43 +167,50 @@ $motivation_data = $data['motivation_page'] ?? [];
             <div class="modal-body p-4">
                 <form id="motivationDownloadForm" method="POST">
                     <input type="hidden" name="action" value="update_motivation_downloads">
-                    <label class="form-label fw-bold">قائمة الملفات (تعديل / إضافة / حذف)</label>
+                    
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الملفات (تعديل / إضافة / حذف)</label>
                     <div id="motivationDownloadContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php 
                           $download_items = $motivation_data['download_items'] ?? [];
                           if (!empty($download_items)): 
                             foreach ($download_items as $index => $dl): 
                         ?>
-                                <div class="p-3 border rounded bg-light position-relative download-item-box" id="motivation_download_<?php echo $index; ?>">
-                                    <div class="row g-2">
+                                <div class="p-4 shadow-sm position-relative download-item-box" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="motivation_download_<?php echo $index; ?>">
+                                    <div class="row g-3">
                                         <div class="col-md-4">
-                                            <label class="form-label small fw-bold">نوع الملف</label>
-                                            <select class="form-select form-select-sm" name="download_types[]">
-                                                <option value="pdf" <?php echo (strtolower($dl['type']) === 'pdf') ? 'selected' : ''; ?>>PDF</option>
-                                                <option value="word" <?php echo (strtolower($dl['type']) === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
+                                            <select class="form-select" name="download_types[]">
+                                                <option value="pdf" <?php echo (strtolower($dl['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo (strtolower($dl['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
                                             </select>
                                         </div>
                                         <div class="col-md-8">
-                                            <label class="form-label small fw-bold">عنوان البطاقة</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_titles[]" value="<?php echo htmlspecialchars($dl['title'] ?? ''); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">عنوان البطاقة</label>
+                                            <input type="text" class="form-control" name="download_titles[]" value="<?php echo htmlspecialchars($dl['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان البطاقة">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_subs[]" value="<?php echo htmlspecialchars($dl['sub'] ?? ''); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">النوع الفرعي (Sub)</label>
+                                            <input type="text" class="form-control" name="download_subs[]" value="<?php echo htmlspecialchars($dl['sub'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="النوع الفرعي">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label small fw-bold">مسار الملف (URL)</label>
-                                            <input type="text" class="form-control form-control-sm" name="download_files[]" value="<?php echo htmlspecialchars($dl['file'] ?? '#'); ?>">
+                                            <label class="form-label fw-semibold small text-secondary">مسار الملف (URL)</label>
+                                            <input type="text" class="form-control" name="download_files[]" value="<?php echo htmlspecialchars($dl['file'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مسار الملف">
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeMotivationRow('motivation_download_<?php echo $index; ?>')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+                                    <div class="mt-3 pt-3 border-top d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;" onclick="removeRow('motivation_download_<?php echo $index; ?>')">
+                                            <i class="bi bi-trash me-1"></i> حذف هذا النموذج
+                                        </button>
+                                    </div>
                                 </div>
                         <?php 
                             endforeach; 
                           endif; 
                         ?>
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="addMotivationDownloadRow()">
+
+                    <!-- زر إضافة نموذج تحميل جديد بنفس الستايل الموحد -->
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMotivationDownloadRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نموذج تحميل جديد
                     </button>
                 </form>

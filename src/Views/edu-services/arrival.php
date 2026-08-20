@@ -1,23 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$arrival_data = $data['arrival_page'] ?? [
-    'hero_img'            => 'assets/img/education/servicesimg9.png',
-    'main_title'          => 'إستمتع برحلتك إلى ألمانيا، وابدأ حياتك الجديدة دون أية مشقة!',
-    'main_desc'           => '',
-    'advice_title'        => 'ما الذي يجب فعله قبل السفر؟',
-    'advice_desc'         => '',
-    'tips'                => [],
-    'notes'               => [],
-    'note_title'          => 'ملاحظات هامة !!',
-    'page_breadcrumb'     => 'الإستقبال في المطار',
-    'page_breadcrumb_url' => '#'
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

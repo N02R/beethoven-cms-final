@@ -276,17 +276,16 @@
         }, 4000);
     }
 
-    // 3. دالة إضافة صف جديد لنصائح كتابة خطاب الدافع
+    // 3. دالة إضافة صف جديد لنصائح كتابة خطاب الدافع (تستخدم مصفوفة مرنة advice_items[])
     function addMotivationAdviceRow() {
         const container = document.getElementById('motivationAdviceContainer');
         if (!container) return;
-        const count = container.querySelectorAll('.advice-item-row').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm advice-item-row d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'motivation_advice_' + Date.now() + '_' + count;
+        div.id = 'motivation_advice_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
         div.innerHTML = `
-            <input type="text" class="form-control advice-item-input" name="advice_items[${count}]" placeholder="اكتب النصيحة هنا...">
+            <input type="text" class="form-control advice-item-input" name="advice_items[]" placeholder="اكتب النصيحة هنا...">
             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف النصيحة">
                 <i class="bi bi-trash"></i>
             </button>
@@ -336,30 +335,11 @@
         container.appendChild(div);
     }
 
-    // 5. معالج الحفظ وإعادة الترقيم التلقائي لجميع النماذج عبر AJAX
+    // 5. معالج الحفظ وإرسال البيانات عبر AJAX بأمان تام
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#motivationBreadcrumbForm, #motivationHeroForm, #motivationMainForm, #motivationAdviceForm, #motivationDownloadForm, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                // إعادة ترقيم صفوف النصائح بدقة
-                form.querySelectorAll('.advice-item-row').forEach((row, index) => {
-                    const input = row.querySelector('.advice-item-input') || row.querySelector('input[type="text"]');
-                    if (input) input.name = `advice_items[${index}]`;
-                });
-
-                // إعادة ترقيم صفوف التحميل بدقة
-                form.querySelectorAll('.download-item-box').forEach((row, index) => {
-                    const typeInput = row.querySelector('.download-type') || row.querySelector('select');
-                    const titleInput = row.querySelector('.download-title') || row.querySelector('input[name*="[title]"]');
-                    const subInput = row.querySelector('.download-sub') || row.querySelector('input[name*="[sub]"]');
-                    const fileInput = row.querySelector('.download-file') || row.querySelector('input[name*="[file]"]');
-
-                    if (typeInput) typeInput.name = `download_items[${index}][type]`;
-                    if (titleInput) titleInput.name = `download_items[${index}][title]`;
-                    if (subInput) subInput.name = `download_items[${index}][sub]`;
-                    if (fileInput) fileInput.name = `download_items[${index}][file]`;
-                });
 
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -368,11 +348,11 @@
                 }
 
                 fetch('index.php?url=admin/settings/save', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': csrfToken,
-                'Accept': 'application/json'
-            },
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 })
                 .then(response => response.text())
@@ -398,4 +378,5 @@
         });
     });
 </script>
+
 

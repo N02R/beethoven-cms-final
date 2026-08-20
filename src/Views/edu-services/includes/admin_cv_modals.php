@@ -298,6 +298,7 @@
     // 3. وظائف إضافة الصفوف (CV Modals)
     function addCvAdviceRow() {
         const container = document.getElementById('cvAdviceContainer');
+        if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm advice-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -311,6 +312,7 @@
 
     function addCvNoteRow() {
         const container = document.getElementById('cvNotesContainer');
+        if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm note-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -324,6 +326,7 @@
 
     function addCvDownloadRow() {
         const container = document.getElementById('cvDownloadContainer');
+        if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-4 shadow-sm position-relative download-item-box';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -359,33 +362,47 @@
         container.appendChild(div);
     }
 
-    // 4. معالج الحفظ الموحد لكل الفورمات عبر AJAX
+    // 4. معالج الحفظ الموحد لكل الفورمات بالمنطق المطلوب تماماً
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
                 
-                fetch(this.getAttribute('action') || 'index.php?url=admin/settings/save', {
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
+
+                fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
-                    headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showNotification(data.message || 'عذراً، لم يتم الحفظ', 'danger');
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('خطأ في الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
                 });
             });
         });
     });
 </script>
+

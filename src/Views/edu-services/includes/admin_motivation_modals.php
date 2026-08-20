@@ -367,12 +367,12 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch('../admin/api/save_config.php', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
+                fetch('index.php?url=admin/settings/save', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': csrfToken,
+                'Accept': 'application/json'
+            },
                     body: formData
                 })
                 .then(response => response.text())

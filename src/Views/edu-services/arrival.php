@@ -94,3 +94,10 @@
     </div>
   </section>
   <!-- custom-services-info end-->
+
+<?php
+    $arrival_modals_file = __DIR__ . '/includes/admin_arrival_modals.php';
+    if (!empty($is_admin) && file_exists($arrival_modals_file)) { 
+        include_once $arrival_modals_file; 
+    }
+?>

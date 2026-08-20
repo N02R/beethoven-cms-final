@@ -527,6 +527,80 @@ class SettingsController
                 $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
+            // ==========================================
+            // قسم تحديث صفحة الوصول (Arrival Page)
+            // ==========================================
+            elseif ($action === 'update_arrival_breadcrumb') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                $oldArrivalData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $oldArrivalData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_arrival_hero') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                $heroImg = $_POST['old_img'] ?? ($oldArrivalData['hero_img'] ?? '');
+
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldArrivalData['hero_img'])) {
+                        $this->deleteOldImageFile($root_path, $oldArrivalData['hero_img']);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+
+                $oldArrivalData['hero_img'] = $heroImg;
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_arrival_main') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                $oldArrivalData['main_title'] = $_POST['main_title'] ?? '';
+                $oldArrivalData['main_desc'] = $_POST['main_desc'] ?? '';
+
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_arrival_advice') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                $oldArrivalData['advice_title'] = $_POST['advice_title'] ?? '';
+                $oldArrivalData['advice_points'] = $_POST['advice_points'] ?? [];
+
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_arrival_notes') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                $oldArrivalData['note_title'] = $_POST['note_title'] ?? '';
+                $oldArrivalData['notes'] = $_POST['notes'] ?? [];
+
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+            elseif ($action === 'update_arrival_downloads') {
+                $oldArrivalData = json_decode($currentSettings['arrival_page'] ?? '', true) ?: [];
+                
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'PDF',
+                        'title' => $titles[$i] ?? '',
+                        'sub'   => $subs[$i] ?? '',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+
+                $oldArrivalData['download_items'] = $downloadItems;
+                $jsonVal = json_encode($oldArrivalData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'arrival_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
+
             // 21. تحديث هيرو فرص العمل والتوظيف (Job Hero)
             elseif ($action === 'update_job_hero') {
                 $oldJobHeroData = json_decode($currentSettings['job_hero'] ?? '', true) ?: [];

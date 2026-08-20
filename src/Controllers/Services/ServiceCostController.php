@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace App\Controllers\Services;
 
+use App\Models\SiteModel;
+
 class ServiceCostController {
     
     public function index(string $lang = 'de'): void {
-        // تعريف الثابت الأمني لمنع خطأ Access Denied
-        if (!defined('ALLOWED_ACCESS')) {
-            define('ALLOWED_ACCESS', true);
-        }
-
+        // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
 
+        // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
@@ -22,62 +21,58 @@ class ServiceCostController {
             session_start();
         }
 
+        // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../../');
-        $config_file = $root_path . '/announcement_config.json';
-        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
+
+        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
+        $data = SiteModel::getGlobalData();
+
+        // 2. جلب بيانات صفحة تكاليف الخدمات الخاصة
+        $global_settings = SiteModel::getSettings();
+        $service_cost_data = isset($global_settings['service_cost_page']) ? json_decode($global_settings['service_cost_page'], true) : [];
         
-        $pricelist_data = $global_data['pricelist_page'] ?? [
-            'page_breadcrumb'     => 'قائمة أسعار الخدمات',
-            'page_breadcrumb_url' => '#',
-            'hero_img'            => 'assets/img/education/servicesimg15.png',
-            'hero_position'       => 'center center',
-            'main_title'          => 'قائمة الأسعار العامة',
-            'main_desc'           => 'يسعى فريق عمل بيتهوفن سيتي جاهدين لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.',
-            'download_item'       => [
-                'type'  => 'pdf',
-                'title' => 'قائمة الأسعار العامة',
-                'file'  => 'assets/files/general_price_list.pdf'
-            ]
-        ];
+        $data['service_cost_page'] = $service_cost_data;
 
-        $data = $global_data;
-        $data['pricelist_page'] = $pricelist_data;
+        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
+        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+        $user_role = $_SESSION['role'] ?? '';
+        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
 
-        $is_admin = !empty($_SESSION['is_admin']) || (!empty($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && !empty($_SESSION['role']) && $_SESSION['role'] === 'admin');
+        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+
+        // متغيرات إضافية قد تحتاجها الـ View
         $path_prefix = '/';
-
-        // ملفات الـ CSS الخاصة بالخدمة
-        $page_css = [
-            '/edu-services/css/edu-services.css'
-        ]; 
-
+        $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js = [];
-        $custom_script = '';
+
+        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
+        extract($data);
 
         // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/includes/header.php';
+        $header_file = $root_path . '/src/Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
+        } else {
+            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء الـ View الخاص بالصفحة
-        $view_file = __DIR__ . '/../../Views/edu-services/services-cost.php';
+        // 2. استدعاء ملف الـ View الخاص بتكاليف الخدمات (service-cost.php أو ما يطابقه)
+        $view_file = $root_path . '/src/Views/edu-services/service-cost.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
-            echo "<div class='container py-5 text-center'><h3>Service Cost View file not found.</h3></div>";
+            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء مودالات الأدمن إن وجدت
-        $admin_modals = $root_path . '/includes/admin_pricelist_modals.php';
-        if (!empty($is_admin) && file_exists($admin_modals)) {
-            include_once $admin_modals;
-        }
-
-        // 4. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/includes/footer.php';
+        // 3. استدعاء الفوتر المشترك
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
+        } else {
+            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

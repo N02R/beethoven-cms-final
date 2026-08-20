@@ -225,85 +225,177 @@
 
 <!-- JavaScript Engine -->
 <script>
-    // دالة عامة لحذف أي صف أو عنصر ديناميكي
-    function removeMotivationRow(id) {
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
+    function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // إدارة صفوف نصائح كتابة خطاب الدافع
-    let motivationAdviceIndex = <?php echo count($motivation_data['advice_section']['items'] ?? []); ?>;
-    function addMotivationAdviceRow() {
-        const container = document.getElementById('motivationAdviceContainer');
-        const div = document.createElement('div');
-        div.className = 'input-group advice-item';
-        div.id = 'motivation_advice_' + motivationAdviceIndex;
-        div.innerHTML = `
-            <input type="text" class="form-control" name="advice_items[]" placeholder="اكتب النصيحة هنا...">
-            <button type="button" class="btn btn-outline-danger" onclick="removeMotivationRow('motivation_advice_${motivationAdviceIndex}')"><i class="bi bi-trash"></i></button>
+    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         `;
-        container.appendChild(div);
-        motivationAdviceIndex++;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
     }
 
-    // إدارة صفوف نماذج التحميل الديناميكية
-    let motivationDownloadIndex = <?php echo count($motivation_data['download_items'] ?? []); ?>;
+    // 3. دالة إضافة صف جديد لنصائح كتابة خطاب الدافع
+    function addMotivationAdviceRow() {
+        const container = document.getElementById('motivationAdviceContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.advice-item-row').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm advice-item-row d-flex align-items-center gap-2';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'motivation_advice_' + Date.now() + '_' + count;
+        div.innerHTML = `
+            <input type="text" class="form-control advice-item-input" name="advice_items[${count}]" placeholder="اكتب النصيحة هنا...">
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف النصيحة">
+                <i class="bi bi-trash"></i>
+            </button>
+        `;
+        container.appendChild(div);
+    }
+
+    // 4. دالة إضافة صف جديد لنماذج التحميل الديناميكية
     function addMotivationDownloadRow() {
         const container = document.getElementById('motivationDownloadContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.download-item-box').length;
         const div = document.createElement('div');
-        div.className = 'p-3 border rounded bg-light position-relative download-item-box';
-        div.id = 'motivation_download_' + motivationDownloadIndex;
+        div.className = 'p-3 shadow-sm download-item-box position-relative';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'motivation_download_' + Date.now() + '_' + count;
         div.innerHTML = `
-            <div class="row g-2">
+            <div class="row g-2 mb-3">
                 <div class="col-md-4">
-                    <label class="form-label small fw-bold">نوع الملف</label>
-                    <select class="form-select form-select-sm" name="download_types[]">
+                    <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
+                    <select class="form-select download-type" name="download_items[${count}][type]">
                         <option value="pdf">PDF</option>
                         <option value="word" selected>Word</option>
                     </select>
                 </div>
                 <div class="col-md-8">
-                    <label class="form-label small fw-bold">عنوان البطاقة</label>
-                    <input type="text" class="form-control form-control-sm" name="download_titles[]" value="خطاب الدافع / التحفيز">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold">النوع الفرعي (Sub)</label>
-                    <input type="text" class="form-control form-control-sm" name="download_subs[]" value="Example (Word)">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label small fw-bold">مسار الملف (URL)</label>
-                    <input type="text" class="form-control form-control-sm" name="download_files[]" value="assets/files/motivation_letter.docx">
+                    <label class="form-label fw-semibold small text-secondary">عنوان البطاقة</label>
+                    <input type="text" class="form-control download-title" name="download_items[${count}][title]" value="خطاب الدافع / التحفيز" placeholder="عنوان البطاقة">
                 </div>
             </div>
-            <button type="button" class="btn btn-outline-danger btn-sm mt-3" onclick="removeMotivationRow('motivation_download_${motivationDownloadIndex}')"><i class="bi bi-trash"></i> حذف هذا النموذج</button>
+            <div class="row g-2 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small text-secondary">النوع الفرعي (Sub)</label>
+                    <input type="text" class="form-control download-sub" name="download_items[${count}][sub]" value="Example (Word)" placeholder="النوع الفرعي">
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold small text-secondary">مسار الملف (URL)</label>
+                    <input type="text" class="form-control download-file" name="download_items[${count}][file]" value="assets/files/motivation_letter.docx" placeholder="مسار الملف">
+                </div>
+                <div class="col-md-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف النموذج">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
         `;
         container.appendChild(div);
-        motivationDownloadIndex++;
     }
 
-    // ربط كافة النماذج عبر AJAX للإرسال الفوري وتحديث الصفحة
-    document.querySelectorAll('#motivationBreadcrumbForm, #motivationHeroForm, #motivationMainForm, #motivationAdviceForm, #motivationDownloadForm').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
+    // 5. معالج الحفظ وإعادة الترقيم التلقائي لجميع النماذج عبر AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('#motivationBreadcrumbForm, #motivationHeroForm, #motivationMainForm, #motivationAdviceForm, #motivationDownloadForm, .admin-settings-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            fetch('../admin/api/save_config.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('تم الحفظ بنجاح');
-                    location.reload();
-                } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+                // إعادة ترقيم صفوف النصائح بدقة
+                form.querySelectorAll('.advice-item-row').forEach((row, index) => {
+                    const input = row.querySelector('.advice-item-input') || row.querySelector('input[type="text"]');
+                    if (input) input.name = `advice_items[${index}]`;
+                });
+
+                // إعادة ترقيم صفوف التحميل بدقة
+                form.querySelectorAll('.download-item-box').forEach((row, index) => {
+                    const typeInput = row.querySelector('.download-type') || row.querySelector('select');
+                    const titleInput = row.querySelector('.download-title') || row.querySelector('input[name*="[title]"]');
+                    const subInput = row.querySelector('.download-sub') || row.querySelector('input[name*="[sub]"]');
+                    const fileInput = row.querySelector('.download-file') || row.querySelector('input[name*="[file]"]');
+
+                    if (typeInput) typeInput.name = `download_items[${index}][type]`;
+                    if (titleInput) titleInput.name = `download_items[${index}][title]`;
+                    if (subInput) subInput.name = `download_items[${index}][sub]`;
+                    if (fileInput) fileInput.name = `download_items[${index}][file]`;
+                });
+
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
                 }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+
+                fetch('../admin/api/save_config.php', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });
 </script>
+

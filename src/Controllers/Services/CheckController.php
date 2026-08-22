@@ -64,12 +64,20 @@ class CheckController {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
+        if ($is_admin) {
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_check_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            }
+        }
+
+        // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             require_once $footer_file;
         } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
+use App\Models\CheckModel;
 
 class CheckController {
     public function index(string $lang = 'de'): void {
@@ -26,11 +27,8 @@ class CheckController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة الفحص أو المراجعة الخاصة
-        $global_settings = SiteModel::getSettings();
-        $check_data = isset($global_settings['check_page']) ? json_decode($global_settings['check_page'], true) : [];
-        
-        $data['check_page'] = $check_data;
+        // 2. جلب بيانات صفحة الفحص والمراجعة عبر المودل الخاص بها
+        $data['check_page'] = CheckModel::getCheckData();
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

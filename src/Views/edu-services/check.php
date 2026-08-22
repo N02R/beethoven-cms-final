@@ -1,27 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$check_data = $data['check_page'] ?? [
-    'page_breadcrumb'     => 'تحقق من شهاداتك التعليمية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg13.png',
-    'main_title'          => 'إفحص و تحقق من شهاداتك التعليمية السابقة',
-    'main_desc'           => '',
-    'note_title'          => 'ملاحظات هامة !!',
-    'notes'               => [],
-    'links_intro'         => '',
-    'anabin_url'          => 'https://anabin.kmk.org/anabin.html',
-    'uniassist_url'       => 'https://www.uni-assist.de',
-    'uni_contact_intro'   => '',
-    'condition_1'         => '',
-    'condition_2'         => '',
-    'conclusion_text'     => ''
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

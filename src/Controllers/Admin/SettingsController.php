@@ -647,18 +647,17 @@ class SettingsController
             elseif ($action === 'update_check_links') {
                 $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
                 
-                $oldCheckData['links_intro']        = $_POST['links_intro'] ?? '';
-                $oldCheckData['anabin_url']         = $_POST['anabin_url'] ?? '';
-                $oldCheckData['uniassist_url']      = $_POST['uniassist_url'] ?? '';
-                $oldCheckData['uni_contact_intro']  = $_POST['uni_contact_intro'] ?? '';
-                $oldCheckData['condition_1']        = $_POST['condition_1'] ?? '';
-                $oldCheckData['condition_2']        = $_POST['condition_2'] ?? '';
-                $oldCheckData['conclusion_text']    = $_POST['conclusion_text'] ?? '';
+                $oldCheckData['links_intro']       = $_POST['links_intro'] ?? '';
+                $oldCheckData['anabin_url']        = $_POST['anabin_url'] ?? '';
+                $oldCheckData['uniassist_url']     = $_POST['uniassist_url'] ?? '';
+                $oldCheckData['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
+                $oldCheckData['condition_1']       = $_POST['condition_1'] ?? '';
+                $oldCheckData['condition_2']       = $_POST['condition_2'] ?? '';
+                $oldCheckData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
 
                 $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
             // 21. تحديث هيرو فرص العمل والتوظيف (Job Hero)
             elseif ($action === 'update_job_hero') {
                 $oldJobHeroData = json_decode($currentSettings['job_hero'] ?? '', true) ?: [];

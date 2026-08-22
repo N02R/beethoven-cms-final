@@ -57,9 +57,3 @@
 </section>
 <!-- ===== GUIDE PAGE END ===== -->
 
-<?php 
-$guide_modals_file = __DIR__ . '/admin/admin_header_modals.php';
-if (!empty($is_admin) && file_exists($guide_modals_file)) { 
-    include_once $guide_modals_file; 
-}
-?>

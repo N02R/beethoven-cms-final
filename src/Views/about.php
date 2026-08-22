@@ -1,9 +1,3 @@
-<?php
-/**
- * صفحة من نحن - About Page View
- */
-?>
-
 <!-- 1. about start -->
 <section class="about py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>

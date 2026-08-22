@@ -4,12 +4,28 @@ declare(strict_types=1);
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
-// جلب الإعدادات مباشرة من قاعدة البيانات عبر دالة get_setting مع قيم افتراضية آمنة
+// جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح
 $site_logo_path  = get_setting('site_logo_path', 'assets/img/logo.png');
+
 $menu_links      = get_setting('menu_links', []);
+if (is_string($menu_links)) {
+    $menu_links = json_decode($menu_links, true) ?? [];
+}
+
 $social_links    = get_setting('social_links', []);
+if (is_string($social_links)) {
+    $social_links = json_decode($social_links, true) ?? [];
+}
+
 $languages       = get_setting('languages', []);
+if (is_string($languages)) {
+    $languages = json_decode($languages, true) ?? [];
+}
+
 $ad              = get_setting('announcement', []);
+if (is_string($ad)) {
+    $ad = json_decode($ad, true) ?? [];
+}
 
 // حساب حالة ظهور الإعلان
 $is_published = ($ad['status'] ?? 'Draft') === 'Published';
@@ -89,9 +105,12 @@ $is_visible = ($is_published && $is_in_time);
                   </button>
               <?php endif; ?>
 
-              <?php if (!empty($ad['link'])): ?><a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank"' : ''); ?>><?php endif; ?>
+              <?php if (!empty($ad['link'])): ?>
+                  <a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank" rel="noopener noreferrer"' : ''); ?>>
+              <?php endif; ?>
+              
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
-                  <div class="p-2 rounded shadow-sm" style="background-color: <?php echo $ad['bg_color'] ?? '#f1f5f9'; ?>; color: <?php echo $ad['text_color'] ?? '#1e293b'; ?>; font-size: <?php echo $ad['font_size'] ?? '16'; ?>px;">
+                  <div class="p-2 rounded shadow-sm" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
                     <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً لكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
@@ -99,6 +118,7 @@ $is_visible = ($is_published && $is_in_time);
                     <img src="<?php echo get_image_url($ad['image_path'] ?? null, '/assets/img/default-ad.png'); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
                   </div>
                 <?php endif; ?>
+                
               <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
           <?php endif; ?>
@@ -114,7 +134,7 @@ $is_visible = ($is_published && $is_in_time);
 
           <div class="social-icons d-flex gap-3">
             <?php foreach ($social_links as $s): ?>
-                <a href="<?php echo htmlspecialchars($s['url'] ?? '#'); ?>">
+                <a href="<?php echo htmlspecialchars($s['url'] ?? '#'); ?>" target="_blank" rel="noopener noreferrer">
                   <img src="<?php echo get_image_url($s['img'] ?? null); ?>" width="28" alt="social">
                 </a>
             <?php endforeach; ?>
@@ -166,7 +186,7 @@ $is_visible = ($is_published && $is_in_time);
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20">
-                  <span><?php echo $current_lang_name ?? 'العربية'; ?></span>
+                  <span><?php echo htmlspecialchars($current_lang_name ?? 'العربية'); ?></span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">

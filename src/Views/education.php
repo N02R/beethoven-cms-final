@@ -14,6 +14,7 @@
 
   <div class="custom-container">
     <?php 
+    $edu_hero = $data['edu_hero'] ?? [];
     $hero_bg = get_image_url($edu_hero['img'] ?? null, 'assets/img/education/hero.jpg');
     ?>
     <div class="row align-items-stretch g-5">
@@ -44,11 +45,11 @@
 
   <div class="custom-container">
     <div class="mb-5">
-      <h2 class="sec-title"><?php echo htmlspecialchars($edu_why_title ?? ''); ?></h2>
-      <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($edu_why_desc ?? ''); ?></p>
+      <h2 class="sec-title"><?php echo htmlspecialchars($data['edu_why_title'] ?? ''); ?></h2>
+      <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($data['edu_why_desc'] ?? ''); ?></p>
     </div>
     <div class="row g-3">
-      <?php foreach (($edu_why_items ?? []) as $item): ?>
+      <?php foreach (($data['edu_why_items'] ?? []) as $item): ?>
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
           <div class="card choose-card h-100">
             <div class="card-body">
@@ -76,8 +77,8 @@
 
   <div class="custom-container">
     <div class="mb-5">
-      <h2 class="sec-title"><?php echo htmlspecialchars($edu_timeline_title ?? ''); ?></h2>
-      <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($edu_timeline_desc ?? ''); ?></p>
+      <h2 class="sec-title"><?php echo htmlspecialchars($data['edu_timeline_title'] ?? ''); ?></h2>
+      <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($data['edu_timeline_desc'] ?? ''); ?></p>
     </div>
     
     <div class="map-container d-none d-lg-block">
@@ -87,7 +88,7 @@
         
         <?php 
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-        foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+        foreach (($data['edu_timeline_steps'] ?? []) as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
             $dotClass = $dots[$idx % count($dots)];
             
@@ -115,7 +116,7 @@
     </div>
 
     <div class="mobile-timeline d-lg-none">
-      <?php foreach (($edu_timeline_steps ?? []) as $idx => $step): 
+      <?php foreach (($data['edu_timeline_steps'] ?? []) as $idx => $step): 
           $num = sprintf("%02d", $idx + 1);
           $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
           $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
@@ -150,11 +151,11 @@
   <?php endif; ?>
 
   <div class="container custom-container">
-    <h2 class="sec-title mb-3"><?php echo htmlspecialchars($edu_services_title ?? ''); ?></h2>
-    <p class="mb-5 main-p" style="max-width: 700px;"><?php echo htmlspecialchars($edu_services_desc ?? ''); ?></p>
+    <h2 class="sec-title mb-3"><?php echo htmlspecialchars($data['edu_services_title'] ?? ''); ?></h2>
+    <p class="mb-5 main-p" style="max-width: 700px;"><?php echo htmlspecialchars($data['edu_services_desc'] ?? ''); ?></p>
     
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
-      <?php foreach (($edu_services_items ?? []) as $item): 
+      <?php foreach (($data['edu_services_items'] ?? []) as $item): 
           $raw_url = trim($item['url'] ?? '#');
           
           if ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) {
@@ -186,7 +187,6 @@
   </div>
 </section>
 <!-- education services end -->
-
 
 <?php 
 $edu_modals_file = __DIR__ . '/admin/admin_edu_modals.php';

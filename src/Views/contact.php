@@ -15,6 +15,7 @@
   <div class="custom-container">
     <div class="contact-hero-img">
       <?php 
+      // جلب صورة الهيرو من المتغير القادم من الكونترولر أو قاعدة البيانات (contact_hero_img)
       $contact_hero_bg = get_image_url($contact_hero_img ?? null, 'assets/img/contacthero.png');
       ?>
       <img src="<?php echo htmlspecialchars($contact_hero_bg); ?>" alt="تواصل معنا">

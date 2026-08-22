@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h5><?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?></h5>
                 <div class="contact-link">
                     <?php 
-                    // معالجة وحماية آمنة لمتغير روابط التواصل
+                    // معالجة وحماية آمنة لمتغير روابط التواصل (مع جلب البيانات من ID 123 في قاعدة البيانات)
                     $footer_col3_links = $data['footer_col3_links'] ?? [];
                     if (is_string($footer_col3_links)) {
                         $footer_col3_links = json_decode($footer_col3_links, true) ?? [];

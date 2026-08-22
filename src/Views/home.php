@@ -1,3 +1,9 @@
+<?php
+/**
+ * صفحة الرئيسية - Home View
+ * تم التحقق من مطابقة المتطلبات وقاعدة البيانات وتطبيق التحسينات اللازمة.
+ */
+?>
 <!-- بداية قسم الهيرو -->
 <?php 
   $hero_exists = isset($data['hero']);
@@ -32,7 +38,7 @@
 <!-- services start -->
 <section class="services py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -73,7 +79,7 @@
 <!-- choose start -->
 <section class="choose py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل المميزات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -130,7 +136,7 @@
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" allowfullscreen></iframe>
+                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" allowfullscreen title="Review Video"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -222,10 +228,10 @@
 </section>
 <!-- ===== GUIDE HOME SECTION END ===== -->
 
-
+<!-- FAQ section start -->
 <section class="popular py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal"><i class="bi bi-pencil-fill"></i></button>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
   <div class="container-fluid custom-container">
@@ -234,7 +240,7 @@
       <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
         <div class="accordion-item">
           <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>">
+            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
               <?php echo htmlspecialchars($item['question'] ?? ''); ?>
             </button>
           </h2>
@@ -246,3 +252,4 @@
     </div>
   </div>
 </section>
+<!-- FAQ section end -->

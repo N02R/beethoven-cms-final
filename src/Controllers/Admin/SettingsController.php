@@ -636,14 +636,6 @@ class SettingsController
                 $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-            elseif ($action === 'update_check_advice') {
-                $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
-                $oldCheckData['advice_title'] = $_POST['advice_title'] ?? '';
-                $oldCheckData['advice_points'] = $_POST['advice_points'] ?? [];
-
-                $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
-                $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-            }
             elseif ($action === 'update_check_notes') {
                 $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
                 $oldCheckData['note_title'] = $_POST['note_title'] ?? '';
@@ -652,40 +644,17 @@ class SettingsController
                 $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-            // الإضافة الجديدة لمعالجة تحديث الروابط والشروط لصفحة الفحص
             elseif ($action === 'update_check_links') {
                 $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
                 
-                $oldCheckData['links_intro']       = $_POST['links_intro'] ?? '';
-                $oldCheckData['anabin_url']        = $_POST['anabin_url'] ?? '';
-                $oldCheckData['uniassist_url']     = $_POST['uniassist_url'] ?? '';
-                $oldCheckData['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
-                $oldCheckData['condition_1']       = $_POST['condition_1'] ?? '';
-                $oldCheckData['condition_2']       = $_POST['condition_2'] ?? '';
-                $oldCheckData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
+                $oldCheckData['links_intro']        = $_POST['links_intro'] ?? '';
+                $oldCheckData['anabin_url']         = $_POST['anabin_url'] ?? '';
+                $oldCheckData['uniassist_url']      = $_POST['uniassist_url'] ?? '';
+                $oldCheckData['uni_contact_intro']  = $_POST['uni_contact_intro'] ?? '';
+                $oldCheckData['condition_1']        = $_POST['condition_1'] ?? '';
+                $oldCheckData['condition_2']        = $_POST['condition_2'] ?? '';
+                $oldCheckData['conclusion_text']    = $_POST['conclusion_text'] ?? '';
 
-                $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
-                $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-            }
-            elseif ($action === 'update_check_downloads') {
-                $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
-                
-                $types = $_POST['download_types'] ?? [];
-                $titles = $_POST['download_titles'] ?? [];
-                $subs = $_POST['download_subs'] ?? [];
-                $files = $_POST['download_files'] ?? [];
-
-                $downloadItems = [];
-                for ($i = 0; $i < count($titles); $i++) {
-                    $downloadItems[] = [
-                        'type'  => $types[$i] ?? 'PDF',
-                        'title' => $titles[$i] ?? '',
-                        'sub'   => $subs[$i] ?? '',
-                        'file'  => $files[$i] ?? '#'
-                    ];
-                }
-
-                $oldCheckData['download_items'] = $downloadItems;
                 $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }

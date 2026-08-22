@@ -1,46 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$offers_data = $data['offers_page'] ?? [
-    'page_breadcrumb'     => 'العروض والاتفاقيات',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg10.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'العروض والاتفاقيات',
-    'main_desc'           => 'كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).',
-    'note_title'          => 'ملاحظات هامة !!',
-    'notes_list'          => [
-        'جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد <a href="contact" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>.'
-    ],
-    'download_cards'      => [
-        [
-            'type'  => 'pdf',
-            'title' => 'بكالوريوس',
-            'file'  => 'assets/files/BCS-bachelor.pdf',
-            'sub'   => 'حزمة واتفاقية البكالوريوس',
-            'active'=> false
-        ],
-        [
-            'type'  => 'pdf',
-            'title' => 'الماجستير',
-            'file'  => 'assets/files/BCS-master.pdf',
-            'sub'   => 'حزمة واتفاقية الماجستير',
-            'active'=> true
-        ],
-        [
-            'type'  => 'pdf',
-            'title' => 'الدكتوراه',
-            'file'  => 'assets/files/BCS-phd.pdf',
-            'sub'   => 'حزمة واتفاقية الدكتوراه',
-            'active'=> false
-        ]
-    ]
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -51,8 +8,8 @@ $offers_data = $data['offers_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($offers_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($offers_data['page_breadcrumb'] ?? 'العروض والاتفاقيات'); ?>
@@ -73,7 +30,7 @@ $offers_data = $data['offers_page'] ?? [
 
     <div class="custom-container">
       <div class="pakeges-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png'); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png')); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -112,11 +69,10 @@ $offers_data = $data['offers_page'] ?? [
           
           if (!empty($notes_list) && is_array($notes_list)):
               foreach ($notes_list as $note_item):
-                // توجيه رابط الاتصال بالمسار النظيف
-                $processed_note = str_replace(['href="contact.php"', 'href="contact"'], 'href="' . $path_prefix . 'contact"', $note_item);
+                $processed_note = str_replace(['href="contact.php"', 'href="contact"'], 'href="' . ($path_prefix ?? '/') . 'contact"', $note_item);
           ?>
               <li class="d-flex align-items-start mb-2">
-                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
                 <p class="mb-0"><?php echo $processed_note; ?></p>
               </li>
           <?php 
@@ -157,9 +113,9 @@ $offers_data = $data['offers_page'] ?? [
                 <div class="<?php echo htmlspecialchars($card_class); ?>">
                   <h5 class="<?php echo htmlspecialchars($title_class); ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
                   <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo get_image_url($icon_img); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                    <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                     <div class="card-body-info">
-                      <a href="<?php echo htmlspecialchars($path_prefix . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
+                      <a href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
                       <p class="<?php echo htmlspecialchars($p_class); ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>
                     </div>
                   </div>
@@ -173,3 +129,10 @@ $offers_data = $data['offers_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $offers_modals_file = __DIR__ . '/includes/admin_offers_modals.php';
+    if (!empty($is_admin) && file_exists($offers_modals_file)) { 
+        include_once $offers_modals_file; 
+    }
+  ?>

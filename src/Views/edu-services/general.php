@@ -1,22 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$visa_data = $data['visa_requirements_page'] ?? [
-    'page_breadcrumb'     => 'متطلبات التأشيرة',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg14.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'قائمة مراجعة عامة لِمتطلبات تأشيرات مختلفة',
-    'main_desc'           => '',
-    'note_title'          => 'ملاحظة !!',
-    'note_text'           => '',
-    'download_items'      => []
-];
+/**
+ * صفحة متطلبات التأشيرة العامة - General Visa Requirements Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -27,8 +13,8 @@ $visa_data = $data['visa_requirements_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($visa_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($visa_data['page_breadcrumb'] ?? 'متطلبات التأشيرة'); ?>
@@ -49,7 +35,7 @@ $visa_data = $data['visa_requirements_page'] ?? [
 
     <div class="custom-container">
       <div class="coverLetter-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($visa_data['hero_img'] ?? null, 'assets/img/education/servicesimg14.png'); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($visa_data['hero_img'] ?? null, 'assets/img/education/servicesimg14.png')); ?>'); background-position: <?php echo htmlspecialchars($visa_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -91,7 +77,7 @@ $visa_data = $data['visa_requirements_page'] ?? [
             <?php foreach ($notes_list as $note_text): ?>
               <li class="mb-2">
                 <p class="mb-0">
-                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2" />
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
                   <?php echo htmlspecialchars($note_text); ?>
                 </p>
               </li>
@@ -124,7 +110,7 @@ $visa_data = $data['visa_requirements_page'] ?? [
                       <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
                     </div>
                     <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
-                    <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
+                    <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
                   </div>
                 </div>
               </div>
@@ -136,3 +122,10 @@ $visa_data = $data['visa_requirements_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $visa_modals_file = __DIR__ . '/includes/admin_general_modals.php';
+    if (!empty($is_admin) && file_exists($visa_modals_file)) { 
+        include_once $visa_modals_file; 
+    }
+  ?>

@@ -1,23 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-$path_prefix = '/';
-
-$medical_spec_data = $data['medical_specialties_page'] ?? [
-    'page_breadcrumb'     => 'التخصصات الطبية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/job/servicesimg1.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'قائمة أكثر التخصصات إنتشاراً',
-    'main_desc'           => 'يوجد في ألمانيا أكثر من 50 تخصص طبي في مجالات طبية مختلفة وجميعها متوفرة لكلٍ من الأطباء الألمان والأجانب. تختلف مدة التخصصات الطبية من فرع لآخر ولكن بشكل عام، تستغرق أكثر من 5 سنوات في معظم التخصصات الطبية. فيما يلي أكثر التخصصات الطبية في ألمانيا انتشاراً',
-    'download_item'       => [
-        'type'  => 'pdf',
-        'title' => 'قائمة أكثر التخصصات الطبية انتشارا',
-        'sub'   => 'اختر تخصصك الطبي',
-        'file'  => 'assets/files/medical_specialties_list.pdf'
-    ]
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -28,8 +8,8 @@ $medical_spec_data = $data['medical_specialties_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>job">التدريب المهني</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>job">التدريب المهني</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($medical_spec_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($medical_spec_data['page_breadcrumb'] ?? 'التخصصات الطبية'); ?>
@@ -95,7 +75,7 @@ $medical_spec_data = $data['medical_specialties_page'] ?? [
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'اختر تخصصك الطبي'); ?></div>
                 </div>
                 <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? 'assets/files/medical_specialties_list.pdf', '/')); ?>" download>Download</a>
+                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/medical_specialties_list.pdf', '/')); ?>" download>Download</a>
               </div>
             </div>
           </div>
@@ -105,3 +85,10 @@ $medical_spec_data = $data['medical_specialties_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $med_spec_modals_file = __DIR__ . '/includes/admin_medical_spec_modals.php';
+    if (!empty($is_admin) && file_exists($med_spec_modals_file)) { 
+        include_once $med_spec_modals_file; 
+    }
+  ?>

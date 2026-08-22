@@ -1,30 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-$path_prefix = '/';
-
-$guide_blog3_data = $data['guide_blog3_page'] ?? [
-    'hero_img'           => 'assets/img/guide/image.jpg',
-    'hero_position'      => 'center center',
-    'main_title'         => 'معالجة طلبات العملاء في بيتهوفن سيتي للخدمات (BCS)',
-    'main_desc'          => 'في عالم الهجرة والدراسة والعمل في ألمانيا، لا يكفي تقديم معلومات عامة، بل تحتاج إلى من يرافقك خطوة بخطوة حتى تصل إلى هدفك بثقة وسلاسة. في بيتهوفن سيتي للخدمات (BCS)، نعالج طلبات العملاء بأسلوب احترافي ومنظّم، يضمن لك متابعة طلبك في كل مرحلة، وتسهيل رحلتك من لحظة تواصلك معنا وحتى وصولك إلى ألمانيا.',
-    'diff_title'         => 'الذي يجعل معالجة طلبات العملاء لدينا مختلفة',
-    'diff_1_bold'        => 'وضوح الخطوات: ',
-    'diff_1_text'        => 'نخبرك دائمًا بما يلي بعد كل مرحلة.',
-    'diff_2_bold'        => 'التواصل المستمر: ',
-    'diff_2_text'        => 'فريقنا معك للإجابة على استفساراتك عبر الواتساب والبريد الإلكتروني.',
-    'diff_3_bold'        => 'أسعار تنافسية وشفافية: ',
-    'diff_3_text'        => 'خدماتنا بأسعار مناسبة، ونشرح لك كل رسوم المعاهد والخدمات مقدمًا.',
-    'diff_4_bold'        => 'خبرة: ',
-    'diff_4_text'        => 'نعرف متطلبات المعاهد الألمانية والقنصليات جيدًا',
-    'timeline_title'     => 'مراحل معالجة طلبك لدينا',
-    'timeline_subtitle'  => 'في بيتهوفن سيتي للخدمات، نقسم معالجة طلبك إلى خطوات واضحة:',
-    'contact_title'      => 'جاهز لبدء رحلتك?',
-    'contact_text_prefix'=> 'احجز استشارتك المجانية الآن مع فريق BCS وابدأ خطواتك نحو ألمانيا بثقة: ',
-    'contact_link_text'  => 'تواصل معنا',
-    'contact_url'        => 'contact'
-];
-?>
-
   <!-- custom-guide start-->
   <section class="custom-services custom-guide py-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -164,7 +137,7 @@ $guide_blog3_data = $data['guide_blog3_page'] ?? [
         <h2 class="main-text"><?php echo htmlspecialchars($guide_blog3_data['contact_title'] ?? ''); ?></h2>
         <p class="par-text">
           <?php echo htmlspecialchars($guide_blog3_data['contact_text_prefix'] ?? ''); ?>
-          <a href="<?php echo htmlspecialchars($path_prefix . ltrim($guide_blog3_data['contact_url'] ?? 'contact', '/')); ?>" style="color: #66aaee;" class="fw-bold">
+          <a href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($guide_blog3_data['contact_url'] ?? 'contact', '/')); ?>" style="color: #66aaee;" class="fw-bold">
             <?php echo htmlspecialchars($guide_blog3_data['contact_link_text'] ?? 'تواصل معنا'); ?>
           </a>
         </p>
@@ -172,3 +145,10 @@ $guide_blog3_data = $data['guide_blog3_page'] ?? [
     </div>
   </section>
   <!-- contact-guide end -->
+
+  <?php
+    $guide_blog3_modals_file = __DIR__ . '/includes/admin_guide_blog3_modals.php';
+    if (!empty($is_admin) && file_exists($guide_blog3_modals_file)) { 
+        include_once $guide_blog3_modals_file; 
+    }
+  ?>

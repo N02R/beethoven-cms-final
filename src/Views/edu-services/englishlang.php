@@ -1,25 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$english_data = $data['english_programs_page'] ?? [
-    'page_breadcrumb'     => 'برامج دراسية باللغة الإنجليزية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg5.png',
-    'main_title'          => 'برامج دراسية باللغة الإنجليزية في ألمانيا',
-    'main_desc'           => '',
-    'who_title'           => 'من يمكنه الاستفادة من هذه البرامج',
-    'who_subtitle'        => 'كل من يستوفي الشروط التالية:',
-    'who_items'           => [],
-    'lang_title'          => 'متطلبات اللغة بشكل عام',
-    'lang_points'         => [],
-    'note_highlight'      => 'ملاحظة:',
-    'note_text'           => ''
-];
+/**
+ * صفحة البرامج الدراسية باللغة الإنجليزية - English Programs Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -30,8 +13,8 @@ $english_data = $data['english_programs_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($english_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($english_data['page_breadcrumb'] ?? 'برامج دراسية باللغة الإنجليزية'); ?>
@@ -52,7 +35,7 @@ $english_data = $data['english_programs_page'] ?? [
 
     <div class="custom-container">
       <div class="germanlang-hero custom-hero"
-        style="background-image: url('<?php echo get_image_url($english_data['hero_img'] ?? null, 'assets/img/education/servicesimg5.png'); ?>');">
+        style="background-image: url('<?php echo htmlspecialchars(get_image_url($english_data['hero_img'] ?? null, 'assets/img/education/servicesimg5.png')); ?>');">
       </div>
     </div>
   </section>
@@ -131,3 +114,10 @@ $english_data = $data['english_programs_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $english_modals_file = __DIR__ . '/includes/admin_english_modals.php';
+    if (!empty($is_admin) && file_exists($english_modals_file)) { 
+        include_once $english_modals_file; 
+    }
+  ?>

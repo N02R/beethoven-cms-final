@@ -1,3 +1,28 @@
+<?php
+/**
+ * صفحة خطاب الدافع / التحفيز (Motivation Letter) - View
+ */
+
+// تأمين المتغيرات الافتراضية
+if (!isset($path_prefix)) {
+    $path_prefix = '/';
+}
+
+$motivation_data = $data['motivation_page'] ?? [
+    'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
+    'page_breadcrumb_url' => '#',
+    'hero_img'            => 'assets/img/education/servicesimg3.png',
+    'hero_position'       => 'center center',
+    'main_title'          => 'خطاب الدافع أو التحفيز (Motivation Letter)',
+    'main_desc'           => '',
+    'advice_section'      => [
+        'title' => 'نصائح سريعة لكتابة خطاب الدافع',
+        'items' => []
+    ],
+    'download_items'      => []
+];
+?>
+
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -8,8 +33,8 @@
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($motivation_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($motivation_data['page_breadcrumb'] ?? 'خطاب الدافع / التحفيز'); ?>
@@ -30,7 +55,7 @@
 
     <div class="custom-container">
       <div class="motivition-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($motivation_data['hero_img'] ?? null, 'assets/img/education/servicesimg3.png'); ?>'); background-position: <?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($motivation_data['hero_img'] ?? null, 'assets/img/education/servicesimg3.png')); ?>'); background-position: <?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -94,13 +119,13 @@
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card">
                   <div class="download-row">
-                    <img src="<?php echo get_image_url($icon_img); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" />
+                    <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" />
                     <div class="dl-info">
                       <div class="dl-title"><?php echo htmlspecialchars($dl['title'] ?? ''); ?></div>
                       <div class="dl-sub"><?php echo htmlspecialchars($dl['sub'] ?? ''); ?></div>
                     </div>
                     <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
-                    <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($dl['file'] ?? '#', '/')); ?>" download>Download</a>
+                    <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($dl['file'] ?? '#', '/')); ?>" download>Download</a>
                   </div>
                 </div>
               </div>
@@ -114,9 +139,9 @@
   </section>
   <!-- custom-services-info end -->
 
-<?php
+  <?php
     $motivation_modals_file = __DIR__ . '/includes/admin_motivation_modals.php';
     if (!empty($is_admin) && file_exists($motivation_modals_file)) { 
         include_once $motivation_modals_file; 
     }
-?>
+  ?>

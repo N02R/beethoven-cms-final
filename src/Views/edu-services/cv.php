@@ -87,7 +87,6 @@
           $total_items = count($download_items);
           foreach ($download_items as $index => $item):
               $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-              // استخدمنا نفس طريقة الـ cover تماماً مع مسار الصور الخاص بك
               $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
               $is_last = ($index === $total_items - 1);
         ?>

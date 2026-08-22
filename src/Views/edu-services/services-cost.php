@@ -1,24 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$pricelist_data = $data['pricelist_page'] ?? [
-    'page_breadcrumb'     => 'قائمة أسعار الخدمات',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg15.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'قائمة الأسعار العامة',
-    'main_desc'           => 'يسعى فريق عمل بيتهوفن سيتي جاهدين لتوفير خدمة عالية الجودة وبتكلفة معقولة وتنافسية للطلبة والمتدربين الأجانب الذين يبحثون عن فرص التعليم العالي والتدريب في ألمانيا. يوضح الجدول أدناه بعض الخدمات التي نسعى لتقديمها مع التكلفة التقديرية لكل خِدمة.',
-    'download_item'       => [
-        'type'  => 'pdf',
-        'title' => 'قائمة الأسعار العامة',
-        'file'  => 'assets/files/general_price_list.pdf'
-    ]
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -29,8 +8,8 @@ $pricelist_data = $data['pricelist_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($pricelist_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($pricelist_data['page_breadcrumb'] ?? 'قائمة أسعار الخدمات'); ?>
@@ -51,7 +30,7 @@ $pricelist_data = $data['pricelist_page'] ?? [
 
     <div class="custom-container">
       <div class="custom-hero" 
-           style="background-image: url('<?php echo get_image_url($pricelist_data['hero_img'] ?? null, 'assets/img/education/servicesimg15.png'); ?>'); background-position: <?php echo htmlspecialchars($pricelist_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($pricelist_data['hero_img'] ?? null, 'assets/img/education/servicesimg15.png')); ?>'); background-position: <?php echo htmlspecialchars($pricelist_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -95,12 +74,12 @@ $pricelist_data = $data['pricelist_page'] ?? [
                       $alt_text = 'ملف PDF';
                   }
                 ?>
-                <img src="<?php echo get_image_url($icon_img); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
+                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
                 <div class="dl-info">
                   <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة الأسعار العامة'); ?></div>
                 </div>
                 <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? 'assets/files/general_price_list.pdf', '/')); ?>" download>Download</a>
+                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/general_price_list.pdf', '/')); ?>" download>Download</a>
               </div>
             </div>
           </div>
@@ -110,3 +89,10 @@ $pricelist_data = $data['pricelist_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $pricelist_modals_file = __DIR__ . '/includes/admin_pricelist_modals.php';
+    if (!empty($is_admin) && file_exists($pricelist_modals_file)) { 
+        include_once $pricelist_modals_file; 
+    }
+  ?>

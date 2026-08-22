@@ -1,24 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-$path_prefix = '/';
-
-$medical_data = $data['medical_package_page'] ?? [
-    'page_breadcrumb'     => 'باقة التدريب الطبي',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/job/servicesimg3.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'عرض وإتفاقية التدريب المهني',
-    'main_desc'           => 'كل عرضٍ (حالة) له تكلفة الخدمة الخاصة به حيث أن كل عرض يتضمن خدمات مختلفة وبذلك يتطلب إجراءات ومراسلات وجهود مختلفة. للحصول على فكرةٍ عامة عن العرض الخاص بك وتكلفة الخدمات الخاصة به، تجد أدناه العروض الأكثر طلباً (مثال لكل عرض).',
-    'note_text'           => 'جميع العروض والاتفاقيات تكتب وتملأ باللغة الإنجليزية، للإستفسار عن أي بند أو شرح أي معلومات، لا تتردد بالتواصل معنا.',
-    'download_item'       => [
-        'type'  => 'pdf',
-        'title' => 'عرض واتفاقية التدريب الطبي',
-        'sub'   => 'Example',
-        'file'  => 'assets/files/medical_training_agreement.pdf'
-    ]
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -29,8 +8,8 @@ $medical_data = $data['medical_package_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>job">التدريب المهني</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix); ?>job">التدريب المهني</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($medical_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($medical_data['page_breadcrumb'] ?? 'باقة التدريب الطبي'); ?>
@@ -87,7 +66,7 @@ $medical_data = $data['medical_package_page'] ?? [
               <?php 
                 $note_text = $medical_data['note_text'] ?? '';
                 $safe_note = htmlspecialchars($note_text);
-                $note_text_formatted = str_replace('بالتواصل معنا', '<a href="' . $path_prefix . 'contact" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>', $safe_note);
+                $note_text_formatted = str_replace('بالتواصل معنا', '<a href="' . htmlspecialchars(($path_prefix ?? '/') . 'contact') . '" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>', $safe_note);
                 echo $note_text_formatted;
               ?>
             </p>
@@ -119,7 +98,7 @@ $medical_data = $data['medical_package_page'] ?? [
                   <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
                 </div>
                 <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">...........................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($path_prefix . ltrim($item['file'] ?? 'assets/files/medical_training_agreement.pdf', '/')); ?>" download>Download</a>
+                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/medical_training_agreement.pdf', '/')); ?>" download>Download</a>
               </div>
             </div>
           </div>
@@ -129,3 +108,10 @@ $medical_data = $data['medical_package_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $medical_modals_file = __DIR__ . '/includes/admin_medical_modals.php';
+    if (!empty($is_admin) && file_exists($medical_modals_file)) { 
+        include_once $medical_modals_file; 
+    }
+  ?>

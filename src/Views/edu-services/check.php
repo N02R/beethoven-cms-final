@@ -1,3 +1,8 @@
+<?php
+/**
+ * صفحة تحقق من شهاداتك التعليمية - Check Certificate Page View
+ */
+?>
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

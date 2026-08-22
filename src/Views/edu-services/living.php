@@ -1,4 +1,8 @@
 <?php
+/**
+ * صفحة تكلفة المعيشة في ألمانيا - Living Costs in Germany Page View
+ */
+
 // تأمين المتغيرات الافتراضية
 if (!isset($path_prefix)) {
     $path_prefix = '/';
@@ -41,8 +45,8 @@ $living_data = $data['living_cost_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($living_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($living_data['page_breadcrumb'] ?? 'تكلفة المعيشة في ألمانيا'); ?>
@@ -63,7 +67,7 @@ $living_data = $data['living_cost_page'] ?? [
 
     <div class="custom-container">
       <div class="living-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($living_data['hero_img'] ?? null, 'assets/img/education/servicesimg8.png'); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($living_data['hero_img'] ?? null, 'assets/img/education/servicesimg8.png')); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -127,7 +131,7 @@ $living_data = $data['living_cost_page'] ?? [
           <?php if (!empty($notes_items)): ?>
             <?php foreach ($notes_items as $note): ?>
               <li class="d-flex align-items-start mb-3">
-                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
                 <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
               </li>
             <?php endforeach; ?>
@@ -138,3 +142,10 @@ $living_data = $data['living_cost_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $living_modals_file = __DIR__ . '/includes/admin_living_modals.php';
+    if (!empty($is_admin) && file_exists($living_modals_file)) { 
+        include_once $living_modals_file; 
+    }
+  ?>

@@ -1,3 +1,8 @@
+<?php
+/**
+ * صفحة خطاب الطلب - Cover Letter Page View
+ */
+?>
 <!-- Breadcrumb start-->
 <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -61,7 +66,7 @@
       <!-- 2. النصائح -->
       <div class="advice-stars my-4 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverAdviceModal" style="position: absolute; top: 0; right: 0; z-index: 10;">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverAdviceModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل النقاط والنصائح">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
@@ -82,7 +87,7 @@
       <!-- 3. ملاحظات -->
       <div class="advice-check py-4 mb-4 " style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
@@ -98,7 +103,7 @@
       <!-- 4. التحميل -->
       <div class="row pt-2" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل عناصر التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
@@ -124,9 +129,11 @@
       </div>
     </div>
 </section>
+<!-- custom-services-info end -->
 
-   <?php 
+<?php 
     $cover_modals_file = __DIR__ . '/includes/admin_cover_modals.php';
     if (!empty($is_admin) && file_exists($cover_modals_file)) { 
-        include_once $cover_modals_file; }
+        include_once $cover_modals_file; 
+    }
 ?>

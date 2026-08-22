@@ -1,42 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$stk_data = $data['studienkolleg_page'] ?? [
-    'page_breadcrumb'   => 'الدورة التأسيسية / السنة التحضيرية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'          => 'assets/img/education/serviceimg11.png',
-    'hero_position'     => 'center -20rem',
-    'main_title'        => 'الدورة التأسيسيّة/السنة التحضيرية "Studienkolleg"',
-    'main_desc'         => '',
-    'goals_title'       => 'أهداف الدورة التأسيسية',
-    'goals_items'       => [],
-    'learning_title'    => '',
-    'learning_intro'    => '',
-    'learning_p1'       => '',
-    'learning_p2'       => '',
-    'courses_title'     => 'أنواع دورات السنة التحضيرية',
-    'courses_items'     => [],
-    'uni_type_title'    => '',
-    'uni_type_intro'    => '',
-    'uni_public'        => '',
-    'uni_applied'       => '',
-    'types_title'       => 'أنواع السنة التحضيرية في ألمانيا',
-    'type_public_desc'  => '',
-    'type_private_desc' => '',
-    'notes_title'       => 'ملاحظات هامة !!',
-    'notes_items'       => [],
-    'exam_title'        => '',
-    'exam_desc'         => '',
-    'fsp_title'         => '',
-    'fsp_desc'          => '',
-    'tips_title'        => 'نصائح مهمة قبل التقديم',
-    'tips_items'        => []
-];
+/**
+ * صفحة الدورة التأسيسية / السنة التحضيرية (Studienkolleg) - Foundation Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -47,8 +13,8 @@ $stk_data = $data['studienkolleg_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($stk_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($stk_data['page_breadcrumb'] ?? 'الدورة التأسيسية / السنة التحضيرية'); ?>
@@ -69,7 +35,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
 
     <div class="custom-container">
       <div class="foundation-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($stk_data['hero_img'] ?? null, 'assets/img/education/serviceimg11.png'); ?>'); background-position: <?php echo htmlspecialchars($stk_data['hero_position'] ?? 'center -20rem'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($stk_data['hero_img'] ?? null, 'assets/img/education/serviceimg11.png')); ?>'); background-position: <?php echo htmlspecialchars($stk_data['hero_position'] ?? 'center -20rem'); ?>;">
       </div>
     </div>
   </section>
@@ -138,7 +104,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
               <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                 <li>
                   <p class="mb-0">
-                    <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2"/>
                     <?php echo htmlspecialchars($course); ?>
                   </p>
                 </li>
@@ -189,7 +155,7 @@ $stk_data = $data['studienkolleg_page'] ?? [
             <?php foreach (($stk_data['notes_items'] ?? []) as $note): ?>
               <li>
                 <p class="mb-0">
-                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2"/>
                   <?php echo htmlspecialchars($note); ?>
                 </p>
               </li>
@@ -234,3 +200,10 @@ $stk_data = $data['studienkolleg_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end-->
+
+  <?php
+    $foundation_modals_file = __DIR__ . '/includes/admin_foundation_modals.php';
+    if (!empty($is_admin) && file_exists($foundation_modals_file)) { 
+        include_once $foundation_modals_file; 
+    }
+  ?>

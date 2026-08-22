@@ -1,48 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$german_data = $data['germanlang_page'] ?? [
-    'page_breadcrumb'   => 'دورات اللغة الألمانية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'          => 'assets/img/education/servicesimg4.png',
-    'hero_position'     => 'center center',
-    'main_title'        => 'دورات اللغة الألمانية باحتراف تدعم خطتك الأكاديمية والمهنية',
-    'main_desc'         => 'اتقن اللغة الألمانية من البداية حتى التفوق مع دوراتنا المعتمدة حسب المستويات الرسمية (A1-C2), تُعدك للدراسة, العمل, التقديم للسفارة, او الحياة اليومية في ألمانيا.',
-    'levels_section'    => [
-        'title' => 'المستويات المتوفرة (طبقًا ل CEFR)',
-        'levels_list' => [
-            'المستوى A1: للمبتدئين.',
-            'المستوى A2: المعرفة الأساسية في اللغة.',
-            'المستوى B1: قبل المتوسط.',
-            'المستوى B2: معرفة متوسطة في اللغة.',
-            'المستوى C1: المستوى العلوي.',
-            'المستوى C2: مُتقدم.'
-        ]
-    ],
-    'features_section'  => [
-        'title' => 'مميزات دوراتنا',
-        'features_list' => [
-            'معتمدون من CEFR.',
-            'مدرسون ناطقون أصليون.',
-            'شهادات مقبولة للسفارات والجامعات.',
-            'دعم في التقدم للإمتحانات (DSH, TestDaf).'
-        ]
-    ],
-    'tips_section'      => [
-        'title' => 'نصائح للنجاح في الدراسة بالألمانية',
-        'tips_list' => [
-            'حضّر لامتحانات اللغة مبكرًا.',
-            'مارس مهارات الاستماع والمحادثة يوميًا.',
-            'راقب تقدمك من خلال اختبارات دورية.',
-            'استخدم موارد مساعدة مثل كتب ووسائط صوت.'
-        ]
-    ]
-];
+/**
+ * صفحة دورات اللغة الألمانية - German Language Courses Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -53,8 +13,8 @@ $german_data = $data['germanlang_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($german_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($german_data['page_breadcrumb'] ?? 'دورات اللغة الألمانية'); ?>
@@ -75,7 +35,7 @@ $german_data = $data['germanlang_page'] ?? [
 
     <div class="custom-container">
       <div class="germanlang-hero custom-hero" 
-           style="background-image: url('<?php echo get_image_url($german_data['hero_img'] ?? null, 'assets/img/education/servicesimg4.png'); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($german_data['hero_img'] ?? null, 'assets/img/education/servicesimg4.png')); ?>'); background-position: <?php echo htmlspecialchars($german_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -117,7 +77,7 @@ $german_data = $data['germanlang_page'] ?? [
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                   <li>
                     <p class="mb-0">
-                      <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                      <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2"/>
                       <?php echo htmlspecialchars($level); ?>
                     </p>
                   </li>
@@ -181,3 +141,10 @@ $german_data = $data['germanlang_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $german_modals_file = __DIR__ . '/includes/admin_germanlang_modals.php';
+    if (!empty($is_admin) && file_exists($german_modals_file)) { 
+        include_once $german_modals_file; 
+    }
+  ?>

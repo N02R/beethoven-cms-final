@@ -1,4 +1,8 @@
 <?php
+/**
+ * صفحة العروض والاتفاقيات (Offers & Agreements) - Health/Offers Page View
+ */
+
 // تأمين المتغيرات الافتراضية
 if (!isset($path_prefix)) {
     $path_prefix = '/';
@@ -46,8 +50,8 @@ $offers_data = $data['offers_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($offers_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($offers_data['page_breadcrumb'] ?? 'العروض والاتفاقيات'); ?>
@@ -67,7 +71,7 @@ $offers_data = $data['offers_page'] ?? [
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="pakeges-hero custom-hero" style="background-image: url('<?php echo get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png'); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="pakeges-hero custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png')); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -98,10 +102,10 @@ $offers_data = $data['offers_page'] ?? [
         <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list list-unstyled p-0">
           <li class="d-flex align-items-start">
-            <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2 mt-1" />
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
             <p class="mb-0">
               <?php 
-              $processed_note = str_replace('href="contact.php"', 'href="' . $path_prefix . 'contact"', $offers_data['note_text'] ?? '');
+              $processed_note = str_replace('href="contact.php"', 'href="' . ($path_prefix ?? '/') . 'contact"', $offers_data['note_text'] ?? '');
               echo $processed_note; 
               ?>
             </p>
@@ -130,9 +134,9 @@ $offers_data = $data['offers_page'] ?? [
                 <div class="<?php echo htmlspecialchars($card_class); ?>">
                   <h5 class="<?php echo htmlspecialchars($title_class); ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
                   <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo get_image_url('assets/img/education/Grouppdf.png'); ?>" alt="ملف PDF" />
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/Grouppdf.png')); ?>" alt="ملف PDF" />
                     <div class="card-body-info">
-                      <a href="<?php echo htmlspecialchars($path_prefix . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
+                      <a href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
                       <p class="<?php echo htmlspecialchars($p_class); ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>
                     </div>
                   </div>
@@ -145,3 +149,10 @@ $offers_data = $data['offers_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $offers_modals_file = __DIR__ . '/includes/admin_offers_modals.php';
+    if (!empty($is_admin) && file_exists($offers_modals_file)) { 
+        include_once $offers_modals_file; 
+    }
+  ?>

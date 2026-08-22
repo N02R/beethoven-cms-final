@@ -1,25 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$blocked_data = $data['blocked_account_page'] ?? [
-    'page_breadcrumb'     => 'الضمانات المالية والحساب البنكي المغلق',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg7.png',
-    'main_title'          => 'إثبات الضمانات المالية/التمويل المالي/الكفالة المالية/الحساب البنكي المغلق',
-    'main_desc'           => '',
-    'importance_title'    => 'أهمية إثبات الضمان المالي',
-    'importance_desc'     => '',
-    'options_title'       => 'خيارات الضمان المالي للدراسة في ألمانيا',
-    'options_items'       => [],
-    'account_title'       => 'الحساب البنكي المغلق',
-    'account_points'      => [],
-    'service_links'       => []
-];
+/**
+ * صفحة الضمانات المالية والحساب البنكي المغلق - Financial/Blocked Account Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -30,8 +13,8 @@ $blocked_data = $data['blocked_account_page'] ?? [
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($blocked_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($blocked_data['page_breadcrumb'] ?? 'الضمانات المالية والحساب البنكي المغلق'); ?>
@@ -52,7 +35,7 @@ $blocked_data = $data['blocked_account_page'] ?? [
 
     <div class="custom-container">
       <div class="financial-hero custom-hero"
-        style="background-image: url('<?php echo get_image_url($blocked_data['hero_img'] ?? null, 'assets/img/education/servicesimg7.png'); ?>');">
+        style="background-image: url('<?php echo htmlspecialchars(get_image_url($blocked_data['hero_img'] ?? null, 'assets/img/education/servicesimg7.png')); ?>');">
       </div>
     </div>
   </section>
@@ -138,3 +121,10 @@ $blocked_data = $data['blocked_account_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end-->
+
+  <?php
+    $financial_modals_file = __DIR__ . '/includes/admin_financial_modals.php';
+    if (!empty($is_admin) && file_exists($financial_modals_file)) { 
+        include_once $financial_modals_file; 
+    }
+  ?>

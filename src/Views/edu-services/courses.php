@@ -1,23 +1,8 @@
 <?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$lang_data = $data['language_page'] ?? [
-    'page_breadcrumb'     => 'الدورة التحضيرية لشهادات اللغة الألمانية',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg12.png',
-    'main_title'          => 'الدورات التحضيرية لشهادات اللغة الألمانية',
-    'main_desc'           => '',
-    'goals_title'         => 'أهداف الدورة التحضيرية',
-    'goals'               => [],
-    'warning_text'        => '',
-    'cost_title'          => 'اماكن الالتحاق والتكلفة',
-    'cost_items'          => []
-];
+/**
+ * صفحة الدورات التحضيرية لشهادات اللغة الألمانية - Courses Page View
+ */
 ?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -124,3 +109,10 @@ $lang_data = $data['language_page'] ?? [
     </div>
   </section>
   <!-- custom-services-info end -->
+
+  <?php
+    $courses_modals_file = __DIR__ . '/includes/admin_courses_modals.php';
+    if (!empty($is_admin) && file_exists($courses_modals_file)) { 
+        include_once $courses_modals_file; 
+    }
+  ?>

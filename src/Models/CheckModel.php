@@ -14,6 +14,7 @@ class CheckModel {
         
         // جلب البيانات الأساسية من الإعدادات الخاصة بصفحة الفحص
         $data = isset($settings['check_page']) ? json_decode($settings['check_page'], true) : [];
+var_dump($data); exit;
 
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
         return is_array($data) ? $data : [];

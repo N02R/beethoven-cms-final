@@ -10,7 +10,6 @@
                 <form id="checkBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_check_breadcrumb">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
@@ -31,7 +30,6 @@
     </div>
 </div>
 
-
 <!-- 2. Hero Image Modal -->
 <div class="modal fade custom-modal" id="checkHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -45,7 +43,6 @@
                     <input type="hidden" name="action" value="update_check_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($check_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($check_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
@@ -80,7 +77,6 @@
                 <form id="checkMainContentForm" method="POST">
                     <input type="hidden" name="action" value="update_check_main">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
@@ -101,7 +97,6 @@
     </div>
 </div>
 
-
 <!-- 4. Important Notes Modal -->
 <div class="modal fade custom-modal" id="checkNotesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -114,7 +109,6 @@
                 <form id="checkNotesForm" method="POST">
                     <input type="hidden" name="action" value="update_check_notes">
                     
-                    <!-- حاوية العنوان بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان الملاحظات</label>
@@ -136,7 +130,6 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- زر إضافة ملاحظة جديدة بنفس الستايل الموحد -->
                     <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCheckNoteRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة ملاحظة جديدة
                     </button>
@@ -150,7 +143,6 @@
     </div>
 </div>
 
-
 <!-- 5. Links & Conditions Modal -->
 <div class="modal fade custom-modal" id="checkLinksModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -163,7 +155,6 @@
                 <form id="checkLinksForm" method="POST">
                     <input type="hidden" name="action" value="update_check_links">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">مقدمة الروابط</label>
@@ -213,13 +204,11 @@
 
 <!-- JavaScript Engine -->
 <script>
-    // 1. دالة عامة لحذف أي صف
     function removeCheckRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -264,7 +253,6 @@
         }, 4000);
     }
 
-    // 3. إضافة صف ملاحظة جديدة بالستايل الموحد
     let checkNoteIndex = <?php echo count($check_data['notes'] ?? []); ?>;
     function addCheckNoteRow() {
         const container = document.getElementById('checkNotesContainer');
@@ -283,7 +271,6 @@
         checkNoteIndex++;
     }
 
-    // 4. معالج الحفظ الموحد عبر AJAX لجميع نماذج الصفحة
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#checkBreadcrumbForm, #checkHeroForm, #checkMainContentForm, #checkNotesForm, #checkLinksForm').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -305,7 +292,6 @@
                 })
                 .then(response => response.text())
                 .then(text => {
-                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
                         if (data.success) {

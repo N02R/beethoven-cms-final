@@ -109,5 +109,4 @@
     if (!empty($is_admin) && file_exists($check_modals_file)) { 
         include_once $check_modals_file; 
     }
-?>
-
+  ?>

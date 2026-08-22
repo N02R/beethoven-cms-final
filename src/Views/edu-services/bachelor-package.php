@@ -1,19 +1,3 @@
-<?php
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$bachelor_data = $data['bachelor_page'] ?? [
-    'page_breadcrumb'     => 'BCS Bachelor Package',
-    'page_breadcrumb_url' => '#',
-    'main_title'          => 'BCS Bachelor Package and Agreement Templet',
-    'main_desc'           => 'هذا المستند محمي بكلمة مرور. يرجى <span style="color: #66aeee;">الاتصال بنا</span> للحصول على كلمة المرور<br>هذا المحتوى محمي بكلمة مرور. لإظهار المحتوى يتعين عليك كتابة كلمة المرور في الأدنى:',
-    'password_label'      => 'كلمة المرور:',
-    'btn_text'            => 'ادخال'
-];
-?>
-
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

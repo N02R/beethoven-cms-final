@@ -103,3 +103,11 @@
     </div>
   </section>
   <!-- custom-services-info end -->
+  
+  <?php
+    $check_modals_file = __DIR__ . '/includes/admin_check_modals.php';
+    if (!empty($is_admin) && file_exists($check_modals_file)) { 
+        include_once $check_modals_file; 
+    }
+?>
+

@@ -652,6 +652,21 @@ class SettingsController
                 $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+            // الإضافة الجديدة لمعالجة تحديث الروابط والشروط لصفحة الفحص
+            elseif ($action === 'update_check_links') {
+                $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
+                
+                $oldCheckData['links_intro']       = $_POST['links_intro'] ?? '';
+                $oldCheckData['anabin_url']        = $_POST['anabin_url'] ?? '';
+                $oldCheckData['uniassist_url']     = $_POST['uniassist_url'] ?? '';
+                $oldCheckData['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
+                $oldCheckData['condition_1']       = $_POST['condition_1'] ?? '';
+                $oldCheckData['condition_2']       = $_POST['condition_2'] ?? '';
+                $oldCheckData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
+
+                $jsonVal = json_encode($oldCheckData, JSON_UNESCAPED_UNICODE);
+                $stmt->execute(['k' => 'check_page', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            }
             elseif ($action === 'update_check_downloads') {
                 $oldCheckData = json_decode($currentSettings['check_page'] ?? '', true) ?: [];
                 

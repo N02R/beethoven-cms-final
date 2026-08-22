@@ -292,6 +292,7 @@
                 })
                 .then(response => response.text())
                 .then(text => {
+                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
                         if (data.success) {
@@ -312,3 +313,4 @@
         });
     });
 </script>
+

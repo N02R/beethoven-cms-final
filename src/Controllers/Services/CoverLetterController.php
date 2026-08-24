@@ -21,14 +21,16 @@ class CoverLetterController {
             session_start();
         }
 
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../../');
+        // تحديد مسار الجذر للمشروع بشكل دقيق وآمن
+        $root_path = realpath($_SERVER['DOCUMENT_ROOT']) ?: realpath(__DIR__ . '/../../../');
 
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة خطاب الطلب عبر المودل المخصص
-        $data['coverletter_page'] = CoverLetterModel::getCoverLetterData();
+        // 2. جلب بيانات صفحة خطاب الطلب عبر المودل المخصص وتوفيرها بالتسميتين لمنع أي نقص
+        $cover_data_array = CoverLetterModel::getCoverLetterData();
+        $data['coverletter_page'] = $cover_data_array;
+        $data['cover_data'] = $cover_data_array; // ضمان التوافق التام مع الـ Modals
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

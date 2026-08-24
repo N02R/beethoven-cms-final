@@ -40,8 +40,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="germanHeroForm" method="POST">
+                <form id="germanHeroForm" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_german_hero">
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($german_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -52,8 +53,8 @@
                         <?php endif; ?>
                         
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">مسار الصورة (URL)</label>
-                            <input type="text" class="form-control" name="hero_img" value="<?php echo htmlspecialchars($german_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
                         </div>
                         
                         <div class="mb-0">
@@ -70,7 +71,6 @@
         </div>
     </div>
 </div>
-
 <!-- 3. Main Title & Description Modal -->
 <div class="modal fade custom-modal" id="germanMainModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">

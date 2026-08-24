@@ -92,7 +92,7 @@
             <?php foreach (($english_data['lang_points'] ?? []) as $point): ?>
               <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                 <li>
-                  <p><img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/><?php echo htmlspecialchars($point); ?></p>
+                  <p><img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="نجمة" class="ms-2" width="25"/><?php echo htmlspecialchars($point); ?></p>
                 </li>
               </div>
             <?php endforeach; ?>

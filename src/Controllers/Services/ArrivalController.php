@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
-use App\Models\ArrivalModel;
+use App\Models\CoverLetterModel;
 
-class ArrivalController {
+class CoverLetterController {
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
@@ -27,8 +27,8 @@ class ArrivalController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة الوصول عبر المودل المخصص
-        $data['arrival_data'] = ArrivalModel::getArrivalData();
+        // 2. جلب بيانات صفحة خطاب الطلب عبر المودل المخصص
+        $data['coverletter_page'] = CoverLetterModel::getCoverLetterData();
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -56,8 +56,8 @@ class ArrivalController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالوصول (arrival.php)
-        $view_file = $root_path . '/src/Views/edu-services/arrival.php';
+        // 2. استدعاء ملف الـ View الخاص بخطاب الطلب (coverletter.php)
+        $view_file = $root_path . '/src/Views/edu-services/coverletter.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
@@ -66,7 +66,7 @@ class ArrivalController {
 
         // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
         if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_arrival_modals.php';
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_cover_modals.php';
             if (file_exists($modals_file)) {
                 include_once $modals_file;
             }

@@ -104,7 +104,8 @@ li {
 }
 
 .custom-services-info .advice-check p,
-.custom-services-info .advice-stars p {
+.custom-services-info .advice-stars p,
+.advice-tips{
     font-weight: 400;
     /* الحفاظ على مقاسك 21.65px كحد أقصى */
     font-size: clamp(14px, 1.5vw, 21.65px);

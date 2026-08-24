@@ -15,22 +15,22 @@ class CoverLetterController {
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            if (isset($_SERVER['HTTPS'] ?? '' ) && $_SERVER['HTTPS'] === 'on') {
                 ini_set('session.cookie_secure', '1');
             }
             session_start();
         }
 
-        // تحديد مسار الجذر للمشروع بشكل دقيق وآمن
-        $root_path = realpath($_SERVER['DOCUMENT_ROOT']) ?: realpath(__DIR__ . '/../../../');
+        // تحديد مسار الجذر للمشروع بنفس الهيكلية الأصلية المعتمدة في ArrivalController
+        $root_path = realpath(__DIR__ . '/../../../');
 
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة خطاب الطلب عبر المودل المخصص وتوفيرها بالتسميتين لمنع أي نقص
+        // 2. جلب بيانات صفحة خطاب الطلب عبر المودل المخصص وتوفيرها بكل المفاتيح المطلوبة لضمان الاحتفاظ بالبيانات داخل المودلز
         $cover_data_array = CoverLetterModel::getCoverLetterData();
         $data['coverletter_page'] = $cover_data_array;
-        $data['cover_data'] = $cover_data_array; // ضمان التوافق التام مع الـ Modals
+        $data['cover_data'] = $cover_data_array; // لضمان التوافق التام مع الحقول داخل admin_cover_modals.php
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

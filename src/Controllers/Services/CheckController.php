@@ -27,8 +27,8 @@ class CheckController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة الفحص والمراجعة عبر المودل الخاص بها
-        $data['check_page'] = CheckModel::getCheckData();
+        // 2. جلب بيانات صفحة التحقق من الشهادات عبر المودل المخصص
+        $data['check_data'] = CheckModel::getCheckData();
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -40,7 +40,7 @@ class CheckController {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js = [];
@@ -56,7 +56,7 @@ class CheckController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالفحص (check.php)
+        // 2. استدعاء ملف الـ View الخاص بالتحقق (check.php)
         $view_file = $root_path . '/src/Views/edu-services/check.php';
         if (file_exists($view_file)) {
             require_once $view_file;
@@ -75,7 +75,7 @@ class CheckController {
         // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
-            require_once $footer_file;
+            include_once $footer_file;
         } else {
             echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }

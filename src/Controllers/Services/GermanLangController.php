@@ -68,7 +68,7 @@ class GermanLangController {
 
         // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
         if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_germanlang_modals.php';
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_german_modals.php';
             if (file_exists($modals_file)) {
                 include_once $modals_file;
             }

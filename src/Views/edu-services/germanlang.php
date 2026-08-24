@@ -143,7 +143,7 @@
   <!-- custom-services-info end -->
 
   <?php
-    $german_modals_file = __DIR__ . '/includes/admin_germanlang_modals.php';
+    $german_modals_file = __DIR__ . '/includes/admin_german_modals.php';
     if (!empty($is_admin) && file_exists($german_modals_file)) { 
         include_once $german_modals_file; 
     }

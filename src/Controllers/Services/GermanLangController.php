@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
+use App\Models\GermanLangModel;
 
 class GermanLangController {
-    
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
@@ -27,11 +27,10 @@ class GermanLangController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة دورات اللغة الألمانية الخاصة
-        $global_settings = SiteModel::getSettings();
-        $german_data = isset($global_settings['german_page']) ? json_decode($global_settings['german_page'], true) : [];
-        
-        $data['german_page'] = $german_data;
+        // 2. جلب بيانات صفحة اللغة الألمانية عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
+        $german_data_array = GermanLangModel::getGermanLangData();
+        $data['germanlang_page'] = $german_data_array;
+        $data['german_data'] = $german_data_array; // لضمان التوافق التام مع الحقول داخل الواجهة والـ Modals
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -43,7 +42,7 @@ class GermanLangController {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js = [];
@@ -59,20 +58,28 @@ class GermanLangController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص باللغة الألمانية (german.php أو ما يطابقه)
-        $view_file = $root_path . '/src/Views/edu-services/german.php';
+        // 2. استدعاء ملف الـ View الخاص باللغة الألمانية (germanlang.php)
+        $view_file = $root_path . '/src/Views/edu-services/germanlang.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
+        if ($is_admin) {
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_germanlang_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            }
+        }
+
+        // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

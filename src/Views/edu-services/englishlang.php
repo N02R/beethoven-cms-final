@@ -46,7 +46,7 @@
     <div class="custom-container">
       
       <!-- 1. العنوان والوصف الرئيسي -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -58,7 +58,7 @@
       </div>
 
       <!-- 2. من يمكنه الاستفادة والشروط -->
-      <div class="advice-check my-5 pb-4 border-bottom" style="position: relative;">
+      <div class="advice-check my-5 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishWhoModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل شروط الاستفادة">
               <i class="bi bi-pencil-fill"></i>
@@ -79,7 +79,7 @@
       </div>
 
       <!-- 3. متطلبات اللغة -->
-      <div class="advice-stars pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-stars pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishLangModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل متطلبات اللغة">
               <i class="bi bi-pencil-fill"></i>

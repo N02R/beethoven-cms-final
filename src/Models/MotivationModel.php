@@ -7,47 +7,15 @@ use App\Models\SiteModel;
 
 class MotivationModel {
     /**
-     * جلب وتجهيز بيانات صفحة خطاب الدافع / التحفيز من الإعدادات المركزية
+     * جلب وتجهيز بيانات صفحة خطاب الدافع أو التحفيز (Motivation Letter)
      */
     public static function getMotivationData(): array {
-        // جلب كافة الإعدادات باستخدام المودل المركزي SiteModel
         $settings = SiteModel::getSettings();
         
-        $motivationData = isset($settings['motivation_page']) ? json_decode($settings['motivation_page'], true) : [];
+        // جلب البيانات الأساسية الخاصة بصفحة خطاب الدافع من الإعدادات
+        $data = isset($settings['motivation_page']) ? json_decode($settings['motivation_page'], true) : [];
 
-        // دمج القيم المعطاة مع القيم الافتراضية لضمان عدم حدوث أخطاء إذا لم يتم حفظ البيانات بعد
-        return array_merge([
-            'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
-            'page_breadcrumb_url' => '#',
-            'hero_img'            => 'assets/img/education/servicesimg3.png',
-            'hero_position'       => 'center center',
-            'main_title'          => 'خطاب دافع احترافي يعزز طلبك الأكاديمي أو المهني',
-            'main_desc'           => "خطاب الدافع/التحفيز هي وثيقة من صفحة واحدة كحد أقصى. تكتُب فيها عن نفسك وتُظهر إهتمامك بالطلب الذي تتقدم إليه و الهدف الذي تريد تحقيقه مثل: (دورة لغة ألمانية، سنة تحضيرية بهدف دخول الجامعة، درجة البكالوريوس أو الماجستير، التدريب أو الزمالة الطبية، إلخ).\nإضافة الى ذلك، يتركز الأمر أكثر على دراستك المستقبلية وخططك المهنية وكيف أن درجة البكالوريوس مثلا التي تتقدم إليها ستساعدك على تحقيق أهدافك المستقبلية. أيضا يمكنك أن تشرح بها الأسباب التي تجعل منك المرشح المثالي لهذا المنصب.",
-            'advice_section'      => [
-                'title' => 'نصائح سريعة لكتابة خطاب الدافع',
-                'items' => [
-                    'ابدأ بمقدمة تلخّص دوافعك',
-                    'اذكر أمثلة ملموسة (دراسة، تدريب، تجربة)',
-                    'اربط خبراتك بأهدافك القادمة',
-                    'استخدم لغة واضحة وشخصية',
-                    'احصل على مراجعة من مختص أو ناطق أصلي.',
-                    'راجع الأخطاء اللغوية جيدًا.'
-                ]
-            ],
-            'download_items'      => [
-                [
-                    'type'  => 'pdf',
-                    'title' => 'خطاب الدافع / التحفيز',
-                    'sub'   => 'Example (PDF)',
-                    'file'  => 'assets/files/motivation_letter.pdf'
-                ],
-                [
-                    'type'  => 'word',
-                    'title' => 'خطاب الدافع / التحفيز',
-                    'sub'   => 'Example (Word)',
-                    'file'  => 'assets/files/motivation_letter.docx'
-                ]
-            ]
-        ], is_array($motivationData) ? $motivationData : []);
+        // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
+        return is_array($data) ? $data : [];
     }
 }

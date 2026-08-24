@@ -43,34 +43,53 @@ class PageContentSettingsService
                 $heroImg = 'assets/uploads/' . $filename;
             }
             $pageData['hero_img'] = $heroImg;
+            $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
         } 
         // 3. تحديث المحتوى الرئيسي (Main)
         elseif (str_contains($action, '_main')) {
             $pageData['main_title'] = $_POST['main_title'] ?? '';
             $pageData['main_desc'] = $_POST['main_desc'] ?? '';
         } 
-        // 4. تحديث النصائح والإرشادات (Advice)
-        elseif (str_contains($action, '_advice')) {
-            $adviceTitle = $_POST['advice_title'] ?? '';
+        // 4. تحديث النصائح والإرشادات (Advice / Tips)
+        elseif (str_contains($action, '_advice') || str_contains($action, '_tips')) {
+            $adviceTitle = $_POST['advice_title'] ?? ($_POST['tips_title'] ?? '');
             
-            // معالجة خاصة لصفحة خطاب الدافع (Motivation) التي تستخدم advice_items بدلاً من advice_points
             if ($dbKey === 'motivation_page') {
                 $adviceItems = $_POST['advice_items'] ?? [];
                 $pageData['advice_section'] = [
                     'title' => $adviceTitle,
                     'items' => is_array($adviceItems) ? $adviceItems : []
                 ];
+            } elseif ($dbKey === 'germanlang_page') {
+                $pageData['tips_section'] = [
+                    'title' => $_POST['tips_title'] ?? 'نصائح للنجاح في الدراسة بالألمانية',
+                    'tips_list' => $_POST['tips_list'] ?? []
+                ];
             } else {
                 $pageData['advice_title'] = $adviceTitle;
                 $pageData['advice_points'] = $_POST['advice_points'] ?? [];
             }
-        } 
-        // 5. تحديث الملاحظات (Notes)
+        }
+        // 5. تحديث مستويات اللغة الألمانية (Levels)
+        elseif (str_contains($action, '_levels')) {
+            $pageData['levels_section'] = [
+                'title' => $_POST['levels_title'] ?? 'المستويات المتوفرة (طبقًا ل CEFR)',
+                'levels_list' => $_POST['levels_list'] ?? []
+            ];
+        }
+        // 6. تحديث مميزات دورات اللغة الألمانية (Features)
+        elseif (str_contains($action, '_features')) {
+            $pageData['features_section'] = [
+                'title' => $_POST['features_title'] ?? 'مميزات دوراتنا',
+                'features_list' => $_POST['features_list'] ?? []
+            ];
+        }
+        // 7. تحديث الملاحظات (Notes)
         elseif (str_contains($action, '_notes')) {
             $pageData['note_title'] = $_POST['note_title'] ?? '';
             $pageData['notes'] = $_POST['notes'] ?? [];
         } 
-        // 6. تحديث الروابط الخاصة بصفحة الفحص (Check Links)
+        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links)
         elseif (str_contains($action, '_links')) {
             $pageData['links_intro']       = $_POST['links_intro'] ?? '';
             $pageData['anabin_url']        = $_POST['anabin_url'] ?? '';
@@ -80,7 +99,7 @@ class PageContentSettingsService
             $pageData['condition_2']       = $_POST['condition_2'] ?? '';
             $pageData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
         }
-        // 7. تحديث الملفات والتحميلات (Downloads)
+        // 9. تحديث الملفات والتحميلات (Downloads)
         elseif (str_contains($action, '_downloads')) {
             $types = $_POST['download_types'] ?? [];
             $titles = $_POST['download_titles'] ?? [];
@@ -111,6 +130,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_cover_')) return 'coverletter_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
+        if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         return null;
     }
 

@@ -67,7 +67,7 @@ class SettingsController
                 exit;
             }
 
-            // 0.ب. فحص الصفحات الفردية
+            // 0.ب. فحص الصفحات الفردية (تشمل Arrival, Check, Cover Letter, CV, Motivation, German Lang)
             $pageService = new PageContentSettingsService($root_path, $imageUploader);
             if ($pageService->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();

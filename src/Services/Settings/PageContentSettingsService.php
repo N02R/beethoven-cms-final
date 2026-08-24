@@ -85,9 +85,16 @@ class PageContentSettingsService
             ];
         }
         // 7. تحديث الملاحظات (Notes)
-        elseif (str_contains($action, '_notes')) {
+        elseif (str_contains($action, '_notes') || str_contains($action, '_note')) {
             $pageData['note_title'] = $_POST['note_title'] ?? '';
             $pageData['notes'] = $_POST['notes'] ?? [];
+            // دعم إضافي للملاحظة المفردة (كما في صفحة البرامج الإنجليزية)
+            if (isset($_POST['note_highlight'])) {
+                $pageData['note_highlight'] = $_POST['note_highlight'];
+            }
+            if (isset($_POST['note_text'])) {
+                $pageData['note_text'] = $_POST['note_text'];
+            }
         } 
         // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links)
         elseif (str_contains($action, '_links')) {
@@ -117,6 +124,17 @@ class PageContentSettingsService
             }
             $pageData['download_items'] = $downloadItems;
         }
+        // 10. تحديث شروط الاستفادة (Who) - خاصة بصفحة البرامج الإنجليزية
+        elseif (str_contains($action, '_who')) {
+            $pageData['who_title'] = $_POST['who_title'] ?? 'من يمكنه الاستفادة من هذه البرامج';
+            $pageData['who_subtitle'] = $_POST['who_subtitle'] ?? 'كل من يستوفي الشروط التالية:';
+            $pageData['who_items'] = $_POST['who_items'] ?? [];
+        }
+        // 11. تحديث متطلبات اللغة (Lang) - خاصة بصفحة البرامج الإنجليزية
+        elseif (str_contains($action, '_lang')) {
+            $pageData['lang_title'] = $_POST['lang_title'] ?? 'متطلبات اللغة بشكل عام';
+            $pageData['lang_points'] = $_POST['lang_points'] ?? [];
+        }
 
         $jsonVal = json_encode($pageData, JSON_UNESCAPED_UNICODE);
         $stmt->execute(['k' => $dbKey, 'v' => $jsonVal, 'v_update' => $jsonVal]);
@@ -131,6 +149,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
+        if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         return null;
     }
 

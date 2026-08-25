@@ -84,11 +84,12 @@ class PageContentSettingsService
                 'features_list' => $_POST['features_list'] ?? []
             ];
         }
-        // 7. تحديث الملاحظات (Notes)
+        // 7. تحديث الملاحظات (Notes / Note)
         elseif (str_contains($action, '_notes') || str_contains($action, '_note')) {
             $pageData['note_title'] = $_POST['note_title'] ?? '';
-            $pageData['notes'] = $_POST['notes'] ?? [];
-            // دعم إضافي للملاحظة المفردة (كما في صفحة البرامج الإنجليزية)
+            if (isset($_POST['notes'])) {
+                $pageData['notes'] = $_POST['notes'];
+            }
             if (isset($_POST['note_highlight'])) {
                 $pageData['note_highlight'] = $_POST['note_highlight'];
             }
@@ -106,23 +107,41 @@ class PageContentSettingsService
             $pageData['condition_2']       = $_POST['condition_2'] ?? '';
             $pageData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
         }
-        // 9. تحديث الملفات والتحميلات (Downloads)
-        elseif (str_contains($action, '_downloads')) {
-            $types = $_POST['download_types'] ?? [];
-            $titles = $_POST['download_titles'] ?? [];
-            $subs = $_POST['download_subs'] ?? [];
-            $files = $_POST['download_files'] ?? [];
+        // 9. تحديث الملفات والتحميلات (Downloads & Cards)
+        elseif (str_contains($action, '_downloads') || str_contains($action, '_cards')) {
+            if ($dbKey === 'offers_page') {
+                $titles = $_POST['card_titles'] ?? [];
+                $subs = $_POST['card_subs'] ?? [];
+                $files = $_POST['card_files'] ?? [];
+                $actives = $_POST['card_actives'] ?? []; // مصفوفة تحمل مفاتيح العناصر النشطة
 
-            $downloadItems = [];
-            for ($i = 0; $i < count($titles); $i++) {
-                $downloadItems[] = [
-                    'type'  => $types[$i] ?? 'PDF',
-                    'title' => $titles[$i] ?? '',
-                    'sub'   => $subs[$i] ?? '',
-                    'file'  => $files[$i] ?? '#'
-                ];
+                $downloadCards = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadCards[] = [
+                        'title'  => $titles[$i] ?? '',
+                        'file'   => $files[$i] ?? '#',
+                        'sub'    => $subs[$i] ?? '',
+                        'active' => isset($actives[$i]) && $actives[$i] == '1'
+                    ];
+                }
+                $pageData['download_cards'] = $downloadCards;
+            } else {
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'PDF',
+                        'title' => $titles[$i] ?? '',
+                        'sub'   => $subs[$i] ?? '',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+                $pageData['download_items'] = $downloadItems;
             }
-            $pageData['download_items'] = $downloadItems;
         }
         // 10. تحديث شروط الاستفادة (Who) - خاصة بصفحة البرامج الإنجليزية
         elseif (str_contains($action, '_who')) {
@@ -150,6 +169,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
+        if (str_starts_with($action, 'update_offers_')) return 'offers_page';
         return null;
     }
 

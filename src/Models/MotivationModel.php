@@ -5,15 +5,15 @@ namespace App\Models;
 
 use App\Models\SiteModel;
 
-class MotivationModel {
+class OffersModel {
     /**
-     * جلب وتجهيز بيانات صفحة خطاب الدافع أو التحفيز (Motivation Letter)
+     * جلب وتجهيز بيانات صفحة العروض والاتفاقيات
      */
-    public static function getMotivationData(): array {
+    public static function getOffersData(): array {
         $settings = SiteModel::getSettings();
         
-        // جلب البيانات الأساسية الخاصة بصفحة خطاب الدافع من الإعدادات
-        $data = isset($settings['motivation_page']) ? json_decode($settings['motivation_page'], true) : [];
+        // جلب البيانات الأساسية من الإعدادات
+        $data = isset($settings['offers_page']) ? json_decode($settings['offers_page'], true) : [];
 
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
         return is_array($data) ? $data : [];

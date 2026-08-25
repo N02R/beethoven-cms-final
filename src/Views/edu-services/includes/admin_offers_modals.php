@@ -180,13 +180,16 @@
                     <div id="offersCardsContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php if (!empty($offers_data['download_cards'])): ?>
                             <?php foreach ($offers_data['download_cards'] as $index => $card): ?>
+                                <?php 
+                                    $card_type = strtolower($card['type'] ?? 'pdf');
+                                ?>
                                 <div class="p-4 shadow-sm position-relative card-item-box" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="offer_card_<?php echo $index; ?>">
                                     <div class="row g-3">
                                         <div class="col-md-3">
                                             <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
-                                            <select class="form-select" name="card_types[]" style="padding: 10px 14px;">
-                                                <option value="pdf" <?php echo (strtolower($card['type'] ?? 'pdf') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
-                                                <option value="word" <?php echo (strtolower($card['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
+                                            <select class="form-select" name="card_types[]" style="padding: 10px 14px;" required>
+                                                <option value="pdf" <?php echo ($card_type === 'pdf') ? 'selected' : ''; ?>>PDF</option>
+                                                <option value="word" <?php echo ($card_type === 'word') ? 'selected' : ''; ?>>Word</option>
                                             </select>
                                         </div>
                                         <div class="col-md-3">
@@ -312,7 +315,7 @@
         noteIndex++;
     }
 
-    // 4. إدارة صفوف كروت التحميل بالستايل الموحد
+    // 4. إدارة صفوف كروت التحميل بالستايل الموحد (مع دعم اختيار نوع الملف PDF أو Word)
     let cardIndex = <?php echo count($offers_data['download_cards'] ?? []); ?>;
     function addOfferCardRow() {
         const container = document.getElementById('offersCardsContainer');
@@ -325,7 +328,7 @@
             <div class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
-                    <select class="form-select" name="card_types[]" style="padding: 10px 14px;">
+                    <select class="form-select" name="card_types[]" style="padding: 10px 14px;" required>
                         <option value="pdf" selected>PDF</option>
                         <option value="word">Word</option>
                     </select>

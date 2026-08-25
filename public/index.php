@@ -98,6 +98,7 @@ use App\Controllers\Services\MedicalPackageController;
 use App\Controllers\Services\JobSearchAgreementController;
 use App\Controllers\Services\MedicalSpecialtiesController;
 use App\Controllers\Services\AusbildungPackageController;
+use App\Controllers\Services\HealthController;
 use App\Controllers\Guide\GuideBlog1Controller;
 use App\Controllers\Guide\GuideBlog2Controller;
 use App\Controllers\Guide\GuideBlog3Controller;
@@ -136,7 +137,7 @@ $router->add('GET', 'edu-services/financial', [FinancialController::class, 'inde
 $router->add('GET', 'edu-services/foundation', [FoundationController::class, 'index']);
 $router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'index']);
 $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'index']);
-$router->add('GET', 'edu-services/health', [OffersController::class, 'index']);
+$router->add('GET', 'edu-services/health', [HealthController::class, 'index']);
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [MotivationController::class, 'index']);
 $router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);

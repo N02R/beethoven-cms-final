@@ -1,18 +1,18 @@
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $path_prefix; ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
-          <a href="<?php echo htmlspecialchars($offers_data['page_breadcrumb_url'] ?? '#'); ?>">
-            <?php echo htmlspecialchars($offers_data['page_breadcrumb'] ?? 'العروض والاتفاقيات'); ?>
+          <a href="<?php echo htmlspecialchars($health_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($health_data['page_breadcrumb'] ?? 'التأمين الصحي'); ?>
           </a>
         </li>
       </ol>
@@ -20,16 +20,16 @@
   </div>
   <!-- Breadcrumb end-->
 
-  <!-- custom-services start-->
+  <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الهيدر والصورة">
           <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class="pakeges-hero custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($offers_data['hero_img'] ?? null, 'assets/img/education/servicesimg10.png')); ?>'); background-position: <?php echo htmlspecialchars($offers_data['hero_position'] ?? 'center center'); ?>;">
+      <div class="health-hero custom-hero" style="background-image: url('<?php echo get_image_url($health_data['hero_img'] ?? null, 'assets/img/education/servicesimg6.png'); ?>');">
       </div>
     </div>
   </section>
@@ -39,83 +39,108 @@
   <section class="custom-services-info py-5">
     <div class="custom-container">
       
+      <!-- 1. قسم العنوان الرئيسي والوصف -->
       <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthMainTitleModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <h2 class="main-text"><?php echo htmlspecialchars($offers_data['main_title'] ?? ''); ?></h2>
-        <p class="par-text"><?php echo nl2br(htmlspecialchars($offers_data['main_desc'] ?? '')); ?></p>
+        <h2 class="main-text"><?php echo htmlspecialchars($health_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($health_data['main_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-stars py-5" style="position: relative;">
+      <!-- 2. قسم النصائح والإرشادات (لماذا التأمين الصحي مهم؟) -->
+      <div class="advice-check py-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersNoteModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthTipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أهمية التأمين الصحي">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
-        <ul class="star-list list-unstyled p-0">
-          <li class="d-flex align-items-start">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
-            <p class="mb-0">
-              <?php 
-              $processed_note = str_replace('href="contact.php"', 'href="' . ($path_prefix ?? '/') . 'contact"', $offers_data['note_text'] ?? '');
-              echo $processed_note; 
-              ?>
-            </p>
-          </li>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($health_data['advice_title'] ?? 'لماذا التأمين الصحي مهم؟'); ?></h5>
+        <div class="row">
+          <?php foreach (($health_data['tips'] ?? []) as $tip): ?>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
+              <p>✅ <?php echo htmlspecialchars($tip); ?></p>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+
+      <!-- 3. قسم الوثائق المكملة -->
+      <div class="advice-stars my-5" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الوثائق المكملة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($health_data['note_title'] ?? 'الوثائق المكملة'); ?></h5>
+        <ul class="star-list">
+          <div class="row">
+            <?php foreach (($health_data['notes'] ?? []) as $note): ?>
+              <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
+                <li>
+                  <p>
+                    <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="" class="ms-2" />
+                    <?php echo $note; ?>
+                  </p>
+                </li>
+              </div>
+            <?php endforeach; ?>
+          </div>
         </ul>
       </div>
 
-      <div class="dl-card py-5" style="position: relative;">
+      <!-- 4. قسم الوصف التمهيدي لروابط الحجز -->
+      <div class="mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersCardsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل بطاقات التحميل">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthIntroModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل وصف روابط الحجز">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <div class="row g-4">
-          <?php if (!empty($offers_data['download_cards']) && is_array($offers_data['download_cards'])): ?>
-            <?php foreach ($offers_data['download_cards'] as $card): ?>
-              <?php 
-                $is_active = !empty($card['active']);
-                $card_class = $is_active ? 'card card-active h-100' : 'card h-100';
-                $title_class = $is_active ? 'text-bg text-center text-bg-active' : 'text-bg text-center';
-                $link_class = $is_active ? 'text-active' : '';
-                $p_class = $is_active ? 'text-active mb-0' : 'mb-0';
+        <p class="advice-text mt-4"><?php echo nl2br(htmlspecialchars($health_data['intro_desc'] ?? '')); ?></p>
+      </div>
 
-                // منطق تحديد نوع الملف والأيقونة (PDF أو Word)
-                $is_pdf = (strtolower($card['type'] ?? 'pdf') === 'pdf');
-                $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              ?>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="<?php echo htmlspecialchars($card_class); ?>">
-                  <h5 class="<?php echo htmlspecialchars($title_class); ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
-                  <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo htmlspecialchars(get_image_url($icon)); ?>" alt="<?php echo $is_pdf ? 'ملف PDF' : 'ملف Word'; ?>" />
-                    <div class="card-body-info">
-                      <a href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
-                      <p class="<?php echo htmlspecialchars($p_class); ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
+      <!-- 5. روابط حجز الشركات (Dr.WALTER & FINTIBA أو الروابط المدارة) -->
+      <div style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthLinksModal" style="position: absolute; top: -15px; right: 0; z-index: 10;" title="تعديل روابط الحجز">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <?php if (!empty($health_data['links'] ?? []) && is_array($health_data['links'])): ?>
+          <?php foreach ($health_data['links'] as $link_item): ?>
+            <?php 
+              $is_active_link = !empty($link_item['active']);
+              $link_class = $is_active_link ? 'link active mt-4' : 'link mt-4';
+            ?>
+            <div class="<?php echo $link_class; ?>">
+              <p class="text-center">
+                <?php if (!empty($link_item['url'])): ?>
+                  <a href="<?php echo htmlspecialchars($link_item['url']); ?>" target="_blank" class="text-decoration-none text-inherit" style="color: inherit;">
+                    <?php echo htmlspecialchars($link_item['text'] ?? ''); ?>
+                  </a>
+                <?php else: ?>
+                  <?php echo htmlspecialchars($link_item['text'] ?? ''); ?>
+                <?php endif; ?>
+              </p>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </div>
 
     </div>
   </section>
   <!-- custom-services-info end -->
 
-  <?php
-    $offers_modals_file = __DIR__ . '/includes/admin_offers_modals.php';
-    if (!empty($is_admin) && file_exists($offers_modals_file)) { 
-        include_once $offers_modals_file; 
+<?php
+    $health_modals_file = __DIR__ . '/includes/admin_health_modals.php';
+    if (!empty($is_admin) && file_exists($health_modals_file)) { 
+        include_once $health_modals_file; 
     }
-  ?>
+?>

@@ -97,23 +97,41 @@ class PageContentSettingsService
                 $pageData['note_text'] = $_POST['note_text'];
             }
         } 
-        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links)
+        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والملاحظات في الصحة
         elseif (str_contains($action, '_links')) {
-            $pageData['links_intro']       = $_POST['links_intro'] ?? '';
-            $pageData['anabin_url']        = $_POST['anabin_url'] ?? '';
-            $pageData['uniassist_url']     = $_POST['uniassist_url'] ?? '';
-            $pageData['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
-            $pageData['condition_1']       = $_POST['condition_1'] ?? '';
-            $pageData['condition_2']       = $_POST['condition_2'] ?? '';
-            $pageData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
+            if ($dbKey === 'health_page') {
+                $pageData['expert_note'] = $_POST['expert_note'] ?? '';
+                
+                $linkTitles = $_POST['link_titles'] ?? [];
+                $linkUrls = $_POST['link_urls'] ?? [];
+                $linkActives = $_POST['link_actives'] ?? []; // مصفوفة تحمل مؤشرات العناصر النشطة المحددة
+
+                $insuranceLinks = [];
+                for ($i = 0; $i < count($linkTitles); $i++) {
+                    $insuranceLinks[] = [
+                        'title'  => $linkTitles[$i] ?? '',
+                        'url'    => $linkUrls[$i] ?? '#',
+                        'active' => in_array((string)$i, array_map('strval', $linkActives), true)
+                    ];
+                }
+                $pageData['insurance_links'] = $insuranceLinks;
+            } else {
+                $pageData['links_intro']       = $_POST['links_intro'] ?? '';
+                $pageData['anabin_url']        = $_POST['anabin_url'] ?? '';
+                $pageData['uniassist_url']     = $_POST['uniassist_url'] ?? '';
+                $pageData['uni_contact_intro'] = $_POST['uni_contact_intro'] ?? '';
+                $pageData['condition_1']       = $_POST['condition_1'] ?? '';
+                $pageData['condition_2']       = $_POST['condition_2'] ?? '';
+                $pageData['conclusion_text']   = $_POST['conclusion_text'] ?? '';
+            }
         }
-        // 9. تحديث الملفات والتحميلات (Downloads & Cards)
-        elseif (str_contains($action, '_downloads') || str_contains($action, '_cards')) {
+        // 9. تحديث الملفات والتحميلات (Downloads & Cards) أو قسم الأهمية والوثائق في الصحة
+        elseif (str_contains($action, '_downloads') || str_contains($action, '_cards') || str_contains($action, '_importance') || str_contains($action, '_documents')) {
             if ($dbKey === 'offers_page') {
                 $titles = $_POST['card_titles'] ?? [];
                 $subs = $_POST['card_subs'] ?? [];
                 $files = $_POST['card_files'] ?? [];
-                $actives = $_POST['card_actives'] ?? []; // مصفوفة تحمل مفاتيح العناصر النشطة
+                $actives = $_POST['card_actives'] ?? [];
 
                 $downloadCards = [];
                 for ($i = 0; $i < count($titles); $i++) {
@@ -125,6 +143,18 @@ class PageContentSettingsService
                     ];
                 }
                 $pageData['download_cards'] = $downloadCards;
+            } elseif ($dbKey === 'health_page') {
+                if (str_contains($action, '_importance')) {
+                    $pageData['importance_section'] = [
+                        'title' => $_POST['importance_title'] ?? 'لماذا التأمين الصحي مهم؟',
+                        'items' => is_array($_POST['importance_items'] ?? null) ? $_POST['importance_items'] : []
+                    ];
+                } elseif (str_contains($action, '_documents')) {
+                    $pageData['documents_section'] = [
+                        'title' => $_POST['documents_title'] ?? 'الوثائق المكملة',
+                        'items' => is_array($_POST['documents_items'] ?? null) ? $_POST['documents_items'] : []
+                    ];
+                }
             } else {
                 $types = $_POST['download_types'] ?? [];
                 $titles = $_POST['download_titles'] ?? [];
@@ -170,6 +200,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
+        if (str_starts_with($action, 'update_health_')) return 'health_page';
         return null;
     }
 

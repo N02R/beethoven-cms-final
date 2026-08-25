@@ -60,7 +60,7 @@
         <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list list-unstyled p-0">
           <li class="d-flex align-items-start">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
             <p class="mb-0">
               <?php 
               $processed_note = str_replace('href="contact.php"', 'href="' . ($path_prefix ?? '/') . 'contact"', $offers_data['note_text'] ?? '');
@@ -87,12 +87,16 @@
                 $title_class = $is_active ? 'text-bg text-center text-bg-active' : 'text-bg text-center';
                 $link_class = $is_active ? 'text-active' : '';
                 $p_class = $is_active ? 'text-active mb-0' : 'mb-0';
+
+                // منطق تحديد نوع الملف والأيقونة (PDF أو Word)
+                $is_pdf = (strtolower($card['type'] ?? 'pdf') === 'pdf');
+                $icon = $is_pdf ? 'assets/img/education/Grouppdf.webp' : 'assets/img/education/Groupword.webp';
               ?>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="<?php echo htmlspecialchars($card_class); ?>">
                   <h5 class="<?php echo htmlspecialchars($title_class); ?>"><?php echo htmlspecialchars($card['title'] ?? ''); ?></h5>
                   <div class="card-body d-flex align-items-center gap-3">
-                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/Grouppdf.png')); ?>" alt="ملف PDF" />
+                    <img src="<?php echo htmlspecialchars(get_image_url($icon)); ?>" alt="<?php echo $is_pdf ? 'ملف PDF' : 'ملف Word'; ?>" />
                     <div class="card-body-info">
                       <a href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($card['file'] ?? '#', '/')); ?>" class="<?php echo htmlspecialchars($link_class); ?>" download>Download</a>
                       <p class="<?php echo htmlspecialchars($p_class); ?>"><?php echo htmlspecialchars($card['sub'] ?? ''); ?></p>
@@ -104,6 +108,7 @@
           <?php endif; ?>
         </div>
       </div>
+
     </div>
   </section>
   <!-- custom-services-info end -->

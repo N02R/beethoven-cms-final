@@ -39,7 +39,7 @@
   <section class="custom-services-info py-5">
     <div class="custom-container">
       
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -50,7 +50,7 @@
         <p class="par-text"><?php echo nl2br(htmlspecialchars($offers_data['main_desc'] ?? '')); ?></p>
       </div>
 
-      <div class="advice-stars py-5 border-bottom" style="position: relative;">
+      <div class="advice-stars py-5" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersNoteModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات">
               <i class="bi bi-pencil-fill"></i>
@@ -60,7 +60,7 @@
         <h5 class="note-text mb-3"><?php echo htmlspecialchars($offers_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
         <ul class="star-list list-unstyled p-0">
           <li class="d-flex align-items-start">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
             <p class="mb-0">
               <?php 
               $processed_note = str_replace('href="contact.php"', 'href="' . ($path_prefix ?? '/') . 'contact"', $offers_data['note_text'] ?? '');

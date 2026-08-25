@@ -90,7 +90,7 @@
 
                 // منطق تحديد نوع الملف والأيقونة (PDF أو Word)
                 $is_pdf = (strtolower($card['type'] ?? 'pdf') === 'pdf');
-                $icon = $is_pdf ? 'assets/img/education/Grouppdf.webp' : 'assets/img/education/Groupword.webp';
+                $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
               ?>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="<?php echo htmlspecialchars($card_class); ?>">

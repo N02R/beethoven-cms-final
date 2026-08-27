@@ -110,7 +110,7 @@
             $marginTop = $index === 0 ? '' : ' mt-4';
         ?>
         <div class="link<?php echo $isActive . $marginTop; ?>">
-          <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none text-dark">
+          <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none">
             <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
           </a>
         </div>

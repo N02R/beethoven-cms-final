@@ -1,8 +1,3 @@
-<?php
-/**
- * صفحة الضمانات المالية والحساب البنكي المغلق - Financial/Blocked Account Page View
- */
-?>
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -46,7 +41,7 @@
     <div class="custom-container">
       
       <!-- 1. العنوان الرئيسي والأهمية -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي والأهمية">
               <i class="bi bi-pencil-fill"></i>
@@ -61,7 +56,7 @@
       </div>
 
       <!-- 2. خيارات الضمان المالي -->
-      <div class="advice-check my-5 pb-4 border-bottom" style="position: relative;">
+      <div class="advice-check my-5 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedOptionsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل خيارات الضمان المالي">
               <i class="bi bi-pencil-fill"></i>
@@ -77,7 +72,7 @@
       </div>
 
       <!-- 3. الحساب البنكي المغلق -->
-      <div class="advice-stars pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-stars pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedAccountModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل نقاط الحساب المغلق">
               <i class="bi bi-pencil-fill"></i>

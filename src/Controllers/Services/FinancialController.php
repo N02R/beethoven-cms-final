@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
+// نفترض وجود مودل خاص بالبيانات المالية، قم بتغييره إن كان الاسم مختلفاً
+use App\Models\FinancialModel; 
 
 class FinancialController {
-    
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
 
-        // إدارة الجلسات بأمان تام
+        // إدارة الجلسات بأمان تام (نفس منطق ArrivalController)
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
@@ -27,11 +28,14 @@ class FinancialController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة الخدمات المالية / الحساب البنكي المغلق الخاصة
-        $global_settings = SiteModel::getSettings();
-        $financial_data = isset($global_settings['financial_page']) ? json_decode($global_settings['financial_page'], true) : [];
+        // 2. جلب بيانات صفحة الضمانات المالية عبر المودل المخصص
+        // يفترض أن الـ Model يقوم بجلب البيانات من جدول site_settings تحت مفتاح 'financial_page'
+        $financial_data_array = FinancialModel::getFinancialData(); 
         
-        $data['financial_page'] = $financial_data;
+        // تمرير البيانات للـ View
+        $data['financial_page'] = $financial_data_array;
+        // إضافة الاسم الثاني المستخدم في الـ view الحالي لضمان توافق الـ Modals
+        $data['blocked_data']   = $financial_data_array; 
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -43,10 +47,11 @@ class FinancialController {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
+        // تم تحديث المسارات لتناسب Financial page بناءً على الـ view السابق
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
-        $page_js = [];
+        $page_js = []; // أضف ملفات JS هنا إن وجدت
 
         // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
         extract($data);
@@ -56,23 +61,37 @@ class FinancialController {
         if (file_exists($header_file)) {
             include_once $header_file;
         } else {
-            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
+            error_log("System Error: Header file not found at " . $header_file);
+            echo "<div class='container py-3 text-danger'>System Error: Header not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالخدمات المالية (financial.php)
+        // 2. استدعاء ملف الـ View الخاص بالضمانات المالية (financial.php)
         $view_file = $root_path . '/src/Views/edu-services/financial.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
-            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
+            error_log("View Error: Financial view not found at " . $view_file);
+            echo "<div class='container py-5 text-center'><h3>System Error: View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (admin_financial_modals.php)
+        if ($is_admin) {
+            // تم تحديث المسار والاسم ليتوافق مع الصفحة المطلوبة
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_financial_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            } else {
+                error_log("Admin Modals Error: File not found at " . $modals_file);
+            }
+        }
+
+        // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+            error_log("System Error: Footer file not found at " . $footer_file);
+            echo "<div class='py-3 text-danger'>System Error: Footer not found.</div>";
         }
     }
 }

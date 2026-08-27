@@ -49,6 +49,14 @@ class PageContentSettingsService
         elseif (str_contains($action, '_main')) {
             $pageData['main_title'] = $_POST['main_title'] ?? '';
             $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            
+            // دعم إضافي لقسم الأهمية إذا وجد ضمن النموذج الرئيسي (خاص بصفحة الضمانات المالية مثلاً)
+            if (isset($_POST['importance_title'])) {
+                $pageData['importance_title'] = $_POST['importance_title'];
+            }
+            if (isset($_POST['importance_desc'])) {
+                $pageData['importance_desc'] = $_POST['importance_desc'];
+            }
         } 
         // 4. تحديث النصائح والإرشادات (Advice / Tips)
         elseif (str_contains($action, '_advice') || str_contains($action, '_tips')) {
@@ -84,27 +92,35 @@ class PageContentSettingsService
                 'features_list' => $_POST['features_list'] ?? []
             ];
         }
-        // 7. تحديث الملاحظات (Notes / Note)
-        elseif (str_contains($action, '_notes') || str_contains($action, '_note')) {
-            $pageData['note_title'] = $_POST['note_title'] ?? '';
-            if (isset($_POST['notes'])) {
-                $pageData['notes'] = $_POST['notes'];
-            }
-            if (isset($_POST['note_highlight'])) {
-                $pageData['note_highlight'] = $_POST['note_highlight'];
-            }
-            if (isset($_POST['note_text'])) {
-                $pageData['note_text'] = $_POST['note_text'];
+        // 7. تحديث الملاحظات (Notes / Note) أو خيارات الضمان المالي / الحساب المغلق
+        elseif (str_contains($action, '_notes') || str_contains($action, '_note') || str_contains($action, '_options') || str_contains($action, '_account')) {
+            if (str_contains($action, '_options')) {
+                $pageData['options_title'] = $_POST['options_title'] ?? '';
+                $pageData['options_items'] = $_POST['options_items'] ?? [];
+            } elseif (str_contains($action, '_account')) {
+                $pageData['account_title'] = $_POST['account_title'] ?? '';
+                $pageData['account_points'] = $_POST['account_points'] ?? [];
+            } else {
+                $pageData['note_title'] = $_POST['note_title'] ?? '';
+                if (isset($_POST['notes'])) {
+                    $pageData['notes'] = $_POST['notes'];
+                }
+                if (isset($_POST['note_highlight'])) {
+                    $pageData['note_highlight'] = $_POST['note_highlight'];
+                }
+                if (isset($_POST['note_text'])) {
+                    $pageData['note_text'] = $_POST['note_text'];
+                }
             }
         } 
-        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والملاحظات في الصحة
+        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والشركات
         elseif (str_contains($action, '_links')) {
             if ($dbKey === 'health_page') {
                 $pageData['expert_note'] = $_POST['expert_note'] ?? '';
                 
                 $linkTitles = $_POST['link_titles'] ?? [];
                 $linkUrls = $_POST['link_urls'] ?? [];
-                $linkActives = $_POST['link_actives'] ?? []; // مصفوفة تحمل مؤشرات العناصر النشطة المحددة
+                $linkActives = $_POST['link_actives'] ?? [];
 
                 $insuranceLinks = [];
                 for ($i = 0; $i < count($linkTitles); $i++) {
@@ -115,6 +131,18 @@ class PageContentSettingsService
                     ];
                 }
                 $pageData['insurance_links'] = $insuranceLinks;
+            } elseif ($dbKey === 'financial_page') {
+                $linkTexts = $_POST['link_texts'] ?? [];
+                $linkUrls = $_POST['link_urls'] ?? [];
+
+                $serviceLinks = [];
+                for ($i = 0; $i < count($linkTexts); $i++) {
+                    $serviceLinks[] = [
+                        'text' => $linkTexts[$i] ?? '',
+                        'url'  => $linkUrls[$i] ?? '#'
+                    ];
+                }
+                $pageData['service_links'] = $serviceLinks;
             } else {
                 $pageData['links_intro']       = $_POST['links_intro'] ?? '';
                 $pageData['anabin_url']        = $_POST['anabin_url'] ?? '';
@@ -201,6 +229,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
         if (str_starts_with($action, 'update_health_')) return 'health_page';
+        if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         return null;
     }
 

@@ -102,10 +102,10 @@
                 
                 $file_type = strtolower($card['type'] ?? 'pdf');
                 if ($file_type === 'word' || $file_type === 'docx') {
-                    $icon_img = 'assets/img/education/Groupword.png';
+                    $icon_img = 'assets/img/Groupword.webp';
                     $alt_text = 'ملف Word';
                 } else {
-                    $icon_img = 'assets/img/education/Grouppdf.png';
+                    $icon_img = 'assets/img/Grouppdf.webp';
                     $alt_text = 'ملف PDF';
                 }
               ?>

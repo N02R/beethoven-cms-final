@@ -110,6 +110,7 @@
         <!-- روابط حجز الشركات (Dr.WALTER & FINTIBA أو الروابط المدارة) -->
         <?php if (!empty($health_data['links'] ?? []) && is_array($health_data['links'])): ?>
           <?php foreach ($health_data['links'] as $link_item): ?>
+          <?php
               $is_active_link = !empty($link_item['active']);
               $link_class = $is_active_link ? 'link active mt-4' : 'link mt-4';
             ?>

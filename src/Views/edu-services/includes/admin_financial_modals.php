@@ -205,7 +205,7 @@
 
 <!-- Modal 4: تعديل الروابط والشركات -->
 <div class="modal fade custom-modal" id="blockedLinksModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-link-45deg text-primary"></i> تعديل الروابط والشركات</h5>
@@ -215,9 +215,9 @@
                 <form id="blockedLinksForm" method="POST">
                     <input type="hidden" name="action" value="update_blocked_links">
                     
-                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الروابط والشركات</label>
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الروابط والشركات (تعديل / إضافة / حذف)</label>
                     <div id="blockedLinksContainer" class="d-flex flex-column gap-3 mb-3">
-                        <?php if (!empty($blocked_data['service_links'])): ?>
+                        <?php if (!empty($blocked_data['service_links']) && is_array($blocked_data['service_links'])): ?>
                             <?php foreach ($blocked_data['service_links'] as $index => $link): ?>
                                 <div class="p-4 shadow-sm position-relative link-item-box" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="link_row_<?php echo $index; ?>">
                                     <div class="row g-3">
@@ -228,6 +228,14 @@
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold small text-secondary">رابط الـ URL</label>
                                             <input type="text" class="form-control" name="link_urls[]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://...">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-check mt-1">
+                                                <input class="form-check-input" type="checkbox" name="link_actives[<?php echo $index; ?>]" value="1" id="blocked_active_<?php echo $index; ?>" <?php echo (!empty($link['active'])) ? 'checked' : ''; ?>>
+                                                <label class="form-check-label fw-semibold small text-secondary" for="blocked_active_<?php echo $index; ?>">
+                                                    اجعل هذا الزر نشطاً (Active - يظهر بلون مميز وعريض)
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-end mt-3 pt-2 border-top">
@@ -252,6 +260,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- Dynamic JS Engine -->
@@ -345,7 +354,7 @@
         pointIndex++;
     }
 
-    // 5. إدارة صفوف الروابط والشركات بالستايل الموحد
+    // 5. إدارة صفوف الروابط والشركات بالستايل الموحد (مع دعم حقل Active)
     let linkIndex = <?php echo count($blocked_data['service_links'] ?? []); ?>;
     function addBlockedLinkRow() {
         const container = document.getElementById('blockedLinksContainer');
@@ -363,6 +372,14 @@
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small text-secondary">رابط الـ URL</label>
                     <input type="text" class="form-control" name="link_urls[]" placeholder="https://...">
+                </div>
+                <div class="col-md-12">
+                    <div class="form-check mt-1">
+                        <input class="form-check-input" type="checkbox" name="link_actives[${linkIndex}]" value="1" id="blocked_active_${linkIndex}">
+                        <label class="form-check-label fw-semibold small text-secondary" for="blocked_active_${linkIndex}">
+                            اجعل هذا الزر نشطاً (Active - يظهر بلون مميز وعريض)
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="d-flex justify-content-end mt-3 pt-2 border-top">
@@ -420,4 +437,5 @@
         });
     });
 </script>
+
 

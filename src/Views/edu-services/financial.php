@@ -85,7 +85,7 @@
             <?php foreach (($blocked_data['account_points'] ?? []) as $point): ?>
               <li>
                 <p class="mb-0">
-                  <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="نجمة" class="ms-2"/>
+                  <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="نجمة" class="ms-2" width="25"/>
                   <?php echo htmlspecialchars($point); ?>
                 </p>
               </li>

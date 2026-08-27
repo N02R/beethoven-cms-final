@@ -35,7 +35,7 @@
   </section>
   <!-- custom-services end -->
 
-  <!-- custom-services-info start -->
+<!-- custom-services-info start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
       
@@ -94,28 +94,22 @@
         </ul>
       </div>
 
-      <!-- 4. قسم الوصف التمهيدي لروابط الحجز -->
-      <div class="mb-4" style="position: relative;">
+      <!-- 4 & 5. قسم الوصف التمهيدي وروابط حجز الشركات (مدمج معاً بزر تعديل واحد) -->
+      <div style="position: relative;" class="pt-2">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthIntroModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل وصف روابط الحجز">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthLinksModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل وصف وروابط الحجز">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <p class="advice-text mt-4"><?php echo nl2br(htmlspecialchars($health_data['intro_desc'] ?? '')); ?></p>
-      </div>
+        <!-- الوصف التمهيدي لروابط الحجز -->
+        <div class="mb-4">
+          <p class="advice-text mt-4"><?php echo nl2br(htmlspecialchars($health_data['intro_desc'] ?? '')); ?></p>
+        </div>
 
-      <!-- 5. روابط حجز الشركات (Dr.WALTER & FINTIBA أو الروابط المدارة) -->
-      <div style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#healthLinksModal" style="position: absolute; top: -15px; right: 0; z-index: 10;" title="تعديل روابط الحجز">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
-
+        <!-- روابط حجز الشركات (Dr.WALTER & FINTIBA أو الروابط المدارة) -->
         <?php if (!empty($health_data['links'] ?? []) && is_array($health_data['links'])): ?>
           <?php foreach ($health_data['links'] as $link_item): ?>
-            <?php 
               $is_active_link = !empty($link_item['active']);
               $link_class = $is_active_link ? 'link active mt-4' : 'link mt-4';
             ?>
@@ -137,6 +131,7 @@
     </div>
   </section>
   <!-- custom-services-info end -->
+
 
 <?php
     $health_modals_file = __DIR__ . '/includes/admin_health_modals.php';

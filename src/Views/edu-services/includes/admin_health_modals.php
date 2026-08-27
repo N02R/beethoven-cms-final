@@ -199,49 +199,30 @@
 </div>
 
 <!-- ========================================== -->
-<!-- 4. Intro Description Modal -->
-<!-- ========================================== -->
-<div class="modal fade custom-modal" id="healthIntroModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-text-paragraph text-primary"></i> تعديل وصف روابط الحجز</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form id="healthIntroForm" method="POST">
-                    <input type="hidden" name="action" value="update_health_intro">
-                    
-                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">وصف روابط الحجز التمهيدي</label>
-                            <textarea class="form-control" name="intro_desc" rows="4" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($health_data['intro_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="healthIntroForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 5. Links Modal (Dynamic List with Active Option) -->
+<!-- Combined Intro & Links Modal -->
 <!-- ========================================== -->
 <div class="modal fade custom-modal" id="healthLinksModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-link-45deg text-primary"></i> إدارة روابط الحجز والشركات</h5>
+                <h5 class="modal-title"><i class="bi bi-link-45deg text-primary"></i> إدارة وصف وروابط الحجز والشركات</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="healthLinksForm" method="POST">
-                    <input type="hidden" name="action" value="update_health_links">
+                    <input type="hidden" name="action" value="update_health_intro_and_links">
                     
+                    <!-- 1. قسم وصف روابط الحجز التمهيدي -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-secondary">وصف روابط الحجز التمهيدي</label>
+                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                            <textarea class="form-control" name="intro_desc" rows="3" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($health_data['intro_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted">
+
+                    <!-- 2. قسم قائمة روابط الشركات والحجز -->
                     <label class="form-label fw-semibold small text-secondary mb-3">قائمة الروابط (تعديل / إضافة / حذف)</label>
                     <div id="healthLinksContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php if (!empty($health_data['links']) && is_array($health_data['links'])): ?>
@@ -288,6 +269,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- JavaScript Engine -->
 <script>
@@ -419,9 +401,9 @@
         linkIndex++;
     }
 
-    // 6. ربط كافة نماذج صفحة التأمين الصحي عبر AJAX
+    // 6. ربط كافة نماذج صفحة التأمين الصحي عبر AJAX (تم تحديث النماذج لتشمل النموذج المدمج الجديد)
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('#healthBreadcrumbForm, #healthHeroForm, #healthMainTitleForm, #healthTipsForm, #healthNotesForm, #healthIntroForm, #healthLinksForm').forEach(form => {
+        document.querySelectorAll('#healthBreadcrumbForm, #healthHeroForm, #healthMainTitleForm, #healthTipsForm, #healthNotesForm, #healthLinksForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -462,4 +444,5 @@
         });
     });
 </script>
+
 

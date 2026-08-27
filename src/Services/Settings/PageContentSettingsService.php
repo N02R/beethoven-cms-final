@@ -121,6 +121,9 @@ class PageContentSettingsService
                 if (isset($_POST['note_text'])) {
                     $pageData['note_text'] = $_POST['note_text'];
                 }
+                if (isset($_POST['notes_list'])) {
+                    $pageData['notes_list'] = $_POST['notes_list'];
+                }
             }
         } 
         // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والشركات
@@ -170,9 +173,10 @@ class PageContentSettingsService
         // 9. تحديث الملفات والتحميلات (Downloads & Cards) أو قسم الأهمية والوثائق في الصحة
         elseif (str_contains($action, '_downloads') || str_contains($action, '_cards') || str_contains($action, '_importance') || str_contains($action, '_documents')) {
             if ($dbKey === 'offers_page') {
-                $titles = $_POST['card_titles'] ?? [];
-                $subs = $_POST['card_subs'] ?? [];
-                $files = $_POST['card_files'] ?? [];
+                $titles  = $_POST['card_titles'] ?? [];
+                $subs    = $_POST['card_subs'] ?? [];
+                $files   = $_POST['card_files'] ?? [];
+                $types   = $_POST['card_types'] ?? [];
                 $actives = $_POST['card_actives'] ?? [];
 
                 $downloadCards = [];
@@ -181,6 +185,7 @@ class PageContentSettingsService
                         'title'  => $titles[$i] ?? '',
                         'file'   => $files[$i] ?? '#',
                         'sub'    => $subs[$i] ?? '',
+                        'type'   => $types[$i] ?? 'PDF',
                         'active' => isset($actives[$i]) && $actives[$i] == '1'
                     ];
                 }

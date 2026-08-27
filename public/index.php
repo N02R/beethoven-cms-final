@@ -140,7 +140,7 @@ $router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'in
 $router->add('GET', 'edu-services/health', [HealthController::class, 'index']);
 $router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [MotivationController::class, 'index']);
-$router->add('GET', 'edu-services/pakeges', [OffersPageController::class, 'index']);
+$router->add('GET', 'edu-services/pakeges', [OffersController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'job-services/medical-pakeges', [MedicalPackageController::class, 'index']);
 $router->add('GET', 'job-services/medical-traning', [JobSearchAgreementController::class, 'index']);

@@ -30,7 +30,7 @@ class OffersController {
         // 2. جلب بيانات صفحة العروض والاتفاقيات عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
         $offers_data_array = OffersModel::getOffersData();
         $data['offers_page'] = $offers_data_array;
-        $data['offers_data'] = $offers_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals
+        $data['offers_data'] = $offers_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -58,8 +58,8 @@ class OffersController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالعروض والاتفاقيات (health.php)
-        $view_file = $root_path . '/src/Views/edu-services/health.php';
+        // 2. استدعاء ملف الـ View الخاص بالعروض والاتفاقيات (pakeges.php)
+        $view_file = $root_path . '/src/Views/edu-services/pakeges.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {

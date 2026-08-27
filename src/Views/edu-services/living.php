@@ -94,7 +94,7 @@
           <?php if (!empty($notes_items)): ?>
             <?php foreach ($notes_items as $note): ?>
               <li class="d-flex align-items-start mb-3">
-                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
                 <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
               </li>
             <?php endforeach; ?>

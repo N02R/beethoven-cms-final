@@ -41,7 +41,7 @@
     <div class="custom-container">
       
       <!-- القسم الرئيسي (العنوان والوصف) -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -52,7 +52,7 @@
       </div>
 
       <!-- ملاحظات هامة -->
-      <div class="advice-stars py-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-stars py-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#offersNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
               <i class="bi bi-pencil-fill"></i>

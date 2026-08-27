@@ -357,7 +357,7 @@
         pointIndex++;
     }
 
-    // 5. إدارة صفوف الروابط والشركات بالستايل الموحد (مع دعم حقل Active)
+    // 5. إدارة صفوف الروابط والشركات بالستايل الموحد (مع دعم حقل Active وحفظ الفهرس بدقة)
     let linkIndex = <?php echo count($financial_data['service_links'] ?? []); ?>;
     function addFinancialLinkRow() {
         const container = document.getElementById('financialLinksContainer');
@@ -378,6 +378,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="form-check mt-1">
+                        <input type="hidden" name="link_actives[${linkIndex}]" value="0">
                         <input class="form-check-input" type="checkbox" name="link_actives[${linkIndex}]" value="1" id="financial_active_${linkIndex}">
                         <label class="form-check-label fw-semibold small text-secondary" for="financial_active_${linkIndex}">
                             اجعل هذا الزر نشطاً (Active - يظهر بلون مميز وعريض)
@@ -440,3 +441,4 @@
         });
     });
 </script>
+

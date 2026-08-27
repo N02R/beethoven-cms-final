@@ -58,7 +58,7 @@ class PageContentSettingsService
                 $pageData['importance_desc'] = $_POST['importance_desc'];
             }
         } 
-        // 4. تحديث النصائح والإرشادات (Advice / Tips)
+        // 4. تحديث النصائح والإرشادات (Advice / Tips) أو نصائح تكلفة المعيشة
         elseif (str_contains($action, '_advice') || str_contains($action, '_tips')) {
             $adviceTitle = $_POST['advice_title'] ?? ($_POST['tips_title'] ?? '');
             
@@ -72,6 +72,11 @@ class PageContentSettingsService
                 $pageData['tips_section'] = [
                     'title' => $_POST['tips_title'] ?? 'نصائح للنجاح في الدراسة بالألمانية',
                     'tips_list' => $_POST['tips_list'] ?? []
+                ];
+            } elseif ($dbKey === 'living_cost_page') {
+                $pageData['tips_section'] = [
+                    'title' => $_POST['tips_title'] ?? 'نصائح لتقليل النفقات',
+                    'items' => is_array($_POST['tips_items'] ?? null) ? $_POST['tips_items'] : []
                 ];
             } else {
                 $pageData['advice_title'] = $adviceTitle;
@@ -100,6 +105,11 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_account')) {
                 $pageData['account_title'] = $_POST['account_title'] ?? '';
                 $pageData['account_points'] = $_POST['account_points'] ?? [];
+            } elseif ($dbKey === 'living_cost_page' && str_contains($action, '_notes')) {
+                $pageData['notes_section'] = [
+                    'title' => $_POST['notes_title'] ?? 'ملاحظات هامة !!',
+                    'items' => is_array($_POST['notes_items'] ?? null) ? $_POST['notes_items'] : []
+                ];
             } else {
                 $pageData['note_title'] = $_POST['note_title'] ?? '';
                 if (isset($_POST['notes'])) {
@@ -138,7 +148,6 @@ class PageContentSettingsService
 
                 $serviceLinks = [];
                 for ($i = 0; $i < count($linkTexts); $i++) {
-                    // التحقق الدقيق من حالة التفعيل لكل صف عبر الفهرس الخاص به
                     $isActive = isset($linkActives[$i]) && (string)$linkActives[$i] === '1';
 
                     $serviceLinks[] = [
@@ -235,6 +244,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
         if (str_starts_with($action, 'update_health_')) return 'health_page';
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
+        if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         return null;
     }
 

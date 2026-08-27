@@ -138,10 +138,13 @@ class PageContentSettingsService
 
                 $serviceLinks = [];
                 for ($i = 0; $i < count($linkTexts); $i++) {
+                    // التحقق الدقيق من حالة التفعيل لكل صف عبر الفهرس الخاص به
+                    $isActive = isset($linkActives[$i]) && (string)$linkActives[$i] === '1';
+
                     $serviceLinks[] = [
                         'text'   => $linkTexts[$i] ?? '',
                         'url'    => $linkUrls[$i] ?? '#',
-                        'active' => in_array((string)$i, array_map('strval', $linkActives), true)
+                        'active' => $isActive
                     ];
                 }
                 $pageData['service_links'] = $serviceLinks;

@@ -185,8 +185,8 @@
                             foreach ($notes_items as $index => $note): 
                         ?>
                                 <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="living_note_<?php echo $index; ?>">
-                                    <textarea class="form-control" name="notes_items[]" rows="2" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_note_<?php echo $index; ?>')" title="حذف الملاحظة">
+                                    <input type="text" class="form-control" name="notes_items[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الملاحظة هنا...">
+                                    <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('living_note_<?php echo $index; ?>')" title="حذف الملاحظة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -209,8 +209,6 @@
     </div>
 </div>
 
-
-<!-- Dynamic JS Engine -->
 <script>
     // 1. دالة عامة لحذف أي صف
     function removeRow(id) {
@@ -274,7 +272,7 @@
         div.id = 'living_tip_' + livingTipIndex;
         div.innerHTML = `
             <input type="text" class="form-control" name="tips_items[]" placeholder="اكتب النصيحة هنا...">
-            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_tip_${livingTipIndex}')" title="حذف النصيحة">
+            <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('living_tip_${livingTipIndex}')" title="حذف النصيحة">
                 <i class="bi bi-trash"></i>
             </button>
         `;
@@ -282,7 +280,7 @@
         livingTipIndex++;
     }
 
-    // 4. إدارة صفوف الملاحظات الهامة بالستايل الموحد
+    // 4. إدارة صفوف الملاحظات الهامة بالستايل الموحد (محدث ليكون input مثل البقية)
     let livingNoteIndex = <?php echo count($living_data['notes_section']['items'] ?? []); ?>;
     function addLivingNoteRow() {
         const container = document.getElementById('livingNotesContainer');
@@ -292,8 +290,8 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'living_note_' + livingNoteIndex;
         div.innerHTML = `
-            <textarea class="form-control" name="notes_items[]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="اكتب الملاحظة هنا..."></textarea>
-            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_note_${livingNoteIndex}')" title="حذف الملاحظة">
+            <input type="text" class="form-control" name="notes_items[]" placeholder="اكتب الملاحظة هنا...">
+            <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('living_note_${livingNoteIndex}')" title="حذف الملاحظة">
                 <i class="bi bi-trash"></i>
             </button>
         `;
@@ -346,3 +344,4 @@
         });
     });
 </script>
+

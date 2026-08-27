@@ -83,7 +83,7 @@
           <?php foreach (($arrival_data['notes'] ?? []) as $note): ?>
             <li class="mb-2">
               <p>
-                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="" class="ms-2">
+                <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="" class="ms-2" width="25">
                 <?php echo $note; ?>
               </p>
             </li>

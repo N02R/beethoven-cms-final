@@ -111,14 +111,16 @@
         <div class="custom-container">
           <?php if (!empty($financial_data['service_links']) && is_array($financial_data['service_links'])): ?>
             <?php foreach ($financial_data['service_links'] as $index => $link): ?>
-              <?php 
-                  $isActive = !empty($link['active']) ? ' active' : '';
-                  $marginTop = $index === 0 ? '' : ' mt-4';
+              <?php
+                  $is_active_link = !empty($link['active']);
+                  // مطابقة تماماً لمنطق التأمين الصحي (الأول يأخذ link أو link active، وباقي العناصر تضاف لها mt-4)
+                  $base_class = $is_active_link ? 'link active' : 'link';
+                  $link_class = $index === 0 ? $base_class : $base_class . ' mt-4';
               ?>
-              <div class="link<?php echo $isActive . $marginTop; ?>">
-                <p class="text-center mb-0">
-                  <?php if (!empty($link['url']) && $link['url'] !== '#'): ?>
-                    <a href="<?php echo htmlspecialchars($link['url']); ?>" target="_blank" rel="noopener" class="text-decoration-none text-inherit" style="color: inherit;">
+              <div class="<?php echo $link_class; ?>">
+                <p class="text-center">
+                  <?php if (!empty($link['url'])): ?>
+                    <a href="<?php echo htmlspecialchars($link['url']); ?>" target="_blank" class="text-decoration-none text-inherit" style="color: inherit;">
                       <?php echo htmlspecialchars($link['text'] ?? ''); ?>
                     </a>
                   <?php else: ?>

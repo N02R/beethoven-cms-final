@@ -134,12 +134,14 @@ class PageContentSettingsService
             } elseif ($dbKey === 'financial_page') {
                 $linkTexts = $_POST['link_texts'] ?? [];
                 $linkUrls = $_POST['link_urls'] ?? [];
+                $linkActives = $_POST['link_actives'] ?? [];
 
                 $serviceLinks = [];
                 for ($i = 0; $i < count($linkTexts); $i++) {
                     $serviceLinks[] = [
-                        'text' => $linkTexts[$i] ?? '',
-                        'url'  => $linkUrls[$i] ?? '#'
+                        'text'   => $linkTexts[$i] ?? '',
+                        'url'    => $linkUrls[$i] ?? '#',
+                        'active' => in_array((string)$i, array_map('strval', $linkActives), true)
                     ];
                 }
                 $pageData['service_links'] = $serviceLinks;

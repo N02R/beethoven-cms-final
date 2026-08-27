@@ -1,3 +1,9 @@
+<?php
+/**
+ * صفحة الضمانات المالية والحساب البنكي المغلق - Beethoven CMS
+ * تتطابق مع هيكلية ومنطق صفحة الاستقبال (arrival.php)
+ */
+?>
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -11,8 +17,8 @@
         <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
         <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
         <li class="breadcrumb-item" aria-current="page">
-          <a href="<?php echo htmlspecialchars($blocked_data['page_breadcrumb_url'] ?? '#'); ?>">
-            <?php echo htmlspecialchars($blocked_data['page_breadcrumb'] ?? 'الضمانات المالية والحساب البنكي المغلق'); ?>
+          <a href="<?php echo htmlspecialchars($financial_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($financial_data['page_breadcrumb'] ?? 'الضمانات المالية والحساب البنكي المغلق'); ?>
           </a>
         </li>
       </ol>
@@ -30,7 +36,7 @@
 
     <div class="custom-container">
       <div class="financial-hero custom-hero"
-        style="background-image: url('<?php echo htmlspecialchars(get_image_url($blocked_data['hero_img'] ?? null, 'assets/img/education/servicesimg7.png')); ?>');">
+        style="background-image: url('<?php echo htmlspecialchars(get_image_url($financial_data['hero_img'] ?? null, 'assets/img/education/servicesimg7.png')); ?>');">
       </div>
     </div>
   </section>
@@ -48,11 +54,11 @@
           </button>
         <?php endif; ?>
 
-        <h2 class="main-text"><?php echo htmlspecialchars($blocked_data['main_title'] ?? ''); ?></h2>
-        <p class="par-text"><?php echo nl2br(htmlspecialchars($blocked_data['main_desc'] ?? '')); ?></p>
+        <h2 class="main-text"><?php echo htmlspecialchars($financial_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($financial_data['main_desc'] ?? '')); ?></p>
         
-        <h5 class="advice-text mt-5"><?php echo htmlspecialchars($blocked_data['importance_title'] ?? 'أهمية إثبات الضمان المالي'); ?></h5>
-        <p><?php echo nl2br(htmlspecialchars($blocked_data['importance_desc'] ?? '')); ?></p>
+        <h5 class="advice-text mt-5"><?php echo htmlspecialchars($financial_data['importance_title'] ?? 'أهمية إثبات الضمان المالي'); ?></h5>
+        <p><?php echo nl2br(htmlspecialchars($financial_data['importance_desc'] ?? '')); ?></p>
       </div>
 
       <!-- 2. خيارات الضمان المالي -->
@@ -63,9 +69,9 @@
           </button>
         <?php endif; ?>
 
-        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($blocked_data['options_title'] ?? 'خيارات الضمان المالي للدراسة في ألمانيا'); ?></h5>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($financial_data['options_title'] ?? 'خيارات الضمان المالي للدراسة في ألمانيا'); ?></h5>
         <div class="d-flex flex-column gap-3">
-          <?php foreach (($blocked_data['options_items'] ?? []) as $opt): ?>
+          <?php foreach (($financial_data['options_items'] ?? []) as $opt): ?>
             <p class="mb-0">✅️<?php echo htmlspecialchars($opt); ?></p>
           <?php endforeach; ?>
         </div>
@@ -79,10 +85,10 @@
           </button>
         <?php endif; ?>
 
-        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($blocked_data['account_title'] ?? 'الحساب البنكي المغلق'); ?></h5>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($financial_data['account_title'] ?? 'الحساب البنكي المغلق'); ?></h5>
         <ul class="star-list">
           <div class="d-flex flex-column gap-3">
-            <?php foreach (($blocked_data['account_points'] ?? []) as $point): ?>
+            <?php foreach (($financial_data['account_points'] ?? []) as $point): ?>
               <li>
                 <p class="mb-0">
                   <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="نجمة" class="ms-2" width="25"/>
@@ -94,29 +100,28 @@
         </ul>
       </div>
 
-  <!-- 4. الروابط الخارجية (Dr.WALTER, FINTIBA وغيرها) -->
-  <div class="py-5" style="position: relative;">
-    <?php if (!empty($is_admin)): ?>
-      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedLinksModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل الروابط والشركات">
-          <i class="bi bi-pencil-fill"></i>
-      </button>
-    <?php endif; ?>
+      <!-- 4. الروابط الخارجية (Dr.WALTER, FINTIBA وغيرها) -->
+      <div class="py-5" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedLinksModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل الروابط والشركات">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-    <div class="custom-container">
-      <?php foreach (($blocked_data['service_links'] ?? []) as $index => $link): ?>
-        <?php 
-            // تحديد ما إذا كان العنصر مفعلًا بناءً على قيمة active في البيانات (أو اعتبار أول عنصر مفعل افتراضياً)
-            $isActive = !empty($link['active']) ? ' active' : '';
-            $marginTop = $index === 0 ? '' : ' mt-4';
-        ?>
-        <div class="link<?php echo $isActive . $marginTop; ?>">
-          <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none">
-            <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
-          </a>
+        <div class="custom-container">
+          <?php foreach (($financial_data['service_links'] ?? []) as $index => $link): ?>
+            <?php 
+                $isActive = !empty($link['active']) ? ' active' : '';
+                $marginTop = $index === 0 ? '' : ' mt-4';
+            ?>
+            <div class="link<?php echo $isActive . $marginTop; ?>">
+              <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none">
+                <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
+              </a>
+            </div>
+          <?php endforeach; ?>
         </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+      </div>
 
     </div>
   </section>

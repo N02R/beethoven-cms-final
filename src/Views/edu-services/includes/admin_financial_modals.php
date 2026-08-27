@@ -1,3 +1,9 @@
+<?php
+/**
+ * نماذج لوحة التحكم الخاصة بصفحة الضمانات المالية والحساب البنكي المغلق
+ * تتطابق مع هيكلية ومنطق ملف admin_arrival_modals.php
+ */
+?>
 <!-- Modal: تعديل مسار التنقل (Breadcrumb) -->
 <div class="modal fade custom-modal" id="blockedBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -7,24 +13,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedBreadcrumbForm" method="POST">
-                    <input type="hidden" name="action" value="update_blocked_breadcrumb">
+                <form id="financialBreadcrumbForm" method="POST">
+                    <input type="hidden" name="action" value="update_financial_breadcrumb">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
-                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($blocked_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: الضمانات المالية والحساب البنكي المغلق" required>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($financial_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: الضمانات المالية والحساب البنكي المغلق" required>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
-                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($blocked_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="#">
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($financial_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="#">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedBreadcrumbForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialBreadcrumbForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -40,15 +46,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedHeroForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_blocked_hero">
-                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($blocked_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <form id="financialHeroForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_financial_hero">
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($financial_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <?php if (!empty($blocked_data['hero_img'])): ?>
+                        <?php if (!empty($financial_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                                <img src="<?php echo htmlspecialchars(get_image_url($blocked_data['hero_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                                <img src="<?php echo htmlspecialchars(get_image_url($financial_data['hero_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
                             </div>
                         <?php endif; ?>
                         
@@ -60,13 +66,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedHeroForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialHeroForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Modal 1: تعديل العنوان والوصف الرئيسي والأهمية -->
 <div class="modal fade custom-modal" id="blockedMainModal" tabindex="-1" aria-hidden="true">
@@ -77,34 +82,34 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedMainForm" method="POST">
-                    <input type="hidden" name="action" value="update_blocked_main">
+                <form id="financialMainForm" method="POST">
+                    <input type="hidden" name="action" value="update_financial_main">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي (Main Title)</label>
-                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($blocked_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($financial_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">الوصف الرئيسي</label>
-                            <textarea class="form-control" name="main_desc" rows="3" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($blocked_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="main_desc" rows="3" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($financial_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">عنوان الأهمية</label>
-                            <input type="text" class="form-control" name="importance_title" value="<?php echo htmlspecialchars($blocked_data['importance_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="importance_title" value="<?php echo htmlspecialchars($financial_data['importance_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">وصف الأهمية</label>
-                            <textarea class="form-control" name="importance_desc" rows="3" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($blocked_data['importance_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="importance_desc" rows="3" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($financial_data['importance_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedMainForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialMainForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -120,20 +125,20 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedOptionsForm" method="POST">
-                    <input type="hidden" name="action" value="update_blocked_options">
+                <form id="financialOptionsForm" method="POST">
+                    <input type="hidden" name="action" value="update_financial_options">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="options_title" value="<?php echo htmlspecialchars($blocked_data['options_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="options_title" value="<?php echo htmlspecialchars($financial_data['options_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                     
                     <label class="form-label fw-semibold small text-secondary mb-3">خيارات الضمان المالي (قائمة)</label>
-                    <div id="blockedOptionsContainer" class="d-flex flex-column gap-3 mb-3">
-                        <?php if (!empty($blocked_data['options_items'])): ?>
-                            <?php foreach ($blocked_data['options_items'] as $index => $opt): ?>
+                    <div id="financialOptionsContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($financial_data['options_items'])): ?>
+                            <?php foreach ($financial_data['options_items'] as $index => $opt): ?>
                                 <div class="p-3 shadow-sm d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="opt_row_<?php echo $index; ?>">
                                     <input type="text" class="form-control" name="options_items[]" value="<?php echo htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>" required>
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('opt_row_<?php echo $index; ?>')" title="حذف الخيار">
@@ -144,13 +149,13 @@
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addBlockedOptionRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFinancialOptionRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة خيار جديد
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedOptionsForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialOptionsForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -166,20 +171,20 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedAccountForm" method="POST">
-                    <input type="hidden" name="action" value="update_blocked_account">
+                <form id="financialAccountForm" method="POST">
+                    <input type="hidden" name="action" value="update_financial_account">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="account_title" value="<?php echo htmlspecialchars($blocked_data['account_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="account_title" value="<?php echo htmlspecialchars($financial_data['account_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                     
                     <label class="form-label fw-semibold small text-secondary mb-3">نقاط الحساب المغلق (قائمة)</label>
-                    <div id="blockedPointsContainer" class="d-flex flex-column gap-3 mb-3">
-                        <?php if (!empty($blocked_data['account_points'])): ?>
-                            <?php foreach ($blocked_data['account_points'] as $index => $point): ?>
+                    <div id="financialPointsContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($financial_data['account_points'])): ?>
+                            <?php foreach ($financial_data['account_points'] as $index => $point): ?>
                                 <div class="p-3 shadow-sm d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="point_row_<?php echo $index; ?>">
                                     <input type="text" class="form-control" name="account_points[]" value="<?php echo htmlspecialchars($point, ENT_QUOTES, 'UTF-8'); ?>" required>
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('point_row_<?php echo $index; ?>')" title="حذف النقطة">
@@ -190,13 +195,13 @@
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addBlockedPointRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFinancialPointRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة نقطة جديدة
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedAccountForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialAccountForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -212,13 +217,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="blockedLinksForm" method="POST">
-                    <input type="hidden" name="action" value="update_blocked_links">
+                <form id="financialLinksForm" method="POST">
+                    <input type="hidden" name="action" value="update_financial_links">
                     
                     <label class="form-label fw-semibold small text-secondary mb-3">قائمة الروابط والشركات (تعديل / إضافة / حذف)</label>
-                    <div id="blockedLinksContainer" class="d-flex flex-column gap-3 mb-3">
-                        <?php if (!empty($blocked_data['service_links']) && is_array($blocked_data['service_links'])): ?>
-                            <?php foreach ($blocked_data['service_links'] as $index => $link): ?>
+                    <div id="financialLinksContainer" class="d-flex flex-column gap-3 mb-3">
+                        <?php if (!empty($financial_data['service_links']) && is_array($financial_data['service_links'])): ?>
+                            <?php foreach ($financial_data['service_links'] as $index => $link): ?>
                                 <div class="p-4 shadow-sm position-relative link-item-box" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="link_row_<?php echo $index; ?>">
                                     <div class="row g-3">
                                         <div class="col-md-6">
@@ -231,8 +236,8 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-check mt-1">
-                                                <input class="form-check-input" type="checkbox" name="link_actives[<?php echo $index; ?>]" value="1" id="blocked_active_<?php echo $index; ?>" <?php echo (!empty($link['active'])) ? 'checked' : ''; ?>>
-                                                <label class="form-check-label fw-semibold small text-secondary" for="blocked_active_<?php echo $index; ?>">
+                                                <input class="form-check-input" type="checkbox" name="link_actives[<?php echo $index; ?>]" value="1" id="financial_active_<?php echo $index; ?>" <?php echo (!empty($link['active'])) ? 'checked' : ''; ?>>
+                                                <label class="form-check-label fw-semibold small text-secondary" for="financial_active_<?php echo $index; ?>">
                                                     اجعل هذا الزر نشطاً (Active - يظهر بلون مميز وعريض)
                                                 </label>
                                             </div>
@@ -248,20 +253,18 @@
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addBlockedLinkRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFinancialLinkRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="blockedLinksForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="financialLinksForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
-
-
 
 <!-- Dynamic JS Engine -->
 <script>
@@ -317,9 +320,9 @@
     }
 
     // 3. إدارة صفوف خيارات الضمان المالي بالستايل الموحد
-    let optionIndex = <?php echo count($blocked_data['options_items'] ?? []); ?>;
-    function addBlockedOptionRow() {
-        const container = document.getElementById('blockedOptionsContainer');
+    let optionIndex = <?php echo count($financial_data['options_items'] ?? []); ?>;
+    function addFinancialOptionRow() {
+        const container = document.getElementById('financialOptionsContainer');
         if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
@@ -336,9 +339,9 @@
     }
 
     // 4. إدارة صفوف نقاط الحساب المغلق بالستايل الموحد
-    let pointIndex = <?php echo count($blocked_data['account_points'] ?? []); ?>;
-    function addBlockedPointRow() {
-        const container = document.getElementById('blockedPointsContainer');
+    let pointIndex = <?php echo count($financial_data['account_points'] ?? []); ?>;
+    function addFinancialPointRow() {
+        const container = document.getElementById('financialPointsContainer');
         if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
@@ -355,9 +358,9 @@
     }
 
     // 5. إدارة صفوف الروابط والشركات بالستايل الموحد (مع دعم حقل Active)
-    let linkIndex = <?php echo count($blocked_data['service_links'] ?? []); ?>;
-    function addBlockedLinkRow() {
-        const container = document.getElementById('blockedLinksContainer');
+    let linkIndex = <?php echo count($financial_data['service_links'] ?? []); ?>;
+    function addFinancialLinkRow() {
+        const container = document.getElementById('financialLinksContainer');
         if (!container) return;
         const div = document.createElement('div');
         div.className = 'p-4 shadow-sm position-relative link-item-box';
@@ -375,8 +378,8 @@
                 </div>
                 <div class="col-md-12">
                     <div class="form-check mt-1">
-                        <input class="form-check-input" type="checkbox" name="link_actives[${linkIndex}]" value="1" id="blocked_active_${linkIndex}">
-                        <label class="form-check-label fw-semibold small text-secondary" for="blocked_active_${linkIndex}">
+                        <input class="form-check-input" type="checkbox" name="link_actives[${linkIndex}]" value="1" id="financial_active_${linkIndex}">
+                        <label class="form-check-label fw-semibold small text-secondary" for="financial_active_${linkIndex}">
                             اجعل هذا الزر نشطاً (Active - يظهر بلون مميز وعريض)
                         </label>
                     </div>
@@ -394,7 +397,7 @@
 
     // 6. معالج الحفظ الموحد عبر AJAX لكافة نماذج الصفحة
     document.addEventListener('DOMContentLoaded', function() {
-        const formSelectors = '#blockedBreadcrumbForm, #blockedHeroForm, #blockedMainForm, #blockedOptionsForm, #blockedAccountForm, #blockedLinksForm';
+        const formSelectors = '#financialBreadcrumbForm, #financialHeroForm, #financialMainForm, #financialOptionsForm, #financialAccountForm, #financialLinksForm';
         
         document.querySelectorAll(formSelectors).forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -437,5 +440,3 @@
         });
     });
 </script>
-
-

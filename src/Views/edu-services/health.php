@@ -84,7 +84,7 @@
               <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
                 <li>
                   <p>
-                    <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="" class="ms-2" />
+                    <img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="" class="ms-2" width="25"/>
                     <?php echo $note; ?>
                   </p>
                 </li>

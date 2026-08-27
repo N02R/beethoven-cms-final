@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
-use App\Models\CvModel;
+use App\Models\ArrivalModel;
 
-class CvController {
+class ArrivalController {
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
@@ -27,10 +27,10 @@ class CvController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة السيرة الذاتية عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
-        $cv_data_array = CvModel::getCvData();
-        $data['cv_page'] = $cv_data_array;
-        $data['cv_data'] = $cv_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals
+        // 2. جلب بيانات صفحة الوصول عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
+        $arrival_data_array = ArrivalModel::getArrivalData();
+        $data['arrival_page'] = $arrival_data_array;
+        $data['arrival_data'] = $arrival_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -58,8 +58,8 @@ class CvController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالسيرة الذاتية (cv.php)
-        $view_file = $root_path . '/src/Views/edu-services/cv.php';
+        // 2. استدعاء ملف الـ View الخاص بصفحة الوصول (arrival.php)
+        $view_file = $root_path . '/src/Views/edu-services/arrival.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
@@ -68,7 +68,7 @@ class CvController {
 
         // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
         if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_cv_modals.php';
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_arrival_modals.php';
             if (file_exists($modals_file)) {
                 include_once $modals_file;
             }

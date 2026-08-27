@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
-// نفترض وجود مودل خاص بالبيانات المالية، قم بتغييره إن كان الاسم مختلفاً
 use App\Models\FinancialModel; 
 
 class FinancialController {
@@ -29,12 +28,11 @@ class FinancialController {
         $data = SiteModel::getGlobalData();
 
         // 2. جلب بيانات صفحة الضمانات المالية عبر المودل المخصص
-        // يفترض أن الـ Model يقوم بجلب البيانات من جدول site_settings تحت مفتاح 'financial_page'
         $financial_data_array = FinancialModel::getFinancialData(); 
         
-        // تمرير البيانات للـ View
+        // تمرير البيانات للـ View بجميع الأسماء المحتملة لضمان التوافق التام وعدم كسر أي عرض
         $data['financial_page'] = $financial_data_array;
-        // إضافة الاسم الثاني المستخدم في الـ view الحالي لضمان توافق الـ Modals
+        $data['financial_data'] = $financial_data_array; // المتغير الأساسي الذي ينتظره ملف الـ View
         $data['blocked_data']   = $financial_data_array; 
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
@@ -48,7 +46,6 @@ class FinancialController {
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
         // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
-        // تم تحديث المسارات لتناسب Financial page بناءً على الـ view السابق
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js = []; // أضف ملفات JS هنا إن وجدت
@@ -76,7 +73,6 @@ class FinancialController {
 
         // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (admin_financial_modals.php)
         if ($is_admin) {
-            // تم تحديث المسار والاسم ليتوافق مع الصفحة المطلوبة
             $modals_file = $root_path . '/src/Views/edu-services/includes/admin_financial_modals.php';
             if (file_exists($modals_file)) {
                 include_once $modals_file;

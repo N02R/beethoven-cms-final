@@ -1,8 +1,3 @@
-<?>
-/**
- * صفحة فرص العمل والتدريب المهني - Job Page View
- */
-?>
 
 <!-- 1. job start -->
 <section class="job py-5" style="position: relative;">
@@ -13,7 +8,7 @@
   <?php endif; ?>
 
   <div class="custom-container">
-    <?> 
+    <?php> 
     $hero_bg = get_image_url($job_hero['img'] ?? null, 'assets/img/job/hero.jpg');
     ?>
     <div class="row align-items-stretch g-5">
@@ -123,8 +118,7 @@
       <div class="map-box">
         <img src="<?php echo get_image_url('assets/img/vector/Vector.png'); ?>" alt="base" class="line-base">
         <img src="<?php echo get_image_url('assets/img/vector/Vector-1.png'); ?>" alt="active" class="line-active">
-        
-        <?> 
+        <?php
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
         foreach (($job_timeline_steps ?? []) as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
@@ -153,7 +147,7 @@
     </div>
 
     <div class="mobile-timeline d-lg-none">
-      <?> 
+      <?php 
       foreach (($job_timeline_steps ?? []) as $idx => $step): 
           $num = sprintf("%02d", $idx + 1);
           $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
@@ -194,7 +188,7 @@
     <p class="mb-5 main-p" style="max-width: 700px;"><?php echo htmlspecialchars($job_services_desc ?? ''); ?></p>
     
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
-      <?> foreach (($job_services_items ?? []) as $item): 
+      <?php foreach (($job_services_items ?? []) as $item): 
           $raw_url = $item['url'] ?? '#';
           $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
           $bg_img = get_image_url($item['img'] ?? null);
@@ -217,7 +211,7 @@
 </section>
 <!-- job services end -->
 
-<?> 
+<?php> 
 $job_modals_file = __DIR__ . '/admin/admin_job_modals.php';
 if (!empty($is_admin) && file_exists($job_modals_file)) { 
     include_once $job_modals_file; 

@@ -180,9 +180,9 @@
                         <?php if (!empty($arrival_data['notes'])): ?>
                             <?php foreach ($arrival_data['notes'] as $index => $note): ?>
                                 <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="note_row_<?php echo $index; ?>">
-                                    <!-- يسمح للمدير برؤية وتعديل النص مع الأكواد بداخل الـ Textarea -->
-                                    <textarea class="form-control" name="notes[]" rows="2" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('note_row_<?php echo $index; ?>')" title="حذف الملاحظة">
+                                    <!-- استخدام input بمسافات منسقة ومتطابقة مع باقي المودلات -->
+                                    <input type="text" class="form-control" name="notes[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الملاحظة هنا...">
+                                    <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('note_row_<?php echo $index; ?>')" title="حذف الملاحظة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -203,6 +203,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic JS Engine -->
 <script>

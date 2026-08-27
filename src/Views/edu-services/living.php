@@ -41,7 +41,7 @@
     <div class="custom-container">
       
       <!-- القسم الرئيسي (العنوان والوصف) -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -52,7 +52,7 @@
       </div>
 
       <!-- 1. نصائح لتقليل النفقات -->
-      <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-check py-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingTipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل نصائح تقليل النفقات">
               <i class="bi bi-pencil-fill"></i>
@@ -94,7 +94,7 @@
           <?php if (!empty($notes_items)): ?>
             <?php foreach ($notes_items as $note): ?>
               <li class="d-flex align-items-start mb-3">
-                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" />
                 <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
               </li>
             <?php endforeach; ?>

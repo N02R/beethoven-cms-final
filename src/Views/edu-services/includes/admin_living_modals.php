@@ -1,7 +1,6 @@
-
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="livingBreadcrumbModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-signpost-split text-primary"></i> تعديل مسار التنقل</h5>
@@ -11,16 +10,14 @@
                 <form id="livingBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_living_breadcrumb">
                     
-                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
-                                <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($living_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب اسم الصفحة..." required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
-                                <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($living_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://...">
-                            </div>
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($living_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($living_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                 </form>
@@ -36,7 +33,7 @@
 
 <!-- 2. Hero Image Modal -->
 <div class="modal fade custom-modal" id="livingHeroModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-image text-primary"></i> تعديل صورة الهيرو</h5>
@@ -47,13 +44,10 @@
                     <input type="hidden" name="action" value="update_living_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($living_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($living_data['hero_img'])): ?>
-                            <div class="mb-4 text-center">
-                                <label class="form-label fw-semibold small text-secondary d-block mb-2">الصورة الحالية</label>
-                                <div class="p-3 shadow-sm d-inline-block" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    <img src="<?php echo $path_prefix . htmlspecialchars($living_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
-                                </div>
+                            <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($living_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
                             </div>
                         <?php endif; ?>
                         
@@ -81,7 +75,7 @@
 
 <!-- 3. Main Title & Description Modal -->
 <div class="modal fade custom-modal" id="livingMainModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-card-heading text-primary"></i> تعديل العنوان والوصف الرئيسي</h5>
@@ -91,14 +85,14 @@
                 <form id="livingMainForm" method="POST">
                     <input type="hidden" name="action" value="update_living_main">
                     
-                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($living_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب العنوان الرئيسي..." required>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($living_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
-                            <textarea class="form-control" name="main_desc" rows="4" style="height: auto; padding: 12px 16px;" placeholder="اكتب الوصف التفصيلي هنا..." required><?php echo htmlspecialchars($living_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($living_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
                 </form>
@@ -114,7 +108,7 @@
 
 <!-- 4. Tips Section Modal -->
 <div class="modal fade custom-modal" id="livingTipsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-list-check text-primary"></i> تعديل نصائح تقليل النفقات</h5>
@@ -124,24 +118,23 @@
                 <form id="livingTipsForm" method="POST">
                     <input type="hidden" name="action" value="update_living_tips">
                     
-                    <!-- عنوان القسم -->
-                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="tips_title" value="<?php echo htmlspecialchars($living_data['tips_section']['title'] ?? 'نصائح لتقليل النفقات', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب عنوان القسم..." required>
+                            <input type="text" class="form-control" name="tips_title" value="<?php echo htmlspecialchars($living_data['tips_section']['title'] ?? 'نصائح لتقليل النفقات', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                     
-                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة النصائح (تعديل / إضافة / حذف)</label>
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة النصائح (تعديل / حذف / إضافة)</label>
                     <div id="livingTipsContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php 
                           $tips_items = $living_data['tips_section']['items'] ?? [];
                           if (!empty($tips_items) && is_array($tips_items)): 
                             foreach ($tips_items as $index => $tip): 
                         ?>
-                                <div class="p-3 shadow-sm d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="living_tip_<?php echo $index; ?>">
-                                    <input type="text" class="form-control" name="tips_items[]" value="<?php echo htmlspecialchars($tip, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النصيحة هنا..." required>
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeLivingRow('living_tip_<?php echo $index; ?>')" title="حذف النصيحة">
+                                <div class="p-3 shadow-sm tip-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="living_tip_<?php echo $index; ?>">
+                                    <input type="text" class="form-control" name="tips_items[]" value="<?php echo htmlspecialchars($tip, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب النصيحة هنا...">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_tip_<?php echo $index; ?>')" title="حذف النصيحة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -167,7 +160,7 @@
 
 <!-- 5. Important Notes Modal -->
 <div class="modal fade custom-modal" id="livingNotesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-exclamation-octagon text-primary"></i> تعديل الملاحظات الهامة</h5>
@@ -177,24 +170,23 @@
                 <form id="livingNotesForm" method="POST">
                     <input type="hidden" name="action" value="update_living_notes">
                     
-                    <!-- عنوان الملاحظات -->
-                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">عنوان الملاحظات</label>
-                            <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($living_data['notes_section']['title'] ?? 'ملاحظات هامة !!', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب عنوان الملاحظات..." required>
+                            <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($living_data['notes_section']['title'] ?? 'ملاحظات هامة !!', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                     
-                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الملاحظات (تعديل / إضافة / حذف)</label>
+                    <label class="form-label fw-semibold small text-secondary mb-3">قائمة الملاحظات (تعديل / حذف / إضافة)</label>
                     <div id="livingNotesContainer" class="d-flex flex-column gap-3 mb-3">
                         <?php 
                           $notes_items = $living_data['notes_section']['items'] ?? [];
                           if (!empty($notes_items) && is_array($notes_items)): 
                             foreach ($notes_items as $index => $note): 
                         ?>
-                                <div class="p-3 shadow-sm d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="living_note_<?php echo $index; ?>">
-                                    <input type="text" class="form-control" name="notes_items[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الملاحظة هنا..." required>
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeLivingRow('living_note_<?php echo $index; ?>')" title="حذف الملاحظة">
+                                <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="living_note_<?php echo $index; ?>">
+                                    <textarea class="form-control" name="notes_items[]" rows="2" style="height: auto; padding: 10px 14px;"><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_note_<?php echo $index; ?>')" title="حذف الملاحظة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -218,9 +210,9 @@
 </div>
 
 
-<!-- JavaScript Engine -->
+<!-- Dynamic JS Engine -->
 <script>
-    // 1. دالة عامة لحذف أي صف أو عنصر ديناميكي
+    // 1. دالة عامة لحذف أي صف
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -277,11 +269,11 @@
         const container = document.getElementById('livingTipsContainer');
         if (!container) return;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
+        div.className = 'p-3 shadow-sm tip-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'living_tip_' + livingTipIndex;
         div.innerHTML = `
-            <input type="text" class="form-control" name="tips_items[]" placeholder="اكتب النصيحة هنا..." required>
+            <input type="text" class="form-control" name="tips_items[]" placeholder="اكتب النصيحة هنا...">
             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_tip_${livingTipIndex}')" title="حذف النصيحة">
                 <i class="bi bi-trash"></i>
             </button>
@@ -296,11 +288,11 @@
         const container = document.getElementById('livingNotesContainer');
         if (!container) return;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
+        div.className = 'p-3 shadow-sm note-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'living_note_' + livingNoteIndex;
         div.innerHTML = `
-            <input type="text" class="form-control" name="notes_items[]" placeholder="اكتب الملاحظة هنا..." required>
+            <textarea class="form-control" name="notes_items[]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="اكتب الملاحظة هنا..."></textarea>
             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('living_note_${livingNoteIndex}')" title="حذف الملاحظة">
                 <i class="bi bi-trash"></i>
             </button>
@@ -309,7 +301,7 @@
         livingNoteIndex++;
     }
 
-    // 5. معالج الحفظ الموحد عبر AJAX لكافة نماذج الصفحة (مع دعم CSRF ومعالجة الاستجابات)
+    // 5. معالج الحفظ الموحد عبر AJAX لكافة نماذج الصفحة
     document.addEventListener('DOMContentLoaded', function() {
         const formSelectors = '#livingBreadcrumbForm, #livingHeroForm, #livingMainForm, #livingTipsForm, #livingNotesForm';
         
@@ -354,4 +346,3 @@
         });
     });
 </script>
-

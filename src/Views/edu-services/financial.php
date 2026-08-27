@@ -94,24 +94,29 @@
         </ul>
       </div>
 
-      <!-- 4. الروابط الخارجية (Dr.WALTER, FINTIBA وغيرها) -->
-      <div class="py-3" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedLinksModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل الروابط والشركات">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
+  <!-- 4. الروابط الخارجية (Dr.WALTER, FINTIBA وغيرها) -->
+  <div class="py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedLinksModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل الروابط والشركات">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-        <div class="custom-container">
-          <?php foreach (($blocked_data['service_links'] ?? []) as $link): ?>
-            <div class="link mt-4">
-              <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none text-dark">
-                <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
-              </a>
-            </div>
-          <?php endforeach; ?>
+    <div class="custom-container">
+      <?php foreach (($blocked_data['service_links'] ?? []) as $index => $link): ?>
+        <?php 
+            // تحديد ما إذا كان العنصر مفعلًا بناءً على قيمة active في البيانات (أو اعتبار أول عنصر مفعل افتراضياً)
+            $isActive = !empty($link['active']) ? ' active' : '';
+            $marginTop = $index === 0 ? '' : ' mt-4';
+        ?>
+        <div class="link<?php echo $isActive . $marginTop; ?>">
+          <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none text-dark">
+            <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
+          </a>
         </div>
-      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
 
     </div>
   </section>

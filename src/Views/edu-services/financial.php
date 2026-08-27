@@ -101,7 +101,7 @@
       </div>
 
       <!-- 4. الروابط الخارجية (Dr.WALTER, FINTIBA وغيرها) -->
-      <div class="py-5" style="position: relative;">
+      <div style="position: relative;" class="py-5">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#blockedLinksModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل الروابط والشركات">
               <i class="bi bi-pencil-fill"></i>
@@ -109,17 +109,27 @@
         <?php endif; ?>
 
         <div class="custom-container">
-          <?php foreach (($financial_data['service_links'] ?? []) as $index => $link): ?>
-            <?php 
-                $isActive = !empty($link['active']) ? ' active' : '';
-                $marginTop = $index === 0 ? '' : ' mt-4';
-            ?>
-            <div class="link<?php echo $isActive . $marginTop; ?>">
-              <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none">
-                <p class="text-center mb-0"><?php echo htmlspecialchars($link['text'] ?? ''); ?></p>
-              </a>
-            </div>
-          <?php endforeach; ?>
+          <?php if (!empty($financial_data['service_links'] ?? []) && is_array($financial_data['service_links'])): ?>
+            <?php foreach (($financial_data['service_links'] ?? []) as $index => $link): ?>
+              <?php 
+                  $is_active_link = !empty($link['active']);
+                  // أول عنصر بدون مسافة علوية، والباقي يأخذ mt-4 ليطابق المعيار
+                  $marginTop = $index === 0 ? '' : ' mt-4';
+                  $link_class = $is_active_link ? 'link active' . $marginTop : 'link' . $marginTop;
+              ?>
+              <div class="<?php echo $link_class; ?>">
+                <p class="text-center mb-0">
+                  <?php if (!empty($link['url'])): ?>
+                    <a href="<?php echo htmlspecialchars($link['url'] ?? '#'); ?>" target="_blank" rel="noopener" class="text-decoration-none text-inherit" style="color: inherit;">
+                      <?php echo htmlspecialchars($link['text'] ?? ''); ?>
+                    </a>
+                  <?php else: ?>
+                    <?php echo htmlspecialchars($link['text'] ?? ''); ?>
+                  <?php endif; ?>
+                </p>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
 

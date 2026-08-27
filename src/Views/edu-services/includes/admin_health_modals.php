@@ -151,7 +151,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- 3. Notes / Documents Modal (Dynamic List) -->
+<!-- 3. Notes / Documents Modal (Dynamic List) - Updated -->
 <!-- ========================================== -->
 <div class="modal fade custom-modal" id="healthNotesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -176,7 +176,7 @@
                         <?php if (!empty($health_data['notes'])): ?>
                             <?php foreach ($health_data['notes'] as $index => $note): ?>
                                 <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="health_note_<?php echo $index; ?>">
-                                    <textarea class="form-control" name="notes[]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="اكتب الوثيقة هنا (تدعم HTML)..." required><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    <input type="text" class="form-control" name="notes[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الوثيقة هنا (تدعم HTML)..." required>
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeHealthRow('health_note_<?php echo $index; ?>')" title="حذف الوثيقة">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -324,7 +324,7 @@
         }, 4000);
     }
 
-    // 3. إدارة صفوف الأهمية والنقاط بالستايل الموحد
+    // 3. إضافة صف نقطة أهمية جديدة بالستايل الموحد
     let tipIndex = <?php echo count($health_data['tips'] ?? []); ?>;
     function addHealthTipRow() {
         const container = document.getElementById('healthTipsContainer');
@@ -334,7 +334,7 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'health_tip_' + tipIndex;
         div.innerHTML = `
-            <input type="text" class="form-control" name="tips[]" placeholder="اكتب نقطة الأهمية هنا..." required>
+            <input type="text" class="form-control" name="tips[]" placeholder="اكتب نقطة الأهمية هنا...">
             <button type="button" class="btn-icon-trash mx-auto" onclick="removeHealthRow('health_tip_${tipIndex}')" title="حذف النقطة">
                 <i class="bi bi-trash"></i>
             </button>
@@ -343,7 +343,7 @@
         tipIndex++;
     }
 
-    // 4. إدارة صفوف الوثائق المكملة بالستايل الموحد
+    // 4. إضافة صف وثيقة جديدة بالستايل الموحد (مطابق لحجم وشكل حقول النصائح)
     let noteIndex = <?php echo count($health_data['notes'] ?? []); ?>;
     function addHealthNoteRow() {
         const container = document.getElementById('healthNotesContainer');
@@ -353,7 +353,7 @@
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'health_note_' + noteIndex;
         div.innerHTML = `
-            <textarea class="form-control" name="notes[]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="اكتب الوثيقة هنا (تدعم HTML)..." required></textarea>
+            <input type="text" class="form-control" name="notes[]" placeholder="اكتب الوثيقة هنا (تدعم HTML)...">
             <button type="button" class="btn-icon-trash mx-auto" onclick="removeHealthRow('health_note_${noteIndex}')" title="حذف الوثيقة">
                 <i class="bi bi-trash"></i>
             </button>
@@ -362,7 +362,7 @@
         noteIndex++;
     }
 
-    // 5. إدارة روابط الشركات والحجز بالستايل الموحد
+    // 5. إضافة صف رابط جديد للشركات والحجز بالستايل الموحد
     let linkIndex = <?php echo count($health_data['links'] ?? []); ?>;
     function addHealthLinkRow() {
         const container = document.getElementById('healthLinksContainer');
@@ -375,7 +375,7 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small text-secondary">نص الزر / الرابط</label>
-                    <input type="text" class="form-control" name="link_texts[]" placeholder="مثال: رابط التسجيل..." required>
+                    <input type="text" class="form-control" name="link_texts[]" placeholder="مثال: رابط التسجيل...">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold small text-secondary">رابط الـ URL (اختياري)</label>
@@ -401,7 +401,7 @@
         linkIndex++;
     }
 
-    // 6. ربط كافة نماذج صفحة التأمين الصحي عبر AJAX (تم تحديث النماذج لتشمل النموذج المدمج الجديد)
+    // 6. معالج الحفظ الموحد عبر AJAX (مع فحص استجابة السيرفر وتفادي أخطاء 404)
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#healthBreadcrumbForm, #healthHeroForm, #healthMainTitleForm, #healthTipsForm, #healthNotesForm, #healthLinksForm').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -444,5 +444,6 @@
         });
     });
 </script>
+
 
 

@@ -296,7 +296,7 @@
         langGoalIndex++;
     }
 
-    // 4. إضافة صف مكان/تكلفة جديد (عنصر مزدوج: عنوان ووصف) بالستايل الموحد والعداد المستقل
+    // 4. إضافة صف مكان/تكلفة جديد بالستايل الموحد والعداد المستقل
     let langCostIndex = <?php echo count($lang_data['cost_items'] ?? []); ?>;
     function addLangCostRow(containerId) {
         const container = document.getElementById(containerId);
@@ -322,7 +322,9 @@
 
     // 5. معالج الحفظ الموحد عبر AJAX لنماذج صفحة دورات اللغات
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('#langBreadcrumbForm, #langHeroForm, #langMainForm, #langGoalsForm, #langWarningForm, #langCostForm').forEach(form => {
+        const forms = document.querySelectorAll('#langBreadcrumbForm, #langHeroForm, #langMainForm, #langGoalsForm, #langWarningForm, #langCostForm');
+        
+        forms.forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -330,6 +332,13 @@
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
+                }
+
+                // إغلاق المودال الحالي إن وجد
+                const modalElement = this.closest('.modal');
+                if (modalElement && window.bootstrap) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) modalInstance.hide();
                 }
 
                 fetch('index.php?url=admin/settings/save', {
@@ -342,7 +351,6 @@
                 })
                 .then(response => response.text())
                 .then(text => {
-                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
                         if (data.success) {
@@ -352,7 +360,7 @@
                             showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        showNotification('خطأ في استجابة السيرفر، يرجى المحاولة لاحقاً.', 'danger');
                     }
                 })
                 .catch(err => {
@@ -363,4 +371,5 @@
         });
     });
 </script>
+
 

@@ -69,7 +69,7 @@ class FoundationController {
 
         // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
         if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_foundation_modals.php';
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_studienkolleg_modals.php';
             if (file_exists($modals_file)) {
                 include_once $modals_file;
             }

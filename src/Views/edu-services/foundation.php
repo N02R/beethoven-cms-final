@@ -198,7 +198,7 @@
   <!-- custom-services-info end-->
 
   <?php
-    $foundation_modals_file = __DIR__ . '/includes/admin_foundation_modals.php';
+    $foundation_modals_file = __DIR__ . '/includes/admin_studienkolleg_modals.php';
     if (!empty($is_admin) && file_exists($foundation_modals_file)) { 
         include_once $foundation_modals_file; 
     }

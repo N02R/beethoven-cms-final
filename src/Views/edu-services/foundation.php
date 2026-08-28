@@ -1,8 +1,4 @@
-<?php
-/**
- * صفحة الدورة التأسيسية / السنة التحضيرية (Studienkolleg) - Foundation Page View
- */
-?>
+
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -46,7 +42,7 @@
     <div class="custom-container">
       
       <!-- 1. العنوان الرئيسي -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان الرئيسي والوصف">
               <i class="bi bi-pencil-fill"></i>
@@ -58,7 +54,7 @@
       </div>
 
       <!-- 2. أهداف الدورة التأسيسية -->
-      <div class="advice-check py-5 border-bottom" style="position: relative;">
+      <div class="advice-check py-5" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkGoalsModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل أهداف الدورة">
               <i class="bi bi-pencil-fill"></i>
@@ -76,7 +72,7 @@
       </div>
 
       <!-- 3. ماذا يدرس و يتعلم الطالب -->
-      <div class="head-info py-4 border-bottom" style="position: relative;">
+      <div class="head-info py-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkLearningModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل المحتوى الدراسي">
               <i class="bi bi-pencil-fill"></i>
@@ -90,7 +86,7 @@
       </div>
 
       <!-- 4. أنواع دورات السنة التحضيرية -->
-      <div class="advice-stars my-5 pb-4 border-bottom" style="position: relative;">
+      <div class="advice-stars my-5 pb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkCoursesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أنواع الدورات">
               <i class="bi bi-pencil-fill"></i>
@@ -115,7 +111,7 @@
       </div>
 
       <!-- 5. ارتباطها بالجامعات -->
-      <div class="head-info py-4 border-bottom" style="position: relative;">
+      <div class="head-info py-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkUniTypeModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل علاقة الجامعات">
               <i class="bi bi-pencil-fill"></i>
@@ -129,7 +125,7 @@
       </div>
 
       <!-- 6. أنواع السنة التحضيرية (حكومية / خاصة) -->
-      <div class="head-info py-5 border-bottom" style="position: relative;">
+      <div class="head-info py-5" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTypesModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل الأنواع الحكومية والخاصة">
               <i class="bi bi-pencil-fill"></i>
@@ -142,7 +138,7 @@
       </div>
 
       <!-- 7. ملاحظات هامة -->
-      <div class="advice-stars py-4 border-bottom" style="position: relative;">
+      <div class="advice-stars py-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
               <i class="bi bi-pencil-fill"></i>
@@ -165,7 +161,7 @@
       </div>
 
       <!-- 8. اختبار القبول والـ FSP -->
-      <div class="head-info py-5 border-bottom" style="position: relative;">
+      <div class="head-info py-5" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkExamFspModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="تعديل اختبار القبول والتقييم">
               <i class="bi bi-pencil-fill"></i>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
-use App\Models\FoundationModel;
+use App\Models\StudienkollegModel;
 
 class FoundationController {
     public function index(string $lang = 'de'): void {
@@ -27,11 +27,10 @@ class FoundationController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة الدورة التأسيسية عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
-        $foundation_data_array = FoundationModel::getFoundationData();
-        $data['foundation_page'] = $foundation_data_array;
-        $data['foundation_data'] = $foundation_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals
-        $data['stk_data'] = $foundation_data_array;         // لضمان التوافق التام مع متغيرات الـ View (foundation.php)
+        // 2. جلب بيانات الدورة التأسيسية / السنة التحضيرية عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
+        $stk_data_array = StudienkollegModel::getStudienkollegData();
+        $data['stk_page'] = $stk_data_array;
+        $data['stk_data'] = $stk_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

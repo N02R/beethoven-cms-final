@@ -5,15 +5,15 @@ namespace App\Models;
 
 use App\Models\SiteModel;
 
-class FoundationModel {
+class StudienkollegModel {
     /**
-     * جلب وتجهيز بيانات صفحة الدورة التأسيسية
+     * جلب وتجهيز بيانات صفحة الدورة التأسيسية / السنة التحضيرية
      */
-    public static function getFoundationData(): array {
+    public static function getStudienkollegData(): array {
         $settings = SiteModel::getSettings();
         
         // جلب البيانات الأساسية من الإعدادات
-        $data = isset($settings['foundation_page']) ? json_decode($settings['foundation_page'], true) : [];
+        $data = isset($settings['studienkolleg_page']) ? json_decode($settings['studienkolleg_page'], true) : [];
 
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
         return is_array($data) ? $data : [];

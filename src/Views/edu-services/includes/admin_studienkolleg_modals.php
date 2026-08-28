@@ -28,6 +28,7 @@
     </div>
 </div>
 
+
 <!-- 2. Hero Modal -->
 <div class="modal fade custom-modal" id="stkHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -63,6 +64,7 @@
     </div>
 </div>
 
+
 <!-- 3. Main Title Modal -->
 <div class="modal fade custom-modal" id="stkMainModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -91,6 +93,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 4. Goals Modal -->
 <div class="modal fade custom-modal" id="stkGoalsModal" tabindex="-1" aria-hidden="true">
@@ -126,6 +129,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 5. Learning Content Modal -->
 <div class="modal fade custom-modal" id="stkLearningModal" tabindex="-1" aria-hidden="true">
@@ -164,6 +168,7 @@
     </div>
 </div>
 
+
 <!-- 6. Courses Modal -->
 <div class="modal fade custom-modal" id="stkCoursesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -198,6 +203,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 7. University Type Modal -->
 <div class="modal fade custom-modal" id="stkUniTypeModal" tabindex="-1" aria-hidden="true">
@@ -236,6 +242,7 @@
     </div>
 </div>
 
+
 <!-- 8. Types Modal (Governmental vs Private) -->
 <div class="modal fade custom-modal" id="stkTypesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -268,6 +275,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 9. Notes Modal -->
 <div class="modal fade custom-modal" id="stkNotesModal" tabindex="-1" aria-hidden="true">
@@ -341,6 +349,7 @@
     </div>
 </div>
 
+
 <!-- 11. Tips Modal -->
 <div class="modal fade custom-modal" id="stkTipsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -376,50 +385,127 @@
     </div>
 </div>
 
-<!-- JS Engine -->
+
+<!-- Dynamic JS Engine -->
 <script>
-    function removeStkRow(id) {
+    // 1. دالة عامة لحذف أي صف
+    function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
+    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
+    }
+
+    // 3. إضافة صف عنصر جديد (أهداف، دورات، ملاحظات، نصائح) بالستايل الموحد
     let stkCounter = 100;
-    function addStkRow(containerId, inputName, idPrefix) {
+    function addStkRow(containerId, inputName, idPrefix, isTextarea = false) {
         const container = document.getElementById(containerId);
+        if (!container) return;
         const div = document.createElement('div');
-        div.className = 'input-group';
-        div.id = idPrefix + stkCounter;
+        div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        const rowId = idPrefix + stkCounter;
+        div.id = rowId;
+        
+        const inputField = isTextarea 
+            ? `<textarea class="form-control" name="${inputName}" rows="2" style="height: auto; padding: 10px 14px;" placeholder="اكتب النص هنا..."></textarea>`
+            : `<input type="text" class="form-control" name="${inputName}" placeholder="اكتب النص هنا...">`;
+
         div.innerHTML = `
-            <input type="text" class="form-control" name="${inputName}" placeholder="اكتب النص هنا...">
-            <button type="button" class="btn btn-outline-danger" onclick="removeStkRow('${idPrefix}${stkCounter}')"><i class="bi bi-trash"></i></button>
+            ${inputField}
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
+                <i class="bi bi-trash"></i>
+            </button>
         `;
         container.appendChild(div);
         stkCounter++;
     }
 
-    // ربط كافة النماذج عبر AJAX
-    document.querySelectorAll('#stkBreadcrumbForm, #stkHeroForm, #stkMainForm, #stkGoalsForm, #stkLearningForm, #stkCoursesForm, #stkUniTypeForm, #stkTypesForm, #stkNotesForm, #stkExamFspForm, #stkTipsForm').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            fetch('../admin/api/save_config.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('تم الحفظ بنجاح');
-                    location.reload();
-                } else {
-                    alert('خطأ: ' + (data.message || 'فشل الحفظ'));
+    // 4. معالج الحفظ الموحد عبر AJAX للـ Studienkolleg Forms
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('#stkBreadcrumbForm, #stkHeroForm, #stkMainForm, #stkGoalsForm, #stkLearningForm, #stkCoursesForm, #stkUniTypeForm, #stkTypesForm, #stkNotesForm, #stkExamFspForm, #stkTipsForm').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
                 }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                alert('حدث خطأ أثناء الاتصال بالسيرفر');
+
+                fetch('index.php?url=admin/settings/save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });
 </script>
+
+

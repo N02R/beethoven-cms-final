@@ -110,20 +110,26 @@ class PageContentSettingsService
                 $pageData['warning_text'] = $_POST['warning_text'] ?? '';
             } elseif (str_contains($action, '_cost')) {
                 $pageData['cost_title'] = $_POST['cost_title'] ?? 'اماكن الالتحاق والتكلفة';
-                $titles = $_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []);
-                $descs = $_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []);
                 
-                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو إنشاء مصفوفة موحدة
+                // استقبال مصفوفات العناوين والأوصاف بدعم كامل لجميع تسميات النماذج المحتملة (بما فيها cost_items_title/desc)
+                $titles = $_POST['cost_items_title'] ?? ($_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []));
+                $descs  = $_POST['cost_items_desc'] ?? ($_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []));
+                
+                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو بناءها من المدخلات الثنائية بأمان تام
                 $costItemsRaw = $_POST['cost_items'] ?? [];
                 if (!empty($costItemsRaw) && is_array($costItemsRaw)) {
                     $pageData['cost_items'] = $costItemsRaw;
                 } else {
                     $costItems = [];
                     for ($i = 0; $i < count($titles); $i++) {
-                        $costItems[] = [
-                            'title' => $titles[$i] ?? '',
-                            'desc'  => $descs[$i] ?? ''
-                        ];
+                        $titleVal = trim($titles[$i] ?? '');
+                        $descVal  = trim($descs[$i] ?? '');
+                        if ($titleVal !== '' || $descVal !== '') {
+                            $costItems[] = [
+                                'title' => $titleVal,
+                                'desc'  => $descVal
+                            ];
+                        }
                     }
                     $pageData['cost_items'] = $costItems;
                 }

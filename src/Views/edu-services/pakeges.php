@@ -72,7 +72,7 @@
                 $processed_note = str_replace(['href="contact.php"', 'href="contact"'], 'href="' . ($path_prefix ?? '/') . 'contact"', $note_item);
           ?>
               <li class="d-flex align-items-start mb-2">
-                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2 mt-1" />
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
                 <p class="mb-0"><?php echo $processed_note; ?></p>
               </li>
           <?php 

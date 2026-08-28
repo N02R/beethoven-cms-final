@@ -12,8 +12,10 @@ class StudienkollegModel {
     public static function getStudienkollegData(): array {
         $settings = SiteModel::getSettings();
         
-        // جلب البيانات الأساسية من الإعدادات
-        $data = isset($settings['studienkolleg_page']) ? json_decode($settings['studienkolleg_page'], true) : [];
+        // التحقق من المفتاح الموحد الجديد foundation_page مع دعم التوافق مع المفتاح القديم إن وجد
+        $rawJson = $settings['foundation_page'] ?? ($settings['studienkolleg_page'] ?? null);
+        
+        $data = $rawJson ? json_decode($rawJson, true) : [];
 
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
         return is_array($data) ? $data : [];

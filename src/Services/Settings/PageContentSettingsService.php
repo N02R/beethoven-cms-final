@@ -80,7 +80,8 @@ class PageContentSettingsService
                 ];
             } elseif ($dbKey === 'foundation_page' && str_contains($action, '_goals')) {
                 $pageData['goals_title'] = $adviceTitle;
-                $pageData['goals_items'] = $_POST['goals_items'] ?? [];
+                $goalsItemsRaw = $_POST['goals_items'] ?? [];
+                $pageData['goals_items'] = is_array($goalsItemsRaw) ? array_values(array_filter(array_map('trim', $goalsItemsRaw), fn($val) => $val !== '')) : [];
             } else {
                 $pageData['advice_title'] = $adviceTitle;
                 $pageData['advice_points'] = $_POST['advice_points'] ?? [];
@@ -104,7 +105,8 @@ class PageContentSettingsService
         elseif (str_contains($action, '_features') || str_contains($action, '_courses')) {
             if ($dbKey === 'foundation_page' && str_contains($action, '_courses')) {
                 $pageData['courses_title'] = $_POST['courses_title'] ?? 'أنواع دورات السنة التحضيرية';
-                $pageData['courses_items'] = $_POST['courses_items'] ?? [];
+                $coursesItemsRaw = $_POST['courses_items'] ?? [];
+                $pageData['courses_items'] = is_array($coursesItemsRaw) ? array_values(array_filter(array_map('trim', $coursesItemsRaw), fn($val) => $val !== '')) : [];
             } else {
                 $pageData['features_section'] = [
                     'title' => $_POST['features_title'] ?? 'مميزات دوراتنا',
@@ -136,7 +138,8 @@ class PageContentSettingsService
                 $pageData['type_private_desc'] = $_POST['type_private_desc'] ?? '';
             } elseif ($dbKey === 'foundation_page' && str_contains($action, '_notes')) {
                 $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة !!';
-                $pageData['notes_items'] = $_POST['notes_items'] ?? [];
+                $notesItemsRaw = $_POST['notes_items'] ?? [];
+                $pageData['notes_items'] = is_array($notesItemsRaw) ? array_values(array_filter(array_map('trim', $notesItemsRaw), fn($val) => $val !== '')) : [];
             } else {
                 $pageData['note_title'] = $_POST['note_title'] ?? '';
                 if (isset($_POST['notes'])) {
@@ -266,6 +269,12 @@ class PageContentSettingsService
         elseif (str_contains($action, '_lang')) {
             $pageData['lang_title'] = $_POST['lang_title'] ?? 'متطلبات اللغة بشكل عام';
             $pageData['lang_points'] = $_POST['lang_points'] ?? [];
+        }
+        // 12. تحديث نصائح التقديم (Tips) الخاصة بصفحة السنة التحضيرية
+        elseif ($dbKey === 'foundation_page' && str_contains($action, '_tips')) {
+            $pageData['tips_title'] = $_POST['tips_title'] ?? 'نصائح مهمة قبل التقديم';
+            $tipsItemsRaw = $_POST['tips_items'] ?? [];
+            $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
         }
 
         $jsonVal = json_encode($pageData, JSON_UNESCAPED_UNICODE);

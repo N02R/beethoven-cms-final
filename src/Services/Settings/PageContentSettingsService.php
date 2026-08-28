@@ -121,8 +121,12 @@ class PageContentSettingsService
                 if (isset($_POST['note_text'])) {
                     $pageData['note_text'] = $_POST['note_text'];
                 }
-                if (isset($_POST['notes_list'])) {
-                    $pageData['notes_list'] = $_POST['notes_list'];
+                if (isset($_POST['note_texts'])) {
+                    $cleanNotes = array_map('trim', $_POST['note_texts']);
+                    $pageData['notes_list'] = array_values(array_filter($cleanNotes));
+                } elseif (isset($_POST['notes_list'])) {
+                    $cleanNotes = array_map('trim', $_POST['notes_list']);
+                    $pageData['notes_list'] = array_values(array_filter($cleanNotes));
                 }
             }
         } 

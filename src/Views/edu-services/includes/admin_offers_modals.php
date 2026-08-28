@@ -141,8 +141,9 @@
                         <?php if (!empty($notes_list)): ?>
                             <?php foreach ($notes_list as $index => $note): ?>
                                 <div class="p-3 shadow-sm note-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="offer_note_<?php echo $index; ?>">
-                                    <textarea class="form-control" name="note_texts[]" rows="2" style="height: auto; padding: 10px 14px;" required><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeOfferNoteRow('offer_note_<?php echo $index; ?>')" title="حذف الملاحظة">
+                                    <!-- استخدام input بمسافات منسقة ومتطابقة -->
+                                    <input type="text" class="form-control" name="note_texts[]" value="<?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الملاحظة هنا..." required>
+                                    <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeOfferNoteRow('offer_note_<?php echo $index; ?>')" title="حذف الملاحظة">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -163,6 +164,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 5. Download Cards Modal (Updated with File Type Selection) -->
 <div class="modal fade custom-modal" id="offersCardsModal" tabindex="-1" aria-hidden="true">

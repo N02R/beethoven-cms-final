@@ -58,9 +58,9 @@ class PageContentSettingsService
                 $pageData['importance_desc'] = $_POST['importance_desc'];
             }
         } 
-        // 4. تحديث النصائح والإرشادات (Advice / Tips) أو نصائح تكلفة المعيشة
-        elseif (str_contains($action, '_advice') || str_contains($action, '_tips')) {
-            $adviceTitle = $_POST['advice_title'] ?? ($_POST['tips_title'] ?? '');
+        // 4. تحديث النصائح والإرشادات (Advice / Tips) أو نصائح تكلفة المعيشة أو أهداف الدورة التأسيسية
+        elseif (str_contains($action, '_advice') || str_contains($action, '_tips') || str_contains($action, '_goals')) {
+            $adviceTitle = $_POST['advice_title'] ?? ($_POST['tips_title'] ?? ($_POST['goals_title'] ?? ''));
             
             if ($dbKey === 'motivation_page') {
                 $adviceItems = $_POST['advice_items'] ?? [];
@@ -78,27 +78,42 @@ class PageContentSettingsService
                     'title' => $_POST['tips_title'] ?? 'نصائح لتقليل النفقات',
                     'items' => is_array($_POST['tips_items'] ?? null) ? $_POST['tips_items'] : []
                 ];
+            } elseif ($dbKey === 'foundation_page' && str_contains($action, '_goals')) {
+                $pageData['goals_title'] = $adviceTitle;
+                $pageData['goals_items'] = $_POST['goals_items'] ?? [];
             } else {
                 $pageData['advice_title'] = $adviceTitle;
                 $pageData['advice_points'] = $_POST['advice_points'] ?? [];
             }
         }
-        // 5. تحديث مستويات اللغة الألمانية (Levels)
-        elseif (str_contains($action, '_levels')) {
-            $pageData['levels_section'] = [
-                'title' => $_POST['levels_title'] ?? 'المستويات المتوفرة (طبقًا ل CEFR)',
-                'levels_list' => $_POST['levels_list'] ?? []
-            ];
+        // 5. تحديث مستويات اللغة الألمانية (Levels) أو المحتوى الدراسي والتفصيلي في التأسيسية (Learning)
+        elseif (str_contains($action, '_levels') || str_contains($action, '_learning')) {
+            if ($dbKey === 'foundation_page' && str_contains($action, '_learning')) {
+                $pageData['learning_title'] = $_POST['learning_title'] ?? '';
+                $pageData['learning_intro'] = $_POST['learning_intro'] ?? '';
+                $pageData['learning_p1'] = $_POST['learning_p1'] ?? '';
+                $pageData['learning_p2'] = $_POST['learning_p2'] ?? '';
+            } else {
+                $pageData['levels_section'] = [
+                    'title' => $_POST['levels_title'] ?? 'المستويات المتوفرة (طبقًا ل CEFR)',
+                    'levels_list' => $_POST['levels_list'] ?? []
+                ];
+            }
         }
-        // 6. تحديث مميزات دورات اللغة الألمانية (Features)
-        elseif (str_contains($action, '_features')) {
-            $pageData['features_section'] = [
-                'title' => $_POST['features_title'] ?? 'مميزات دوراتنا',
-                'features_list' => $_POST['features_list'] ?? []
-            ];
+        // 6. تحديث مميزات دورات اللغة الألمانية (Features) أو أنواع دورات السنة التحضيرية (Courses)
+        elseif (str_contains($action, '_features') || str_contains($action, '_courses')) {
+            if ($dbKey === 'foundation_page' && str_contains($action, '_courses')) {
+                $pageData['courses_title'] = $_POST['courses_title'] ?? 'أنواع دورات السنة التحضيرية';
+                $pageData['courses_items'] = $_POST['courses_items'] ?? [];
+            } else {
+                $pageData['features_section'] = [
+                    'title' => $_POST['features_title'] ?? 'مميزات دوراتنا',
+                    'features_list' => $_POST['features_list'] ?? []
+                ];
+            }
         }
-        // 7. تحديث الملاحظات (Notes / Note) أو خيارات الضمان المالي / الحساب المغلق
-        elseif (str_contains($action, '_notes') || str_contains($action, '_note') || str_contains($action, '_options') || str_contains($action, '_account')) {
+        // 7. تحديث الملاحظات (Notes / Note) أو خيارات الضمان المالي / الحساب المغلق أو ارتباط الجامعات والأنواع في التأسيسية
+        elseif (str_contains($action, '_notes') || str_contains($action, '_note') || str_contains($action, '_options') || str_contains($action, '_account') || str_contains($action, '_unitype') || str_contains($action, '_types')) {
             if (str_contains($action, '_options')) {
                 $pageData['options_title'] = $_POST['options_title'] ?? '';
                 $pageData['options_items'] = $_POST['options_items'] ?? [];
@@ -110,6 +125,18 @@ class PageContentSettingsService
                     'title' => $_POST['notes_title'] ?? 'ملاحظات هامة !!',
                     'items' => is_array($_POST['notes_items'] ?? null) ? $_POST['notes_items'] : []
                 ];
+            } elseif ($dbKey === 'foundation_page' && str_contains($action, '_unitype')) {
+                $pageData['uni_type_title'] = $_POST['uni_type_title'] ?? '';
+                $pageData['uni_type_intro'] = $_POST['uni_type_intro'] ?? '';
+                $pageData['uni_public'] = $_POST['uni_public'] ?? '';
+                $pageData['uni_applied'] = $_POST['uni_applied'] ?? '';
+            } elseif ($dbKey === 'foundation_page' && str_contains($action, '_types')) {
+                $pageData['types_title'] = $_POST['types_title'] ?? 'أنواع السنة التحضيرية في ألمانيا';
+                $pageData['type_public_desc'] = $_POST['type_public_desc'] ?? '';
+                $pageData['type_private_desc'] = $_POST['type_private_desc'] ?? '';
+            } elseif ($dbKey === 'foundation_page' && str_contains($action, '_notes')) {
+                $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة !!';
+                $pageData['notes_items'] = $_POST['notes_items'] ?? [];
             } else {
                 $pageData['note_title'] = $_POST['note_title'] ?? '';
                 if (isset($_POST['notes'])) {
@@ -130,9 +157,14 @@ class PageContentSettingsService
                 }
             }
         } 
-        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والشركات
-        elseif (str_contains($action, '_links')) {
-            if ($dbKey === 'health_page') {
+        // 8. تحديث الروابط الخاصة بصفحة الفحص (Check Links) أو قسم الروابط والشركات أو اختبار القبول والـ FSP في التأسيسية
+        elseif (str_contains($action, '_links') || str_contains($action, '_examfsp')) {
+            if ($dbKey === 'foundation_page' && str_contains($action, '_examfsp')) {
+                $pageData['exam_title'] = $_POST['exam_title'] ?? '';
+                $pageData['exam_desc'] = $_POST['exam_desc'] ?? '';
+                $pageData['fsp_title'] = $_POST['fsp_title'] ?? '';
+                $pageData['fsp_desc'] = $_POST['fsp_desc'] ?? '';
+            } elseif ($dbKey === 'health_page') {
                 $pageData['expert_note'] = $_POST['expert_note'] ?? '';
                 
                 $linkTitles = $_POST['link_titles'] ?? [];
@@ -254,6 +286,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_health_')) return 'health_page';
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
+        if (str_starts_with($action, 'update_foundation_')) return 'foundation_page';
         return null;
     }
 

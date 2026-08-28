@@ -67,7 +67,7 @@ class SettingsController
                 exit;
             }
 
-            // 0.ب. فحص الصفحات الفردية (تشمل Arrival, Check, Cover Letter, CV, Motivation, German Lang, English Lang, Offers, Health, Financial)
+            // 0.ب. فحص الصفحات الفردية (تشمل Arrival, Check, Cover Letter, CV, Motivation, German Lang, English Lang, Offers, Health, Financial, Living Cost, Foundation)
             $pageService = new PageContentSettingsService($root_path, $imageUploader);
             if ($pageService->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();

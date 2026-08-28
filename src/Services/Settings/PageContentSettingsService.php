@@ -1,3 +1,4 @@
+<?>
 <?php
 declare(strict_types=1);
 
@@ -82,7 +83,54 @@ class PageContentSettingsService
                 $tipsItemsRaw = $_POST['tips_items'] ?? [];
                 $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
             }
-        } else {
+        } 
+        // معالجة خاصة لصفحة الدورات (Courses Page)
+        elseif ($dbKey === 'courses_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_goals')) {
+                $pageData['goals_title'] = $_POST['goals_title'] ?? 'أهداف الدورة التحضيرية';
+                $goalsRaw = $_POST['goals'] ?? ($_POST['goals_items'] ?? []);
+                $pageData['goals'] = is_array($goalsRaw) ? array_values(array_filter(array_map('trim', $goalsRaw), fn($val) => $val !== '')) : [];
+            } elseif (str_contains($action, '_warning')) {
+                $pageData['warning_text'] = $_POST['warning_text'] ?? '';
+            } elseif (str_contains($action, '_cost')) {
+                $pageData['cost_title'] = $_POST['cost_title'] ?? 'اماكن الالتحاق والتكلفة';
+                $titles = $_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []);
+                $descs = $_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []);
+                
+                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو إنشاء مصفوفة موحدة
+                $costItemsRaw = $_POST['cost_items'] ?? [];
+                if (!empty($costItemsRaw) && is_array($costItemsRaw)) {
+                    $pageData['cost_items'] = $costItemsRaw;
+                } else {
+                    $costItems = [];
+                    for ($i = 0; $i < count($titles); $i++) {
+                        $costItems[] = [
+                            'title' => $titles[$i] ?? '',
+                            'desc'  => $descs[$i] ?? ''
+                        ];
+                    }
+                    $pageData['cost_items'] = $costItems;
+                }
+            }
+        }
+        else {
             // المعالجة العامة لبقية الصفحات الأخرى
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -301,6 +349,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';
+        if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_course_')) return 'courses_page';
         return null;
     }
 

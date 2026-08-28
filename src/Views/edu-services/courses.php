@@ -42,7 +42,7 @@
     <div class="custom-container">
       
       <!-- 1. العنوان والوصف الرئيسي -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
               <i class="bi bi-pencil-fill"></i>
@@ -54,7 +54,7 @@
       </div>
 
       <!-- 2. أهداف الدورة التحضيرية -->
-      <div class="advice-check py-4 mb-4 border-bottom" style="position: relative;">
+      <div class="advice-check py-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langGoalsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل أهداف الدورة">
               <i class="bi bi-pencil-fill"></i>

@@ -83,7 +83,7 @@ class PageContentSettingsService
                 $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
             }
         } 
-        // معالجة خاصة لصفحة الدورات (Courses Page)
+        // معالجة خاصة لصفحة الدورات (Courses Page / Language Page)
         elseif ($dbKey === 'courses_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -354,7 +354,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';
-        if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_course_')) return 'courses_page';
+        if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_course_') || str_starts_with($action, 'update_lang_')) return 'courses_page';
         return null;
     }
 

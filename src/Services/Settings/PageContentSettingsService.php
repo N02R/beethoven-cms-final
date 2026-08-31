@@ -48,7 +48,7 @@ class PageContentSettingsService
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_goals')) {
                 $pageData['goals_title'] = $_POST['goals_title'] ?? '';
-                $goalsItemsRaw = $_POST['goals_items'] ?? [];
+                $goalsItemsRaw = $_POST['goals_items'] ?? ($_POST['goals'] ?? []);
                 $pageData['goals_items'] = is_array($goalsItemsRaw) ? array_values(array_filter(array_map('trim', $goalsItemsRaw), fn($val) => $val !== '')) : [];
             } elseif (str_contains($action, '_learning')) {
                 $pageData['learning_title'] = $_POST['learning_title'] ?? '';
@@ -111,11 +111,9 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_cost')) {
                 $pageData['cost_title'] = $_POST['cost_title'] ?? 'اماكن الالتحاق والتكلفة';
                 
-                // استقبال مصفوفات العناوين والأوصاف بدعم كامل لجميع تسميات النماذج المحتملة (بما فيها cost_items_title/desc)
                 $titles = $_POST['cost_items_title'] ?? ($_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []));
                 $descs  = $_POST['cost_items_desc'] ?? ($_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []));
                 
-                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو بناءها من المدخلات الثنائية بأمان تام
                 $costItemsRaw = $_POST['cost_items'] ?? [];
                 if (!empty($costItemsRaw) && is_array($costItemsRaw)) {
                     $pageData['cost_items'] = $costItemsRaw;
@@ -354,6 +352,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';
+        // شروط شاملة وموسعة لضمان التوجيه الصحيح لقسم الدورات واللغات
         if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_course_') || str_starts_with($action, 'update_lang_')) return 'courses_page';
         return null;
     }

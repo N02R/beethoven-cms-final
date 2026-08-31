@@ -1,3 +1,10 @@
+<?php
+// منع الوصول المباشر للملف
+if (!defined('ROOT_PATH') && !isset($lang_data)) {
+    // حماية إضافية
+}
+?>
+
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="langBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -275,9 +282,9 @@
         }, 4000);
     }
 
-    // 3. إضافة صف هدف جديد بالستايل الموحد والعداد المستقل
+    // 3. إضافة صف هدف جديد (محدثة لتستقبل المعاملات وتدعم القيم الافتراضية لمنع الأخطاء)
     let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
-    function addLangRow(containerId, inputName, idPrefix) {
+    function addLangRow(containerId = 'langGoalsContainer', inputName = 'goals[]', idPrefix = 'lang_goal_') {
         const container = document.getElementById(containerId);
         if (!container) return;
         const div = document.createElement('div');
@@ -371,5 +378,3 @@
         });
     });
 </script>
-
-

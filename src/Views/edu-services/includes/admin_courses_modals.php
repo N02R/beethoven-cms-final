@@ -128,7 +128,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                             <?php foreach ($lang_data['goals'] as $i => $goal): ?>
                                 <div class="p-3 shadow-sm goal-item d-flex align-items-center gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_goal_<?php echo $i; ?>">
                                     <input type="text" class="form-control" name="goals[]" value="<?php echo htmlspecialchars($goal, ENT_QUOTES, 'UTF-8'); ?>" placeholder="اكتب الهدف هنا...">
-                                    <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('lang_goal_<?php echo $i; ?>')" title="حذف الهدف">
+                                    <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('lang_goal_<?php echo $i; ?>')" title="حذف الهدف">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -136,7 +136,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow('langGoalsContainer', 'goals[]', 'lang_goal_')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة هدف جديد
                     </button>
                 </form>
@@ -203,7 +203,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                                 <div class="p-3 shadow-sm cost-item d-flex flex-column gap-2" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_cost_<?php echo $i; ?>">
                                     <div class="d-flex align-items-center gap-2">
                                         <input type="text" class="form-control fw-bold" name="cost_items_title[]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان العنصر (مثال: برلين):">
-                                        <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('lang_cost_<?php echo $i; ?>')" title="حذف العنصر">
+                                        <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('lang_cost_<?php echo $i; ?>')" title="حذف العنصر">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -213,7 +213,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangCostRow('langCostContainer')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangCostRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة مكان/تكلفة جديدة
                     </button>
                 </form>
@@ -228,12 +228,13 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
 
 <!-- Dynamic JS Engine for Language Course Page -->
 <script>
-    function removeRow(id) {
+    // جعل الدوال معرفة في النطاق العام (Global Scope) لضمان عمل الـ onclick مباشرة
+    window.removeRow = function(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
-    }
+    };
 
-    function showNotification(message, type = 'success') {
+    window.showNotification = function(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
@@ -275,33 +276,39 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                 setTimeout(() => alertDiv.remove(), 300);
             }
         }, 4000);
-    }
+    };
 
     let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
-    function addLangRow(containerId, inputName, idPrefix) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
+    window.addLangRow = function() {
+        const container = document.getElementById('langGoalsContainer');
+        if (!container) {
+            console.error('langGoalsContainer not found');
+            return;
+        }
         
-        const rowId = idPrefix + langGoalIndex;
+        const rowId = 'lang_goal_' + langGoalIndex;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm goal-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = rowId;
         
         div.innerHTML = `
-            <input type="text" class="form-control" name="${inputName}" placeholder="اكتب الهدف هنا...">
-            <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('${rowId}')" title="حذف الهدف">
+            <input type="text" class="form-control" name="goals[]" placeholder="اكتب الهدف هنا...">
+            <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${rowId}')" title="حذف الهدف">
                 <i class="bi bi-trash"></i>
             </button>
         `;
         container.appendChild(div);
         langGoalIndex++;
-    }
+    };
 
     let langCostIndex = <?php echo count($lang_data['cost_items'] ?? []); ?>;
-    function addLangCostRow(containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
+    window.addLangCostRow = function() {
+        const container = document.getElementById('langCostContainer');
+        if (!container) {
+            console.error('langCostContainer not found');
+            return;
+        }
 
         const rowId = 'lang_cost_' + langCostIndex;
         const div = document.createElement('div');
@@ -312,7 +319,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
         div.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <input type="text" class="form-control fw-bold" name="cost_items_title[]" placeholder="عنوان العنصر (مثال: برلين):">
-                <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('${rowId}')" title="حذف العنصر">
+                <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${rowId}')" title="حذف العنصر">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
@@ -320,7 +327,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
         `;
         container.appendChild(div);
         langCostIndex++;
-    }
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('#langBreadcrumbForm, #langHeroForm, #langMainForm, #langGoalsForm, #langWarningForm, #langCostForm');

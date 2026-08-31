@@ -27,7 +27,7 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page)
+        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page) لتجنب تداخل الشروط العامة
         if ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -48,7 +48,7 @@ class PageContentSettingsService
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_goals')) {
                 $pageData['goals_title'] = $_POST['goals_title'] ?? '';
-                $goalsItemsRaw = $_POST['goals_items'] ?? ($_POST['goals'] ?? []);
+                $goalsItemsRaw = $_POST['goals_items'] ?? [];
                 $pageData['goals_items'] = is_array($goalsItemsRaw) ? array_values(array_filter(array_map('trim', $goalsItemsRaw), fn($val) => $val !== '')) : [];
             } elseif (str_contains($action, '_learning')) {
                 $pageData['learning_title'] = $_POST['learning_title'] ?? '';
@@ -83,7 +83,7 @@ class PageContentSettingsService
                 $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
             }
         } 
-        // معالجة خاصة لصفحة الدورات (Courses Page)
+        // معالجة خاصة لصفحة الدورات (Courses Page / Language Page)
         elseif ($dbKey === 'courses_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -103,9 +103,7 @@ class PageContentSettingsService
                 $pageData['main_title'] = $_POST['main_title'] ?? '';
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_goals')) {
-                // حفظ عنوان الأهداف
                 $pageData['goals_title'] = $_POST['goals_title'] ?? 'أهداف الدورة التحضيرية';
-                // التقاط مصفوفة الأهداف بدقة من goals[] أو goals_items[]
                 $goalsRaw = $_POST['goals'] ?? ($_POST['goals_items'] ?? []);
                 $pageData['goals'] = is_array($goalsRaw) ? array_values(array_filter(array_map('trim', $goalsRaw), fn($val) => $val !== '')) : [];
             } elseif (str_contains($action, '_warning')) {
@@ -113,9 +111,11 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_cost')) {
                 $pageData['cost_title'] = $_POST['cost_title'] ?? 'اماكن الالتحاق والتكلفة';
                 
+                // استقبال مصفوفات العناوين والأوصاف بدعم كامل لجميع تسميات النماذج المحتملة (بما فيها cost_items_title/desc)
                 $titles = $_POST['cost_items_title'] ?? ($_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []));
                 $descs  = $_POST['cost_items_desc'] ?? ($_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []));
                 
+                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو بناءها من المدخلات الثنائية بأمان تام
                 $costItemsRaw = $_POST['cost_items'] ?? [];
                 if (!empty($costItemsRaw) && is_array($costItemsRaw)) {
                     $pageData['cost_items'] = $costItemsRaw;

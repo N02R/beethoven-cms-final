@@ -275,20 +275,24 @@
         }, 4000);
     }
 
-    // 3. إضافة صف هدف جديد بالستايل الموحد والعداد المستقل
+    // 3. إضافة صف هدف جديد بالستايل المضبوط
     let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
     function addLangRow(containerId, inputName, idPrefix) {
         const container = document.getElementById(containerId);
-        if (!container) return;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        if (!container) {
+            console.error('Container not found:', containerId);
+            return;
+        }
+        
         const rowId = idPrefix + langGoalIndex;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm goal-item d-flex align-items-center gap-2';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = rowId;
         
         div.innerHTML = `
             <input type="text" class="form-control" name="${inputName}" placeholder="اكتب الهدف هنا...">
-            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
+            <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('${rowId}')" title="حذف الهدف">
                 <i class="bi bi-trash"></i>
             </button>
         `;
@@ -296,21 +300,25 @@
         langGoalIndex++;
     }
 
-    // 4. إضافة صف مكان/تكلفة جديد بالستايل الموحد والعداد المستقل
+    // 4. إضافة صف مكان/تكلفة جديد بالستايل المضبوط
     let langCostIndex = <?php echo count($lang_data['cost_items'] ?? []); ?>;
     function addLangCostRow(containerId) {
         const container = document.getElementById(containerId);
-        if (!container) return;
+        if (!container) {
+            console.error('Container not found:', containerId);
+            return;
+        }
+
+        const rowId = 'lang_cost_' + langCostIndex;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm cost-item d-flex flex-column gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        const rowId = 'lang_cost_' + langCostIndex;
         div.id = rowId;
         
         div.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <input type="text" class="form-control fw-bold" name="cost_items_title[]" placeholder="عنوان العنصر (مثال: برلين):">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
+                <button type="button" class="btn-icon-trash flex-shrink-0" onclick="removeRow('${rowId}')" title="حذف العنصر">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>

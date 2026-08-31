@@ -228,7 +228,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
 
 <!-- Dynamic JS Engine for Language Course Page -->
 <script>
-    // جعل الدوال معرفة في النطاق العام (Global Scope) لضمان عمل الـ onclick مباشرة
+    // جعل الدوال معرفة في النطاق العام (Global Scope)
     window.removeRow = function(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -278,7 +278,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
         }, 4000);
     };
 
-    let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
+    // دالة إضافة هدف جديد (محدثة لتكون ذكية وتعتمد على الوقت الحالي لمنع أي تداخل IDs)
     window.addLangRow = function() {
         const container = document.getElementById('langGoalsContainer');
         if (!container) {
@@ -286,23 +286,22 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
             return;
         }
         
-        const rowId = 'lang_goal_' + langGoalIndex;
+        const uniqueId = 'lang_goal_' + Date.now() + '_' + Math.random().toString(36.substring(2, 7));
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm goal-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = rowId;
+        div.id = uniqueId;
         
         div.innerHTML = `
-            <input type="text" class="form-control" name="goals[]" placeholder="اكتب الهدف هنا...">
-            <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${rowId}')" title="حذف الهدف">
+            <input type="text" class="form-control" name="goals[]" placeholder="اكتب الهدف هنا..." required>
+            <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${uniqueId}')" title="حذف الهدف">
                 <i class="bi bi-trash"></i>
             </button>
         `;
         container.appendChild(div);
-        langGoalIndex++;
     };
 
-    let langCostIndex = <?php echo count($lang_data['cost_items'] ?? []); ?>;
+    // دالة إضافة مكان/تكلفة جديد
     window.addLangCostRow = function() {
         const container = document.getElementById('langCostContainer');
         if (!container) {
@@ -310,23 +309,22 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
             return;
         }
 
-        const rowId = 'lang_cost_' + langCostIndex;
+        const uniqueId = 'lang_cost_' + Date.now() + '_' + Math.random().toString(36.substring(2, 7));
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm cost-item d-flex flex-column gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = rowId;
+        div.id = uniqueId;
         
         div.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <input type="text" class="form-control fw-bold" name="cost_items_title[]" placeholder="عنوان العنصر (مثال: برلين):">
-                <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${rowId}')" title="حذف العنصر">
+                <button type="button" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; border-radius: 10px;" onclick="removeRow('${uniqueId}')" title="حذف العنصر">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
             <textarea class="form-control" name="cost_items_desc[]" rows="2" placeholder="وصف العنصر أو التكلفة..." style="height: auto; padding: 10px 14px;"></textarea>
         `;
         container.appendChild(div);
-        langCostIndex++;
     };
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -378,3 +376,4 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
         });
     });
 </script>
+

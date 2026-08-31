@@ -1,3 +1,10 @@
+<?php
+// منع الوصول المباشر للملف
+if (!defined('ROOT_PATH') && !isset($lang_data)) {
+    // حماية إضافية
+}
+?>
+
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="langBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -8,9 +15,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langBreadcrumbForm" method="POST">
-                    <input type="hidden" name="action" value="update_lang_breadcrumb">
-                    
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
+                    <input type="hidden" name="action" value="update_courses_breadcrumb">
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
@@ -41,10 +46,9 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langHeroForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_lang_hero">
+                    <input type="hidden" name="action" value="update_courses_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($lang_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($lang_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
@@ -77,7 +81,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langMainForm" method="POST">
-                    <input type="hidden" name="action" value="update_lang_main">
+                    <input type="hidden" name="action" value="update_courses_main">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
@@ -109,7 +113,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langGoalsForm" method="POST">
-                    <input type="hidden" name="action" value="update_lang_goals">
+                    <input type="hidden" name="action" value="update_courses_goals">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
@@ -155,7 +159,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langWarningForm" method="POST">
-                    <input type="hidden" name="action" value="update_lang_warning">
+                    <input type="hidden" name="action" value="update_courses_warning">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
@@ -183,7 +187,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="langCostForm" method="POST">
-                    <input type="hidden" name="action" value="update_lang_cost">
+                    <input type="hidden" name="action" value="update_courses_cost">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
@@ -224,13 +228,11 @@
 
 <!-- Dynamic JS Engine for Language Course Page -->
 <script>
-    // 1. دالة عامة لحذف أي صف
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -275,14 +277,10 @@
         }, 4000);
     }
 
-    // 3. إضافة صف هدف جديد بالستايل المضبوط
     let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
     function addLangRow(containerId, inputName, idPrefix) {
         const container = document.getElementById(containerId);
-        if (!container) {
-            console.error('Container not found:', containerId);
-            return;
-        }
+        if (!container) return;
         
         const rowId = idPrefix + langGoalIndex;
         const div = document.createElement('div');
@@ -300,14 +298,10 @@
         langGoalIndex++;
     }
 
-    // 4. إضافة صف مكان/تكلفة جديد بالستايل المضبوط
     let langCostIndex = <?php echo count($lang_data['cost_items'] ?? []); ?>;
     function addLangCostRow(containerId) {
         const container = document.getElementById(containerId);
-        if (!container) {
-            console.error('Container not found:', containerId);
-            return;
-        }
+        if (!container) return;
 
         const rowId = 'lang_cost_' + langCostIndex;
         const div = document.createElement('div');
@@ -328,7 +322,6 @@
         langCostIndex++;
     }
 
-    // 5. معالج الحفظ الموحد عبر AJAX لنماذج صفحة دورات اللغات
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('#langBreadcrumbForm, #langHeroForm, #langMainForm, #langGoalsForm, #langWarningForm, #langCostForm');
         
@@ -342,7 +335,6 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
-                // إغلاق المودال الحالي إن وجد
                 const modalElement = this.closest('.modal');
                 if (modalElement && window.bootstrap) {
                     const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -379,6 +371,3 @@
         });
     });
 </script>
-
-
-

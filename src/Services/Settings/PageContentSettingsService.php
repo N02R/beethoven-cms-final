@@ -27,7 +27,7 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page) لتجنب تداخل الشروط العامة
+        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page)
         if ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -83,7 +83,7 @@ class PageContentSettingsService
                 $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
             }
         } 
-        // معالجة خاصة لصفحة الدورات (Courses Page / Language Page)
+        // معالجة خاصة لصفحة الدورات (Courses Page)
         elseif ($dbKey === 'courses_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -103,7 +103,9 @@ class PageContentSettingsService
                 $pageData['main_title'] = $_POST['main_title'] ?? '';
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_goals')) {
+                // حفظ عنوان الأهداف
                 $pageData['goals_title'] = $_POST['goals_title'] ?? 'أهداف الدورة التحضيرية';
+                // التقاط مصفوفة الأهداف بدقة من goals[] أو goals_items[]
                 $goalsRaw = $_POST['goals'] ?? ($_POST['goals_items'] ?? []);
                 $pageData['goals'] = is_array($goalsRaw) ? array_values(array_filter(array_map('trim', $goalsRaw), fn($val) => $val !== '')) : [];
             } elseif (str_contains($action, '_warning')) {
@@ -352,7 +354,6 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';
-        // شروط شاملة وموسعة لضمان التوجيه الصحيح لقسم الدورات واللغات
         if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_course_') || str_starts_with($action, 'update_lang_')) return 'courses_page';
         return null;
     }

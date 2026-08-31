@@ -48,7 +48,7 @@ class PageContentSettingsService
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_goals')) {
                 $pageData['goals_title'] = $_POST['goals_title'] ?? '';
-                $goalsItemsRaw = $_POST['goals_items'] ?? [];
+                $goalsItemsRaw = $_POST['goals_items'] ?? ($_POST['goals'] ?? []);
                 $pageData['goals_items'] = is_array($goalsItemsRaw) ? array_values(array_filter(array_map('trim', $goalsItemsRaw), fn($val) => $val !== '')) : [];
             } elseif (str_contains($action, '_learning')) {
                 $pageData['learning_title'] = $_POST['learning_title'] ?? '';

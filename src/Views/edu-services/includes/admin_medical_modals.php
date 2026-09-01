@@ -9,7 +9,7 @@
             <div class="modal-body p-4">
                 <form id="medicalBreadcrumbForm" method="POST" action="index.php?url=admin/settings/save">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
-                    <input type="hidden" name="action" value="update_medical_breadcrumb">
+                    <input type="hidden" name="action" value="update_medical_packages_breadcrumb">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
@@ -42,7 +42,7 @@
             <div class="modal-body p-4">
                 <form id="medicalHeroForm" method="POST" action="index.php?url=admin/settings/save" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
-                    <input type="hidden" name="action" value="update_medical_hero">
+                    <input type="hidden" name="action" value="update_medical_packages_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($medical_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -85,7 +85,7 @@
             <div class="modal-body p-4">
                 <form id="medicalMainForm" method="POST" action="index.php?url=admin/settings/save">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
-                    <input type="hidden" name="action" value="update_medical_main">
+                    <input type="hidden" name="action" value="update_medical_packages_main">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
@@ -118,7 +118,7 @@
             <div class="modal-body p-4">
                 <form id="medicalNotesForm" method="POST" action="index.php?url=admin/settings/save">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
-                    <input type="hidden" name="action" value="update_medical_notes">
+                    <input type="hidden" name="action" value="update_medical_packages_notes">
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-0">
@@ -147,7 +147,7 @@
             <div class="modal-body p-4">
                 <form id="medicalCardForm" method="POST" action="index.php?url=admin/settings/save" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?= \App\Core\Security::generateCsrfToken() ?>">
-                    <input type="hidden" name="action" value="update_medical_card">
+                    <input type="hidden" name="action" value="update_medical_packages_card">
                     <input type="hidden" name="old_file" value="<?php echo htmlspecialchars($medical_data['download_item']['file'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -258,5 +258,3 @@
         });
     });
 </script>
-
-

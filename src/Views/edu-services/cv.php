@@ -74,38 +74,45 @@
         </div>
       </div>
 
-      <!-- 3. التحميل (PDF & Word) -->
-      <div class="row mt-5" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvDownloadModal" style="position: absolute; top: -20px; right: 0; z-index: 10;" title="تعديل">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
+<!-- 3. التحميل (PDF & Word) -->
+<div class="row mt-5" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#cvDownloadModal" style="position: absolute; top: -20px; right: 0; z-index: 10;" title="تعديل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
 
-        <?php 
-          $download_items = $cv_data['download_items'] ?? [];
-          $total_items = count($download_items);
-          foreach ($download_items as $index => $item):
-              $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-              $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              $is_last = ($index === $total_items - 1);
-        ?>
-          <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
-              <div class="download-row">
-                <img src="<?php echo get_image_url($icon); ?>" alt="icon" />
-                <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'السيرة الذاتية "CV"'); ?></div>
-                  <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
-                </div>
-                <span class="leader d-lg-block d-md-none d-sm-none"
-                  aria-hidden="true">................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
-              </div>
-            </div>
+  <?php 
+    $download_items = $cv_data['download_items'] ?? [];
+    $total_items = count($download_items);
+    foreach ($download_items as $index => $item):
+        $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
+        $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+        $is_last = ($index === $total_items - 1);
+  ?>
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
+        <div class="download-row">
+          <!-- الأيقونة -->
+          <img src="<?php echo get_image_url($icon); ?>" alt="icon" class="dl-icon" />
+          
+          <!-- العنوان والنص الفرعي -->
+          <div class="dl-info">
+            <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'السيرة الذاتية "CV"'); ?></div>
+            <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
           </div>
-        <?php endforeach; ?>
+          
+          <!-- النقاط الفاصلة المرنة -->
+          <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.......................................................................................................................................................................................................................</span>
+          
+          <!-- زر التحميل -->
+          <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
+        </div>
       </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
 
     </div>
   </section>

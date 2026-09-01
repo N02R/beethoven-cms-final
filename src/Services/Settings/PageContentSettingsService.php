@@ -48,15 +48,16 @@ class PageContentSettingsService
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_card')) {
                 $downloadItem = $pageData['download_item'] ?? [];
-                $downloadItem['title'] = $_POST['download_title'] ?? ($downloadItem['title'] ?? 'قائمة الأسعار العامة');
-                $downloadItem['type'] = $_POST['download_type'] ?? ($downloadItem['type'] ?? 'pdf');
+                $downloadItem['title'] = $_POST['item_title'] ?? ($downloadItem['title'] ?? 'قائمة الأسعار العامة');
+                $downloadItem['type']  = $_POST['item_type'] ?? ($downloadItem['type'] ?? 'pdf');
+                $downloadItem['sub']   = $_POST['item_sub'] ?? ($downloadItem['sub'] ?? '');
                 
                 $filePath = $_POST['old_file'] ?? ($downloadItem['file'] ?? 'assets/files/general_price_list.pdf');
-                if (isset($_FILES['download_file']) && $_FILES['download_file']['error'] === UPLOAD_ERR_OK) {
+                if (isset($_FILES['item_file']) && $_FILES['item_file']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($filePath) && str_starts_with($filePath, 'assets/uploads/')) {
                         $this->deleteOldImageFile($filePath);
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES['download_file']['tmp_name']);
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['item_file']['tmp_name']);
                     $filePath = 'assets/uploads/' . $filename;
                 }
                 $downloadItem['file'] = $filePath;
@@ -147,11 +148,9 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_cost')) {
                 $pageData['cost_title'] = $_POST['cost_title'] ?? 'اماكن الالتحاق والتكلفة';
                 
-                // استقبال مصفوفات العناوين والأوصاف بدعم كامل لجميع تسميات النماذج المحتملة (بما فيها cost_items_title/desc)
                 $titles = $_POST['cost_items_title'] ?? ($_POST['cost_titles'] ?? ($_POST['item_titles'] ?? []));
                 $descs  = $_POST['cost_items_desc'] ?? ($_POST['cost_descs'] ?? ($_POST['item_descs'] ?? []));
                 
-                // دعم الهيكلية المتداخلة للمصفوفة إن وجدت أو بناءها من المدخلات الثنائية بأمان تام
                 $costItemsRaw = $_POST['cost_items'] ?? [];
                 if (!empty($costItemsRaw) && is_array($costItemsRaw)) {
                     $pageData['cost_items'] = $costItemsRaw;
@@ -213,7 +212,6 @@ class PageContentSettingsService
                     $typeVal = $types[$i] ?? 'pdf';
                     $filePath = $oldFiles[$i] ?? '#';
 
-                    // التحقق من رفع ملف جديد لهذا البند
                     if (isset($filesFiles['name'][$i]) && $filesFiles['error'][$i] === UPLOAD_ERR_OK) {
                         if (!empty($filePath) && $filePath !== '#' && str_starts_with($filePath, 'assets/uploads/')) {
                             $this->deleteOldImageFile($filePath);

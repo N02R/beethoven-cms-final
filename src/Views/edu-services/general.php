@@ -82,38 +82,46 @@
         </ul>
       </div>
 
-      <!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
-      <div class="py-4" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaDownloadModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
+<!-- قائمة الملفات المتاحة للتحميل (ديناميكية) -->
+<div class="py-4" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#visaDownloadModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
 
-        <div class="row">
-          <?php if (!empty($visa_data['download_items'])): ?>
-            <?php foreach ($visa_data['download_items'] as $item): ?>
-              <?php 
-                $file_type = strtolower($item['type'] ?? 'pdf');
-                $icon_file = ($file_type === 'word') ? 'Groupword.webp' : 'Grouppdf.webp'; 
-                $icon_url = get_image_url('assets/img/' . $icon_file);
-              ?>
-              <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="download-card mb-3">
-                  <div class="download-row">
-                    <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="ملف التحميل" />
-                    <div class="dl-info">
-                      <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
-                    </div>
-                    <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">..............................................................................</span>
-                    <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
-                  </div>
-                </div>
+  <div class="row">
+    <?php if (!empty($visa_data['download_items'])): ?>
+      <?php foreach ($visa_data['download_items'] as $item): ?>
+        <?php 
+          $file_type = strtolower($item['type'] ?? 'pdf');
+          $icon_file = ($file_type === 'word') ? 'Groupword.webp' : 'Grouppdf.webp'; 
+          $icon_url = get_image_url('assets/img/' . $icon_file);
+        ?>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <div class="download-card mb-3">
+            <div class="download-row d-flex align-items-center flex-nowrap" style="gap: 12px; width: 100%;">
+              <!-- الأيقونة -->
+              <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="ملف التحميل" style="flex-shrink: 0; width: 24px; height: auto;" />
+              
+              <!-- العنوان -->
+              <div class="dl-info" style="flex-shrink: 0;">
+                <div class="dl-title text-nowrap"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
               </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+              
+              <!-- النقاط الفاصلة (تم إعطاؤها مرونة لملء الفراغ الأوسط وتجنب النزول لسطر جديد) -->
+              <span class="leader d-lg-block d-md-none d-sm-none overflow-hidden text-muted text-nowrap flex-grow-1" aria-hidden="true" style="opacity: 0.6; text-overflow: clip;">................................................................................................................................................................</span>
+              
+              <!-- زر التحميل -->
+              <a class="download-link flex-shrink-0 ms-auto" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
+            </div>
+          </div>
         </div>
-      </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+</div>
+
 
     </div>
   </section>

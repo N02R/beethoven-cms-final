@@ -1,5 +1,5 @@
   <!-- Breadcrumb start-->
-  <?>
+  <?php
       // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
       $from = $_GET['from'] ?? 'education';
       

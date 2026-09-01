@@ -1,4 +1,3 @@
-
 <!-- 1. job start -->
 <section class="job py-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
@@ -8,7 +7,7 @@
   <?php endif; ?>
 
   <div class="custom-container">
-    <?php> 
+    <?php 
     $hero_bg = get_image_url($job_hero['img'] ?? null, 'assets/img/job/hero.jpg');
     ?>
     <div class="row align-items-stretch g-5">
@@ -211,7 +210,7 @@
 </section>
 <!-- job services end -->
 
-<?php> 
+<?php 
 $job_modals_file = __DIR__ . '/admin/admin_job_modals.php';
 if (!empty($is_admin) && file_exists($job_modals_file)) { 
     include_once $job_modals_file; 

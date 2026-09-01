@@ -27,8 +27,44 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة قائمة أسعار الخدمات (Price List Page)
+        if ($dbKey === 'pricelist_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_card')) {
+                $downloadItem = $pageData['download_item'] ?? [];
+                $downloadItem['title'] = $_POST['download_title'] ?? ($downloadItem['title'] ?? 'قائمة الأسعار العامة');
+                $downloadItem['type'] = $_POST['download_type'] ?? ($downloadItem['type'] ?? 'pdf');
+                
+                $filePath = $_POST['old_file'] ?? ($downloadItem['file'] ?? 'assets/files/general_price_list.pdf');
+                if (isset($_FILES['download_file']) && $_FILES['download_file']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($filePath) && str_starts_with($filePath, 'assets/uploads/')) {
+                        $this->deleteOldImageFile($filePath);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['download_file']['tmp_name']);
+                    $filePath = 'assets/uploads/' . $filename;
+                }
+                $downloadItem['file'] = $filePath;
+                $pageData['download_item'] = $downloadItem;
+            }
+        }
         // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page) لتجنب تداخل الشروط العامة
-        if ($dbKey === 'foundation_page') {
+        elseif ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
@@ -402,6 +438,7 @@ class PageContentSettingsService
 
     private function resolveDbKey(string $action): ?string
     {
+        if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_visa_')) return 'general_visa_page';
         if (str_starts_with($action, 'update_check_')) return 'check_page';

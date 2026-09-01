@@ -101,39 +101,47 @@ $motivation_data = $data['motivation_page'] ?? [
         </div>
       </div>
 
-      <!-- قسم ملفات التحميل -->
-      <div class="row gy-3" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationDownloadModal" style="position: absolute; top: -10px; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
+<!-- قسم ملفات التحميل -->
+<div class="row gy-3" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationDownloadModal" style="position: absolute; top: -10px; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
 
-        <?php 
-          $downloads = $motivation_data['download_items'] ?? [];
-          if (!empty($downloads)):
-            foreach ($downloads as $dl):
-              $is_pdf = (strtolower($dl['type'] ?? 'pdf') === 'pdf');
-              $icon_img = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-        ?>
-              <div class="col-lg-12 col-md-12 col-sm-12">
-                <div class="download-card">
-                  <div class="download-row">
-                    <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" />
-                    <div class="dl-info">
-                      <div class="dl-title"><?php echo htmlspecialchars($dl['title'] ?? ''); ?></div>
-                      <div class="dl-sub"><?php echo htmlspecialchars($dl['sub'] ?? ''); ?></div>
-                    </div>
-                    <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
-                    <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($dl['file'] ?? '#', '/')); ?>" download>Download</a>
-                  </div>
-                </div>
+  <?php 
+    $downloads = $motivation_data['download_items'] ?? [];
+    if (!empty($downloads)):
+      foreach ($downloads as $dl):
+        $is_pdf = (strtolower($dl['type'] ?? 'pdf') === 'pdf');
+        $icon_img = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+  ?>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <div class="download-card">
+            <div class="download-row">
+              <!-- الأيقونة -->
+              <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" class="dl-icon" />
+              
+              <!-- العنوان والنص الفرعي -->
+              <div class="dl-info">
+                <div class="dl-title"><?php echo htmlspecialchars($dl['title'] ?? ''); ?></div>
+                <div class="dl-sub"><?php echo htmlspecialchars($dl['sub'] ?? ''); ?></div>
               </div>
-        <?php 
-            endforeach;
-          endif; 
-        ?>
-      </div>
+              
+              <!-- النقاط الفاصلة المرنة -->
+              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................................................................................................................................</span>
+              
+              <!-- زر التحميل -->
+              <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($dl['file'] ?? '#', '/')); ?>" download>Download</a>
+            </div>
+          </div>
+        </div>
+  <?php 
+      endforeach;
+    endif; 
+  ?>
+</div>
+
 
     </div>
   </section>

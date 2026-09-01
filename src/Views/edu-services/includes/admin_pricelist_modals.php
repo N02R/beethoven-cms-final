@@ -1,11 +1,3 @@
-<?php
-// التأكد من عدم الوصول المباشر أو التحقق من صلاحيات الأدمن
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$is_admin) { header("HTTP/1.1 403 Forbidden"); exit("Access Denied"); }
-
-$pricelist_data = $global_data['pricelist_page'] ?? [];
-?>
 
 <!-- 1. Modal تعديل مسار التنقل (Breadcrumb) -->
 <div class="modal fade custom-modal" id="priceListBreadcrumbModal" tabindex="-1" aria-hidden="true">

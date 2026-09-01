@@ -1,9 +1,3 @@
-<?php
-// منع الوصول المباشر للملف
-if (!defined('ROOT_PATH') && !isset($lang_data)) {
-    // حماية إضافية
-}
-?>
 
 <!-- 1. Breadcrumb Modal -->
 <div class="modal fade custom-modal" id="langBreadcrumbModal" tabindex="-1" aria-hidden="true">
@@ -139,7 +133,7 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
                         <?php endif; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow('langGoalsContainer', 'goals[]', 'lang_goal_')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                    <button type="button" class="btn w-100 mt-2 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangGoalRow('langGoalsContainer')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle me-1"></i> إضافة هدف جديد
                     </button>
                 </form>
@@ -282,20 +276,20 @@ if (!defined('ROOT_PATH') && !isset($lang_data)) {
         }, 4000);
     }
 
-    // 3. إضافة صف هدف جديد (محدثة لتستقبل المعاملات وتدعم القيم الافتراضية لمنع الأخطاء)
+    // 3. إضافة صف هدف جديد بدالة مستقلة تماماً ومطابقة لنمط مودل التكلفة
     let langGoalIndex = <?php echo count($lang_data['goals'] ?? []); ?>;
-    function addLangRow(containerId = 'langGoalsContainer', inputName = 'goals[]', idPrefix = 'lang_goal_') {
+    function addLangGoalRow(containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex align-items-center gap-2';
+        div.className = 'p-3 shadow-sm goal-item d-flex align-items-center gap-2';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        const rowId = idPrefix + langGoalIndex;
+        const rowId = 'lang_goal_' + langGoalIndex;
         div.id = rowId;
         
         div.innerHTML = `
-            <input type="text" class="form-control" name="${inputName}" placeholder="اكتب الهدف هنا...">
-            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
+            <input type="text" class="form-control" name="goals[]" placeholder="اكتب الهدف هنا...">
+            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف الهدف">
                 <i class="bi bi-trash"></i>
             </button>
         `;

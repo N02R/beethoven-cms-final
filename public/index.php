@@ -144,7 +144,8 @@ $router->add('GET', 'edu-services/pakeges', [OffersController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'job-services/medical-pakeges', [MedicalPackageController::class, 'index']);
 $router->add('GET', 'job-services/medical-traning', [JobSearchAgreementController::class, 'index']);
-$router->add('GET', 'job-services/medical', [MedicalSpecialtiesController::class, 'index']);
+// تم نقل مسار الاختصاصات الطبية ليصبح تحت edu-services بدلاً من job-services
+$router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'job-services/vocational', [AusbildungPackageController::class, 'index']);
 $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);

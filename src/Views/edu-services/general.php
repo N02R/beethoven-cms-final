@@ -100,20 +100,20 @@
         ?>
         <div class="col-lg-12 col-md-12 col-sm-12">
           <div class="download-card mb-3">
-            <div class="download-row d-flex align-items-center flex-nowrap" style="gap: 12px; width: 100%;">
+            <div class="download-row">
               <!-- الأيقونة -->
-              <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="ملف التحميل" style="flex-shrink: 0; width: 24px; height: auto;" />
+              <img src="<?php echo htmlspecialchars($icon_url); ?>" alt="ملف التحميل" class="dl-icon" />
               
               <!-- العنوان -->
-              <div class="dl-info" style="flex-shrink: 0;">
-                <div class="dl-title text-nowrap"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
+              <div class="dl-info">
+                <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
               </div>
               
-              <!-- النقاط الفاصلة (تم إعطاؤها مرونة لملء الفراغ الأوسط وتجنب النزول لسطر جديد) -->
-              <span class="leader d-lg-block d-md-none d-sm-none overflow-hidden text-muted text-nowrap flex-grow-1" aria-hidden="true" style="opacity: 0.6; text-overflow: clip;">................................................................................................................................................................</span>
+              <!-- النقاط الفاصلة -->
+              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................................................................</span>
               
               <!-- زر التحميل -->
-              <a class="download-link flex-shrink-0 ms-auto" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
+              <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? '#', '/')); ?>" download>Download</a>
             </div>
           </div>
         </div>
@@ -121,6 +121,7 @@
     <?php endif; ?>
   </div>
 </div>
+
 
 
     </div>

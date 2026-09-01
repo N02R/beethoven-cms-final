@@ -1,8 +1,4 @@
-<?php
-/**
- * صفحة متطلبات التأشيرة العامة - General Visa Requirements Page View
- */
-?>
+
   <!-- Breadcrumb start-->
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

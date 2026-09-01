@@ -135,6 +135,66 @@ class PageContentSettingsService
                 }
             }
         }
+        // معالجة خاصة لصفحة متطلبات التأشيرة العامة (General Visa Page)
+        elseif ($dbKey === 'general_visa_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_notes')) {
+                $noteTitle = $_POST['note_title'] ?? 'ملاحظة !!';
+                $notesListRaw = $_POST['notes_list'] ?? [];
+                $cleanNotes = is_array($notesListRaw) ? array_values(array_filter(array_map('trim', $notesListRaw), fn($val) => $val !== '')) : [];
+                $pageData['notes_section'] = [
+                    'title' => $noteTitle,
+                    'notes_list' => $cleanNotes
+                ];
+            } elseif (str_contains($action, '_downloads')) {
+                $titles = $_POST['download_titles'] ?? [];
+                $types = $_POST['download_types'] ?? [];
+                $oldFiles = $_POST['old_download_files'] ?? [];
+                $filesFiles = $_FILES['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    if ($titleVal === '') {
+                        continue;
+                    }
+                    $typeVal = $types[$i] ?? 'pdf';
+                    $filePath = $oldFiles[$i] ?? '#';
+
+                    // التحقق من رفع ملف جديد لهذا البند
+                    if (isset($filesFiles['name'][$i]) && $filesFiles['error'][$i] === UPLOAD_ERR_OK) {
+                        if (!empty($filePath) && $filePath !== '#' && str_starts_with($filePath, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($filePath);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($filesFiles['tmp_name'][$i]);
+                        $filePath = 'assets/uploads/' . $filename;
+                    }
+
+                    $downloadItems[] = [
+                        'title' => $titleVal,
+                        'type'  => $typeVal,
+                        'file'  => $filePath
+                    ];
+                }
+                $pageData['download_items'] = $downloadItems;
+            }
+        }
         else {
             // المعالجة العامة لبقية الصفحات الأخرى
             if (str_contains($action, '_breadcrumb')) {
@@ -343,6 +403,7 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
+        if (str_starts_with($action, 'update_visa_')) return 'general_visa_page';
         if (str_starts_with($action, 'update_check_')) return 'check_page';
         if (str_starts_with($action, 'update_cover_')) return 'coverletter_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';

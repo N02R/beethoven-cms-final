@@ -163,13 +163,15 @@
               if (!str_starts_with($slug, 'edu-services/')) {
                   $slug = 'edu-services/' . $slug;
               }
-              $final_url = ($path_prefix ?? '') . $slug;
+              // إضافة معامل المصدر الخاص بالتعليم هنا
+              $final_url = ($path_prefix ?? '') . $slug . '?from=education';
           } else {
               $final_url = $raw_url;
           }
           
           $bg_img = get_image_url($item['img'] ?? null);
       ?>
+
         <div class="col">
           <a href="<?php echo htmlspecialchars($final_url); ?>" class="text-decoration-none">
             <div class="card service-card text-white border-0 rounded-5"

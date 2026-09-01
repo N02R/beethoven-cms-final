@@ -65,33 +65,31 @@
               <div class="download-row">
                 <?php 
                   $item = $pricelist_data['download_item'] ?? [];
-                  $file_type = strtolower($item['type'] ?? 'pdf');
-                  if ($file_type === 'word' || $file_type === 'docx') {
-                      $icon_img = 'assets/img/Groupword.webp';
-                      $alt_text = 'ملف Word';
-                  } else {
-                      $icon_img = 'assets/img/Grouppdf.';
-                      $alt_text = 'ملف PDF';
-                  }
+                  $is_pdf = (strtolower($item['type'] ?? 'pdf') === 'pdf');
+                  $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
                 ?>
                 <!-- الأيقونة -->
-                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" class="dl-icon" />
+                <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="dl-icon" />
                 
-                <!-- العنوان -->
+                <!-- العنوان والنص الفرعي -->
                 <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة الأسعار العامة'); ?></div>
+                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة الأسعار العامة', ENT_QUOTES, 'UTF-8'); ?></div>
+                  <?php if (!empty($item['sub'])): ?>
+                    <div class="dl-sub"><?php echo htmlspecialchars($item['sub'], ENT_QUOTES, 'UTF-8'); ?></div>
+                  <?php endif; ?>
                 </div>
                 
                 <!-- النقاط الفاصلة -->
                 <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.......................................................................................................................................................................................................................</span>
                 
                 <!-- زر التحميل -->
-                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/general_price_list.pdf', '/')); ?>" download>Download</a>
+                <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" download>Download</a>
               </div>
             </div>
           </div>
         </div>
       </div>
+
 
     </div>
   </section>

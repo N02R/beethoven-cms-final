@@ -73,7 +73,7 @@
             <?php foreach ($notes_list as $note_text): ?>
               <li class="mb-2">
                 <p class="mb-0">
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25" />
                   <?php echo htmlspecialchars($note_text); ?>
                 </p>
               </li>
@@ -95,8 +95,8 @@
             <?php foreach ($visa_data['download_items'] as $item): ?>
               <?php 
                 $file_type = strtolower($item['type'] ?? 'pdf');
-                $icon_file = ($file_type === 'word') ? 'Groupword.png' : 'Grouppdf.png'; 
-                $icon_url = get_image_url('assets/img/education/' . $icon_file);
+                $icon_file = ($file_type === 'word') ? 'Groupword.webp' : 'Grouppdf.webp'; 
+                $icon_url = get_image_url('assets/img/' . $icon_file);
               ?>
               <div class="col-lg-12 col-md-12 col-sm-12">
                 <div class="download-card mb-3">

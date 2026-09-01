@@ -220,9 +220,12 @@
                 
                 const formData = new FormData(this);
                 
-                // جلب الـ CSRF Token مباشرة من الحقل المخفي داخل النموذج نفسه لضمان دقته
                 const csrfTokenInput = this.querySelector('input[name="csrf_token"]');
-                const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+                const csrfToken = csrfTokenInput ? csrfTokenInput.value : (document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+                
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
 
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
@@ -255,4 +258,5 @@
         });
     });
 </script>
+
 

@@ -27,7 +27,7 @@ class MedicalPackageController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة التدريب الطبي عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
+        // 2. جلب بيانات صفحة التدريب الطبي وتوفيرها بالتسميات المتوافقة
         $medical_data_array = MedicalModel::getMedicalData();
         $data['medical_page'] = $medical_data_array;
         $data['medical_data'] = $medical_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View

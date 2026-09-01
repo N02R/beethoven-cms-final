@@ -12,10 +12,26 @@ class MedicalModel {
     public static function getMedicalData(): array {
         $settings = SiteModel::getSettings();
         
-        // جلب البيانات الأساسية من الإعدادات
-        $data = isset($settings['medical_page']) ? json_decode($settings['medical_page'], true) : [];
+        // جلب البيانات الأساسية من الإعدادات باستخدام المفتاح الصحيح المطابق بقاعدة البيانات
+        $data = isset($settings['medical_packages_page']) ? json_decode($settings['medical_packages_page'], true) : [];
 
-        // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
-        return is_array($data) ? $data : [];
+        // قيم افتراضية لضمان عمل الصفحة بسلاسة تامة وعدم وجود بيانات فارغة
+        $default = [
+            "page_breadcrumb" => "باقة التدريب الطبي",
+            "page_breadcrumb_url" => "#",
+            "hero_img" => "assets/img/job/servicesimg3.png",
+            "hero_position" => "center center",
+            "main_title" => "باقة التدريب الطبي الشاملة في ألمانيا",
+            "main_desc" => "نوفر لك فرصة مميزة للحصول على تدريب طبي احترافي في المستشفيات والمراكز الطبية الألمانية، مع دعم كامل في كافة الإجراءات الإدارية والتنظيمية لتحقيق طموحك المهني.",
+            "note_text" => "للاطلاع على تفاصيل الاتفاقية وشروط التسجيل، يرجى الاطلاع على الملف المرفق أدناه أو بالتواصل معنا.",
+            "download_item" => [
+                "title" => "عرض واتفاقية التدريب الطبي",
+                "type" => "pdf",
+                "sub" => "",
+                "file" => "assets/files/medical_training_agreement.pdf"
+            ]
+        ];
+
+        return array_merge($default, is_array($data) ? $data : []);
     }
 }

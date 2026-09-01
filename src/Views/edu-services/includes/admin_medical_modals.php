@@ -219,10 +219,10 @@
                 e.preventDefault();
                 
                 const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                if (csrfToken && !formData.has('csrf_token')) {
-                    formData.append('csrf_token', csrfToken);
-                }
+                
+                // جلب الـ CSRF Token مباشرة من الحقل المخفي داخل النموذج نفسه لضمان دقته
+                const csrfTokenInput = this.querySelector('input[name="csrf_token"]');
+                const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
 
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
@@ -241,7 +241,7 @@
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
                         showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
@@ -255,3 +255,4 @@
         });
     });
 </script>
+

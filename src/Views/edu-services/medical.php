@@ -87,7 +87,7 @@
   <!-- custom-services-info end -->
 
   <?php
-    $med_spec_modals_file = __DIR__ . '/includes/admin_medical_spec_modals.php';
+    $med_spec_modals_file = __DIR__ . '/includes/admin_medical_specialties_modals.php';
     if (!empty($is_admin) && file_exists($med_spec_modals_file)) { 
         include_once $med_spec_modals_file; 
     }

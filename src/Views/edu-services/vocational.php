@@ -66,33 +66,58 @@
       <!-- كرت التحميل -->
       <div class="dl-card py-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#vocationalCardModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل ملف التحميل">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#vocationalCardModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل ملفات التحميل">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
         <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="download-card">
-              <div class="download-row">
-                <?php 
-                  $item = $vocational_data['download_item'] ?? [];
-                  $file_type = strtolower($item['type'] ?? 'pdf');
-                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/Groupword.webp' : 'assets/img/Grouppdf.webp';
-                  $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
-                ?>
-                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
-                <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة تخصصات التدريب المهني'); ?></div>
-                  <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'اختر تخصصك المهني'); ?></div>
+          <?php 
+            $download_items = $vocational_data['download_items'] ?? [];
+            // للتوافق مع البيانات القديمة إن وجدت كمصفوفة مفردة
+            if (empty($download_items) && isset($vocational_data['download_item'])) {
+                $download_items = [$vocational_data['download_item']];
+            }
+            $total_items = count($download_items);
+            if ($total_items === 0) {
+                // عنصر افتراضي في حال عدم وجود بيانات
+                $download_items = [[
+                    'type'  => 'pdf',
+                    'title' => 'قائمة تخصصات التدريب المهني',
+                    'sub'   => 'اختر تخصصك المهني',
+                    'file'  => 'assets/files/vocational_training_list.pdf'
+                ]];
+                $total_items = 1;
+            }
+            foreach ($download_items as $index => $item):
+                $file_type = strtolower($item['type'] ?? 'pdf');
+                $is_pdf = ($file_type === 'pdf');
+                $icon_img = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+                $alt_text = $is_pdf ? 'ملف PDF' : 'ملف Word';
+                $is_last = ($index === $total_items - 1);
+                
+                $file_path = $item['file'] ?? 'assets/files/vocational_training_list.pdf';
+                $full_file_url = (str_starts_with($file_path, 'http://') || str_starts_with($file_path, 'https://') || str_starts_with($file_path, 'assets/')) 
+                    ? htmlspecialchars(($path_prefix ?? '/') . ltrim($file_path, '/')) 
+                    : htmlspecialchars($file_path);
+          ?>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <div class="download-card <?php echo (!$is_last && $total_items > 1) ? 'mb-3' : ''; ?>">
+                <div class="download-row">
+                  <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" class="dl-icon" />
+                  <div class="dl-info">
+                    <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'قائمة تخصصات التدريب المهني'); ?></div>
+                    <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'اختر تخصصك المهني'); ?></div>
+                  </div>
+                  <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.......................................................................................................................................................................................................................</span>
+                  <a class="download-link" href="<?php echo $full_file_url; ?>" download>Download</a>
                 </div>
-                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/vocational_training_list.pdf', '/')); ?>" download>Download</a>
               </div>
             </div>
-          </div>
+          <?php endforeach; ?>
         </div>
       </div>
+
 
     </div>
   </section>

@@ -126,23 +126,27 @@
 
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان الملف الظاهر</label>
-                            <input type="text" class="form-control" name="item_title" value="<?php echo htmlspecialchars($pricelist_data['download_item']['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
-                            <select class="form-select" name="item_type">
-                                <option value="pdf" <?php echo (($pricelist_data['download_item']['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>ملف PDF</option>
-                                <option value="word" <?php echo (in_array($pricelist_data['download_item']['type'] ?? '', ['word', 'docx'])) ? 'selected' : ''; ?>>ملف Word (docx)</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">رفع ملف جديد (PDF أو Word)</label>
-                            <input type="file" class="form-control" name="item_file" accept=".pdf,.doc,.docx">
-                            <div class="form-text text-muted mt-2 small">الملف الحالي: <?php echo htmlspecialchars($pricelist_data['download_item']['file'] ?? 'لا يوجد', ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
+                                <select class="form-select" name="item_type">
+                                    <option value="pdf" <?php echo (($pricelist_data['download_item']['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>ملف PDF</option>
+                                    <option value="word" <?php echo (in_array($pricelist_data['download_item']['type'] ?? '', ['word', 'docx'])) ? 'selected' : ''; ?>>ملف Word (docx)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold small text-secondary">عنوان الملف الظاهر</label>
+                                <input type="text" class="form-control" name="item_title" value="<?php echo htmlspecialchars($pricelist_data['download_item']['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold small text-secondary">النوع الفرعي (Sub)</label>
+                                <input type="text" class="form-control" name="item_sub" value="<?php echo htmlspecialchars($pricelist_data['download_item']['sub'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="النوع الفرعي">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold small text-secondary">رفع ملف جديد (PDF أو Word)</label>
+                                <input type="file" class="form-control" name="item_file" accept=".pdf,.doc,.docx">
+                                <div class="form-text text-muted mt-2 small">الملف الحالي: <?php echo htmlspecialchars($pricelist_data['download_item']['file'] ?? 'لا يوجد', ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
                         </div>
                     </div>
                 </form>

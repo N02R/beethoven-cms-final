@@ -365,29 +365,29 @@
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
                                         <label for="job_srv_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
-                                        <input type="text" id="job_srv_title_<?php echo $index; ?>" class="form-control" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
+                                        <input type="text" id="job_srv_title_<?php echo $index; ?>" class="form-control job-srv-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="job_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الرابط</label>
-                                        <input type="text" id="job_srv_url_<?php echo $index; ?>" class="form-control" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        <label for="job_srv_url_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">رابط الخدمة (اسم الصفحة فقط)</label>
+                                        <input type="text" id="job_srv_url_<?php echo $index; ?>" class="form-control job-srv-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: job-package">
                                     </div>
                                 </div>
 
-                                <!-- السطر الثاني: صورة الخلفية وزر الحذف -->
+                                <!-- السطر الثاني: الصورة + زر الرفع + زر الحذف -->
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11">
-                                        <label for="job_srv_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">صورة الخلفية</label>
+                                        <label for="job_srv_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">صورة الخلفية الحالية / الجديدة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Img" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="service image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" id="job_srv_file_<?php echo $index; ?>" class="form-control" name="srv_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" id="job_srv_file_<?php echo $index; ?>" class="form-control job-srv-file" name="srv_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
 
-                                    <input type="hidden" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="job-srv-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_srv_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
@@ -411,6 +411,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic Rows JS Engine -->
 <script>

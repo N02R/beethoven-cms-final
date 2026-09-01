@@ -100,33 +100,41 @@
         </div>
       </div>
 
-      <!-- 4. التحميل -->
-      <div class="row pt-2" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل عناصر التحميل">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
+<!-- 4. التحميل -->
+<div class="row pt-2" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="تعديل عناصر التحميل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
 
-        <?php foreach (($cover['download_items'] ?? []) as $item): 
-            $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
-            $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-        ?>
-          <div class="col-lg-12">
-            <div class="download-card mb-3">
-              <div class="download-row">
-                <img src="<?php echo get_image_url($icon); ?>" alt="icon" />
-                <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
-                  <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
-                </div>
-                <span class="leader d-lg-block d-md-none d-sm-none">................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
-              </div>
-            </div>
+  <?php foreach (($cover['download_items'] ?? []) as $item): 
+      $is_pdf = (strtolower($item['type'] ?? '') === 'pdf');
+      $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+  ?>
+    <div class="col-lg-12">
+      <div class="download-card mb-3">
+        <div class="download-row">
+          <!-- الأيقونة -->
+          <img src="<?php echo get_image_url($icon); ?>" alt="icon" class="dl-icon" />
+          
+          <!-- العنوان والنص الفرعي -->
+          <div class="dl-info">
+            <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? ''); ?></div>
+            <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
           </div>
-        <?php endforeach; ?>
+          
+          <!-- النقاط الفاصلة المرنة -->
+          <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................</span>
+          
+          <!-- زر التحميل -->
+          <a class="download-link" href="<?php echo htmlspecialchars($item['file'] ?? '#'); ?>" download>Download</a>
+        </div>
       </div>
+    </div>
+  <?php endforeach; ?>
+</div>
+
     </div>
 </section>
 <!-- custom-services-info end -->

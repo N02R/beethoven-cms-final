@@ -1,29 +1,17 @@
-<?php
-/**
- * صفحة خطاب الدافع / التحفيز (Motivation Letter) - View
- */
-
-// تأمين المتغيرات الافتراضية
-if (!isset($path_prefix)) {
-    $path_prefix = '/';
-}
-
-$motivation_data = $data['motivation_page'] ?? [
-    'page_breadcrumb'     => 'خطاب الدافع / التحفيز',
-    'page_breadcrumb_url' => '#',
-    'hero_img'            => 'assets/img/education/servicesimg3.png',
-    'hero_position'       => 'center center',
-    'main_title'          => 'خطاب الدافع أو التحفيز (Motivation Letter)',
-    'main_desc'           => '',
-    'advice_section'      => [
-        'title' => 'نصائح سريعة لكتابة خطاب الدافع',
-        'items' => []
-    ],
-    'download_items'      => []
-];
-?>
 
   <!-- Breadcrumb start-->
+  <?>
+      // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
+      $from = $_GET['from'] ?? 'education';
+      
+      if ($from === 'job') {
+          $parent_url = ($path_prefix ?? '') . 'job';
+          $parent_name = 'التدريب المهني';
+      } else {
+          $parent_url = ($path_prefix ?? '') . 'education';
+          $parent_name = 'التعليم العالي';
+      }
+  ?>
   <div class="custom-container pt-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
@@ -34,7 +22,7 @@ $motivation_data = $data['motivation_page'] ?? [
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb justify-content-start">
         <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>education">التعليم العالي</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
         <li class="breadcrumb-item" aria-current="page">
           <a href="<?php echo htmlspecialchars($motivation_data['page_breadcrumb_url'] ?? '#'); ?>">
             <?php echo htmlspecialchars($motivation_data['page_breadcrumb'] ?? 'خطاب الدافع / التحفيز'); ?>
@@ -44,6 +32,7 @@ $motivation_data = $data['motivation_page'] ?? [
     </nav>
   </div>
   <!-- Breadcrumb end-->
+
 
   <!-- custom-services start -->
   <section class="custom-services py-5" style="position: relative;">

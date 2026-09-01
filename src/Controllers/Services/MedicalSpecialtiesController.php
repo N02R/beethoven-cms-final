@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
+use App\Models\MedicalSpecialtiesModel;
 
 class MedicalSpecialtiesController {
-    
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
@@ -27,11 +27,10 @@ class MedicalSpecialtiesController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة التخصصات الطبية الخاصة
-        $global_settings = SiteModel::getSettings();
-        $medical_specialties_data = isset($global_settings['medical_specialties_page']) ? json_decode($global_settings['medical_specialties_page'], true) : [];
-        
-        $data['medical_specialties_page'] = $medical_specialties_data;
+        // 2. جلب بيانات صفحة التخصصات الطبية عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
+        $medical_spec_data_array = MedicalSpecialtiesModel::getMedicalSpecialtiesData();
+        $data['medical_spec_page'] = $medical_spec_data_array;
+        $data['medical_spec_data'] = $medical_spec_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -43,7 +42,7 @@ class MedicalSpecialtiesController {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js = [];
@@ -59,20 +58,28 @@ class MedicalSpecialtiesController {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالتخصصات الطبية (medical-specialties.php أو ما يطابقه)
-        $view_file = $root_path . '/src/Views/edu-services/medical-specialties.php';
+        // 2. استدعاء ملف الـ View الخاص بصفحة التخصصات الطبية (medical.php)
+        $view_file = $root_path . '/src/Views/edu-services/medical.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
+        if ($is_admin) {
+            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_medical_specialties_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            }
+        }
+
+        // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

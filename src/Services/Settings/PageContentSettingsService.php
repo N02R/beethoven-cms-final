@@ -64,6 +64,43 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
+        // معالجة خاصة لصفحة التخصصات الطبية (Medical Specialties Page)
+        elseif ($dbKey === 'medical_specialties_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_card')) {
+                $downloadItem = $pageData['download_item'] ?? [];
+                $downloadItem['title'] = $_POST['item_title'] ?? ($downloadItem['title'] ?? 'ملف التخصصات الطبية');
+                $downloadItem['type']  = $_POST['item_type'] ?? ($downloadItem['type'] ?? 'pdf');
+                $downloadItem['sub']   = $_POST['item_sub'] ?? ($downloadItem['sub'] ?? '');
+                
+                $filePath = $_POST['old_file'] ?? ($downloadItem['file'] ?? 'assets/files/medical_specialties.pdf');
+                if (isset($_FILES['item_file']) && $_FILES['item_file']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($filePath) && str_starts_with($filePath, 'assets/uploads/')) {
+                        $this->deleteOldImageFile($filePath);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['item_file']['tmp_name']);
+                    $filePath = 'assets/uploads/' . $filename;
+                }
+                $downloadItem['file'] = $filePath;
+                $pageData['download_item'] = $downloadItem;
+            }
+        }
         // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page) لتجنب تداخل الشروط العامة
         elseif ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
@@ -437,6 +474,7 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
+        if (str_starts_with($action, 'update_medical_specialties_')) return 'medical_specialties_page';
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_visa_')) return 'general_visa_page';
         if (str_starts_with($action, 'update_check_')) return 'check_page';

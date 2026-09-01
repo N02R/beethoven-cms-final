@@ -192,8 +192,8 @@
           
           if ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) {
               $slug = ltrim($raw_url, '/');
-              if (!str_starts_with($slug, 'job-services/')) {
-                  $slug = 'job-services/' . $slug;
+              if (!str_starts_with($slug, 'edu-services/')) {
+                  $slug = 'edu-services/' . $slug;
               }
               $final_url = ($path_prefix ?? '') . $slug;
           } else {

@@ -41,7 +41,7 @@
     <div class="custom-container">
       
       <!-- العنوان والوصف الرئيسي -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#medSpecMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف">
               <i class="bi bi-pencil-fill"></i>
@@ -66,7 +66,7 @@
                 <?php 
                   $item = $medical_spec_data['download_item'] ?? [];
                   $file_type = strtolower($item['type'] ?? 'pdf');
-                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
+                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/Groupword.webp' : 'assets/img/Grouppdf.webp';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
                 ?>
                 <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />

@@ -1,4 +1,3 @@
-
   <!-- Breadcrumb start-->
   <?php 
       // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
@@ -77,6 +76,7 @@
           <li>
             <p>
               <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="تنبيه" class="ms-2" />
+              <?php 
                 $note_text = $job_agreements_data['note_text'] ?? '';
                 $safe_note = htmlspecialchars($note_text);
                 $note_text_formatted = str_replace('بالتواصل معنا', '<a href="' . htmlspecialchars(($path_prefix ?? '/') . 'contact') . '" class="fw-bold" style="color: #66aeee; text-decoration: none;">بالتواصل معنا</a>', $safe_note);
@@ -97,23 +97,46 @@
 
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12">
-            <div class="download-card">
-              <div class="download-row">
-                <?php 
-                  $item = $job_agreements_data['download_item'] ?? [];
+            <?php 
+              $download_items = $job_agreements_data['download_items'] ?? [];
+              
+              // التوافقية العكسية مع النظام المفرد القديم
+              if (empty($download_items) && !empty($job_agreements_data['download_item'])) {
+                  $download_items = [$job_agreements_data['download_item']];
+              }
+              
+              // القيمة الافتراضية
+              if (empty($download_items)) {
+                  $download_items = [[
+                      'type' => 'pdf',
+                      'title' => 'عرض واتفاقيات العمل',
+                      'sub' => 'Example',
+                      'file' => 'assets/files/job_search_agreement.pdf'
+                  ]];
+              }
+              
+              $total_items = count($download_items);
+              foreach ($download_items as $index => $item):
                   $file_type = strtolower($item['type'] ?? 'pdf');
                   $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
-                ?>
-                <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="<?php echo htmlspecialchars($alt_text); ?>" />
-                <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقيات العمل'); ?></div>
-                  <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example'); ?></div>
+                  $is_last = ($index === $total_items - 1);
+                  
+                  $raw_file = $item['file'] ?? '';
+                  $file_url = !empty($raw_file) ? htmlspecialchars(($path_prefix ?? '/') . ltrim($raw_file, '/')) : '#';
+            ?>
+              <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
+                <div class="download-row">
+                  <img src="<?php echo htmlspecialchars(get_image_url($icon_img), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8'); ?>" />
+                  <div class="dl-info">
+                    <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقيات العمل', ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example', ENT_QUOTES, 'UTF-8'); ?></div>
+                  </div>
+                  <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
+                  <a class="download-link" href="<?php echo $file_url; ?>" download>Download</a>
                 </div>
-                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
-                <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($item['file'] ?? 'assets/files/job_search_agreement.pdf', '/')); ?>" download>Download</a>
               </div>
-            </div>
+            <?php endforeach; ?>
           </div>
         </div>
       </div>

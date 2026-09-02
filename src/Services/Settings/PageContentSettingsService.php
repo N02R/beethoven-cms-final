@@ -27,8 +27,63 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة اتفاقيات البحث عن عمل (Job Agreements Page)
+        if ($dbKey === 'job_agreements_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_notes')) {
+                $pageData['note_text'] = $_POST['note_text'] ?? '';
+            } elseif (str_contains($action, '_card')) {
+                // دعم العناصر المفردة أو المتعددة للتحميل
+                $downloadItems = $pageData['download_items'] ?? [];
+                if (empty($downloadItems) && !empty($pageData['download_item'])) {
+                    $downloadItems = [$pageData['download_item']];
+                }
+                if (empty($downloadItems)) {
+                    $downloadItems = [[
+                        'type' => 'pdf',
+                        'title' => 'عرض واتفاقيات العمل',
+                        'sub' => 'Example',
+                        'file' => 'assets/files/job_search_agreement.pdf'
+                    ]];
+                }
+                
+                $downloadItem = &$downloadItems[0];
+                $downloadItem['title'] = $_POST['item_title'] ?? ($downloadItem['title'] ?? 'عرض واتفاقيات العمل');
+                $downloadItem['type']  = $_POST['item_type'] ?? ($downloadItem['type'] ?? 'pdf');
+                $downloadItem['sub']   = $_POST['item_sub'] ?? ($downloadItem['sub'] ?? '');
+                
+                $filePath = $_POST['old_file'] ?? ($downloadItem['file'] ?? 'assets/files/job_search_agreement.pdf');
+                if (isset($_FILES['item_file']) && $_FILES['item_file']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($filePath) && str_starts_with($filePath, 'assets/uploads/')) {
+                        $this->deleteOldImageFile($filePath);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['item_file']['tmp_name']);
+                    $filePath = 'assets/uploads/' . $filename;
+                }
+                $downloadItem['file'] = $filePath;
+                
+                $pageData['download_items'] = $downloadItems;
+                $pageData['download_item'] = $downloadItem; // للتوافقية التامة
+            }
+        }
         // معالجة خاصة لصفحة باقة التدريب الطبي (Medical Packages Page)
-        if ($dbKey === 'medical_packages_page') {
+        elseif ($dbKey === 'medical_packages_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
@@ -549,6 +604,7 @@ class PageContentSettingsService
 
     private function resolveDbKey(string $action): ?string
     {
+        if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
         if (str_starts_with($action, 'update_medical_specialties_')) return 'medical_specialties_page';

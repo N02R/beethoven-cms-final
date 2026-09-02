@@ -67,7 +67,7 @@ class SettingsController
                 exit;
             }
 
-            // 0.ب. فحص الصفحات الفردية (تشمل Medical Packages, Price List, Medical Specialties, Vocational, Arrival, Visa, Check, Cover Letter, CV, Motivation, German Lang, English Lang, Offers, Health, Financial, Living Cost, Foundation, Courses)
+            // 0.ب. فحص الصفحات الفردية (تشمل Job Agreements, Medical Packages, Price List, Medical Specialties, Vocational, Arrival, Visa, Check, Cover Letter, CV, Motivation, German Lang, English Lang, Offers, Health, Financial, Living Cost, Foundation, Courses)
             $pageService = new PageContentSettingsService($root_path, $imageUploader);
             if ($pageService->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();

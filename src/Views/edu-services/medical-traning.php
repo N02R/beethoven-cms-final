@@ -54,7 +54,7 @@
     <div class="custom-container">
       
       <!-- العنوان والوصف الرئيسي -->
-      <div class="head-info pb-4 mb-4 border-bottom" style="position: relative;">
+      <div class="head-info pb-4 mb-4" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
           <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف">
               <i class="bi bi-pencil-fill"></i>
@@ -75,7 +75,7 @@
         <ul class="star-list">
           <li>
             <p>
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="تنبيه" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="تنبيه" class="ms-2" width="25" />
               <?php 
                 $note_text = $job_agreements_data['note_text'] ?? '';
                 $safe_note = htmlspecialchars($note_text);
@@ -118,7 +118,7 @@
               $total_items = count($download_items);
               foreach ($download_items as $index => $item):
                   $file_type = strtolower($item['type'] ?? 'pdf');
-                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/education/Groupword.png' : 'assets/img/education/Grouppdf.png';
+                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/Groupword.webp' : 'assets/img/Grouppdf.webp';
                   $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
                   $is_last = ($index === $total_items - 1);
                   
@@ -132,7 +132,7 @@
                     <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقيات العمل', ENT_QUOTES, 'UTF-8'); ?></div>
                     <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example', ENT_QUOTES, 'UTF-8'); ?></div>
                   </div>
-                  <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.........................................................................................................................</span>
+                  <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">......................................................................................................................................................................................</span>
                   <a class="download-link" href="<?php echo $file_url; ?>" download>Download</a>
                 </div>
               </div>

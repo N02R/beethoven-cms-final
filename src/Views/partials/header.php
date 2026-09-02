@@ -49,7 +49,7 @@ $is_visible = ($is_published && $is_in_time);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- ملفات التنسيق المحلية -->
+  <!-- ملفات التنسيق المحلية العامة -->
   <link rel="stylesheet" href="/assets/css/bootstrap.min.css"> 
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/style.css">
@@ -66,6 +66,7 @@ $is_visible = ($is_published && $is_in_time);
     .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
   </style>
 
+  <!-- ملفات الـ CSS الخاصة بالصفحات الفردية (توضع هنا أخيراً لتأخذ الأسبقية العليا) -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {
       foreach ($page_css as $css_file) {

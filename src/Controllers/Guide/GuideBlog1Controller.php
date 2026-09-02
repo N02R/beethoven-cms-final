@@ -42,7 +42,7 @@ class GuideBlog1Controller {
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/guide.css'];
+        $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
 
         extract($data);
 

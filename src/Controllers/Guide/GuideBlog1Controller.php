@@ -23,13 +23,8 @@ class GuideBlog1Controller {
 
         $data = SiteModel::getGlobalData();
 
-        // جلب بيانات المقال الأول من الإعدادات العامة أو قاعدة البيانات
-        $blogData = [
-            'blog_title'   => $data['guide_blog1_title'] ?? 'عنوان المقال الأول',
-            'blog_desc'    => $data['guide_blog1_desc'] ?? '',
-            'blog_content' => $data['guide_blog1_content'] ?? '',
-            'blog_img'     => $data['guide_blog1_img'] ?? '',
-        ];
+        // جلب بيانات المقال الأول مباشرة عبر المودل المخصص من قاعدة البيانات
+        $blogData = GuideBlog1Model::getData();
 
         $data = array_merge($data, $blogData);
 

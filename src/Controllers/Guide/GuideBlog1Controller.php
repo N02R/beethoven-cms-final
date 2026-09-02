@@ -43,7 +43,8 @@ class GuideBlog1Controller {
 
         // 3. تعريف المتغيرات ومصفوفات الستايل (تمت إزالة style.css لكي لا يلغي ستايل الخدمات)
         $data['path_prefix'] = '/';
-        $data['page_css'] = ['/assets/css/edu-services.css'];
+        $data['page_css'] = ['/assets/css/education.css'];
+
         $data['page_js'] = [];
 
         // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View

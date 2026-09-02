@@ -117,22 +117,29 @@
               
               $total_items = count($download_items);
               foreach ($download_items as $index => $item):
-                  $file_type = strtolower($item['type'] ?? 'pdf');
-                  $icon_img = ($file_type === 'word' || $file_type === 'docx') ? 'assets/img/Groupword.webp' : 'assets/img/Grouppdf.webp';
-                  $alt_text = ($file_type === 'word' || $file_type === 'docx') ? 'ملف Word' : 'ملف PDF';
+                  $is_pdf = (strtolower($item['type'] ?? 'pdf') === 'pdf');
+                  $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+                  $alt_text = $is_pdf ? 'ملف PDF' : 'ملف Word';
                   $is_last = ($index === $total_items - 1);
                   
-                  $raw_file = $item['file'] ?? '';
-                  $file_url = !empty($raw_file) ? htmlspecialchars(($path_prefix ?? '/') . ltrim($raw_file, '/')) : '#';
+                  $raw_file = $item['file'] ?? '#';
+                  $file_url = ($raw_file !== '#') ? htmlspecialchars(($path_prefix ?? '/') . ltrim($raw_file, '/')) : '#';
             ?>
               <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
                 <div class="download-row">
-                  <img src="<?php echo htmlspecialchars(get_image_url($icon_img), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8'); ?>" />
+                  <!-- الأيقونة -->
+                  <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8'); ?>" class="dl-icon" />
+                  
+                  <!-- العنوان والنص الفرعي -->
                   <div class="dl-info">
                     <div class="dl-title"><?php echo htmlspecialchars($item['title'] ?? 'عرض واتفاقيات العمل', ENT_QUOTES, 'UTF-8'); ?></div>
                     <div class="dl-sub"><?php echo htmlspecialchars($item['sub'] ?? 'Example', ENT_QUOTES, 'UTF-8'); ?></div>
                   </div>
+                  
+                  <!-- النقاط الفاصلة المرنة -->
                   <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">......................................................................................................................................................................................</span>
+                  
+                  <!-- زر التحميل -->
                   <a class="download-link" href="<?php echo $file_url; ?>" download>Download</a>
                 </div>
               </div>
@@ -140,7 +147,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
   <!-- custom-services-info end -->

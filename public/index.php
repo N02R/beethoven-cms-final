@@ -99,6 +99,7 @@ use App\Controllers\Services\JobSearchAgreementController;
 use App\Controllers\Services\MedicalSpecialtiesController;
 use App\Controllers\Services\AusbildungPackageController;
 use App\Controllers\Services\HealthController;
+use App\Controllers\Services\JobAgreementsController;
 use App\Controllers\Guide\GuideBlog1Controller;
 use App\Controllers\Guide\GuideBlog2Controller;
 use App\Controllers\Guide\GuideBlog3Controller;
@@ -144,6 +145,7 @@ $router->add('GET', 'edu-services/pakeges', [OffersController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'edu-services/medical-pakeges', [MedicalPackageController::class, 'index']);
 $router->add('GET', 'edu-services/medical-traning', [JobSearchAgreementController::class, 'index']);
+$router->add('GET', 'edu-services/job-agreements', [JobAgreementsController::class, 'index']);
 // تم نقل مسار الاختصاصات الطبية ليصبح تحت edu-services بدلاً من job-services
 $router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);

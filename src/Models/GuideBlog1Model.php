@@ -18,4 +18,11 @@ class GuideBlog1Model {
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View
         return is_array($data) ? $data : [];
     }
+
+    /**
+     * ميثود توافقية لتجنب خطأ Call to undefined method
+     */
+    public static function getGuideData(): array {
+        return self::getGuideBlog1Data();
+    }
 }

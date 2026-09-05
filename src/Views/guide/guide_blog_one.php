@@ -44,8 +44,8 @@
     <div class="custom-container ">
       <?php 
         $hero_img_path = $guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg';
-        $hero_full_path = public_path($hero_img_path);
-        $hero_version = file_exists($hero_full_path) ? filemtime($hero_full_path) : time();
+        $hero_real_path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($hero_img_path, '/');
+        $hero_version = file_exists($hero_real_path) ? filemtime($hero_real_path) : time();
       ?>
       <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($hero_img_path) . '?v=' . $hero_version); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
       </div>
@@ -141,8 +141,8 @@
                     $card_img = !empty($section['icon']) ? $section['icon'] : 'assets/img/education/edu-services' . $default_img_num . '.png';
                     
                     // منع التخزين المؤقت للأيقونات المحدثة
-                    $card_img_full_path = public_path($card_img);
-                    $card_img_version = file_exists($card_img_full_path) ? filemtime($card_img_full_path) : time();
+                    $card_img_real_path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($card_img, '/');
+                    $card_img_version = file_exists($card_img_real_path) ? filemtime($card_img_real_path) : time();
                   ?>
                   <a href="#">
                     <img src="<?php echo htmlspecialchars(get_image_url($card_img) . '?v=' . $card_img_version); ?>" alt="icon" />
@@ -188,8 +188,8 @@
               
               $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
               $timeline_icon_src = $step['icon'] ?? $defaultIcon;
-              $timeline_icon_full_path = public_path($timeline_icon_src);
-              $timeline_icon_version = file_exists($timeline_icon_full_path) ? filemtime($timeline_icon_full_path) : time();
+              $timeline_icon_real_path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($timeline_icon_src, '/');
+              $timeline_icon_version = file_exists($timeline_icon_real_path) ? filemtime($timeline_icon_real_path) : time();
               
               $iconPath = get_image_url($timeline_icon_src, $defaultIcon);
               $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
@@ -221,8 +221,8 @@
             $num = sprintf("%02d", $idx + 1);
             $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
             $m_timeline_icon_src = $step['icon'] ?? $defaultIcon;
-            $m_timeline_icon_full_path = public_path($m_timeline_icon_src);
-            $m_timeline_icon_version = file_exists($m_timeline_icon_full_path) ? filemtime($m_timeline_icon_full_path) : time();
+            $m_timeline_icon_real_path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($m_timeline_icon_src, '/');
+            $m_timeline_icon_version = file_exists($m_timeline_icon_real_path) ? filemtime($m_timeline_icon_real_path) : time();
             
             $iconPath = get_image_url($m_timeline_icon_src, $defaultIcon);
         ?>

@@ -44,7 +44,7 @@ class GuideBlog1Controller {
 
         // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
+        $page_css = ['/assets/css/style.css', '/assets/css/education.css'];
         $page_js = [];
 
         // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View

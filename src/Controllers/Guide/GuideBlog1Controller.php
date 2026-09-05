@@ -58,7 +58,7 @@ class GuideBlog1Controller {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بصفحة الدليل (guide_blog_one.php)
+        // 2. استدعاء ملف الـ View الخاص بصفحة الدليل (guide_blog_one.php) - والذي يتولى تضمين المودلز في مكانه الصحيح بالـ DOM
         $view_file = $root_path . '/src/Views/guide/guide_blog_one.php';
         if (file_exists($view_file)) {
             require_once $view_file;
@@ -66,15 +66,7 @@ class GuideBlog1Controller {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
-        if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/guide/includes/admin_guide_modals.php';
-            if (file_exists($modals_file)) {
-                include_once $modals_file;
-            }
-        }
-
-        // 4. استدعاء الفوتر المشترك
+        // 3. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;

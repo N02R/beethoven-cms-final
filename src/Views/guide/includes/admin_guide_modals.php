@@ -113,16 +113,20 @@
                 <form id="guideNotesForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_notes">
                     
-                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <!-- عنوان القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <label class="form-label fw-semibold small text-secondary">عنوان قسم الملاحظات</label>
+                        <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($guide_data['notes_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                    </div>
+
+                    <!-- النقطة الأولى: الشتاء والصيف -->
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-1-circle"></i> النقطة الأولى (الفصول)</h6>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($guide_data['notes_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">النقطة الأولى (الرئيسية)</label>
+                            <label class="form-label fw-semibold small text-secondary">العنوان أو النقطة الرئيسية</label>
                             <input type="text" class="form-control" name="note_1_bold" value="<?php echo htmlspecialchars($guide_data['note_1_bold'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
-                        <div class="row g-2 mb-3">
+                        <div class="row g-2">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small text-secondary">فصل الشتاء</label>
                                 <input type="text" class="form-control" name="note_winter" value="<?php echo htmlspecialchars($guide_data['note_winter'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
@@ -132,16 +136,26 @@
                                 <input type="text" class="form-control" name="note_summer" value="<?php echo htmlspecialchars($guide_data['note_summer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
-                        <div class="mb-3">
+                    </div>
+
+                    <!-- النقطة الثانية -->
+                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-2-circle"></i> النقطة الثانية</h6>
+                        <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">نص النقطة الثانية</label>
                             <input type="text" class="form-control" name="note_2_text" value="<?php echo htmlspecialchars($guide_data['note_2_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
+                    </div>
+
+                    <!-- النقطة الثالثة والتفريعات (FAQ) -->
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-3-circle"></i> النقطة الثالثة والتفريعات</h6>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان النقطة الثالثة</label>
+                            <label class="form-label fw-semibold small text-secondary">عنوان النقطة الرئيسية الثالثة</label>
                             <input type="text" class="form-control" name="note_3_title" value="<?php echo htmlspecialchars($guide_data['note_3_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">السؤال / التفريع الأول (FAQ 1)</label>
+                            <label class="form-label fw-semibold small text-secondary">التفريع الأول (النص الفرعي)</label>
                             <input type="text" class="form-control" name="faq_1" value="<?php echo htmlspecialchars($guide_data['faq_1'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="row g-2">
@@ -154,7 +168,7 @@
                                 <input type="text" class="form-control" name="faq_2_url" value="<?php echo htmlspecialchars($guide_data['faq_2_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-secondary">نص الرابط</label>
+                                <label class="form-label fw-semibold small text-secondary">نص الرابط الظاهر</label>
                                 <input type="text" class="form-control" name="faq_2_link_text" value="<?php echo htmlspecialchars($guide_data['faq_2_link_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
@@ -168,6 +182,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 5. Why Study Edit Modal -->
 <div class="modal fade custom-modal" id="guideWhyStudyModal" tabindex="-1" aria-hidden="true">

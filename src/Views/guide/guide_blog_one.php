@@ -75,7 +75,7 @@
         <ul class="star-list">
           <li>
             <p class="fw-bold">
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25"/>
               <?php echo htmlspecialchars($guide_data['note_1_bold'] ?? ''); ?>
             </p>
             <p><span class="fw-bold">فصل الشتاء: </span><?php echo htmlspecialchars($guide_data['note_winter'] ?? ''); ?></p>
@@ -83,13 +83,13 @@
           </li>
           <li>
             <p class="fw-bold"> 
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" /> 
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25" /> 
               <?php echo htmlspecialchars($guide_data['note_2_text'] ?? ''); ?>
             </p>
           </li>
           <li>
             <p class="fw-bold"> 
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="نجمة" class="ms-2" />
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25"/>
               <?php echo htmlspecialchars($guide_data['note_3_title'] ?? ''); ?>
             </p>
             <ul>

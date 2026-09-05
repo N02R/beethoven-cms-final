@@ -112,7 +112,7 @@
   </section>
   <!-- custom-services-info end -->
 
-  <!-- why study start -->
+<!-- why study start -->
   <section class="study py-5" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
       <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideWhyStudyModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم لماذا الدراسة">
@@ -121,9 +121,9 @@
     <?php endif; ?>
 
     <div class="custom-container">
-      <div class=" mb-5">
+      <div class="mb-5">
         <h2 class="sec-title"><?php echo htmlspecialchars($guide_data['why_study_title'] ?? 'لماذا الدراسة في ألمانيا؟'); ?></h2>
-        <p class="main-p"><?php echo htmlspecialchars($guide_data['why_study_desc'] ?? 'إنها بيئة مثالية للطلاب الطموحين من جميع أنحاء العالم لبناء مستقبل أكاديمي ومهني قوي'); ?></p>
+        <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($guide_data['why_study_desc'] ?? 'إنها بيئة مثالية للطلاب الطموحين من جميع أنحاء العالم لبناء مستقبل أكاديمي ومهني قوي'); ?></p>
       </div>
       <div class="row g-3">
         <?php if (!empty($guide_data['content_sections']) && is_array($guide_data['content_sections'])): ?>
@@ -135,7 +135,9 @@
                     $default_img_num = ($index % 12) + 1;
                     $card_img = !empty($section['icon']) ? $section['icon'] : 'assets/img/education/edu-services' . $default_img_num . '.png';
                   ?>
-                  <a href="#"><img src="<?php echo htmlspecialchars(get_image_url($card_img)); ?>" alt="" /></a>
+                  <a href="#">
+                    <img src="<?php echo htmlspecialchars(get_image_url($card_img)); ?>" alt="icon" />
+                  </a>
                   <h5 class="card-title"><?php echo htmlspecialchars($section['heading'] ?? ''); ?></h5>
                   <p class="card-text"><?php echo htmlspecialchars($section['body'] ?? ''); ?></p>
                 </div>
@@ -147,6 +149,7 @@
     </div>
   </section>
   <!-- why study end -->
+
 
   <!-- time line start -->
   <section class="timeline-section py-5" style="position: relative;">

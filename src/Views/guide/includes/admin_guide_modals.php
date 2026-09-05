@@ -101,7 +101,7 @@
     </div>
 </div>
 
-<!-- 4. Important Notes Edit Modal -->
+<!-- 4. Important Notes Edit Modal (معدل ليمنح المدير تحكماً كاملاً بالنصوص) -->
 <div class="modal fade custom-modal" id="guideNotesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -119,20 +119,30 @@
                         <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($guide_data['notes_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                     </div>
 
-                    <!-- النقطة الأولى: الشتاء والصيف -->
+                    <!-- النقطة الأولى: الفصول مع إمكانية تعديل البادئة والنص -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-1-circle"></i> النقطة الأولى (الفصول)</h6>
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان أو النقطة الرئيسية</label>
                             <input type="text" class="form-control" name="note_1_bold" value="<?php echo htmlspecialchars($guide_data['note_1_bold'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-secondary">فصل الشتاء</label>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الأول (مثلاً: فصل الشتاء)</label>
+                                <input type="text" class="form-control" name="note_winter_label" value="<?php echo htmlspecialchars($guide_data['note_winter_label'] ?? 'فصل الشتاء', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold small text-secondary">قيمة الفصل الأول</label>
                                 <input type="text" class="form-control" name="note_winter" value="<?php echo htmlspecialchars($guide_data['note_winter'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-secondary">فصل الصيف</label>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الثاني (مثلاً: فصل الصيف)</label>
+                                <input type="text" class="form-control" name="note_summer_label" value="<?php echo htmlspecialchars($guide_data['note_summer_label'] ?? 'فصل الصيف', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold small text-secondary">قيمة الفصل الثاني</label>
                                 <input type="text" class="form-control" name="note_summer" value="<?php echo htmlspecialchars($guide_data['note_summer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
@@ -182,8 +192,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- 5. Why Study Edit Modal -->
 <div class="modal fade custom-modal" id="guideWhyStudyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">

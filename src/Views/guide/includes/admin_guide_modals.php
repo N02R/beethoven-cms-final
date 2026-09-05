@@ -275,58 +275,87 @@
 
 <!-- 6. Timeline Edit Modal -->
 <div class="modal fade custom-modal" id="guideTimelineModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-clock-history text-primary"></i> تعديل خطوات الرحلة (Timeline)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
-                <form id="guideTimelineForm" method="POST">
+                <form id="guideTimelineForm" class="admin-settings-form" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide_timeline">
                     
+                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($guide_data['timeline_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label for="guide_timeline_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="guide_timeline_title_input" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($guide_data['timeline_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="timeline_desc" rows="2" style="height: auto;" required><?php echo htmlspecialchars($guide_data['timeline_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="guide_timeline_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="guide_timeline_desc_input" class="form-control" name="timeline_desc" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_data['timeline_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0 text-dark">الخطوات الزمنية</h6>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addTimelineRow()">
-                            <i class="bi bi-plus-lg"></i> إضافة خطوة جديدة
-                        </button>
-                    </div>
-
+                    <!-- قائمة خطوات الرحلة -->
                     <div id="guideTimelineContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): ?>
                             <?php foreach ($guide_data['timeline_steps'] as $i => $step): ?>
-                                <div class="p-3 shadow-sm d-flex flex-column gap-2" id="timeline_row_<?php echo $i; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="text" class="form-control fw-bold" name="timeline_steps[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخطوة الرئيسي">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('timeline_row_<?php echo $i; ?>')" title="حذف العنصر">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    <div class="row g-2">
+                                <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="timeline_row_<?php echo $i; ?>">
+                                    
+                                    <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
+                                    <div class="row g-2 mb-3">
                                         <div class="col-md-6">
-                                            <input type="text" class="form-control" name="timeline_steps[<?php echo $i; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
+                                            <label for="timeline_title_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                            <input type="text" id="timeline_title_<?php echo $i; ?>" class="form-control edu-step-title" name="timeline_steps[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                         </div>
                                         <div class="col-md-6">
-                                            <input type="text" class="form-control" name="timeline_steps[<?php echo $i; ?>][dot_class]" value="<?php echo htmlspecialchars($step['dot_class'] ?? 'bg-blue', ENT_QUOTES, 'UTF-8'); ?>" placeholder="لون النقطة">
+                                            <label for="timeline_subtitle_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                                            <input type="text" id="timeline_subtitle_<?php echo $i; ?>" class="form-control edu-step-subtitle" name="timeline_steps[<?php echo $i; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                         </div>
                                     </div>
-                                    <input type="text" class="form-control" name="timeline_steps[<?php echo $i; ?>][icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مسار الأيقونة (اختياري)">
-                                    <textarea class="form-control" name="timeline_steps[<?php echo $i; ?>][desc]" rows="2" placeholder="تفاصيل الخطوة..." style="height: auto;"><?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+
+                                    <!-- السطر الثاني: التفاصيل ولون النقطة -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-8">
+                                            <label for="timeline_desc_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                                            <input type="text" id="timeline_desc_<?php echo $i; ?>" class="form-control edu-step-desc" name="timeline_steps[<?php echo $i; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="timeline_dot_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">لون النقطة</label>
+                                            <input type="text" id="timeline_dot_<?php echo $i; ?>" class="form-control" name="timeline_steps[<?php echo $i; ?>][dot_class]" value="<?php echo htmlspecialchars($step['dot_class'] ?? 'bg-blue', ENT_QUOTES, 'UTF-8'); ?>" placeholder="bg-blue, bg-green...">
+                                        </div>
+                                    </div>
+
+                                    <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-11">
+                                            <label for="timeline_file_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <?php if (!empty($step['icon'])): ?>
+                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                        <img src="<?php echo htmlspecialchars(get_image_url($step['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                    </div>
+                                                <?php endif; ?>
+                                                <input type="file" id="timeline_file_<?php echo $i; ?>" class="form-control edu-step-file" name="timeline_steps_icon_<?php echo $i; ?>" accept="image/*">
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" class="edu-step-old-icon" name="timeline_steps[<?php echo $i; ?>][icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                        <div class="col-1 text-center pb-1">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('timeline_row_<?php echo $i; ?>')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addTimelineRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة خطوة جديدة
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -336,6 +365,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic JS Engine -->
 <script>
@@ -396,20 +426,39 @@
         const container = document.getElementById('guideWhyStudyContainer');
         if (!container) return;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex flex-column gap-2';
+        div.className = 'p-3 shadow-sm edu-why-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         const rowId = 'whystudy_row_' + whyStudyCounter;
         div.id = rowId;
         
         div.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <input type="text" class="form-control fw-bold" name="content_sections[${whyStudyCounter}][heading]" placeholder="عنوان الكارت">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
-                    <i class="bi bi-trash"></i>
-                </button>
+            <!-- السطر الأول: العنوان والوصف -->
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label for="content_heading_${whyStudyCounter}" class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <input type="text" id="content_heading_${whyStudyCounter}" class="form-control edu-why-title" name="content_sections[${whyStudyCounter}][heading]" placeholder="عنوان الكارت">
+                </div>
+                <div class="col-md-6">
+                    <label for="content_body_${whyStudyCounter}" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                    <input type="text" id="content_body_${whyStudyCounter}" class="form-control edu-why-desc" name="content_sections[${whyStudyCounter}][body]" placeholder="وصف الكارت...">
+                </div>
             </div>
-            <input type="text" class="form-control" name="content_sections[${whyStudyCounter}][icon]" placeholder="مسار الأيقونة (اختياري)">
-            <textarea class="form-control" name="content_sections[${whyStudyCounter}][body]" rows="2" placeholder="وصف الكارت..." style="height: auto;"></textarea>
+
+            <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="content_file_${whyStudyCounter}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="content_file_${whyStudyCounter}" class="form-control edu-why-file" name="content_sections_img_${whyStudyCounter}" accept="image/*">
+                    </div>
+                </div>
+
+                <input type="hidden" class="edu-why-old-img" name="content_sections[${whyStudyCounter}][icon]" value="">
+
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف الكارت"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
         `;
         container.appendChild(div);
         whyStudyCounter++;
@@ -420,28 +469,51 @@
         const container = document.getElementById('guideTimelineContainer');
         if (!container) return;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm d-flex flex-column gap-2';
+        div.className = 'p-3 shadow-sm edu-timeline-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         const rowId = 'timeline_row_' + timelineCounter;
         div.id = rowId;
         
         div.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <input type="text" class="form-control fw-bold" name="timeline_steps[${timelineCounter}][title]" placeholder="عنوان الخطوة الرئيسي">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف العنصر">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-            <div class="row g-2">
+            <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
+            <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="timeline_steps[${timelineCounter}][subtitle]" placeholder="العنوان الفرعي">
+                    <label for="timeline_title_${timelineCounter}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                    <input type="text" id="timeline_title_${timelineCounter}" class="form-control edu-step-title" name="timeline_steps[${timelineCounter}][title]" placeholder="اسم الخطوة">
                 </div>
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="timeline_steps[${timelineCounter}][dot_class]" value="bg-blue" placeholder="لون النقطة">
+                    <label for="timeline_subtitle_${timelineCounter}" class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                    <input type="text" id="timeline_subtitle_${timelineCounter}" class="form-control edu-step-subtitle" name="timeline_steps[${timelineCounter}][subtitle]" placeholder="العنوان الفرعي">
                 </div>
             </div>
-            <input type="text" class="form-control" name="timeline_steps[${timelineCounter}][icon]" placeholder="مسار الأيقونة (اختياري)">
-            <textarea class="form-control" name="timeline_steps[${timelineCounter}][desc]" rows="2" placeholder="تفاصيل الخطوة..." style="height: auto;"></textarea>
+
+            <!-- السطر الثاني: التفاصيل ولون النقطة -->
+            <div class="row g-2 mb-3">
+                <div class="col-md-8">
+                    <label for="timeline_desc_${timelineCounter}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                    <input type="text" id="timeline_desc_${timelineCounter}" class="form-control edu-step-desc" name="timeline_steps[${timelineCounter}][desc]" placeholder="التفاصيل">
+                </div>
+                <div class="col-md-4">
+                    <label for="timeline_dot_${timelineCounter}" class="form-label fw-semibold small text-secondary">لون النقطة</label>
+                    <input type="text" id="timeline_dot_${timelineCounter}" class="form-control" name="timeline_steps[${timelineCounter}][dot_class]" value="bg-blue" placeholder="bg-blue, bg-green...">
+                </div>
+            </div>
+
+            <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="timeline_file_${timelineCounter}" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="timeline_file_${timelineCounter}" class="form-control edu-step-file" name="timeline_steps_icon_${timelineCounter}" accept="image/*">
+                    </div>
+                </div>
+
+                <input type="hidden" class="edu-step-old-icon" name="timeline_steps[${timelineCounter}][icon]" value="">
+
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
         `;
         container.appendChild(div);
         timelineCounter++;
@@ -490,3 +562,4 @@
         });
     });
 </script>
+

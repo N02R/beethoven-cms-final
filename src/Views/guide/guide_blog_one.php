@@ -162,51 +162,72 @@
     <div class="custom-container">
       <div class="mb-5">
         <h2 class="sec-title"><?php echo htmlspecialchars($guide_data['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS'); ?></h2>
-        <p class="main-p"><?php echo htmlspecialchars($guide_data['timeline_desc'] ?? 'نرشدك من أول استشارة حتى استقرارك في ألمانيا — إليك كيف تتم العملية معنا.'); ?></p>
+        <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($guide_data['timeline_desc'] ?? 'نرشدك من أول استشارة حتى استقرارك في ألمانيا — إليك كيف تتم العملية معنا.'); ?></p>
       </div>
+      
       <div class="map-container d-none d-lg-block">
         <div class="map-box">
           <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png')); ?>" alt="base" class="line-base">
           <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png')); ?>" alt="active" class="line-active">
           
-          <?php if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): ?>
-            <?php foreach ($guide_data['timeline_steps'] as $i => $step): ?>
-              <?php $step_num = $i + 1; ?>
-              <div class="step-wrapper step-<?php echo $step_num; ?>">
-                <div class="step-img-num"><img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Group' . $step_num . '.png')); ?>" alt="0<?php echo $step_num; ?>"></div>
-                <div class="icon-main"><img src="<?php echo htmlspecialchars(get_image_url($step['icon'] ?? 'assets/img/vector/Grouptime' . $step_num . '.png')); ?>" alt=""></div>
-                <div class="info-content">
-                  <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
-                  <span class="dot <?php echo htmlspecialchars($step['dot_class'] ?? 'bg-blue'); ?>"></span>
-                  <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
-                  <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
-                </div>
+          <?php 
+          $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
+          if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): 
+            foreach ($guide_data['timeline_steps'] as $idx => $step): 
+              $num = sprintf("%02d", $idx + 1);
+              $dotClass = !empty($step['dot_class']) ? $step['dot_class'] : $dots[$idx % count($dots)];
+              
+              $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+              $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+              $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
+              
+              $stepNumberClass = 'step-' . ($idx + 1);
+          ?>
+            <div class="step-wrapper <?php echo $stepNumberClass; ?>">
+              <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+              <div class="icon-main">
+                <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
               </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+              <div class="info-content">
+                <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
+                <span class="dot <?php echo htmlspecialchars($dotClass); ?>"></span>
+                <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
+                <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
+              </div>
+            </div>
+          <?php 
+            endforeach; 
+          endif; 
+          ?>
         </div>
       </div>
       
       <div class="mobile-timeline d-lg-none">
-        <?php if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): ?>
-          <?php foreach ($guide_data['timeline_steps'] as $i => $step): ?>
-            <?php 
-              $step_num = $i + 1;
-              $formatted_num = str_pad($step_num, 2, '0', STR_PAD_LEFT);
-            ?>
-            <div class="m-step">
-                <div class="m-number-box"><span class="m-num"><?php echo $formatted_num; ?></span></div>
-                <div class="m-content">
-                    <div class="m-header">
-                        <div class="m-icon"><img src="<?php echo htmlspecialchars(get_image_url($step['icon'] ?? 'assets/img/vector/Grouptime' . $step_num . '.png')); ?>" alt=""></div>
-                        <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
-                    </div>
-                    <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
-                    <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
-                </div>
-            </div>
-          <?php endforeach; ?>
-        <?php endif; ?>
+        <?php if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): 
+          foreach ($guide_data['timeline_steps'] as $idx => $step): 
+            $num = sprintf("%02d", $idx + 1);
+            $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
+            $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+        ?>
+          <div class="m-step">
+              <div class="m-number-box">
+                <span class="m-num"><?php echo $num; ?></span>
+              </div>
+              <div class="m-content">
+                  <div class="m-header">
+                      <div class="m-icon">
+                        <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
+                      </div>
+                      <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
+                  </div>
+                  <h4><?php echo htmlspecialchars($step['subtitle'] ?? ''); ?></h4>
+                  <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
+              </div>
+          </div>
+        <?php 
+          endforeach; 
+        endif; 
+        ?>
       </div>
     </div>
   </section>

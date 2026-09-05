@@ -27,8 +27,87 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة دليل الطالب (Guide Blog One Page)
+        if ($dbKey === 'guide_blog_one_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_notes')) {
+                $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة جداً';
+                $pageData['note_1_bold'] = $_POST['note_1_bold'] ?? '';
+                $pageData['note_winter'] = $_POST['note_winter'] ?? '';
+                $pageData['note_summer'] = $_POST['note_summer'] ?? '';
+                $pageData['note_2_text'] = $_POST['note_2_text'] ?? '';
+                $pageData['note_3_title'] = $_POST['note_3_title'] ?? '';
+                $pageData['faq_1'] = $_POST['faq_1'] ?? '';
+                $pageData['faq_2_prefix'] = $_POST['faq_2_prefix'] ?? '';
+                $pageData['faq_2_url'] = $_POST['faq_2_url'] ?? 'contact';
+                $pageData['faq_2_link_text'] = $_POST['faq_2_link_text'] ?? '';
+                $pageData['faq_2_suffix'] = $_POST['faq_2_suffix'] ?? '';
+            } elseif (str_contains($action, '_whystudy') || str_contains($action, '_sections')) {
+                $pageData['why_study_title'] = $_POST['why_study_title'] ?? '';
+                $pageData['why_study_desc'] = $_POST['why_study_desc'] ?? '';
+                
+                $headings = $_POST['section_headings'] ?? [];
+                $bodies = $_POST['section_bodies'] ?? [];
+                $icons = $_POST['section_icons'] ?? [];
+                
+                $contentSections = [];
+                for ($i = 0; $i < count($headings); $i++) {
+                    $headingVal = trim($headings[$i] ?? '');
+                    if ($headingVal === '') continue;
+                    $contentSections[] = [
+                        'heading' => $headingVal,
+                        'body'    => trim($bodies[$i] ?? ''),
+                        'icon'    => trim($icons[$i] ?? '')
+                    ];
+                }
+                if (!empty($contentSections)) {
+                    $pageData['content_sections'] = $contentSections;
+                }
+            } elseif (str_contains($action, '_timeline')) {
+                $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
+                
+                $titles = $_POST['step_titles'] ?? [];
+                $subtitles = $_POST['step_subtitles'] ?? [];
+                $descs = $_POST['step_descs'] ?? [];
+                $dots = $_POST['step_dots'] ?? [];
+                $icons = $_POST['step_icons'] ?? [];
+
+                $timelineSteps = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    if ($titleVal === '') continue;
+                    $timelineSteps[] = [
+                        'title'     => $titleVal,
+                        'subtitle'  => trim($subtitles[$i] ?? ''),
+                        'desc'      => trim($descs[$i] ?? ''),
+                        'dot_class' => trim($dots[$i] ?? 'bg-blue'),
+                        'icon'      => trim($icons[$i] ?? '')
+                    ];
+                }
+                if (!empty($timelineSteps)) {
+                    $pageData['timeline_steps'] = $timelineSteps;
+                }
+            }
+        }
         // معالجة خاصة لصفحة اتفاقيات البحث عن عمل (Job Agreements Page)
-        if ($dbKey === 'job_agreements_page') {
+        elseif ($dbKey === 'job_agreements_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
@@ -604,6 +683,7 @@ class PageContentSettingsService
 
     private function resolveDbKey(string $action): ?string
     {
+        if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_')) return 'guide_blog_one_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';

@@ -6,25 +6,18 @@ namespace App\Models;
 use PDO;
 
 class GuideBlog1Model {
-
     /**
-     * جلب اتصال قاعدة البيانات بالطريقة المعتمدة في SiteModel
-     */
-    private static function getConnection(): PDO {
-        // استخدام الطريقة المعيارية للاتصال المتاحة في SiteModel في مشروعك
-        return SiteModel::getDb();
-    }
-
-    /**
-     * جلب بيانات صفحة المقال من جدول guide_blog1_content المستقل
+     * جلب وتجهيز بيانات صفحة المقال (دليل الدراسة) من جدولها المستقل
      */
     public static function getData(): array {
         try {
-            $db = self::getConnection();
+            // استخدام الاتصال المعتمد في كلاس SiteModel
+            $db = SiteModel::getDb();
             $stmt = $db->prepare("SELECT * FROM guide_blog1_content WHERE id = 1 LIMIT 1");
             $stmt->execute();
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // إرجاع البيانات الافتراضية في حال لم يتم العثور على سجل في الجدول بعد
             if (!$data) {
                 return [
                     'hero_img'        => 'assets/img/home/image(0).jpg',
@@ -56,7 +49,7 @@ class GuideBlog1Model {
      */
     public static function updateData(array $postData, ?array $filesData = null): bool {
         try {
-            $db = self::getConnection();
+            $db = SiteModel::getDb();
             $currentData = self::getData();
 
             $hero_img = $currentData['hero_img'] ?? 'assets/img/home/image(0).jpg';

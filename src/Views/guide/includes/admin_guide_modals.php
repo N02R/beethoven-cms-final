@@ -48,18 +48,13 @@
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($guide_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                                <img src="<?php echo htmlspecialchars(get_image_url($guide_data['hero_img']), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                                <img src="<?php echo $path_prefix . htmlspecialchars($guide_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
                             </div>
                         <?php endif; ?>
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">مسار/رابط صورة الهيرو (أو ارفع صورة جديدة)</label>
-                            <input type="text" class="form-control mb-2" name="hero_img" value="<?php echo htmlspecialchars($guide_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                            <input type="file" class="form-control" name="hero_img_file" accept="image/*">
-                        </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">محاذاة الخلفية (Hero Position)</label>
-                            <input type="text" class="form-control" name="hero_position" value="<?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center', ENT_QUOTES, 'UTF-8'); ?>" placeholder="center center">
+                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" class="form-control" name="hero_img" accept="image/*">
                         </div>
                     </div>
                 </form>
@@ -71,6 +66,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- 3. Main Title & Description Edit Modal -->
 <div class="modal fade custom-modal" id="guideMainModal" tabindex="-1" aria-hidden="true">

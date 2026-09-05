@@ -194,50 +194,75 @@
 </div>
 <!-- 5. Why Study Edit Modal -->
 <div class="modal fade custom-modal" id="guideWhyStudyModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-grid text-primary"></i> تعديل قسم لماذا الدراسة</h5>
+                <h5 class="modal-title"><i class="bi bi-patch-question text-primary"></i> تعديل قسم لماذا الدراسة</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
-                <form id="guideWhyStudyForm" method="POST">
+                <form id="guideWhyStudyForm" class="admin-settings-form" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide_whystudy">
                     
+                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="why_study_title" value="<?php echo htmlspecialchars($guide_data['why_study_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label for="guide_why_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="guide_why_title_input" class="form-control" name="why_study_title" value="<?php echo htmlspecialchars($guide_data['why_study_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="why_study_desc" rows="2" style="height: auto;" required><?php echo htmlspecialchars($guide_data['why_study_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="guide_why_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="guide_why_desc_input" class="form-control" name="why_study_desc" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_data['why_study_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0 text-dark">الكروت والبطاقات</h6>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addWhyStudyRow()">
-                            <i class="bi bi-plus-lg"></i> إضافة كارت جديد
-                        </button>
-                    </div>
-
+                    <!-- قائمة الكروت -->
                     <div id="guideWhyStudyContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($guide_data['content_sections']) && is_array($guide_data['content_sections'])): ?>
                             <?php foreach ($guide_data['content_sections'] as $i => $section): ?>
-                                <div class="p-3 shadow-sm d-flex flex-column gap-2" id="whystudy_row_<?php echo $i; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <input type="text" class="form-control fw-bold" name="content_sections[<?php echo $i; ?>][heading]" value="<?php echo htmlspecialchars($section['heading'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الكارت">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('whystudy_row_<?php echo $i; ?>')" title="حذف العنصر">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="whystudy_row_<?php echo $i; ?>">
+                                    
+                                    <!-- السطر الأول: العنوان والوصف -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-6">
+                                            <label for="content_heading_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
+                                            <input type="text" id="content_heading_<?php echo $i; ?>" class="form-control edu-why-title" name="content_sections[<?php echo $i; ?>][heading]" value="<?php echo htmlspecialchars($section['heading'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الكارت">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="content_body_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                                            <input type="text" id="content_body_<?php echo $i; ?>" class="form-control edu-why-desc" name="content_sections[<?php echo $i; ?>][body]" value="<?php echo htmlspecialchars($section['body'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الكارت...">
+                                        </div>
                                     </div>
-                                    <input type="text" class="form-control" name="content_sections[<?php echo $i; ?>][icon]" value="<?php echo htmlspecialchars($section['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مسار الأيقونة (اختياري)">
-                                    <textarea class="form-control" name="content_sections[<?php echo $i; ?>][body]" rows="2" placeholder="وصف الكارت..." style="height: auto;"><?php echo htmlspecialchars($section['body'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+
+                                    <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-11">
+                                            <label for="content_file_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <?php if (!empty($section['icon'])): ?>
+                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                        <img src="<?php echo htmlspecialchars(get_image_url($section['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                    </div>
+                                                <?php endif; ?>
+                                                <input type="file" id="content_file_<?php echo $i; ?>" class="form-control edu-why-file" name="content_sections_img_<?php echo $i; ?>" accept="image/*">
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" class="edu-why-old-img" name="content_sections[<?php echo $i; ?>][icon]" value="<?php echo htmlspecialchars($section['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                        <div class="col-1 text-center pb-1">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('whystudy_row_<?php echo $i; ?>')" title="حذف الكارت"><i class="bi bi-trash"></i></button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addWhyStudyRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة كارت جديد
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">

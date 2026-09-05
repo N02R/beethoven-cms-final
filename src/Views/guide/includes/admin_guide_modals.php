@@ -10,6 +10,7 @@
                 <form id="guideBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_breadcrumb">
                     
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
@@ -43,6 +44,7 @@
                     <input type="hidden" name="action" value="update_guide_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($guide_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($guide_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
@@ -82,6 +84,7 @@
                 <form id="guideMainForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_main">
                     
+                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>

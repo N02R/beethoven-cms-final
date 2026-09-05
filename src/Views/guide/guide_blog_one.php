@@ -113,7 +113,13 @@
   <!-- custom-services-info end -->
 
   <!-- why study start -->
-  <section class="study py-5">
+  <section class="study py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideWhyStudyModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل قسم لماذا الدراسة">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <div class=" mb-5">
         <h2 class="sec-title"><?php echo htmlspecialchars($guide_data['why_study_title'] ?? 'لماذا الدراسة في ألمانيا؟'); ?></h2>
@@ -143,7 +149,13 @@
   <!-- why study end -->
 
   <!-- time line start -->
-  <section class="timeline-section py-5">
+  <section class="timeline-section py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideTimelineModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخطوات الزمنية">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <div class="mb-5">
         <h2 class="sec-title"><?php echo htmlspecialchars($guide_data['timeline_title'] ?? 'رحلتك إلى ألمانيا خطوة بخطوة مع BCS'); ?></h2>

@@ -8,11 +8,11 @@ use PDO;
 class GuideBlog1Model {
 
     /**
-     * جلب اتصال قاعدة البيانات بالطريقة المعتمدة الآمنة للمشروع
+     * جلب اتصال قاعدة البيانات بالطريقة المعتمدة في SiteModel
      */
     private static function getConnection(): PDO {
-        // الاعتماد على SiteModel للحصول على اتصال PDO النشط في المشروع لتجنب خطأ عدم وجود الكلاس
-        return SiteModel::getPdoConnection() ?? \App\Core\Database::getInstance();
+        // استخدام الطريقة المعيارية للاتصال المتاحة في SiteModel في مشروعك
+        return SiteModel::getDb();
     }
 
     /**

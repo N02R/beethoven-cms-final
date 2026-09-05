@@ -3,17 +3,24 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Database;
 use PDO;
 
 class GuideBlog1Model {
+
+    /**
+     * جلب اتصال قاعدة البيانات بالطريقة المعتمدة الآمنة للمشروع
+     */
+    private static function getConnection(): PDO {
+        // الاعتماد على SiteModel للحصول على اتصال PDO النشط في المشروع لتجنب خطأ عدم وجود الكلاس
+        return SiteModel::getPdoConnection() ?? \App\Core\Database::getInstance();
+    }
 
     /**
      * جلب بيانات صفحة المقال من جدول guide_blog1_content المستقل
      */
     public static function getData(): array {
         try {
-            $db = Database::getInstance();
+            $db = self::getConnection();
             $stmt = $db->prepare("SELECT * FROM guide_blog1_content WHERE id = 1 LIMIT 1");
             $stmt->execute();
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -49,7 +56,7 @@ class GuideBlog1Model {
      */
     public static function updateData(array $postData, ?array $filesData = null): bool {
         try {
-            $db = Database::getInstance();
+            $db = self::getConnection();
             $currentData = self::getData();
 
             $hero_img = $currentData['hero_img'] ?? 'assets/img/home/image(0).jpg';

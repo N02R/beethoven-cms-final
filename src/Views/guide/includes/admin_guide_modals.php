@@ -468,6 +468,14 @@
     function addTimelineRow() {
         const container = document.getElementById('guideTimelineContainer');
         if (!container) return;
+        
+        // التحقق من عدد العناصر الحالية بحيث لا يتجاوز 6 عناصر
+        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        if (currentRows >= 6) {
+            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
+            return;
+        }
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm edu-timeline-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -562,4 +570,5 @@
         });
     });
 </script>
+
 

@@ -42,7 +42,12 @@
     <?php endif; ?>
 
     <div class="custom-container ">
-      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg')); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
+      <?php 
+        $hero_img_path = $guide_data['hero_img'] ?? 'assets/img/home/image(0).jpg';
+        $hero_full_path = public_path($hero_img_path);
+        $hero_version = file_exists($hero_full_path) ? filemtime($hero_full_path) : time();
+      ?>
+      <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($hero_img_path) . '?v=' . $hero_version); ?>'); background-position: <?php echo htmlspecialchars($guide_data['hero_position'] ?? 'center center'); ?>;">
       </div>
     </div>
   </section>
@@ -134,9 +139,13 @@
                   <?php 
                     $default_img_num = ($index % 12) + 1;
                     $card_img = !empty($section['icon']) ? $section['icon'] : 'assets/img/education/edu-services' . $default_img_num . '.png';
+                    
+                    // منع التخزين المؤقت للأيقونات المحدثة
+                    $card_img_full_path = public_path($card_img);
+                    $card_img_version = file_exists($card_img_full_path) ? filemtime($card_img_full_path) : time();
                   ?>
                   <a href="#">
-                    <img src="<?php echo htmlspecialchars(get_image_url($card_img)); ?>" alt="icon" />
+                    <img src="<?php echo htmlspecialchars(get_image_url($card_img) . '?v=' . $card_img_version); ?>" alt="icon" />
                   </a>
                   <h5 class="card-title"><?php echo htmlspecialchars($section['heading'] ?? ''); ?></h5>
                   <p class="card-text"><?php echo htmlspecialchars($section['body'] ?? ''); ?></p>
@@ -178,7 +187,11 @@
               $dotClass = !empty($step['dot_class']) ? $step['dot_class'] : $dots[$idx % count($dots)];
               
               $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
-              $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+              $timeline_icon_src = $step['icon'] ?? $defaultIcon;
+              $timeline_icon_full_path = public_path($timeline_icon_src);
+              $timeline_icon_version = file_exists($timeline_icon_full_path) ? filemtime($timeline_icon_full_path) : time();
+              
+              $iconPath = get_image_url($timeline_icon_src, $defaultIcon);
               $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
               
               $stepNumberClass = 'step-' . ($idx + 1);
@@ -186,7 +199,7 @@
             <div class="step-wrapper <?php echo $stepNumberClass; ?>">
               <img src="<?php echo htmlspecialchars($groupNumImg); ?>" class="step-img-num" alt="<?php echo $num; ?>">
               <div class="icon-main">
-                <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
+                <img src="<?php echo htmlspecialchars($iconPath . '?v=' . $timeline_icon_version); ?>" alt="">
               </div>
               <div class="info-content">
                 <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
@@ -207,7 +220,11 @@
           foreach ($guide_data['timeline_steps'] as $idx => $step): 
             $num = sprintf("%02d", $idx + 1);
             $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
-            $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+            $m_timeline_icon_src = $step['icon'] ?? $defaultIcon;
+            $m_timeline_icon_full_path = public_path($m_timeline_icon_src);
+            $m_timeline_icon_version = file_exists($m_timeline_icon_full_path) ? filemtime($m_timeline_icon_full_path) : time();
+            
+            $iconPath = get_image_url($m_timeline_icon_src, $defaultIcon);
         ?>
           <div class="m-step">
               <div class="m-number-box">
@@ -216,7 +233,7 @@
               <div class="m-content">
                   <div class="m-header">
                       <div class="m-icon">
-                        <img src="<?php echo htmlspecialchars($iconPath); ?>" alt="">
+                        <img src="<?php echo htmlspecialchars($iconPath . '?v=' . $m_timeline_icon_version); ?>" alt="">
                       </div>
                       <h3><?php echo htmlspecialchars($step['title'] ?? ''); ?></h3>
                   </div>

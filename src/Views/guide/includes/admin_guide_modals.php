@@ -10,7 +10,6 @@
                 <form id="guideBreadcrumbForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_breadcrumb">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
@@ -44,7 +43,6 @@
                     <input type="hidden" name="action" value="update_guide_hero">
                     <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($guide_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <?php if (!empty($guide_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
@@ -67,7 +65,6 @@
     </div>
 </div>
 
-
 <!-- 3. Main Title & Description Edit Modal -->
 <div class="modal fade custom-modal" id="guideMainModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -80,7 +77,6 @@
                 <form id="guideMainForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_main">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
@@ -101,7 +97,7 @@
     </div>
 </div>
 
-<!-- 4. Important Notes Edit Modal (معدل ليمنح المدير تحكماً كاملاً بالنصوص) -->
+<!-- 4. Important Notes Edit Modal -->
 <div class="modal fade custom-modal" id="guideNotesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -113,13 +109,11 @@
                 <form id="guideNotesForm" method="POST">
                     <input type="hidden" name="action" value="update_guide_notes">
                     
-                    <!-- عنوان القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="form-label fw-semibold small text-secondary">عنوان قسم الملاحظات</label>
                         <input type="text" class="form-control" name="notes_title" value="<?php echo htmlspecialchars($guide_data['notes_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                     </div>
 
-                    <!-- النقطة الأولى: الفصول مع إمكانية تعديل البادئة والنص -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-1-circle"></i> النقطة الأولى (الفصول)</h6>
                         <div class="mb-3">
@@ -128,7 +122,7 @@
                         </div>
                         <div class="row g-2 mb-3">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الأول (مثلاً: فصل الشتاء)</label>
+                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الأول</label>
                                 <input type="text" class="form-control" name="note_winter_label" value="<?php echo htmlspecialchars($guide_data['note_winter_label'] ?? 'فصل الشتاء', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-8">
@@ -138,7 +132,7 @@
                         </div>
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الثاني (مثلاً: فصل الصيف)</label>
+                                <label class="form-label fw-semibold small text-secondary">تسمية الفصل الثاني</label>
                                 <input type="text" class="form-control" name="note_summer_label" value="<?php echo htmlspecialchars($guide_data['note_summer_label'] ?? 'فصل الصيف', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-8">
@@ -148,7 +142,6 @@
                         </div>
                     </div>
 
-                    <!-- النقطة الثانية -->
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-2-circle"></i> النقطة الثانية</h6>
                         <div class="mb-0">
@@ -157,7 +150,6 @@
                         </div>
                     </div>
 
-                    <!-- النقطة الثالثة والتفريعات (FAQ) -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-3-circle"></i> النقطة الثالثة والتفريعات</h6>
                         <div class="mb-3">
@@ -165,7 +157,7 @@
                             <input type="text" class="form-control" name="note_3_title" value="<?php echo htmlspecialchars($guide_data['note_3_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">التفريع الأول (النص الفرعي)</label>
+                            <label class="form-label fw-semibold small text-secondary">التفريع الأول</label>
                             <input type="text" class="form-control" name="faq_1" value="<?php echo htmlspecialchars($guide_data['faq_1'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="row g-2">
@@ -192,6 +184,7 @@
         </div>
     </div>
 </div>
+
 <!-- 5. Why Study Edit Modal -->
 <div class="modal fade custom-modal" id="guideWhyStudyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -204,7 +197,6 @@
                 <form id="guideWhyStudyForm" class="admin-settings-form" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide_whystudy">
                     
-                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label for="guide_why_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
@@ -216,13 +208,11 @@
                         </div>
                     </div>
 
-                    <!-- قائمة الكروت -->
                     <div id="guideWhyStudyContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($guide_data['content_sections']) && is_array($guide_data['content_sections'])): ?>
                             <?php foreach ($guide_data['content_sections'] as $i => $section): ?>
                                 <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="whystudy_row_<?php echo $i; ?>">
                                     
-                                    <!-- السطر الأول: العنوان والوصف -->
                                     <div class="row g-2 mb-3">
                                         <div class="col-md-6">
                                             <label for="content_heading_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
@@ -234,7 +224,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
                                     <div class="row g-2 align-items-end">
                                         <div class="col-11">
                                             <label for="content_file_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
@@ -285,7 +274,6 @@
                 <form id="guideTimelineForm" class="admin-settings-form" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide_timeline">
                     
-                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label for="guide_timeline_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
@@ -297,13 +285,11 @@
                         </div>
                     </div>
 
-                    <!-- قائمة خطوات الرحلة -->
                     <div id="guideTimelineContainer" class="d-flex flex-column gap-3">
                         <?php if (!empty($guide_data['timeline_steps']) && is_array($guide_data['timeline_steps'])): ?>
                             <?php foreach ($guide_data['timeline_steps'] as $i => $step): ?>
                                 <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="timeline_row_<?php echo $i; ?>">
                                     
-                                    <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
                                     <div class="row g-2 mb-3">
                                         <div class="col-md-6">
                                             <label for="timeline_title_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
@@ -315,7 +301,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- السطر الثاني: التفاصيل ولون النقطة -->
                                     <div class="row g-2 mb-3">
                                         <div class="col-md-8">
                                             <label for="timeline_desc_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">التفاصيل</label>
@@ -327,7 +312,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
                                     <div class="row g-2 align-items-end">
                                         <div class="col-11">
                                             <label for="timeline_file_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
@@ -366,16 +350,13 @@
     </div>
 </div>
 
-
 <!-- Dynamic JS Engine -->
 <script>
-    // دالة عامة لحذف أي صف ديناميكي
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 1. دالة إظهار التنبيهات الاحترافية الموحدة
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -420,7 +401,6 @@
         }, 4000);
     }
 
-    // عدادات الصفوف الديناميكية
     let whyStudyCounter = <?php echo count($guide_data['content_sections'] ?? []); ?>;
     function addWhyStudyRow() {
         const container = document.getElementById('guideWhyStudyContainer');
@@ -432,7 +412,6 @@
         div.id = rowId;
         
         div.innerHTML = `
-            <!-- السطر الأول: العنوان والوصف -->
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
                     <label for="content_heading_${whyStudyCounter}" class="form-label fw-semibold small text-secondary">العنوان</label>
@@ -444,7 +423,6 @@
                 </div>
             </div>
 
-            <!-- السطر الثاني: الأيقونة + زر الرفع + زر الحذف -->
             <div class="row g-2 align-items-end">
                 <div class="col-11">
                     <label for="content_file_${whyStudyCounter}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
@@ -469,7 +447,6 @@
         const container = document.getElementById('guideTimelineContainer');
         if (!container) return;
         
-        // التحقق من عدد العناصر الحالية بحيث لا يتجاوز 6 عناصر
         const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
         if (currentRows >= 6) {
             showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
@@ -483,7 +460,6 @@
         div.id = rowId;
         
         div.innerHTML = `
-            <!-- السطر الأول: اسم الخطوة والعنوان الفرعي -->
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
                     <label for="timeline_title_${timelineCounter}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
@@ -495,7 +471,6 @@
                 </div>
             </div>
 
-            <!-- السطر الثاني: التفاصيل ولون النقطة -->
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
                     <label for="timeline_desc_${timelineCounter}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
@@ -507,7 +482,6 @@
                 </div>
             </div>
 
-            <!-- السطر الثالث: الأيقونة الحالية / الجديدة وزر الحذف -->
             <div class="row g-2 align-items-end">
                 <div class="col-11">
                     <label for="timeline_file_${timelineCounter}" class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
@@ -527,7 +501,6 @@
         timelineCounter++;
     }
 
-    // 2. معالج الحفظ الموحد عبر AJAX لنماذج صفحة الدليل
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#guideBreadcrumbForm, #guideHeroForm, #guideMainForm, #guideNotesForm, #guideWhyStudyForm, #guideTimelineForm').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -570,5 +543,3 @@
         });
     });
 </script>
-
-

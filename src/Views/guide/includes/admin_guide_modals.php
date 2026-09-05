@@ -110,15 +110,15 @@
     </div>
 </div>
 
-<!-- Dynamic JS Engine for Guide Page -->
+<!-- Dynamic JS Engine for Guide Page Modals & Forms -->
 <script>
-    // 1. دالة عامة لحذف أي صف
+    // 1. دالة عامة لحذف أي صف ديناميكي
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية الموحدة
+    // 2. دالة إظهار التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -131,10 +131,6 @@
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
             title = 'عذراً، حدث خطأ!';
-        } else if (type === 'warning') {
-            bgClass = 'alert-warning';
-            icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
         }
 
         const alertDiv = document.createElement('div');
@@ -154,7 +150,6 @@
         `;
 
         document.body.appendChild(alertDiv);
-
         setTimeout(() => {
             if (alertDiv) {
                 alertDiv.classList.remove('show');
@@ -163,7 +158,7 @@
         }, 4000);
     }
 
-    // 3. إضافة صف كارت جديد (Why Study) بالستايل الموحد والعداد المستقل
+    // 3. إضافة صف كارت جديد (Why Study)
     let whyStudyCounter = <?php echo count($guide_data['content_sections'] ?? []); ?>;
     function addWhyStudyRow() {
         const container = document.getElementById('guideWhyStudyContainer');
@@ -188,7 +183,7 @@
         whyStudyCounter++;
     }
 
-    // 4. إضافة خطوة زمنية جديدة (Timeline) بالستايل الموحد والعداد المستقل
+    // 4. إضافة خطوة زمنية جديدة (Timeline)
     let timelineCounter = <?php echo count($guide_data['timeline_steps'] ?? []); ?>;
     function addTimelineRow() {
         const container = document.getElementById('guideTimelineContainer');
@@ -221,47 +216,65 @@
         timelineCounter++;
     }
 
-    // 5. معالج الحفظ الموحد عبر AJAX لنماذج صفحة الدليل
+    // 5. تفعيل فتح المودلز برمجياً ومعالجة الحفظ عبر AJAX عند تحميل الصفحة بالكامل
     document.addEventListener('DOMContentLoaded', function() {
+        
+        // تفعيل أزرار القلم لفتح المودلز حصرياً وبرمجياً لضمان عدم تعارض الـ DOM
+        document.querySelectorAll('.edit-pen').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSelector = this.getAttribute('data-bs-target');
+                if (targetSelector) {
+                    const modalEl = document.querySelector(targetSelector);
+                    if (modalEl) {
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            let modalInstance = bootstrap.Modal.getInstance(modalEl);
+                            if (!modalInstance) {
+                                modalInstance = new bootstrap.Modal(modalEl);
+                            }
+                            modalInstance.show();
+                        } else {
+                            // بديل احتياطي في حال تأخر تحميل كلاسات بوتستراب
+                            modalEl.classList.add('show');
+                            modalEl.style.display = 'block';
+                            document.body.classList.add('modal-open');
+                        }
+                    }
+                }
+            });
+        });
+
+        // معالجة إرسال النماذج عبر AJAX
         document.querySelectorAll('#guideBreadcrumbForm, #guideHeroForm, #guideMainForm, #guideNotesForm, #guideWhyStudyForm, #guideTimelineForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
                 const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                if (csrfToken && !formData.has('csrf_token')) {
-                    formData.append('csrf_token', csrfToken);
-                }
-
+                
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Accept': 'application/json' },
                     body: formData
                 })
                 .then(response => response.text())
                 .then(text => {
-                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
                         if (data.success) {
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
+                            showNotification('فشل الحفظ: ' + (data.message || 'خطأ غير معروف'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        showNotification('خطأ استجابة السيرفر: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر.', 'danger');
                 });
             });
         });
     });
 </script>
+
 

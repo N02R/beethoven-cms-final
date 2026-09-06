@@ -746,7 +746,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
-        if (str_starts_with($action, 'update_health_')) return* 'health_page';
+        if (str_starts_with($action, 'update_health_')) return 'health_page';
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';

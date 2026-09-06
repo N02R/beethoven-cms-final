@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace App\Controllers\Guide;
 
-class GuideBlog2Controller {
-    
-    public function index(string $lang = 'de'): void {
-        // تأمين إذن الوصول
-        if (!defined('ALLOWED_ACCESS')) {
-            define('ALLOWED_ACCESS', true);
-        }
+use App\Models\SiteModel;
+use App\Models\GuideBlog2Model;
 
+class GuideBlog2Controller {
+    public function index(string $lang = 'de'): void {
+        // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
 
+        // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
@@ -22,71 +21,57 @@ class GuideBlog2Controller {
             session_start();
         }
 
+        // تحديد مسار الجذر للمشروع (بناءً على التموضع داخل /src/Controllers/Guide/)
         $root_path = realpath(__DIR__ . '/../../../');
-        $config_file = $root_path . '/announcement_config.json';
-        $global_data = file_exists($config_file) ? json_decode(file_get_contents($config_file), true) : [];
-        
-        $guide_blog2_data = $global_data['guide_blog2_page'] ?? [
-            'hero_img'           => 'assets/img/guide/image (1).jpg',
-            'hero_position'      => 'center center',
-            'main_title'         => 'التعليم والعمل في ألمانيا: فرص جديدة لحياة أفضل',
-            'main_desc'          => 'تعتبر ألمانيا واحدة من أفضل الوجهات عالميًا للراغبين في إكمال تعليمهم أو بدء مسيرتهم المهنية، بفضل جودة التعليم المجاني، وتوفّر فرص التدريب المهني، وسوق العمل المستقر الذي يرحب بالكفاءات من جميع أنحاء العالم. في هذه المدونة، سنرشدك إلى كيفية الاستفادة من فرص التعليم والعمل في ألمانيا، والخطوات العملية للبدء، مع نصائح عملية تسهل رحلتك نحو حياة مستقرة وآمنة في أوروبا.',
-            'why_title'          => 'لماذا التعليم والعمل في ألمانيا؟',
-            'why_subtitle'       => 'إنها بيئة مثالية للطلاب الطموحين من جميع أنحاء العالم لبناء مستقبل أكاديمي ومهني قوي',
-            'services_title'     => 'ماذا تقدم لك بيتهوفن سيتي للخدمات الطلابية؟',
-            'service_1'          => 'تقديم استشارات فردية مصممة وفق احتياجاتك.',
-            'service_2'          => 'مساعدتك في إعداد السيرة الذاتية ورسائل التحفيز باللغة الألمانية.',
-            'service_3'          => 'التقديم على برامج التدريب المهني (Ausbildung) المناسبة لك',
-            'service_4'          => 'التقديم على برامج الإقامة الطبية وخريجي الصحة',
-            'service_5'          => 'دعمك في إعداد الوثائق، تعلم اللغة، والحصول على السكن في ألمانيا.',
-            'tips_title'         => 'كيف نضمن لك تجربة سلسة وآمنة؟',
-            'tip_1_bold'         => 'سهولة الوصول للمعلومات: ',
-            'tip_1_text'         => 'جميع خطوات التقديم واضحة وستعرف ماذا عليك أن تفعل في كل مرحلة.',
-            'tip_2_bold'         => 'التواصل المستمر: ',
-            'tip_2_text'         => 'فريقنا معك للإجابة على استفساراتك عبر الواتساب والبريد الإلكتروني.',
-            'tip_3_bold'         => 'أسعار تنافسية وشفافية: ',
-            'tip_3_text'         => 'خدماتنا بأسعار مناسبة، ونشرح لك كل رسوم المعاهد والخدمات مقدمًا.'
-        ];
 
-        $data = $global_data;
-        $data['guide_blog2_page'] = $guide_blog2_data;
+        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
+        $data = SiteModel::getGlobalData();
 
-        $is_admin = !empty($_SESSION['is_admin']) || !empty($_SESSION['is_logged_in']) || (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin');
+        // 2. جلب بيانات دليل المقال الثاني (guide_blog_two) وتوفيرها بالتسميات المتوافقة
+        $guide_blog2_data_array = GuideBlog2Model::getGuideData();
+        $data['guide_blog2_page'] = $guide_blog2_data_array;
+        $data['guide_blog2_data'] = $guide_blog2_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
+
+        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
+        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+        $user_role = $_SESSION['role'] ?? '';
+        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+
+        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+
+        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
-
-        // ملفات الـ CSS الخاصة بالصفحة
-        $page_css = [
-            '/assets/css/education.css',
-            '/edu-services/css/edu-services.css'
-        ]; 
-
+        $page_css = ['/assets/css/style.css', '/assets/css/education.css', '/assets/css/edu-services.css'];
         $page_js = [];
-        $custom_script = '';
+
+        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
+        extract($data);
 
         // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/includes/header.php';
+        $header_file = $root_path . '/src/Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
+        } else {
+            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء الـ View الخاص بالصفحة
-        $view_file = __DIR__ . '/../../Views/guide/guide-blog2.php';
+        // 2. استدعاء ملف الـ View الخاص بصفحة الدليل (guide_blog_two.php)
+        $view_file = $root_path . '/src/Views/guide/guide_blog_two.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
-            echo "<div class='container py-5 text-center'><h3>Guide Blog 2 View file not found.</h3></div>";
+            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء مودالات الأدمن إن وجدت
-        $admin_modals = $root_path . '/includes/admin_guide_blog2_modals.php';
-        if (!empty($is_admin) && file_exists($admin_modals)) {
-            include_once $admin_modals;
-        }
-
-        // 4. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/includes/footer.php';
+        // 3. استدعاء الفوتر المشترك
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;
+        } else {
+            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

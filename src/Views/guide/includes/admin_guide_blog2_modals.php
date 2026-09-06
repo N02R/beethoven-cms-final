@@ -283,8 +283,6 @@
         </div>
     </div>
 </div>
-
-<!-- Dynamic JS Engine for Blog 2 Modals -->
 <script>
     let blog2WhyCounter = <?php echo count($guide_blog2_data['content_sections'] ?? []); ?>;
     function addBlog2WhyStudyRow() {
@@ -365,6 +363,9 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
+                // إشعار للمدير بأن العملية قيد التنفيذ
+                showNotification('جاري حفظ التغييرات...', 'info');
+
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
                     headers: {
@@ -375,26 +376,45 @@
                 })
                 .then(response => response.text())
                 .then(text => {
+                    console.log("Raw Server Response:", text); // اطبع الرد الخام لمعرفة شكل المتغيرات القادم
+                    
+                    let data;
                     try {
-                        const data = JSON.parse(text);
-                        if (data.success) {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            
-                            // إغلاق أي modal مفتوح حالياً بشكل برمجي لضمان السلاسة
-                            const activeModal = bootstrap.Modal.getInstance(this.closest('.modal'));
-                            if (activeModal) {
-                                activeModal.hide();
-                            }
-                            
-                            // تأخير بسيط جداً لضمان ظهور الإشعار قبل ريلود الصفحة
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 800);
-                        } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                        data = JSON.parse(text);
+                    } catch (err) {
+                        // إذا السيرفر أرسل HTML أو تحذير PHP
+                        showNotification('خطأ برمجي من السيرفر (راجع الـ Console)', 'danger');
+                        return;
+                    }
+
+                    if (data.success) {
+                        showNotification('تم حفظ التعديلات بنجاح!', 'success');
+                        
+                        // إغلاق المودل بشكل صحيح
+                        const modalEl = this.closest('.modal');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) {
+                            modalInstance.hide();
                         }
-                    } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        
+                        // إزالة الـ Backdrop لمنع تجميد الشاشة
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        document.body.classList.remove('modal-open');
+                        document.body.style.overflow = '';
+
+                        // إعادة تحميل الصفحة لتحديث البيانات
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showNotification('خطأ: ' + (data.message || 'فشل الحفظ من السيرفر'), 'danger');
                     }
                 })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة.', 'danger');
+                });
+            });
+        });
+    });
 </script>

@@ -62,47 +62,95 @@ class PageContentSettingsService
                 $pageData['why_study_title'] = $_POST['why_study_title'] ?? '';
                 $pageData['why_study_desc'] = $_POST['why_study_desc'] ?? '';
                 
-                $headings = $_POST['section_headings'] ?? [];
-                $bodies = $_POST['section_bodies'] ?? [];
-                $icons = $_POST['section_icons'] ?? [];
-                
+                $incomingSections = $_POST['content_sections'] ?? [];
+                if (empty($incomingSections)) {
+                    $headings = $_POST['section_headings'] ?? [];
+                    $bodies = $_POST['section_bodies'] ?? [];
+                    $icons = $_POST['section_icons'] ?? [];
+                    foreach ($headings as $i => $h) {
+                        $incomingSections[$i] = [
+                            'heading' => $h,
+                            'body' => $bodies[$i] ?? '',
+                            'icon' => $icons[$i] ?? ''
+                        ];
+                    }
+                }
+
                 $contentSections = [];
-                for ($i = 0; $i < count($headings); $i++) {
-                    $headingVal = trim($headings[$i] ?? '');
+                foreach ($incomingSections as $i => $section) {
+                    $headingVal = trim($section['heading'] ?? '');
                     if ($headingVal === '') continue;
+
+                    $iconVal = trim($section['icon'] ?? '');
+                    $fileKey = "content_sections_img_{$i}";
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($iconVal);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $iconVal = 'assets/uploads/' . $filename;
+                    }
+
                     $contentSections[] = [
                         'heading' => $headingVal,
-                        'body'    => trim($bodies[$i] ?? ''),
-                        'icon'    => trim($icons[$i] ?? '')
+                        'body'    => trim($section['body'] ?? ''),
+                        'icon'    => $iconVal
                     ];
                 }
                 if (!empty($contentSections)) {
                     $pageData['content_sections'] = $contentSections;
+                } else {
+                    $pageData['content_sections'] = [];
                 }
             } elseif (str_contains($action, '_timeline')) {
                 $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
                 $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
                 
-                $titles = $_POST['step_titles'] ?? [];
-                $subtitles = $_POST['step_subtitles'] ?? [];
-                $descs = $_POST['step_descs'] ?? [];
-                $dots = $_POST['step_dots'] ?? [];
-                $icons = $_POST['step_icons'] ?? [];
+                $incomingSteps = $_POST['timeline_steps'] ?? [];
+                if (empty($incomingSteps)) {
+                    $titles = $_POST['step_titles'] ?? [];
+                    $subtitles = $_POST['step_subtitles'] ?? [];
+                    $descs = $_POST['step_descs'] ?? [];
+                    $dots = $_POST['step_dots'] ?? [];
+                    $icons = $_POST['step_icons'] ?? [];
+                    foreach ($titles as $i => $t) {
+                        $incomingSteps[$i] = [
+                            'title' => $t,
+                            'subtitle' => $subtitles[$i] ?? '',
+                            'desc' => $descs[$i] ?? '',
+                            'dot_class' => $dots[$i] ?? 'bg-blue',
+                            'icon' => $icons[$i] ?? ''
+                        ];
+                    }
+                }
 
                 $timelineSteps = [];
-                for ($i = 0; $i < count($titles); $i++) {
-                    $titleVal = trim($titles[$i] ?? '');
+                foreach ($incomingSteps as $i => $step) {
+                    $titleVal = trim($step['title'] ?? '');
                     if ($titleVal === '') continue;
+
+                    $iconVal = trim($step['icon'] ?? '');
+                    $fileKey = "timeline_steps_icon_{$i}";
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($iconVal);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $iconVal = 'assets/uploads/' . $filename;
+                    }
+
                     $timelineSteps[] = [
                         'title'     => $titleVal,
-                        'subtitle'  => trim($subtitles[$i] ?? ''),
-                        'desc'      => trim($descs[$i] ?? ''),
-                        'dot_class' => trim($dots[$i] ?? 'bg-blue'),
-                        'icon'      => trim($icons[$i] ?? '')
+                        'subtitle'  => trim($step['subtitle'] ?? ''),
+                        'desc'      => trim($step['desc'] ?? ''),
+                        'dot_class' => trim($step['dot_class'] ?? 'bg-blue'),
+                        'icon'      => $iconVal
                     ];
                 }
                 if (!empty($timelineSteps)) {
                     $pageData['timeline_steps'] = $timelineSteps;
+                } else {
+                    $pageData['timeline_steps'] = [];
                 }
             }
         }
@@ -698,7 +746,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
-        if (str_starts_with($action, 'update_health_')) return 'health_page';
+        if (str_starts_with($action, 'update_health_')) return* 'health_page';
         if (str_starts_with($action, 'update_financial_')) return 'financial_page';
         if (str_starts_with($action, 'update_living_')) return 'living_cost_page';
         if (str_starts_with($action, 'update_foundation_') || str_starts_with($action, 'update_stk_')) return 'foundation_page';

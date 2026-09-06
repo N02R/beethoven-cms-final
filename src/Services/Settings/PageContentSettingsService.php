@@ -58,9 +58,15 @@ class PageContentSettingsService
                 $pageData['faq_2_url'] = $_POST['faq_2_url'] ?? 'contact';
                 $pageData['faq_2_link_text'] = $_POST['faq_2_link_text'] ?? '';
                 $pageData['faq_2_suffix'] = $_POST['faq_2_suffix'] ?? '';
+            } elseif (str_contains($action, '_tips')) {
+                $pageData['tips_title'] = $_POST['tips_title'] ?? 'نصائح وضمانات';
+                for ($i = 1; $i <= 3; $i++) {
+                    $pageData["tip_{$i}_bold"] = $_POST["tip_{$i}_bold"] ?? '';
+                    $pageData["tip_{$i}_text"] = $_POST["tip_{$i}_text"] ?? '';
+                }
             } elseif (str_contains($action, '_whystudy') || str_contains($action, '_sections')) {
-                $pageData['why_study_title'] = $_POST['why_study_title'] ?? '';
-                $pageData['why_study_desc'] = $_POST['why_study_desc'] ?? '';
+                $pageData['why_study_title'] = $_POST['why_title'] ?? ($_POST['why_study_title'] ?? '');
+                $pageData['why_study_desc'] = $_POST['why_subtitle'] ?? ($_POST['why_study_desc'] ?? '');
                 
                 $incomingSections = $_POST['content_sections'] ?? [];
                 if (empty($incomingSections)) {

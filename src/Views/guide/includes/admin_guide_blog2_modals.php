@@ -379,7 +379,17 @@
                         const data = JSON.parse(text);
                         if (data.success) {
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
+                            
+                            // إغلاق أي modal مفتوح حالياً بشكل برمجي لضمان السلاسة
+                            const activeModal = bootstrap.Modal.getInstance(this.closest('.modal'));
+                            if (activeModal) {
+                                activeModal.hide();
+                            }
+                            
+                            // تأخير بسيط جداً لضمان ظهور الإشعار قبل ريلود الصفحة
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 800);
                         } else {
                             showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                         }
@@ -387,11 +397,4 @@
                         showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
                 })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
-                });
-            });
-        });
-    });
 </script>

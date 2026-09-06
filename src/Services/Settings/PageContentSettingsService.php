@@ -303,7 +303,6 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_notes')) {
                 $pageData['note_text'] = $_POST['note_text'] ?? '';
             } elseif (str_contains($action, '_card')) {
-                // دعم العناصر المفردة أو المتعددة للتحميل
                 $downloadItems = $pageData['download_items'] ?? [];
                 if (empty($downloadItems) && !empty($pageData['download_item'])) {
                     $downloadItems = [$pageData['download_item']];
@@ -333,7 +332,7 @@ class PageContentSettingsService
                 $downloadItem['file'] = $filePath;
                 
                 $pageData['download_items'] = $downloadItems;
-                $pageData['download_item'] = $downloadItem; // للتوافقية التامة
+                $pageData['download_item'] = $downloadItem;
             }
         }
         // معالجة خاصة لصفحة باقة التدريب الطبي (Medical Packages Page)
@@ -486,7 +485,7 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page) لتجنب تداخل الشروط العامة
+        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page)
         elseif ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';

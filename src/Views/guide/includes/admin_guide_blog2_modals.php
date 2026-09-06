@@ -19,8 +19,8 @@
                         <?php endif; ?>
                         
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
-                            <input type="file" class="form-control" name="hero_img" accept="image/*">
+                            <label for="guide_blog2_hero_file" class="form-label fw-semibold small text-secondary">رفع صورة جديدة</label>
+                            <input type="file" id="guide_blog2_hero_file" class="form-control" name="hero_img" accept="image/*">
                         </div>
                     </div>
                 </form>
@@ -47,12 +47,12 @@
                     
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($guide_blog2_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label for="guide_blog2_main_title_input" class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
+                            <input type="text" id="guide_blog2_main_title_input" class="form-control" name="main_title" value="<?php echo htmlspecialchars($guide_blog2_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
-                            <textarea class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="guide_blog2_main_desc_input" class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
+                            <textarea id="guide_blog2_main_desc_input" class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
                 </form>
@@ -79,12 +79,12 @@
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="why_title" value="<?php echo htmlspecialchars($guide_blog2_data['why_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label for="guide_blog2_why_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="guide_blog2_why_title_input" class="form-control" name="why_title" value="<?php echo htmlspecialchars($guide_blog2_data['why_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="why_subtitle" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['why_subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="guide_blog2_why_subtitle_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="guide_blog2_why_subtitle_input" class="form-control" name="why_subtitle" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['why_subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -95,25 +95,25 @@
                                     
                                     <div class="row g-2 mb-3">
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small text-secondary">العنوان</label>
-                                            <input type="text" class="form-control edu-why-title" name="content_sections[<?php echo $i; ?>][heading]" value="<?php echo htmlspecialchars($section['heading'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الكارت">
+                                            <label for="blog2_content_heading_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">العنوان</label>
+                                            <input type="text" id="blog2_content_heading_<?php echo $i; ?>" class="form-control edu-why-title" name="content_sections[<?php echo $i; ?>][heading]" value="<?php echo htmlspecialchars($section['heading'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الكارت">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
-                                            <input type="text" class="form-control edu-why-desc" name="content_sections[<?php echo $i; ?>][body]" value="<?php echo htmlspecialchars($section['body'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الكارت...">
+                                            <label for="blog2_content_body_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                                            <input type="text" id="blog2_content_body_<?php echo $i; ?>" class="form-control edu-why-desc" name="content_sections[<?php echo $i; ?>][body]" value="<?php echo htmlspecialchars($section['body'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الكارت...">
                                         </div>
                                     </div>
 
                                     <div class="row g-2 align-items-end">
                                         <div class="col-11">
-                                            <label class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                                            <label for="blog2_content_file_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($section['icon'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                         <img src="<?php echo htmlspecialchars(get_image_url($section['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                     </div>
                                                 <?php endif; ?>
-                                                <input type="file" class="form-control edu-why-file" name="content_sections_img_<?php echo $i; ?>" accept="image/*">
+                                                <input type="file" id="blog2_content_file_<?php echo $i; ?>" class="form-control edu-why-file" name="content_sections_img_<?php echo $i; ?>" accept="image/*">
                                             </div>
                                         </div>
 
@@ -155,16 +155,16 @@
                     <input type="hidden" name="action" value="update_guide_blog2_services">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <label class="form-label fw-semibold small text-secondary">عنوان قسم الخدمات</label>
-                        <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($guide_blog2_data['services_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        <label for="guide_blog2_services_title" class="form-label fw-semibold small text-secondary">عنوان قسم الخدمات</label>
+                        <input type="text" id="guide_blog2_services_title" class="form-control" name="services_title" value="<?php echo htmlspecialchars($guide_blog2_data['services_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                     </div>
 
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <h6 class="text-primary fw-bold mb-3 small">قائمة الخدمات (5 خدمات)</h6>
                         <?php for ($i = 1; $i <= 5; $i++): ?>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold small text-secondary">الخدمة رقم <?php echo $i; ?></label>
-                                <input type="text" class="form-control" name="service_<?php echo $i; ?>" value="<?php echo htmlspecialchars($guide_blog2_data["service_$i"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label for="guide_blog2_service_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">الخدمة رقم <?php echo $i; ?></label>
+                                <input type="text" id="guide_blog2_service_<?php echo $i; ?>" class="form-control" name="service_<?php echo $i; ?>" value="<?php echo htmlspecialchars($guide_blog2_data["service_$i"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
@@ -192,12 +192,12 @@
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($guide_blog2_data['timeline_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label for="guide_blog2_timeline_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
+                            <input type="text" id="guide_blog2_timeline_title_input" class="form-control" name="timeline_title" value="<?php echo htmlspecialchars($guide_blog2_data['timeline_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="timeline_desc" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['timeline_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label for="guide_blog2_timeline_desc_input" class="form-label small fw-bold mb-1 text-secondary">وصف القسم</label>
+                            <textarea id="guide_blog2_timeline_desc_input" class="form-control" name="timeline_desc" rows="2" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($guide_blog2_data['timeline_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -208,12 +208,12 @@
                                     
                                     <div class="row g-2 mb-3">
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
-                                            <input type="text" class="form-control edu-step-title" name="timeline_steps[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
+                                            <label for="blog2_timeline_title_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                            <input type="text" id="blog2_timeline_title_<?php echo $i; ?>" class="form-control edu-step-title" name="timeline_steps[<?php echo $i; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label fw-semibold small text-secondary">التفاصيل المختصرة</label>
-                                            <input type="text" class="form-control edu-step-desc" name="timeline_steps[<?php echo $i; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                            <label for="blog2_timeline_desc_<?php echo $i; ?>" class="form-label fw-semibold small text-secondary">التفاصيل المختصرة</label>
+                                            <input type="text" id="blog2_timeline_desc_<?php echo $i; ?>" class="form-control edu-step-desc" name="timeline_steps[<?php echo $i; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
                                         </div>
                                     </div>
 
@@ -257,20 +257,20 @@
                     <input type="hidden" name="action" value="update_guide_blog2_tips">
                     
                     <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <label class="form-label fw-semibold small text-secondary">عنوان القسم</label>
-                        <input type="text" class="form-control" name="tips_title" value="<?php echo htmlspecialchars($guide_blog2_data['tips_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        <label for="guide_blog2_tips_title" class="form-label fw-semibold small text-secondary">عنوان القسم</label>
+                        <input type="text" id="guide_blog2_tips_title" class="form-control" name="tips_title" value="<?php echo htmlspecialchars($guide_blog2_data['tips_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                     </div>
 
                     <?php for ($i = 1; $i <= 3; $i++): ?>
                         <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <h6 class="text-primary fw-bold mb-3 small"><i class="bi bi-<?php echo $i; ?>-circle"></i> النصيحة رقم <?php echo $i; ?></h6>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold small text-secondary">النص البولد (المميز)</label>
-                                <input type="text" class="form-control" name="tip_<?php echo $i; ?>_bold" value="<?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_bold"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label for="guide_blog2_tip_<?php echo $i; ?>_bold" class="form-label fw-semibold small text-secondary">النص البولد (المميز)</label>
+                                <input type="text" id="guide_blog2_tip_<?php echo $i; ?>_bold" class="form-control" name="tip_<?php echo $i; ?>_bold" value="<?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_bold"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mb-0">
-                                <label class="form-label fw-semibold small text-secondary">باقي نص النصيحة</label>
-                                <input type="text" class="form-control" name="tip_<?php echo $i; ?>_text" value="<?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_text"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label for="guide_blog2_tip_<?php echo $i; ?>_text" class="form-label fw-semibold small text-secondary">باقي نص النصيحة</label>
+                                <input type="text" id="guide_blog2_tip_<?php echo $i; ?>_text" class="form-control" name="tip_<?php echo $i; ?>_text" value="<?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_text"] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     <?php endfor; ?>
@@ -283,83 +283,9 @@
         </div>
     </div>
 </div>
+
+<!-- Dynamic JS Engine -->
 <script>
-    let blog2WhyCounter = <?php echo count($guide_blog2_data['content_sections'] ?? []); ?>;
-    function addBlog2WhyStudyRow() {
-        const container = document.getElementById('guideBlog2WhyContainer');
-        if (!container) return;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm edu-why-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        const rowId = 'blog2_whystudy_row_' + blog2WhyCounter;
-        div.id = rowId;
-        
-        div.innerHTML = `
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label for="content_heading_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">العنوان</label>
-                    <input type="text" id="content_heading_${blog2WhyCounter}" class="form-control edu-why-title" name="content_sections[${blog2WhyCounter}][heading]" placeholder="عنوان الكارت">
-                </div>
-                <div class="col-md-6">
-                    <label for="content_body_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
-                    <input type="text" id="content_body_${blog2WhyCounter}" class="form-control edu-why-desc" name="content_sections[${blog2WhyCounter}][body]" placeholder="وصف الكارت...">
-                </div>
-            </div>
-
-            <div class="row g-2 align-items-end">
-                <div class="col-11">
-                    <label for="content_file_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="content_file_${blog2WhyCounter}" class="form-control edu-why-file" name="content_sections_img_${blog2WhyCounter}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="edu-why-old-img" name="content_sections[${blog2WhyCounter}][icon]" value="">
-                <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف الكارت"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-        blog2WhyCounter++;
-    }
-
-    let blog2TimelineCounter = <?php echo count($guide_blog2_data['timeline_steps'] ?? []); ?>;
-    function addBlog2TimelineRow() {
-        const container = document.getElementById('guideBlog2TimelineContainer');
-        if (!container) return;
-        
-        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
-        if (currentRows >= 6) {
-            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
-            return;
-        }
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm edu-timeline-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        const rowId = 'blog2_timeline_row_' + blog2TimelineCounter;
-        div.id = rowId;
-        
-        div.innerHTML = `
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label for="timeline_title_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
-                    <input type="text" id="timeline_title_${blog2TimelineCounter}" class="form-control edu-step-title" name="timeline_steps[${blog2TimelineCounter}][title]" placeholder="اسم الخطوة">
-                </div>
-                <div class="col-md-6">
-                    <label for="timeline_desc_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
-                    <input type="text" id="timeline_desc_${blog2TimelineCounter}" class="form-control edu-step-desc" name="timeline_steps[${blog2TimelineCounter}][desc]" placeholder="التفاصيل">
-                </div>
-            </div>
-            <input type="hidden" name="timeline_steps[${blog2TimelineCounter}][dot_class]" value="bg-blue">
-            <div class="text-end">
-                <button type="button" class="btn-icon-trash" onclick="removeRow('${rowId}')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
-            </div>
-        `;
-        container.appendChild(div);
-        blog2TimelineCounter++;
-    }
-
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
@@ -409,24 +335,94 @@
         }, 4000);
     }
 
+    let blog2WhyCounter = <?php echo count($guide_blog2_data['content_sections'] ?? []); ?>;
+    function addBlog2WhyStudyRow() {
+        const container = document.getElementById('guideBlog2WhyContainer');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm edu-why-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        const rowId = 'blog2_whystudy_row_' + blog2WhyCounter;
+        div.id = rowId;
+        
+        div.innerHTML = `
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label for="blog2_content_heading_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <input type="text" id="blog2_content_heading_${blog2WhyCounter}" class="form-control edu-why-title" name="content_sections[${blog2WhyCounter}][heading]" placeholder="عنوان الكارت">
+                </div>
+                <div class="col-md-6">
+                    <label for="blog2_content_body_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                    <input type="text" id="blog2_content_body_${blog2WhyCounter}" class="form-control edu-why-desc" name="content_sections[${blog2WhyCounter}][body]" placeholder="وصف الكارت...">
+                </div>
+            </div>
+
+            <div class="row g-2 align-items-end">
+                <div class="col-11">
+                    <label for="blog2_content_file_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="blog2_content_file_${blog2WhyCounter}" class="form-control edu-why-file" name="content_sections_img_${blog2WhyCounter}" accept="image/*">
+                    </div>
+                </div>
+
+                <input type="hidden" class="edu-why-old-img" name="content_sections[${blog2WhyCounter}][icon]" value="">
+
+                <div class="col-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${rowId}')" title="حذف الكارت"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+        blog2WhyCounter++;
+    }
+
+    let blog2TimelineCounter = <?php echo count($guide_blog2_data['timeline_steps'] ?? []); ?>;
+    function addBlog2TimelineRow() {
+        const container = document.getElementById('guideBlog2TimelineContainer');
+        if (!container) return;
+        
+        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        if (currentRows >= 6) {
+            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
+            return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm edu-timeline-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        const rowId = 'blog2_timeline_row_' + blog2TimelineCounter;
+        div.id = rowId;
+        
+        div.innerHTML = `
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label for="blog2_timeline_title_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                    <input type="text" id="blog2_timeline_title_${blog2TimelineCounter}" class="form-control edu-step-title" name="timeline_steps[${blog2TimelineCounter}][title]" placeholder="اسم الخطوة">
+                </div>
+                <div class="col-md-6">
+                    <label for="blog2_timeline_desc_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                    <input type="text" id="blog2_timeline_desc_${blog2TimelineCounter}" class="form-control edu-step-desc" name="timeline_steps[${blog2TimelineCounter}][desc]" placeholder="التفاصيل">
+                </div>
+            </div>
+            <input type="hidden" name="timeline_steps[${blog2TimelineCounter}][dot_class]" value="bg-blue">
+            <div class="text-end">
+                <button type="button" class="btn-icon-trash" onclick="removeRow('${rowId}')" title="حذف الخطوة"><i class="bi bi-trash"></i></button>
+            </div>
+        `;
+        container.appendChild(div);
+        blog2TimelineCounter++;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#guideBlog2HeroForm, #guideBlog2MainForm, #guideBlog2WhyForm, #guideBlog2ServicesForm, #guideBlog2TimelineForm, #guideBlog2TipsForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                if (this.dataset.submitting === 'true') return;
-                this.dataset.submitting = 'true';
-                
-                const submitBtn = this.querySelector('[type="submit"]');
-                if (submitBtn) submitBtn.disabled = true;
-
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
-
-                showNotification('جاري حفظ التغييرات...', 'info');
 
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
@@ -439,44 +435,21 @@
                 .then(response => response.text())
                 .then(text => {
                     console.log("Raw Server Response:", text);
-                    
-                    let data;
                     try {
-                        data = JSON.parse(text);
-                    } catch (err) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
-                        this.dataset.submitting = 'false';
-                        if (submitBtn) submitBtn.disabled = false;
-                        return;
-                    }
-
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        
-                        const modalEl = this.closest('.modal');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        if (modalInstance) {
-                            modalInstance.hide();
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                         }
-                        
-                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                        document.body.classList.remove('modal-open');
-                        document.body.style.overflow = '';
-
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
-                        this.dataset.submitting = 'false';
-                        if (submitBtn) submitBtn.disabled = false;
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
                     showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
-                    this.dataset.submitting = 'false';
-                    if (submitBtn) submitBtn.disabled = false;
                 });
             });
         });

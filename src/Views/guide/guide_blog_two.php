@@ -154,7 +154,7 @@
             <?php if (!empty($guide_blog2_data["tip_{$i}_bold"]) || !empty($guide_blog2_data["tip_{$i}_text"])): ?>
               <li>
                 <p>
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/education/starList.svg')); ?>" alt="" class="ms-2" />
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25" />
                   <span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_bold"] ?? ''); ?></span>
                   <?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_text"] ?? ''); ?>
                 </p>

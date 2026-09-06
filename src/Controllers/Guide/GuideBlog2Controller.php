@@ -27,10 +27,10 @@ class GuideBlog2Controller {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات دليل المقال الثاني (guide_blog_two) وتوفيرها بالتسميات المتوافقة
+        // 2. جلب بيانات دليل المقال الثاني (guide_blog_two / guide_blog2) وتوفيرها بالتسميات المتوافقة
         $guide_blog2_data_array = GuideBlog2Model::getGuideData();
-        $data['guide_blog2_page'] = $guide_blog2_data_array;
-        $data['guide_blog2_data'] = $guide_blog2_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
+        $data['guide_blog2_data'] = $guide_blog2_data_array;
+        $data['guide_data'] = $guide_blog2_data_array; // لضمان التوافق التام مع أي متغيرات عامة مشتركة
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -58,7 +58,7 @@ class GuideBlog2Controller {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بصفحة الدليل (guide_blog_two.php)
+        // 2. استدعاء ملف الـ View الخاص بصفحة الدليل الثاني (guide_blog_two.php)
         $view_file = $root_path . '/src/Views/guide/guide_blog_two.php';
         if (file_exists($view_file)) {
             require_once $view_file;

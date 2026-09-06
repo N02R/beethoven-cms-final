@@ -47,8 +47,8 @@
 
     <div class="custom-container">
       <div class="mb-5">
-        <h2 class="sec-title"><?php echo htmlspecialchars($guide_blog2_data['why_title'] ?? ''); ?></h2>
-        <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($guide_blog2_data['why_subtitle'] ?? ''); ?></p>
+        <h2 class="sec-title"><?php echo htmlspecialchars($guide_blog2_data['why_study_title'] ?? ($guide_blog2_data['why_title'] ?? '')); ?></h2>
+        <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars($guide_blog2_data['why_study_desc'] ?? ($guide_blog2_data['why_subtitle'] ?? '')); ?></p>
       </div>
       <div class="row g-3">
         <?php if (!empty($guide_blog2_data['content_sections']) && is_array($guide_blog2_data['content_sections'])): ?>
@@ -78,30 +78,64 @@
   </section>
   <!-- why study end -->
 
-  <!-- custom-services-info start-->
+  <!-- notes & faq section start -->
   <section class="custom-services-info py-5">
     <div class="custom-container">
       <div class="advice-check py-5" style="position: relative;">
         <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog2ServicesModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات المقدمة">
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog2NotesModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الملاحظات والأسئلة">
               <i class="bi bi-pencil-fill"></i>
           </button>
         <?php endif; ?>
 
-        <h5 class="advice-text"><?php echo htmlspecialchars($guide_blog2_data['services_title'] ?? ''); ?></h5>
+        <h5 class="advice-text"><?php echo htmlspecialchars($guide_blog2_data['notes_title'] ?? 'ملاحظات هامة جداً'); ?></h5>
         <div class="row">
-          <?php for ($i = 1; $i <= 5; $i++): ?>
-            <?php if (!empty($guide_blog2_data["service_$i"])): ?>
-              <div class="col-lg-6 col-md-6 col-sm-12">
-                <p>✅ <?php echo htmlspecialchars($guide_blog2_data["service_$i"]); ?></p>
-              </div>
-            <?php endif; ?>
-          <?php endfor; ?>
+          <?php if (!empty($guide_blog2_data['note_1_bold'])): ?>
+            <div class="col-12 mb-3">
+              <p><strong><?php echo htmlspecialchars($guide_blog2_data['note_1_bold']); ?></strong></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['note_winter'])): ?>
+            <div class="col-12 mb-2">
+              <p>❄️ <?php echo htmlspecialchars($guide_blog2_data['note_winter']); ?></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['note_summer'])): ?>
+            <div class="col-12 mb-2">
+              <p>☀️ <?php echo htmlspecialchars($guide_blog2_data['note_summer']); ?></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['note_2_text'])): ?>
+            <div class="col-12 mb-2">
+              <p><?php echo htmlspecialchars($guide_blog2_data['note_2_text']); ?></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['note_3_title'])): ?>
+            <div class="col-12 mb-2">
+              <p>📌 <strong><?php echo htmlspecialchars($guide_blog2_data['note_3_title']); ?></strong></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['faq_1'])): ?>
+            <div class="col-12 mb-2">
+              <p><?php echo htmlspecialchars($guide_blog2_data['faq_1']); ?></p>
+            </div>
+          <?php endif; ?>
+          <?php if (!empty($guide_blog2_data['faq_2_prefix']) || !empty($guide_blog2_data['faq_2_link_text'])): ?>
+            <div class="col-12 mt-2">
+              <p>
+                <?php echo htmlspecialchars($guide_blog2_data['faq_2_prefix'] ?? ''); ?>
+                <a href="<?php echo htmlspecialchars($guide_blog2_data['faq_2_url'] ?? 'contact'); ?>" class="text-primary text-decoration-underline">
+                  <?php echo htmlspecialchars($guide_blog2_data['faq_2_link_text'] ?? ''); ?>
+                </a>
+                <?php echo htmlspecialchars($guide_blog2_data['faq_2_suffix'] ?? ''); ?>
+              </p>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
     </div>
   </section>
-  <!-- custom-services-info end-->
+  <!-- notes & faq section end -->
 
   <!-- time line start -->
   <section class="timeline-section py-5" style="position: relative;">
@@ -126,6 +160,9 @@
             <div class="m-number-box"><span class="m-num"><?php echo $num; ?></span></div>
             <div class="m-content">
               <h4><?php echo htmlspecialchars($step['title'] ?? ''); ?></h4>
+              <?php if (!empty($step['subtitle'])): ?>
+                <span class="text-muted d-block mb-1 small"><?php echo htmlspecialchars($step['subtitle']); ?></span>
+              <?php endif; ?>
               <p><?php echo htmlspecialchars($step['desc'] ?? ''); ?></p>
             </div>
           </div>
@@ -137,35 +174,6 @@
     </div>
   </section>
   <!-- time line end -->
-
-  <!-- custom-services-info start -->
-  <section class="custom-services-info py-5">
-    <div class="custom-container">
-      <div class="advice-stars my-5" style="position: relative;">
-        <?php if (!empty($is_admin)): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBlog2TipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل قسم النصائح والضمانات">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-        <?php endif; ?>
-
-        <h5 class="mb-4 advice-text"><?php echo htmlspecialchars($guide_blog2_data['tips_title'] ?? ''); ?></h5>
-        <ul class="star-list">
-          <?php for ($i = 1; $i <= 3; $i++): ?>
-            <?php if (!empty($guide_blog2_data["tip_{$i}_bold"]) || !empty($guide_blog2_data["tip_{$i}_text"])): ?>
-              <li>
-                <p>
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2" width="25" />
-                  <span class="fw-bold"><?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_bold"] ?? ''); ?></span>
-                  <?php echo htmlspecialchars($guide_blog2_data["tip_{$i}_text"] ?? ''); ?>
-                </p>
-              </li>
-            <?php endif; ?>
-          <?php endfor; ?>
-        </ul>
-      </div>
-    </div>
-  </section>
-  <!-- custom-services-info end -->
 
   <?php
     $guide_blog2_modals_file = __DIR__ . '/includes/admin_guide_blog2_modals.php';

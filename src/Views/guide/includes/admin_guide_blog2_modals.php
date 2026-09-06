@@ -297,19 +297,21 @@
         div.innerHTML = `
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">العنوان</label>
-                    <input type="text" class="form-control edu-why-title" name="content_sections[${blog2WhyCounter}][heading]" placeholder="عنوان الكارت">
+                    <label for="content_heading_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <input type="text" id="content_heading_${blog2WhyCounter}" class="form-control edu-why-title" name="content_sections[${blog2WhyCounter}][heading]" placeholder="عنوان الكارت">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
-                    <input type="text" class="form-control edu-why-desc" name="content_sections[${blog2WhyCounter}][body]" placeholder="وصف الكارت...">
+                    <label for="content_body_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                    <input type="text" id="content_body_${blog2WhyCounter}" class="form-control edu-why-desc" name="content_sections[${blog2WhyCounter}][body]" placeholder="وصف الكارت...">
                 </div>
             </div>
 
             <div class="row g-2 align-items-end">
                 <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" class="form-control edu-why-file" name="content_sections_img_${blog2WhyCounter}" accept="image/*">
+                    <label for="content_file_${blog2WhyCounter}" class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="content_file_${blog2WhyCounter}" class="form-control edu-why-file" name="content_sections_img_${blog2WhyCounter}" accept="image/*">
+                    </div>
                 </div>
                 <input type="hidden" class="edu-why-old-img" name="content_sections[${blog2WhyCounter}][icon]" value="">
                 <div class="col-1 text-center pb-1">
@@ -326,6 +328,12 @@
         const container = document.getElementById('guideBlog2TimelineContainer');
         if (!container) return;
         
+        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+        if (currentRows >= 6) {
+            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
+            return;
+        }
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm edu-timeline-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -335,12 +343,12 @@
         div.innerHTML = `
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
-                    <input type="text" class="form-control edu-step-title" name="timeline_steps[${blog2TimelineCounter}][title]" placeholder="اسم الخطوة">
+                    <label for="timeline_title_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                    <input type="text" id="timeline_title_${blog2TimelineCounter}" class="form-control edu-step-title" name="timeline_steps[${blog2TimelineCounter}][title]" placeholder="اسم الخطوة">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">التفاصيل</label>
-                    <input type="text" class="form-control edu-step-desc" name="timeline_steps[${blog2TimelineCounter}][desc]" placeholder="التفاصيل">
+                    <label for="timeline_desc_${blog2TimelineCounter}" class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                    <input type="text" id="timeline_desc_${blog2TimelineCounter}" class="form-control edu-step-desc" name="timeline_steps[${blog2TimelineCounter}][desc]" placeholder="التفاصيل">
                 </div>
             </div>
             <input type="hidden" name="timeline_steps[${blog2TimelineCounter}][dot_class]" value="bg-blue">
@@ -352,18 +360,72 @@
         blog2TimelineCounter++;
     }
 
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#guideBlog2HeroForm, #guideBlog2MainForm, #guideBlog2WhyForm, #guideBlog2ServicesForm, #guideBlog2TimelineForm, #guideBlog2TipsForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                if (this.dataset.submitting === 'true') return;
+                this.dataset.submitting = 'true';
+                
+                const submitBtn = this.querySelector('[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
 
-                // إشعار للمدير بأن العملية قيد التنفيذ
                 showNotification('جاري حفظ التغييرات...', 'info');
 
                 fetch('index.php?url=admin/settings/save', {
@@ -376,43 +438,45 @@
                 })
                 .then(response => response.text())
                 .then(text => {
-                    console.log("Raw Server Response:", text); // اطبع الرد الخام لمعرفة شكل المتغيرات القادم
+                    console.log("Raw Server Response:", text);
                     
                     let data;
                     try {
                         data = JSON.parse(text);
                     } catch (err) {
-                        // إذا السيرفر أرسل HTML أو تحذير PHP
-                        showNotification('خطأ برمجي من السيرفر (راجع الـ Console)', 'danger');
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        this.dataset.submitting = 'false';
+                        if (submitBtn) submitBtn.disabled = false;
                         return;
                     }
 
                     if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح!', 'success');
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                         
-                        // إغلاق المودل بشكل صحيح
                         const modalEl = this.closest('.modal');
                         const modalInstance = bootstrap.Modal.getInstance(modalEl);
                         if (modalInstance) {
                             modalInstance.hide();
                         }
                         
-                        // إزالة الـ Backdrop لمنع تجميد الشاشة
                         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                         document.body.classList.remove('modal-open');
                         document.body.style.overflow = '';
 
-                        // إعادة تحميل الصفحة لتحديث البيانات
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
                     } else {
-                        showNotification('خطأ: ' + (data.message || 'فشل الحفظ من السيرفر'), 'danger');
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                        this.dataset.submitting = 'false';
+                        if (submitBtn) submitBtn.disabled = false;
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة.', 'danger');
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                    this.dataset.submitting = 'false';
+                    if (submitBtn) submitBtn.disabled = false;
                 });
             });
         });

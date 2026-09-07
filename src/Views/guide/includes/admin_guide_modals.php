@@ -448,7 +448,10 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch('index.php?url=admin/settings/save', {
+                // استخدام المسار المطلق والثابت لجذر المشروع لمنع خطأ 400 في المسارات الفرعية
+                const targetUrl = window.location.origin + '/index.php?url=admin/settings/save';
+
+                fetch(targetUrl, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-Token': csrfToken,
@@ -479,3 +482,4 @@
         });
     });
 </script>
+

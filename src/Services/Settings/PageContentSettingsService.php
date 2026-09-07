@@ -70,7 +70,7 @@ class PageContentSettingsService
             }
         }
 
-        // معالجة خاصة لصفحة دليل الطالب (Guide Blog One Page)
+        // معالجة خاصة لصفحة دليل الطالب الأولى (Guide Blog One Page)
         elseif ($dbKey === 'guide_blog_one_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -189,6 +189,37 @@ class PageContentSettingsService
                 $pageData['timeline_steps'] = !empty($timelineSteps) ? $timelineSteps : [];
             }
         }
+        
+        // معالجة خاصة لصفحة دليل الطالب الثانية (Guide Blog Two Page)
+        elseif ($dbKey === 'guide_blog_two_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } else {
+                // إمكانية معالجة عامة لأقسام الصفحة الثانية إذا تطلبت ذلك
+                if (str_contains($action, '_notes')) {
+                    $pageData['note_title'] = $_POST['note_title'] ?? '';
+                    if (isset($_POST['notes'])) {
+                        $pageData['notes'] = $_POST['notes'];
+                    }
+                }
+            }
+        }
+
         // بقية الصفحات الأخرى...
         elseif ($dbKey === 'job_agreements_page') {
             if (str_contains($action, '_breadcrumb')) {
@@ -759,7 +790,8 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
-        if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_')) return 'guide_blog_one_page';
+        if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_blog_1_')) return 'guide_blog_one_page';
+        if (str_starts_with($action, 'update_guide_blog_two_') || str_starts_with($action, 'update_guide_blog_2_') || str_starts_with($action, 'update_guide_two_')) return 'guide_blog_two_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';

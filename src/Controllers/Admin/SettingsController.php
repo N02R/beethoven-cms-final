@@ -13,6 +13,11 @@ use App\Services\Settings\JobSettingsService;
 use App\Services\Settings\PageContentSettingsService;
 use Exception;
 use PDO;
+echo "<pre>";
+print_r($_POST);
+print_r($_FILES);
+echo "</pre>";
+die();
 
 class SettingsController
 {

@@ -209,14 +209,71 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_main')) {
                 $pageData['main_title'] = $_POST['main_title'] ?? '';
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
-            } else {
-                // إمكانية معالجة عامة لأقسام الصفحة الثانية إذا تطلبت ذلك
-                if (str_contains($action, '_notes')) {
-                    $pageData['note_title'] = $_POST['note_title'] ?? '';
-                    if (isset($_POST['notes'])) {
-                        $pageData['notes'] = $_POST['notes'];
+            } elseif (str_contains($action, '_whystudy')) {
+                $pageData['why_study_title'] = $_POST['why_study_title'] ?? '';
+                $pageData['why_study_desc'] = $_POST['why_study_desc'] ?? '';
+                
+                $incomingSections = $_POST['content_sections'] ?? [];
+                $contentSections = [];
+                
+                foreach ($incomingSections as $i => $section) {
+                    $headingVal = trim($section['heading'] ?? '');
+                    if ($headingVal === '') continue;
+
+                    $iconVal = trim($section['icon'] ?? '');
+                    $fileKey = "content_sections_img_{$i}";
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($iconVal);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $iconVal = 'assets/uploads/' . $filename;
                     }
+
+                    $contentSections[] = [
+                        'heading' => $headingVal,
+                        'body'    => trim($section['body'] ?? ''),
+                        'icon'    => $iconVal
+                    ];
                 }
+                $pageData['content_sections'] = $contentSections;
+            } elseif (str_contains($action, '_advice')) {
+                $pageData['advice_title'] = $_POST['advice_title'] ?? '';
+                $adviceItemsRaw = $_POST['advice_items'] ?? [];
+                $pageData['advice_items'] = is_array($adviceItemsRaw) ? array_values(array_filter(array_map('trim', $adviceItemsRaw), fn($val) => $val !== '')) : [];
+            } elseif (str_contains($action, '_timeline')) {
+                $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
+                
+                $incomingSteps = $_POST['timeline_steps'] ?? [];
+                $timelineSteps = [];
+                
+                foreach ($incomingSteps as $step) {
+                    $titleVal = trim($step['title'] ?? '');
+                    if ($titleVal === '') continue;
+
+                    $timelineSteps[] = [
+                        'title' => $titleVal,
+                        'desc'  => trim($step['desc'] ?? '')
+                    ];
+                }
+                $pageData['timeline_steps'] = $timelineSteps;
+            } elseif (str_contains($action, '_guarantees') || str_contains($action, '_notes')) {
+                $pageData['guarantee_title'] = $_POST['guarantee_title'] ?? '';
+                $incomingGuarantees = $_POST['guarantees_list'] ?? [];
+                $guaranteesList = [];
+                
+                foreach ($incomingGuarantees as $gItem) {
+                    $boldVal = trim($gItem['bold'] ?? '');
+                    $textVal = trim($gItem['text'] ?? '');
+                    if ($boldVal === '' && $textVal === '') continue;
+
+                    $guaranteesList[] = [
+                        'bold' => $boldVal,
+                        'text' => $textVal
+                    ];
+                }
+                $pageData['guarantees_list'] = $guaranteesList;
             }
         }
 

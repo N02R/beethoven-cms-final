@@ -69,131 +69,7 @@ class PageContentSettingsService
                 }
             }
         }
-        // معالجة خاصة لصفحة دليل المقال الثاني (Guide Blog Two Page)
-        elseif ($dbKey === 'guide_blog_two_page') {
-            if (str_contains($action, '_breadcrumb')) {
-                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
-                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
-            } elseif (str_contains($action, '_hero')) {
-                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
-                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($pageData['hero_img'])) {
-                        $this->deleteOldImageFile($pageData['hero_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
-                    $heroImg = 'assets/uploads/' . $filename;
-                }
-                $pageData['hero_img'] = $heroImg;
-                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
-            } elseif (str_contains($action, '_main')) {
-                $pageData['main_title'] = $_POST['main_title'] ?? '';
-                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
-            } elseif (str_contains($action, '_notes')) {
-                $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة جداً';
-                $pageData['note_1_bold'] = $_POST['note_1_bold'] ?? '';
-                $pageData['note_winter'] = $_POST['note_winter'] ?? '';
-                $pageData['note_summer'] = $_POST['note_summer'] ?? '';
-                $pageData['note_2_text'] = $_POST['note_2_text'] ?? '';
-                $pageData['note_3_title'] = $_POST['note_3_title'] ?? '';
-                $pageData['faq_1'] = $_POST['faq_1'] ?? '';
-                $pageData['faq_2_prefix'] = $_POST['faq_2_prefix'] ?? '';
-                $pageData['faq_2_url'] = $_POST['faq_2_url'] ?? 'contact';
-                $pageData['faq_2_link_text'] = $_POST['faq_2_link_text'] ?? '';
-                $pageData['faq_2_suffix'] = $_POST['faq_2_suffix'] ?? '';
-            } elseif (str_contains($action, '_tips')) {
-                $pageData['tips_title'] = $_POST['tips_title'] ?? 'نصائح وضمانات';
-                for ($i = 1; $i <= 3; $i++) {
-                    $pageData["tip_{$i}_bold"] = $_POST["tip_{$i}_bold"] ?? '';
-                    $pageData["tip_{$i}_text"] = $_POST["tip_{$i}_text"] ?? '';
-                }
-            } elseif (str_contains($action, '_whystudy') || str_contains($action, '_sections')) {
-                $pageData['why_study_title'] = $_POST['why_title'] ?? ($_POST['why_study_title'] ?? '');
-                $pageData['why_study_desc'] = $_POST['why_subtitle'] ?? ($_POST['why_study_desc'] ?? '');
-                
-                $incomingSections = $_POST['content_sections'] ?? [];
-                if (empty($incomingSections)) {
-                    $headings = $_POST['section_headings'] ?? [];
-                    $bodies = $_POST['section_bodies'] ?? [];
-                    $icons = $_POST['section_icons'] ?? [];
-                    foreach ($headings as $i => $h) {
-                        $incomingSections[$i] = [
-                            'heading' => $h,
-                            'body' => $bodies[$i] ?? '',
-                            'icon' => $icons[$i] ?? ''
-                        ];
-                    }
-                }
 
-                $contentSections = [];
-                foreach ($incomingSections as $i => $section) {
-                    $headingVal = trim($section['heading'] ?? '');
-                    if ($headingVal === '') continue;
-
-                    $iconVal = trim($section['icon'] ?? '');
-                    $fileKey = "content_sections_img_{$i}";
-                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($iconVal);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                        $iconVal = 'assets/uploads/' . $filename;
-                    }
-
-                    $contentSections[] = [
-                        'heading' => $headingVal,
-                        'body'    => trim($section['body'] ?? ''),
-                        'icon'    => $iconVal
-                    ];
-                }
-                $pageData['content_sections'] = !empty($contentSections) ? $contentSections : [];
-            } elseif (str_contains($action, '_timeline')) {
-                $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
-                $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
-                
-                $incomingSteps = $_POST['timeline_steps'] ?? [];
-                if (empty($incomingSteps)) {
-                    $titles = $_POST['step_titles'] ?? [];
-                    $subtitles = $_POST['step_subtitles'] ?? [];
-                    $descs = $_POST['step_descs'] ?? [];
-                    $dots = $_POST['step_dots'] ?? [];
-                    $icons = $_POST['step_icons'] ?? [];
-                    foreach ($titles as $i => $t) {
-                        $incomingSteps[$i] = [
-                            'title' => $t,
-                            'subtitle' => $subtitles[$i] ?? '',
-                            'desc' => $descs[$i] ?? '',
-                            'dot_class' => $dots[$i] ?? 'bg-blue',
-                            'icon' => $icons[$i] ?? ''
-                        ];
-                    }
-                }
-
-                $timelineSteps = [];
-                foreach ($incomingSteps as $i => $step) {
-                    $titleVal = trim($step['title'] ?? '');
-                    if ($titleVal === '') continue;
-
-                    $iconVal = trim($step['icon'] ?? '');
-                    $fileKey = "timeline_steps_icon_{$i}";
-                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($iconVal);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                        $iconVal = 'assets/uploads/' . $filename;
-                    }
-
-                    $timelineSteps[] = [
-                        'title'     => $titleVal,
-                        'subtitle'  => trim($step['subtitle'] ?? ''),
-                        'desc'      => trim($step['desc'] ?? ''),
-                        'dot_class' => trim($step['dot_class'] ?? 'bg-blue'),
-                        'icon'      => $iconVal
-                    ];
-                }
-                $pageData['timeline_steps'] = !empty($timelineSteps) ? $timelineSteps : [];
-            }
-        }
         // معالجة خاصة لصفحة دليل الطالب (Guide Blog One Page)
         elseif ($dbKey === 'guide_blog_one_page') {
             if (str_contains($action, '_breadcrumb')) {
@@ -883,7 +759,6 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
-        if (str_starts_with($action, 'update_guide_blog_two_')) return 'guide_blog_two_page';
         if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_')) return 'guide_blog_one_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';

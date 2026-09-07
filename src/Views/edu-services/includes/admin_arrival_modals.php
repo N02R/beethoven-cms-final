@@ -1,5 +1,12 @@
+<?php
+/**
+ * مودالات التعديل الخاصة بصفحة الاستقبال والوصول (Arrival Modals)
+ * مطابقة تماماً لهيكلة البيانات ومفاتيح الـ arrival_data والـ IDs المطلوبة في arrival.php
+ */
+?>
+
 <!-- 1. Breadcrumb Edit Modal -->
-<div class="modal fade custom-modal" id="priceListBreadcrumbModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="arrivalBreadcrumbModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,24 +14,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="priceListBreadcrumbForm" method="POST">
-                    <input type="hidden" name="action" value="update_pricelist_breadcrumb">
+                <form id="arrivalBreadcrumbForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_breadcrumb">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">اسم الصفحة في المسار</label>
-                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($pricelist_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <input type="text" class="form-control" name="page_breadcrumb" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">رابط الصفحة (URL)</label>
-                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($pricelist_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="page_breadcrumb_url" value="<?php echo htmlspecialchars($arrival_data['page_breadcrumb_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="priceListBreadcrumbForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="arrivalBreadcrumbForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -32,7 +39,7 @@
 </div>
 
 <!-- 2. Hero Image Edit Modal -->
-<div class="modal fade custom-modal" id="priceListHeroModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="arrivalHeroModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -40,15 +47,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="priceListHeroForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_pricelist_hero">
-                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($pricelist_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <form id="arrivalHeroForm" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_arrival_hero">
+                    <input type="hidden" name="old_img" value="<?php echo htmlspecialchars($arrival_data['hero_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <?php if (!empty($pricelist_data['hero_img'])): ?>
+                        <?php if (!empty($arrival_data['hero_img'])): ?>
                             <div class="mb-4 text-center p-3 rounded-3" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
-                                <img src="<?php echo $path_prefix . htmlspecialchars($pricelist_data['hero_img'], ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
+                                <img src="<?php echo get_image_url($arrival_data['hero_img'], 'assets/img/education/servicesimg9.png'); ?>" style="max-height: 120px; object-fit: contain; border-radius: 8px;" alt="Hero Preview">
                             </div>
                         <?php endif; ?>
                         
@@ -60,7 +67,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="priceListHeroForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="arrivalHeroForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -68,7 +75,7 @@
 </div>
 
 <!-- 3. Main Title & Description Edit Modal -->
-<div class="modal fade custom-modal" id="priceListMainModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="arrivalMainTitleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -76,65 +83,92 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="priceListMainForm" method="POST">
-                    <input type="hidden" name="action" value="update_pricelist_main">
+                <form id="arrivalMainTitleForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_main">
                     
                     <!-- حاوية منسقة بنفس الستايل الموحد -->
                     <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small text-secondary">العنوان الرئيسي</label>
-                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($pricelist_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <input type="text" class="form-control" name="main_title" value="<?php echo htmlspecialchars($arrival_data['main_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-semibold small text-secondary">الوصف التفصيلي</label>
-                            <textarea class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($pricelist_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="main_desc" rows="5" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($arrival_data['main_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="priceListMainForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="arrivalMainTitleForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 4. Download Card / File Edit Modal -->
-<div class="modal fade custom-modal" id="priceListCardModal" tabindex="-1" aria-hidden="true">
+<!-- 4. Tips & Advice Edit Modal -->
+<div class="modal fade custom-modal" id="arrivalTipsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-down text-primary"></i> تعديل ملف التحميل</h5>
+                <h5 class="modal-title"><i class="bi bi-check2-circle text-primary"></i> تعديل التوصيات والنصائح</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="priceListCardForm" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_pricelist_card">
-                    <input type="hidden" name="old_file" value="<?php echo htmlspecialchars($pricelist_data['download_item']['file'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <form id="arrivalTipsForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_tips">
                     
-                    <!-- حاوية منسقة بنفس الستايل الموحد -->
-                    <div class="p-4 shadow-sm mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">عنوان الملف</label>
-                            <input type="text" class="form-control" name="download_title" value="<?php echo htmlspecialchars($pricelist_data['download_item']['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                            <label class="form-label fw-semibold small text-secondary">عنوان قسم النصائح</label>
+                            <input type="text" class="form-control" name="advice_title" value="<?php echo htmlspecialchars($arrival_data['advice_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small text-secondary">نوع الملف</label>
-                            <select class="form-control" name="download_type">
-                                <option value="pdf" <?php echo (($pricelist_data['download_item']['type'] ?? '') === 'pdf') ? 'selected' : ''; ?>>PDF</option>
-                                <option value="word" <?php echo (($pricelist_data['download_item']['type'] ?? '') === 'word') ? 'selected' : ''; ?>>Word</option>
-                            </select>
+                            <label class="form-label fw-semibold small text-secondary">وصف قسم النصائح</label>
+                            <textarea class="form-control" name="advice_desc" rows="3"><?php echo htmlspecialchars($arrival_data['advice_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                         <div class="mb-0">
-                            <label class="form-label fw-semibold small text-secondary">رفع ملف جديد (اختياري)</label>
-                            <input type="file" class="form-control" name="download_file" accept=".pdf,.doc,.docx">
+                            <label class="form-label fw-semibold small text-secondary">قائمة النصائح (كل نصيحة في سطر)</label>
+                            <textarea class="form-control" name="tips_raw" rows="6" placeholder="اكتب كل نصيحة في سطر منفصل"><?php echo htmlspecialchars(implode("\n", $arrival_data['tips'] ?? []), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="priceListCardForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="submit" form="arrivalTipsForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Important Notes Edit Modal -->
+<div class="modal fade custom-modal" id="arrivalNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-star-fill text-warning"></i> تعديل الملاحظات الهامة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="arrivalNotesForm" method="POST">
+                    <input type="hidden" name="action" value="update_arrival_notes">
+                    
+                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-secondary">عنوان الملاحظات</label>
+                            <input type="text" class="form-control" name="note_title" value="<?php echo htmlspecialchars($arrival_data['note_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold small text-secondary">قائمة الملاحظات (كل ملاحظة في سطر)</label>
+                            <textarea class="form-control" name="notes_raw" rows="6" placeholder="اكتب كل ملاحظة في سطر منفصل"><?php echo htmlspecialchars(implode("\n", $arrival_data['notes'] ?? []), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="arrivalNotesForm" class="btn-premium">حفظ التغييرات</button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
             </div>
         </div>
@@ -188,9 +222,9 @@
         }, 4000);
     }
 
-    // 2. معالج الحفظ الموحد عبر AJAX (مع فحص استجابة السيرفر وتفادي أخطاء 404)
+    // 2. معالج الحفظ الموحد عبر AJAX لمودالات صفحة الوصول
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('#priceListBreadcrumbForm, #priceListHeroForm, #priceListMainForm, #priceListCardForm').forEach(form => {
+        document.querySelectorAll('#arrivalBreadcrumbForm, #arrivalHeroForm, #arrivalMainTitleForm, #arrivalTipsForm, #arrivalNotesForm').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 

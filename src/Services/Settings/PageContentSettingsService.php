@@ -27,8 +27,50 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة الاستقبال والوصول (Arrival Page)
+        if ($dbKey === 'arrival_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_tips')) {
+                $pageData['advice_title'] = $_POST['advice_title'] ?? '';
+                $pageData['advice_desc'] = $_POST['advice_desc'] ?? '';
+                $tipsRaw = $_POST['tips_raw'] ?? ($_POST['tips'] ?? []);
+                if (is_string($tipsRaw)) {
+                    $pageData['tips'] = array_values(array_filter(array_map('trim', explode("\n", $tipsRaw)), fn($val) => $val !== ''));
+                } elseif (is_array($tipsRaw)) {
+                    $pageData['tips'] = array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== ''));
+                } else {
+                    $pageData['tips'] = [];
+                }
+            } elseif (str_contains($action, '_notes')) {
+                $pageData['note_title'] = $_POST['note_title'] ?? '';
+                $notesRaw = $_POST['notes_raw'] ?? ($_POST['notes'] ?? []);
+                if (is_string($notesRaw)) {
+                    $pageData['notes'] = array_values(array_filter(array_map('trim', explode("\n", $notesRaw)), fn($val) => $val !== ''));
+                } elseif (is_array($notesRaw)) {
+                    $pageData['notes'] = array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== ''));
+                } else {
+                    $pageData['notes'] = [];
+                }
+            }
+        }
         // معالجة خاصة لصفحة دليل المقال الثاني (Guide Blog Two Page)
-        if ($dbKey === 'guide_blog_two_page') {
+        elseif ($dbKey === 'guide_blog_two_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
@@ -863,6 +905,7 @@ class PageContentSettingsService
 
     private function resolveDbKey(string $action): ?string
     {
+        if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_guide_blog_two_')) return 'guide_blog_two_page';
         if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_')) return 'guide_blog_one_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
@@ -870,7 +913,6 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
         if (str_starts_with($action, 'update_medical_specialties_')) return 'medical_specialties_page';
         if (str_starts_with($action, 'update_vocational_')) return 'vocational_page';
-        if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_visa_')) return 'general_visa_page';
         if (str_starts_with($action, 'update_check_')) return 'check_page';
         if (str_starts_with($action, 'update_cover_')) return 'coverletter_page';

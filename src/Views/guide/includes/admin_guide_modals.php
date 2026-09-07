@@ -354,7 +354,7 @@
                 <i class="bi ${icon} fs-4"></i>
                 <div>
                     <strong>${title}</strong>
-                    <div class="small">${message}</div>
+                    <div class="small" style="max-height: 150px; overflow-y: auto; direction: ltr; text-align: right;">${message}</div>
                 </div>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -367,7 +367,7 @@
                 alertDiv.classList.remove('show');
                 setTimeout(() => alertDiv.remove(), 300);
             }
-        }, 4000);
+        }, 8000);
     }
 
     let whyStudyCounter = <?php echo count($guide_data['content_sections'] ?? []); ?>;
@@ -490,30 +490,27 @@
                     body: formData
                 })
                 .then(response => {
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json();
-                    } else {
-                        return response.text().then(text => {
-                            throw new Error(text);
-                        });
-                    }
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            throw new Error(text || 'استجابة السيرفر غير صالحة أو فارغة');
+                        }
+                    });
                 })
                 .then(data => {
                     if (data && data.success) {
                         showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                         setTimeout(() => location.reload(), 1000);
                     } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data?.message || 'فشل الحفظ'), 'danger');
+                        showNotification('عذراً: ' + (data?.message || 'فشل الحفظ'), 'danger');
                     }
                 })
-.catch(err => {
-    console.error('Save Error:', err);
-    // إظهار النص الحقيقي القادم من السيرفر مباشرة في الـ Popup
-    showNotification('خطأ السيرفر: ' + err.message, 'danger');
-});
-
+                .catch(err => {
+                    showNotification('خطأ السيرفر: ' + err.message, 'danger');
+                });
             });
         });
     });
 </script>
+

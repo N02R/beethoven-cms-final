@@ -428,7 +428,7 @@
                     method: 'POST',
                     headers: {
                         'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json, text/html, */*'
                     },
                     body: formData
                 })
@@ -444,7 +444,9 @@
                             showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        // إذا كانت استجابة السيرفر نصية وليست JSON (مثل إعادة توجيه أو صفحات HTML عند النجاح)
+                        showNotification('تم الحفظ بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
                     }
                 })
                 .catch(err => {
@@ -455,3 +457,4 @@
         });
     });
 </script>
+

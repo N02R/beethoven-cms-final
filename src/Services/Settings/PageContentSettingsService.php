@@ -145,11 +145,7 @@ class PageContentSettingsService
                         'icon'    => $iconVal
                     ];
                 }
-                if (!empty($contentSections)) {
-                    $pageData['content_sections'] = $contentSections;
-                } else {
-                    $pageData['content_sections'] = [];
-                }
+                $pageData['content_sections'] = !empty($contentSections) ? $contentSections : [];
             } elseif (str_contains($action, '_timeline')) {
                 $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
                 $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
@@ -195,11 +191,7 @@ class PageContentSettingsService
                         'icon'      => $iconVal
                     ];
                 }
-                if (!empty($timelineSteps)) {
-                    $pageData['timeline_steps'] = $timelineSteps;
-                } else {
-                    $pageData['timeline_steps'] = [];
-                }
+                $pageData['timeline_steps'] = !empty($timelineSteps) ? $timelineSteps : [];
             }
         }
         // معالجة خاصة لصفحة دليل الطالب (Guide Blog One Page)
@@ -272,11 +264,7 @@ class PageContentSettingsService
                         'icon'    => $iconVal
                     ];
                 }
-                if (!empty($contentSections)) {
-                    $pageData['content_sections'] = $contentSections;
-                } else {
-                    $pageData['content_sections'] = [];
-                }
+                $pageData['content_sections'] = !empty($contentSections) ? $contentSections : [];
             } elseif (str_contains($action, '_timeline')) {
                 $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
                 $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
@@ -322,14 +310,10 @@ class PageContentSettingsService
                         'icon'      => $iconVal
                     ];
                 }
-                if (!empty($timelineSteps)) {
-                    $pageData['timeline_steps'] = $timelineSteps;
-                } else {
-                    $pageData['timeline_steps'] = [];
-                }
+                $pageData['timeline_steps'] = !empty($timelineSteps) ? $timelineSteps : [];
             }
         }
-        // معالجة خاصة لصفحة اتفاقيات البحث عن عمل (Job Agreements Page)
+        // بقية الصفحات الأخرى...
         elseif ($dbKey === 'job_agreements_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -383,7 +367,6 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة باقة التدريب الطبي (Medical Packages Page)
         elseif ($dbKey === 'medical_packages_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -422,7 +405,6 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة قائمة أسعار الخدمات (Price List Page)
         elseif ($dbKey === 'pricelist_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -459,7 +441,6 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة التخصصات الطبية (Medical Specialties Page)
         elseif ($dbKey === 'medical_specialties_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -496,7 +477,6 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة التدريب المهني (Vocational / Ausbildung Page)
         elseif ($dbKey === 'vocational_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -533,7 +513,6 @@ class PageContentSettingsService
                 $pageData['download_item'] = $downloadItem;
             }
         }
-        // معالجة خاصة لصفحة السنة التحضيرية (Foundation Page)
         elseif ($dbKey === 'foundation_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -589,7 +568,6 @@ class PageContentSettingsService
                 $pageData['tips_items'] = is_array($tipsItemsRaw) ? array_values(array_filter(array_map('trim', $tipsItemsRaw), fn($val) => $val !== '')) : [];
             }
         } 
-        // معالجة خاصة لصفحة الدورات (Courses Page / Language Page)
         elseif ($dbKey === 'courses_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
@@ -639,7 +617,6 @@ class PageContentSettingsService
                 }
             }
         }
-        // معالجة خاصة لصفحة متطلبات التأشيرة العامة (General Visa Page)
         elseif ($dbKey === 'general_visa_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';

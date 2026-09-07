@@ -507,10 +507,12 @@
                         showNotification('عذراً، لم يتم الحفظ: ' + (data?.message || 'فشل الحفظ'), 'danger');
                     }
                 })
-                .catch(err => {
-                    console.error('Save Error:', err);
-                    showNotification('الخطأ الحقيقي من السيرفر: ' + (err.message || err), 'danger');
-                });
+.catch(err => {
+    console.error('Save Error:', err);
+    // إظهار النص الحقيقي القادم من السيرفر مباشرة في الـ Popup
+    showNotification('خطأ السيرفر: ' + err.message, 'danger');
+});
+
             });
         });
     });

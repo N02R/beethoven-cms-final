@@ -424,7 +424,7 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch('index.php?url=admin/settings/save', {
+                fetch('/index.php?url=admin/settings/save', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-Token': csrfToken,

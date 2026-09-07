@@ -446,23 +446,29 @@
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) formData.append('csrf_token', csrfToken);
 
-                fetch('index.php?url=admin/settings/save', {
+                // تحديد الرابط الديناميكي لتفادي خطأ المسارات الفرعية في السيرفر
+                let targetUrl = 'index.php?url=admin/settings/save';
+                if (window.location.href.includes('/guide/')) {
+                    targetUrl = '../index.php?url=admin/settings/save';
+                }
+
+                fetch(targetUrl, {
                     method: 'POST',
                     headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
                     body: formData
                 })
-                .then(response => response.text())
-                .then(text => {
+                .then(async response => {
+                    const text = await response.text();
                     try {
                         const data = JSON.parse(text);
-                        if (data.success) {
+                        if (response.ok && data.success) {
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text.substring(0, 150), 'danger');
                     }
                 })
                 .catch(err => showNotification('حدث خطأ أثناء الاتصال بالسيرفر.', 'danger'));
@@ -470,3 +476,4 @@
         });
     });
 </script>
+

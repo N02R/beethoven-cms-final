@@ -296,6 +296,16 @@ class SettingsController
                 $jsonVal = json_encode(array_values($guideData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
+            else {
+                // منع النجاح الوهمي في حال لم يتطابق أي إجراء
+                $pdo->rollBack();
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'الإجراء المطلوب غير معروف أو غير مبرمج (Action: ' . htmlspecialchars($action) . ')'
+                ]);
+                exit;
+            }
 
             $pdo->commit();
 

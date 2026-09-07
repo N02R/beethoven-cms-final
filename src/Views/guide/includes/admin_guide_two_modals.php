@@ -438,38 +438,38 @@
                 e.preventDefault();
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                if (csrfToken && !formData.has('csrf_token')) formData.append('csrf_token', csrfToken);
-
-                // استخدام رابط مطلق يضمن الوصول لملف التوجيه الرئيسي في الـ public مباشرة دون أخطاء المسارات الفرعية
-                const saveUrl = window.location.origin + '/admin/settings/save';
-                
-                // بديل احتياطي في حال كان المشروع يعمل داخل مجلد فرعي ضمن السيرفر المحلي:
-                // يمكنك استبدال السطر أعلاه بـ: window.location.pathname.includes('/guide/') ? '../index.php?url=admin/settings/save' : 'index.php?url=admin/settings/save'
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
 
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
-                    headers: { 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 })
-                .then(async response => {
-                    const text = await response.text();
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
-                        if (response.ok && data.success) {
+                        if (data.success) {
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || data.error || 'فشل الحفظ'), 'danger');
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ من السيرفر (استجابة غير صالحة): ' + text.substring(0, 150), 'danger');
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
-                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر.', 'danger');
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
                 });
             });
         });
     });
 </script>
-

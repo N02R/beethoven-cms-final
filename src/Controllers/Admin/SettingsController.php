@@ -13,11 +13,6 @@ use App\Services\Settings\JobSettingsService;
 use App\Services\Settings\PageContentSettingsService;
 use Exception;
 use PDO;
-echo "<pre>";
-print_r($_POST);
-print_r($_FILES);
-echo "</pre>";
-die();
 
 class SettingsController
 {
@@ -72,7 +67,7 @@ class SettingsController
                 exit;
             }
 
-            // 0.ب. فحص الصفحات الفردية (تشمل Job Agreements, Medical Packages, Price List, Medical Specialties, Vocational, Arrival, Visa, Check, Cover Letter, CV, Motivation, German Lang, English Lang, Offers, Health, Financial, Living Cost, Foundation, Courses)
+            // 0.ب. فحص الصفحات الفردية
             $pageService = new PageContentSettingsService($root_path, $imageUploader);
             if ($pageService->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();

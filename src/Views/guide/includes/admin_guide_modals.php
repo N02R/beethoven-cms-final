@@ -489,24 +489,27 @@
                     },
                     body: formData
                 })
-                .then(response => response.text())
-                .then(text => {
-                    console.log("Raw Server Response:", text);
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success) {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
-                        } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
-                        }
-                    } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data?.message || 'فشل الحفظ'), 'danger');
                     }
                 })
                 .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
+                    console.error('Save Error:', err);
+                    showNotification('الخطأ الحقيقي من السيرفر: ' + (err.message || err), 'danger');
                 });
             });
         });

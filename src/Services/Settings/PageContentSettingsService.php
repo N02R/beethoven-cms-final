@@ -27,8 +27,97 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة المدونة الأولى (Guide Blog 1 Page)
+        if ($dbKey === 'guide_blog1_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_notes')) {
+                $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة جداً';
+                
+                $titles = $_POST['note_titles'] ?? [];
+                $texts  = $_POST['note_texts'] ?? [];
+                
+                $notesItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    $textVal  = trim($texts[$i] ?? '');
+                    if ($titleVal !== '' || $textVal !== '') {
+                        $notesItems[] = [
+                            'title' => $titleVal,
+                            'text'  => $textVal
+                        ];
+                    }
+                }
+                $pageData['notes_items'] = $notesItems;
+            } elseif (str_contains($action, '_why')) {
+                $pageData['why_title'] = $_POST['why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
+                $pageData['why_desc'] = $_POST['why_desc'] ?? '';
+                
+                $titles = $_POST['card_titles'] ?? [];
+                $texts  = $_POST['card_texts'] ?? [];
+                $oldImgs = $_POST['card_old_imgs'] ?? [];
+                $filesFiles = $_FILES['card_imgs'] ?? [];
+
+                $cards = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    if ($titleVal === '') continue;
+
+                    $imgPath = $oldImgs[$i] ?? '';
+                    if (isset($filesFiles['name'][$i]) && $filesFiles['error'][$i] === UPLOAD_ERR_OK) {
+                        if (!empty($imgPath) && str_starts_with($imgPath, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($imgPath);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($filesFiles['tmp_name'][$i]);
+                        $imgPath = 'assets/uploads/' . $filename;
+                    }
+
+                    $cards[] = [
+                        'title' => $titleVal,
+                        'text'  => $texts[$i] ?? '',
+                        'img'   => $imgPath
+                    ];
+                }
+                $pageData['why_cards'] = $cards;
+            } elseif (str_contains($action, '_timeline')) {
+                $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
+                
+                $titles = $_POST['step_titles'] ?? [];
+                $subs   = $_POST['step_subs'] ?? [];
+                $descs  = $_POST['step_descs'] ?? [];
+                
+                $steps = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    if ($titleVal === '') continue;
+
+                    $steps[] = [
+                        'title'    => $titleVal,
+                        'subtitle' => $subs[$i] ?? '',
+                        'desc'     => $descs[$i] ?? ''
+                    ];
+                }
+                $pageData['timeline_steps'] = $steps;
+            }
+        }
+
         // معالجة خاصة لصفحة السيرة الذاتية (CV Page)
-        if ($dbKey === 'cv_page') {
+        elseif ($dbKey === 'cv_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
@@ -687,6 +776,7 @@ class PageContentSettingsService
 
     private function resolveDbKey(string $action): ?string
     {
+        if (str_starts_with($action, 'update_guide_blog1_')) return 'guide_blog1_page';
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';

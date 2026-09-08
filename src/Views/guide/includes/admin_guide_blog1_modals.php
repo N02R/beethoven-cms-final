@@ -454,14 +454,15 @@
                     if (oldIconInput) oldIconInput.name = `timeline[${index}][old_icon]`;
                 });
 
-                // 4. تجهيز وإرسال البيانات عبر Fetch
+                // 4. تحديد المسار المطلق الصحيح وإرسال البيانات عبر Fetch
+                const saveUrl = '/admin/settings/save';
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch('index.php?url=admin/settings/save', {
+                fetch(saveUrl, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-Token': csrfToken,
@@ -492,4 +493,5 @@
         });
     });
 </script>
+
 

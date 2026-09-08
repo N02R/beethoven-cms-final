@@ -27,8 +27,56 @@ class PageContentSettingsService
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
+        // معالجة خاصة لصفحة السيرة الذاتية (CV Page)
+        if ($dbKey === 'cv_page') {
+            if (str_contains($action, '_breadcrumb')) {
+                $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } elseif (str_contains($action, '_hero')) {
+                $heroImg = $_POST['old_img'] ?? ($pageData['hero_img'] ?? '');
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($pageData['hero_img'])) {
+                        $this->deleteOldImageFile($pageData['hero_img']);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $pageData['hero_img'] = $heroImg;
+            } elseif (str_contains($action, '_main')) {
+                $pageData['main_title'] = $_POST['main_title'] ?? '';
+                $pageData['main_desc'] = $_POST['main_desc'] ?? '';
+            } elseif (str_contains($action, '_advice')) {
+                $pageData['advice_title'] = $_POST['advice_title'] ?? '';
+                $advicePointsRaw = $_POST['advice_points'] ?? [];
+                $pageData['advice_points'] = is_array($advicePointsRaw) ? array_values(array_filter(array_map('trim', $advicePointsRaw), fn($val) => $val !== '')) : [];
+            } elseif (str_contains($action, '_notes')) {
+                $pageData['note_title'] = $_POST['note_title'] ?? '';
+                $notesRaw = $_POST['notes'] ?? [];
+                $pageData['notes'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
+            } elseif (str_contains($action, '_downloads')) {
+                $types = $_POST['download_types'] ?? [];
+                $titles = $_POST['download_titles'] ?? [];
+                $subs = $_POST['download_subs'] ?? [];
+                $files = $_POST['download_files'] ?? [];
+
+                $downloadItems = [];
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titleVal = trim($titles[$i] ?? '');
+                    if ($titleVal === '') continue;
+
+                    $downloadItems[] = [
+                        'type'  => $types[$i] ?? 'pdf',
+                        'title' => $titleVal,
+                        'sub'   => $subs[$i] ?? 'Example',
+                        'file'  => $files[$i] ?? '#'
+                    ];
+                }
+                $pageData['download_items'] = $downloadItems;
+            }
+        }
+
         // معالجة خاصة لصفحة الاستقبال والوصول (Arrival Page)
-        if ($dbKey === 'arrival_page') {
+        elseif ($dbKey === 'arrival_page') {
             if (str_contains($action, '_breadcrumb')) {
                 $pageData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
                 $pageData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';

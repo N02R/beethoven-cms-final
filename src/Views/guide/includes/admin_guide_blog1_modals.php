@@ -316,7 +316,7 @@
 </div>
 
 <script>
-    // الدوال الخاصة بإضافة عناصر جديدة ديناميكياً وإعادة الترقيم
+    // الدوال الخاصة بإضافة عناصر جديدة ديناميكياً
     function addGuideNoteRow() {
         const container = document.getElementById('guideNotesContainer');
         if (!container) return;
@@ -412,13 +412,13 @@
         container.appendChild(div);
     }
 
-    // معالج إعادة الترقيم وإرسال البيانات عبر AJAX
+    // معالج إعادة الترقيم وإرسال البيانات عبر AJAX بنفس آلية admin_edu_modals.php
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('#guideNotesForm, #guideWhyForm, #guideTimelineForm, #guideBreadcrumbForm, #guideHeroForm, #guideMainForm');
         
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // منع الإرسال التقليدي للنموذج
+                e.preventDefault();
 
                 // 1. إعادة ترقيم الملاحظات
                 this.querySelectorAll('.guide-note-row-item').forEach((row, index) => {
@@ -454,15 +454,14 @@
                     if (oldIconInput) oldIconInput.name = `timeline[${index}][old_icon]`;
                 });
 
-                // 4. تحديد المسار المطلق الصحيح وإرسال البيانات عبر Fetch
-                const saveUrl = '/admin/settings/save';
                 const formData = new FormData(this);
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch(saveUrl, {
+                // توحيد مسار الطلب مع الـ Router العام للمشروع
+                fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-Token': csrfToken,
@@ -493,5 +492,3 @@
         });
     });
 </script>
-
-

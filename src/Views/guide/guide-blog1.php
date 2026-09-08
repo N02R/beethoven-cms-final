@@ -1,4 +1,15 @@
 <!-- Breadcrumb start-->
+<?php
+    $from = $_GET['from'] ?? 'education';
+    
+    if ($from === 'job') {
+        $parent_url = ($path_prefix ?? '') . 'job';
+        $parent_name = 'التدريب المهني';
+    } else {
+        $parent_url = ($path_prefix ?? '') . 'education';
+        $parent_name = 'التعليم العالي';
+    }
+?>
 <div class="custom-container pt-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل">
@@ -8,7 +19,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb justify-content-start">
       <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '../'); ?>">الرئيسية</a></li>
-      <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars(($path_prefix ?? '') . 'education'); ?>">التعليم العالي</a></li>
+      <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
       <li class="breadcrumb-item" aria-current="page">
         <a href="<?php echo htmlspecialchars($guide_data['page_breadcrumb_url'] ?? '#'); ?>">
           <?php echo htmlspecialchars($guide_data['page_breadcrumb'] ?? 'لماذا يختار الطلاب الدراسة في ألمانيا؟'); ?>

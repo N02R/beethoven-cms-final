@@ -133,108 +133,107 @@ class PageContentSettingsService
                     $heroImg = 'assets/uploads/' . $filename;
                 }
                 $pageData['hero_img'] = $heroImg;
-                $pageData['hero_position'] = $_POST['hero_position'] ?? 'center center';
             } elseif (str_contains($action, '_main')) {
                 $pageData['main_title'] = $_POST['main_title'] ?? '';
                 $pageData['main_desc'] = $_POST['main_desc'] ?? '';
             } elseif (str_contains($action, '_notes')) {
                 $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة جداً';
-                $pageData['note_1_bold'] = $_POST['note_1_bold'] ?? '';
-                $pageData['note_winter'] = $_POST['note_winter'] ?? '';
-                $pageData['note_summer'] = $_POST['note_summer'] ?? '';
-                $pageData['note_2_text'] = $_POST['note_2_text'] ?? '';
-                $pageData['note_3_title'] = $_POST['note_3_title'] ?? '';
-                $pageData['faq_1'] = $_POST['faq_1'] ?? '';
-                $pageData['faq_2_prefix'] = $_POST['faq_2_prefix'] ?? '';
-                $pageData['faq_2_url'] = $_POST['faq_2_url'] ?? 'contact';
-                $pageData['faq_2_link_text'] = $_POST['faq_2_link_text'] ?? '';
-                $pageData['faq_2_suffix'] = $_POST['faq_2_suffix'] ?? '';
-            } elseif (str_contains($action, '_whystudy') || str_contains($action, '_sections')) {
-                $pageData['why_study_title'] = $_POST['why_study_title'] ?? '';
-                $pageData['why_study_desc'] = $_POST['why_study_desc'] ?? '';
                 
-                $incomingSections = $_POST['content_sections'] ?? [];
-                if (empty($incomingSections)) {
-                    $headings = $_POST['section_headings'] ?? [];
-                    $bodies = $_POST['section_bodies'] ?? [];
-                    $icons = $_POST['section_icons'] ?? [];
-                    foreach ($headings as $i => $h) {
-                        $incomingSections[$i] = [
-                            'heading' => $h,
-                            'body' => $bodies[$i] ?? '',
-                            'icon' => $icons[$i] ?? ''
-                        ];
-                    }
-                }
+                $incomingNotes = $_POST['notes_items'] ?? [];
+                $notesItems = [];
+                
+                foreach ($incomingNotes as $i => $note) {
+                    $titleVal = trim($note['title'] ?? '');
+                    $textVal  = trim($note['text'] ?? '');
+                    
+                    if ($titleVal === '' && $textVal === '') continue;
 
-                $contentSections = [];
-                foreach ($incomingSections as $i => $section) {
-                    $headingVal = trim($section['heading'] ?? '');
-                    if ($headingVal === '') continue;
-
-                    $iconVal = trim($section['icon'] ?? '');
-                    $fileKey = "content_sections_img_{$i}";
-                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($iconVal);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                        $iconVal = 'assets/uploads/' . $filename;
+                    $subItemsRaw = $note['sub_items'] ?? [];
+                    if (is_string($subItemsRaw)) {
+                        $subItems = array_values(array_filter(array_map('trim', explode("\n", $subItemsRaw)), fn($val) => $val !== ''));
+                    } elseif (is_array($subItemsRaw)) {
+                        $subItems = array_values(array_filter(array_map('trim', $subItemsRaw), fn($val) => $val !== ''));
+                    } else {
+                        $subItems = [];
                     }
 
-                    $contentSections[] = [
-                        'heading' => $headingVal,
-                        'body'    => trim($section['body'] ?? ''),
-                        'icon'    => $iconVal
+                    $notesItems[] = [
+                        'title'     => $titleVal,
+                        'text'      => $textVal,
+                        'sub_items' => $subItems
                     ];
                 }
-                $pageData['content_sections'] = !empty($contentSections) ? $contentSections : [];
+                $pageData['notes_items'] = $notesItems;
+            } elseif (str_contains($action, '_why')) {
+                $pageData['why_title'] = $_POST['why_title'] ?? 'لماذا الدراسة في ألمانيا؟';
+                $pageData['why_desc'] = $_POST['why_desc'] ?? '';
+                
+                $incomingCards = $_POST['why_cards'] ?? [];
+                $whyCards = [];
+                
+                foreach ($incomingCards as $i => $card) {
+                    $titleVal = trim($card['title'] ?? '');
+                    $textVal  = trim($card['text'] ?? '');
+                    if ($titleVal === '' && $textVal === '') continue;
+
+                    $imgVal = trim($card['img'] ?? '');
+                    $fileKey = "why_cards_img_{$i}";
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($imgVal) && str_starts_with($imgVal, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($imgVal);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $imgVal = 'assets/uploads/' . $filename;
+                    }
+
+                    $whyCards[] = [
+                        'title' => $titleVal,
+                        'text'  => $textVal,
+                        'img'   => $imgVal
+                    ];
+                }
+                $pageData['why_cards'] = $whyCards;
             } elseif (str_contains($action, '_timeline')) {
                 $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
                 $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
                 
                 $incomingSteps = $_POST['timeline_steps'] ?? [];
-                if (empty($incomingSteps)) {
-                    $titles = $_POST['step_titles'] ?? [];
-                    $subtitles = $_POST['step_subtitles'] ?? [];
-                    $descs = $_POST['step_descs'] ?? [];
-                    $dots = $_POST['step_dots'] ?? [];
-                    $icons = $_POST['step_icons'] ?? [];
-                    foreach ($titles as $i => $t) {
-                        $incomingSteps[$i] = [
-                            'title' => $t,
-                            'subtitle' => $subtitles[$i] ?? '',
-                            'desc' => $descs[$i] ?? '',
-                            'dot_class' => $dots[$i] ?? 'bg-blue',
-                            'icon' => $icons[$i] ?? ''
-                        ];
-                    }
-                }
-
                 $timelineSteps = [];
+                
                 foreach ($incomingSteps as $i => $step) {
                     $titleVal = trim($step['title'] ?? '');
                     if ($titleVal === '') continue;
 
+                    $numImgVal = trim($step['num_img'] ?? '');
+                    $numFileKey = "timeline_steps_num_img_{$i}";
+                    if (isset($_FILES[$numFileKey]) && $_FILES[$numFileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($numImgVal) && str_starts_with($numImgVal, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($numImgVal);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$numFileKey]['tmp_name']);
+                        $numImgVal = 'assets/uploads/' . $filename;
+                    }
+
                     $iconVal = trim($step['icon'] ?? '');
-                    $fileKey = "timeline_steps_icon_{$i}";
-                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                    $iconFileKey = "timeline_steps_icon_{$i}";
+                    if (isset($_FILES[$iconFileKey]) && $_FILES[$iconFileKey]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
                             $this->deleteOldImageFile($iconVal);
                         }
-                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$iconFileKey]['tmp_name']);
                         $iconVal = 'assets/uploads/' . $filename;
                     }
 
                     $timelineSteps[] = [
+                        'num_img'   => $numImgVal,
+                        'icon'      => $iconVal,
                         'title'     => $titleVal,
-                        'subtitle'  => trim($step['subtitle'] ?? ''),
-                        'desc'      => trim($step['desc'] ?? ''),
                         'dot_class' => trim($step['dot_class'] ?? 'bg-blue'),
-                        'icon'      => $iconVal
+                        'subtitle'  => trim($step['subtitle'] ?? ''),
+                        'desc'      => trim($step['desc'] ?? '')
                     ];
                 }
-                $pageData['timeline_steps'] = !empty($timelineSteps) ? $timelineSteps : [];
+                $pageData['timeline_steps'] = $timelineSteps;
             }
         }
         

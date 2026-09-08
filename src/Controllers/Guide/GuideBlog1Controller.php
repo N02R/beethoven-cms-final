@@ -1,53 +1,75 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controllers\Guide;
+namespace App\Controllers;
 
-use App\Models\GuideBlogOneModel;
-use PDO;
+use App\Models\SiteModel;
+use App\Models\GuideBlogOneModel; // استبدلها بالـ Model الخاص بجلب بيانات المقال
 
-class GuideBlog1Controller
-{
-    private PDO $pdo;
+class GuideBlog1Controller {
+    public function show(string $lang = 'de'): void {
+        // حماية مخرجات اللغة المعروضة
+        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
 
-    public function __construct(?PDO $pdo = null)
-    {
-        if ($pdo !== null) {
-            $this->pdo = $pdo;
-        } else {
-            $dbClass = 'App\\Config\\Database';
-            if (class_exists($dbClass) && method_exists($dbClass, 'getConnection')) {
-                $this->pdo = $dbClass::getConnection();
-            } else {
-                global $pdo;
-                if ($pdo instanceof PDO) {
-                    $this->pdo = $pdo;
-                } else {
-                    $dbPath = __DIR__ . '/../../../database/database.sqlite';
-                    $this->pdo = file_exists($dbPath) ? new PDO('sqlite:' . $dbPath) : new PDO('mysql:host=localhost;dbname=beethoven_db', 'root', '');
-                }
+        // إدارة الجلسات بأمان تام
+        if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_httponly', '1');
+            ini_set('session.use_strict_mode', '1');
+            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+                ini_set('session.cookie_secure', '1');
             }
-        }
-    }
-
-    public function index(): void
-    {
-        $model = new GuideBlogOneModel($this->pdo);
-        $settings = $model->getSettings();
-
-        $isAdmin = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-        $pageTitle = $settings['main_breadcrumb'] ?? 'الدليل الشامل - الدراسة في ألمانيا';
-        
-        $viewFile = __DIR__ . '/../../Views/guide/guide-blog1.php';
-        if (!file_exists($viewFile)) {
-            $viewFile = __DIR__ . '/../../../src/Views/guide/guide-blog1.php';
+            session_start();
         }
 
-        if (file_exists($viewFile)) {
-            include $viewFile;
+        // تحديد مسار الجذر للمشروع
+        $root_path = realpath(__DIR__ . '/../../');
+
+        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
+        $data = SiteModel::getGlobalData();
+
+        // 2. جلب بيانات المقال الأول وإعدادات المودلات الخاصة به
+        $guideData = GuideModel::getGuideBlog1Data(); // دالة افتراضية لجلب بيانات هذا المقال من قاعدة البيانات
+        $data = array_merge($data, $guideData);
+
+        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
+        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+        $user_role = $_SESSION['role'] ?? '';
+        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+
+        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views والمودلات
+        $data['is_admin'] = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+
+        // متغيرات إضافية قد تحتاجها الـ View الخاصة بالمقال
+        $path_prefix = '/';
+        $page_css = ['/assets/css/style.css', '/assets/css/guide.css'];
+
+        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
+        extract($data);
+
+        // 1. استدعاء الهيدر المشترك
+        $header_file = __DIR__ . '/../Views/partials/header.php';
+        if (file_exists($header_file)) {
+            include_once $header_file;
         } else {
-            echo "خطأ: ملف العرض (View) غير موجود في المسار المحدد.";
+            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
+        }
+
+        // 2. استدعاء ملف الـ View الخاص بالمقال (guide-blog1.php)
+        $view_file = __DIR__ . '/../Views/guide/guide-blog1.php';
+        if (file_exists($view_file)) {
+            require_once $view_file;
+        } else {
+            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
+        }
+
+        // 3. استدعاء الفوتر المشترك
+        $footer_file = $root_path . '/src/Views/partials/footer.php';
+        if (file_exists($footer_file)) {
+            include_once $footer_file;
+        } else {
+            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

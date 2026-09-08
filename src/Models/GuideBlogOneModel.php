@@ -13,7 +13,7 @@ class GuideBlogOneModel {
         $settings = SiteModel::getSettings();
         
         // جلب البيانات الخاصة بالمقال الأول من الإعدادات العامة للموقع
-        $data = isset($settings['guide_blog_one_page']) ? json_decode($settings['guide_blog_one_page'], true) : [];
+        $data = isset($settings['guide_blog1_page']) ? json_decode($settings['guide_blog1_page'], true) : [];
 
         // التأكد من أن المخرجات مصفوفة لتجنب أخطاء الـ View والمودلات
         return is_array($data) ? $data : [];

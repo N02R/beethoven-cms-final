@@ -148,6 +148,8 @@ $router->add('GET', 'edu-services/medical-traning', [JobAgreementsController::cl
 // تم نقل مسار الاختصاصات الطبية ليصبح تحت edu-services بدلاً من job-services
 $router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);
+
+// مسارات أدلة ومقالات الموقع
 $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);

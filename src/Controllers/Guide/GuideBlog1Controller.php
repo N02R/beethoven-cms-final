@@ -21,53 +21,42 @@ class GuideBlog1Controller {
             session_start();
         }
 
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../');
+        // تحديد مسار الجذر للمشروع بدقة (الصعود 3 مستويات للوصول لمجلد الجذر)
+        $root_path = realpath(__DIR__ . '/../../../');
 
         // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة
+        // 2. جلب بيانات الصفحة ودمجها مع البيانات العامة
         $guideData = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
         $data = array_merge($data, $guideData);
 
-        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في النظام
+        // فحص حالة تسجيل الدخول كـ Admin
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
         $user_role = $_SESSION['role'] ?? '';
         $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
 
-        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
         $data['is_admin'] = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
-
-        // متغيرات إضافية ومسارات
-        $path_prefix = '/';
-
-        // تعريف ملفات الـ CSS والـ JS الخاصة بصفحة من نحن (مع دعم Swiper)
-        $page_css = [
-            '/assets/css/education.css',
-            '/assets/css/edu-services.css'
-        ]; 
-
-
 
         // 1. استدعاء الهيدر المشترك
         $header_file = $root_path . '/src/Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
         } else {
-            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
+            echo "<div class='container py-3 text-danger'>Header file not found: {$header_file}</div>";
         }
-        // 2. استدعاء الـ View الخاص بـ About
-        $view_file = __DIR__ . '/src/Views/guide/guide-blog1.php';
+
+        // 2. استدعاء الـ View الخاص بالصفحة (تم تصحيح المسار بالاعتماد على $root_path)
+        $view_file = $root_path . '/src/Views/guide/guide-blog1.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
-            echo "<div class='container py-5 text-center'><h3>About View file not found.</h3></div>";
+            echo "<div class='container py-5 text-center'><h3>About View file not found:</h3> <p>{$view_file}</p></div>";
         }
 
-        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة
         if ($is_admin) {
             $modals_file = $root_path . '/src/Views/guide/includes/admin_guide_blog1_modals.php';
             if (file_exists($modals_file)) {
@@ -80,7 +69,7 @@ class GuideBlog1Controller {
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class='py-3 text-danger'>Footer file not found: {$footer_file}</div>";
         }
     }
 }

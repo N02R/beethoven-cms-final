@@ -38,7 +38,7 @@ class GuideBlog1Controller {
 
         // متغيرات إضافية قد تحتاجها الـ View
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/guide.css'];
+        $page_css = ['/assets/css/style.css', '/assets/css/education.css', '/assets/css/edu-services.css'];
 
         // دمج بيانات الصفحة مع حالة المشرف
         $pageData['is_admin'] = $is_admin;

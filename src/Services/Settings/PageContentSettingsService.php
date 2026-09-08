@@ -139,7 +139,7 @@ class PageContentSettingsService
             } elseif (str_contains($action, '_notes')) {
                 $pageData['notes_title'] = $_POST['notes_title'] ?? 'ملاحظات هامة جداً';
                 
-                $incomingNotes = $_POST['notes_items'] ?? [];
+                $incomingNotes = $_POST['notes'] ?? ($_POST['notes_items'] ?? []);
                 $notesItems = [];
                 
                 foreach ($incomingNotes as $i => $note) {
@@ -176,8 +176,11 @@ class PageContentSettingsService
                     $textVal  = trim($card['text'] ?? '');
                     if ($titleVal === '' && $textVal === '') continue;
 
-                    $imgVal = trim($card['img'] ?? '');
+                    $imgVal = trim($card['img'] ?? ($card['old_icon'] ?? ''));
                     $fileKey = "why_cards_img_{$i}";
+                    if (!isset($_FILES[$fileKey]) || $_FILES[$fileKey]['error'] !== UPLOAD_ERR_OK) {
+                        $fileKey = "why_card_icon_{$i}";
+                    }
                     if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($imgVal) && str_starts_with($imgVal, 'assets/uploads/')) {
                             $this->deleteOldImageFile($imgVal);
@@ -197,7 +200,7 @@ class PageContentSettingsService
                 $pageData['timeline_title'] = $_POST['timeline_title'] ?? '';
                 $pageData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
                 
-                $incomingSteps = $_POST['timeline_steps'] ?? [];
+                $incomingSteps = $_POST['timeline'] ?? ($_POST['timeline_steps'] ?? []);
                 $timelineSteps = [];
                 
                 foreach ($incomingSteps as $i => $step) {
@@ -214,8 +217,11 @@ class PageContentSettingsService
                         $numImgVal = 'assets/uploads/' . $filename;
                     }
 
-                    $iconVal = trim($step['icon'] ?? '');
+                    $iconVal = trim($step['icon'] ?? ($step['old_icon'] ?? ''));
                     $iconFileKey = "timeline_steps_icon_{$i}";
+                    if (!isset($_FILES[$iconFileKey]) || $_FILES[$iconFileKey]['error'] !== UPLOAD_ERR_OK) {
+                        $iconFileKey = "timeline_icon_{$i}";
+                    }
                     if (isset($_FILES[$iconFileKey]) && $_FILES[$iconFileKey]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($iconVal) && str_starts_with($iconVal, 'assets/uploads/')) {
                             $this->deleteOldImageFile($iconVal);

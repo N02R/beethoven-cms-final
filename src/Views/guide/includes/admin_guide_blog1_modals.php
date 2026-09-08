@@ -460,7 +460,6 @@
                     formData.append('csrf_token', csrfToken);
                 }
 
-                // توحيد مسار الطلب مع الـ Router العام للمشروع
                 fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
                     headers: {
@@ -478,7 +477,7 @@
                             showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'فشل الحفظ'), 'danger');
                         }
                     } catch (e) {
                         showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
@@ -486,9 +485,10 @@
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                    showNotification('حدث خطأ أثناء الاتصال بالسيرفر، يرجى المحاولة لاحقاً.', 'danger');
                 });
             });
         });
     });
 </script>
+

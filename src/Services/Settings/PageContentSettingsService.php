@@ -900,7 +900,12 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
-        if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_blog_1_')) return 'guide_blog_one_page';
+        
+        // التعديل المعتمد لضمان جلب وتوجيه إجراءات دليل الطالب الأولى بشكل صحيح دون أخطاء
+        if (str_starts_with($action, 'update_guide_blog_one_') || str_starts_with($action, 'update_guide_blog_1_') || in_array($action, ['update_guide_notes', 'update_guide_why', 'update_guide_timeline'], true)) {
+            return 'guide_blog_one_page';
+        }
+        
         if (str_starts_with($action, 'update_guide_blog_two_') || str_starts_with($action, 'update_guide_blog_2_') || str_starts_with($action, 'update_guide_two_')) return 'guide_blog_two_page';
         if (str_starts_with($action, 'update_job_agreements_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_medical_packages_')) return 'medical_packages_page';

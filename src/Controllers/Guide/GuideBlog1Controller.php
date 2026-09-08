@@ -53,13 +53,12 @@ class GuideBlog1Controller {
 
 
         // 1. استدعاء الهيدر المشترك
-        $header_file = __DIR__ . '/../Views/partials/header.php';
+        $header_file = $root_path . '/src/Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
         } else {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
-
         // 2. استدعاء الـ View الخاص بـ About
         $view_file = __DIR__ . '/src/Views/guide/guide-blog1.php';
         if (file_exists($view_file)) {
@@ -68,7 +67,15 @@ class GuideBlog1Controller {
             echo "<div class='container py-5 text-center'><h3>About View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
+        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (إذا كان المستخدم مشرفاً ومتاحة)
+        if ($is_admin) {
+            $modals_file = $root_path . '/src/Views/guide/includes/admin_guide_blog1_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            }
+        }
+
+        // 4. استدعاء الفوتر المشترك
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;

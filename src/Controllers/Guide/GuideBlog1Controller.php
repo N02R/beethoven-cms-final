@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace App\Controllers\Guide;
 
 use App\Models\SiteModel;
+use App\Models\GuideBlogOneModel;
 
-class GuideBlog1Controller {
-    
-    public function index(): void {
+class AboutController {
+    public function index(string $lang = 'de'): void {
+        // حماية مخرجات اللغة المعروضة
+        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+
         // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
             ini_set('session.cookie_httponly', '1');
@@ -19,18 +22,16 @@ class GuideBlog1Controller {
         }
 
         // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../../');
+        $root_path = realpath(__DIR__ . '/../../');
 
-        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع عبر SiteModel
+        // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة مقال الدليل الأول من الجدول العام
-        $global_settings = SiteModel::getSettings();
-        $guide_data = isset($global_settings['guide_blog_one_page']) ? json_decode($global_settings['guide_blog_one_page'], true) : [];
-        
-        $data['guide_data'] = $guide_data;
+        // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة
+        $aboutData = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
+        $data = array_merge($data, $guideData);
 
-        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
+        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في النظام
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
         $user_role = $_SESSION['role'] ?? '';
         $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
@@ -40,28 +41,31 @@ class GuideBlog1Controller {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية ومسارات
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/education.css', '/assets/css/edu-services.css'];
-        $page_js = [];
 
-        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
-        extract($data);
+        // تعريف ملفات الـ CSS والـ JS الخاصة بصفحة من نحن (مع دعم Swiper)
+        $page_css = [
+            '/assets/css/education.css',
+            '/assets/css/edu-services.css'
+        ]; 
+
+
 
         // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/src/Views/partials/header.php';
+        $header_file = __DIR__ . '/../Views/partials/header.php';
         if (file_exists($header_file)) {
             include_once $header_file;
         } else {
             echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالمقال (guide-blog1.php)
-        $view_file = $root_path . '/src/Views/guide/guide-blog1.php';
+        // 2. استدعاء الـ View الخاص بـ About
+        $view_file = __DIR__ . '/src/Views/guide/guide-blog1.php';
         if (file_exists($view_file)) {
             require_once $view_file;
         } else {
-            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
+            echo "<div class='container py-5 text-center'><h3>About View file not found.</h3></div>";
         }
 
         // 3. استدعاء الفوتر المشترك

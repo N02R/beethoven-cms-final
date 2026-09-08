@@ -6,7 +6,7 @@ namespace App\Controllers\Guide;
 use App\Models\SiteModel;
 use App\Models\GuideBlogOneModel;
 
-class AboutController {
+class GuideBlog1Controller {
     public function index(string $lang = 'de'): void {
         // حماية مخرجات اللغة المعروضة
         $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');

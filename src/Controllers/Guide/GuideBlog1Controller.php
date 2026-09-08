@@ -28,7 +28,7 @@ class GuideBlog1Controller {
         $data = SiteModel::getGlobalData();
 
         // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة
-        $aboutData = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
+        $guideData = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
         $data = array_merge($data, $guideData);
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في النظام

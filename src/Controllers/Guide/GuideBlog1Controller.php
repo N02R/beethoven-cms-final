@@ -27,22 +27,17 @@ class GuideBlog1Controller {
         // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات الصفحة ودمجها بطريقة آمنة
+        // 2. جلب بيانات الصفحة بطريقة آمنة
         $raw_guide_data = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
         
-        // --- كود الفحص المؤقت لمعرفة ما يقرأه السيرفر فعلياً ---
-        echo "<pre style='background:#f4f4f4; padding:15px; direction:ltr; text-align:left;'>";
-        echo "<strong>RAW GUIDE DATA FROM MODEL:</strong><br>";
-        print_r($raw_guide_data);
-        echo "</pre>";
-        exit;
-        // -----------------------------------------------------
-
-        // التأكد من استخراج المصفوفة الداخلية سواء كانت مغلفة بمفتاح أو لا
+        // استخراج المصفوفة الداخلية 
         $guide_data = $raw_guide_data['guide_blog1'] ?? $raw_guide_data;
-        
-        // دمج البيانات العامة مع بيانات الدليل
-        $data = array_merge($data, is_array($guide_data) ? $guide_data : []);
+        if (!is_array($guide_data)) {
+            $guide_data = [];
+        }
+
+        // دمج بيانات الصفحة مع البيانات العامة لضمان توفرها في أي متغير
+        $data = array_merge($data, $guide_data);
 
         // فحص حالة تسجيل الدخول كـ Admin
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -52,10 +47,11 @@ class GuideBlog1Controller {
         $data['is_admin'] = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+        
         // متغيرات إضافية ومسارات
         $path_prefix = '/';
 
-        // تعريف ملفات الـ CSS والـ JS الخاصة بصفحة من نحن (مع دعم Swiper)
+        // تعريف ملفات الـ CSS والـ JS الخاصة بالصفحة
         $page_css = [
             '/assets/css/education.css',
             '/assets/css/edu-services.css'
@@ -69,7 +65,7 @@ class GuideBlog1Controller {
             echo "<div class='container py-3 text-danger'>Header file not found: {$header_file}</div>";
         }
 
-        // 2. استدعاء الـ View الخاص بالصفحة (تم تصحيح المسار بالاعتماد على $root_path)
+        // 2. استدعاء الـ View الخاص بالصفحة (مع تمرير $guide_data ليعمل الكود كما كتبته تماماً)
         $view_file = $root_path . '/src/Views/guide/guide-blog1.php';
         if (file_exists($view_file)) {
             require_once $view_file;

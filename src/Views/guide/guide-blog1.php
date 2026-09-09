@@ -89,7 +89,7 @@
       <ul class="star-list">
         <?php foreach (($guide_data['notes_items'] ?? []) as $note): ?>
           <li>
-            <p class="fw-bold"><img src="../assets/img/starList.svg.webp" alt="" class="ms-2" width="25"/><?php echo htmlspecialchars($note['title'] ?? ''); ?></p>
+            <p class="fw-bold"><img src="assets/img/starList.svg.webp" alt="" class="ms-2" width="25"/><?php echo htmlspecialchars($note['title'] ?? ''); ?></p>
             <?php if (!empty($note['text'])): ?>
               <p><?php echo htmlspecialchars($note['text']); ?></p>
             <?php endif; ?>

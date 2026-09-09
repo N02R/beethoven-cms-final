@@ -10,6 +10,7 @@ use App\Services\Settings\ContactSettingsService;
 use App\Services\Settings\EduSettingsService;
 use App\Services\Settings\HeaderSettingsService;
 use App\Services\Settings\JobSettingsService;
+use App\Services\Settings\GuideBlog1SettingsService;
 use App\Services\Settings\PageContentSettingsService;
 use Exception;
 use PDO;
@@ -104,6 +105,14 @@ class SettingsController
             if ($contactService->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();
                 echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات تواصل معنا وتحديث الصور بنجاح.']);
+                exit;
+            }
+
+            // 0.ز. فحص أقسام مقال الدليل الأول (GuideBlog1) - [تم نقله للمكان الصحيح هنا]
+            $guideBlog1Service = new GuideBlog1SettingsService($root_path, $imageUploader);
+            if ($guideBlog1Service->handleAction($action, $pdo, $currentSettings)) {
+                $pdo->commit();
+                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات مقال الدليل وتحديث الصور بنجاح.']);
                 exit;
             }
 

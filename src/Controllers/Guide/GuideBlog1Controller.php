@@ -65,7 +65,7 @@ class GuideBlog1Controller {
             echo "<div class='container py-3 text-danger'>Header file not found: {$header_file}</div>";
         }
 
-        // 2. استدعاء الـ View الخاص بالصفحة (مع تمرير $guide_data ليعمل الكود كما كتبته تماماً)
+        // 2. استدعاء الـ View الخاص بالصفحة
         $view_file = $root_path . '/src/Views/guide/guide-blog1.php';
         if (file_exists($view_file)) {
             require_once $view_file;

@@ -38,11 +38,22 @@
     </button>
   <?php endif; ?>
   <div class="custom-container">
-    <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars(get_image_url($guide_data['hero_img'] ?? null, '../assets/img/home/image(0).jpg')); ?>');">
+    <?php 
+        // معالجة مسار الصورة وإضافة بصمة زمنية (Cache Buster) لضمان تحديثها فوراً في المتصفح
+        $raw_hero_img = $guide_data['hero_img'] ?? '../assets/img/home/image(0).jpg';
+        $hero_resolved_url = function_exists('get_image_url') ? get_image_url($raw_hero_img, '../assets/img/home/image(0).jpg') : $raw_hero_img;
+        if (!preg_match('/^http/', $hero_resolved_url) && $hero_resolved_url[0] !== '/') {
+            $hero_resolved_url = '/' . ltrim($hero_resolved_url, './');
+        }
+        // إضافة بارامتر زمني لمنع تخزين الصورة القديمة في الـ Cache
+        $hero_resolved_url .= '?v=' . time();
+    ?>
+    <div class="custom-hero" style="background-image: url('<?php echo htmlspecialchars($hero_resolved_url, ENT_QUOTES, 'UTF-8'); ?>');">
     </div>
   </div>
 </section>
 <!-- custom-services end-->
+
 
 <!-- custom-services-info start -->
 <section class="custom-services-info py-5">

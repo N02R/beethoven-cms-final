@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideBreadcrumbForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_breadcrumb">
+                    <input type="hidden" name="action" value="update_guide_blog1_breadcrumb">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -50,7 +50,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideHeroForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_hero">
+                    <input type="hidden" name="action" value="update_guide_blog1_hero">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -89,7 +89,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideMainForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_main">
+                    <input type="hidden" name="action" value="update_guide_blog1_main">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -124,7 +124,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideNotesForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_notes">
+                    <input type="hidden" name="action" value="update_guide_blog1_notes">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -177,7 +177,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideWhyForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_why">
+                    <input type="hidden" name="action" value="update_guide_blog1_why">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -248,7 +248,7 @@
             </div>
             <div class="modal-body p-4">
                 <form id="guideTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_guide_timeline">
+                    <input type="hidden" name="action" value="update_guide_blog1_timeline">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -491,4 +491,3 @@
         });
     });
 </script>
-

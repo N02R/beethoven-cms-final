@@ -27,9 +27,14 @@ class GuideBlog1Controller {
         // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات الصفحة ودمجها مع البيانات العامة
-        $guide_data = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
-        $data = array_merge($data, $guide_data);
+        // 2. جلب بيانات الصفحة ودمجها بطريقة آمنة
+        $raw_guide_data = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
+        
+        // التأكد من استخراج المصفوفة الداخلية سواء كانت مغلفة بمفتاح أو لا
+        $guide_data = $raw_guide_data['guide_blog1'] ?? $raw_guide_data;
+        
+        // دمج البيانات العامة مع بيانات الدليل
+        $data = array_merge($data, is_array($guide_data) ? $guide_data : []);
 
         // فحص حالة تسجيل الدخول كـ Admin
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

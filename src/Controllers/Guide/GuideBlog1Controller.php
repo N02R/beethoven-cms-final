@@ -28,8 +28,8 @@ class GuideBlog1Controller {
         $data = SiteModel::getGlobalData();
 
         // 2. جلب بيانات الصفحة ودمجها مع البيانات العامة
-        $guideData = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
-        $data = array_merge($data, $guideData);
+        $guide_data = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
+        $data = array_merge($data, $guide_data);
 
         // فحص حالة تسجيل الدخول كـ Admin
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;

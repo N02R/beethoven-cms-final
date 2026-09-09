@@ -1,3 +1,4 @@
+
 <!-- Breadcrumb start-->
 <?php
     $from = $_GET['from'] ?? 'education';
@@ -10,6 +11,11 @@
         $parent_name = 'التعليم العالي';
     }
 ?>
+<div style="background: #000; color: #0f0; padding: 10px; margin: 10px; direction: ltr; font-family: monospace; z-index: 9999; position: relative;">
+    <h4>[DEBUG INFO]</h4>
+    <p><strong>Raw hero_img from database:</strong> <?php echo htmlspecialchars($guide_data['hero_img'] ?? 'NOT FOUND', ENT_QUOTES, 'UTF-8'); ?></p>
+    <p><strong>Full guide_data array:</strong> <?php echo htmlspecialchars(json_encode($guide_data, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?></p>
+</div>
 <div class="custom-container pt-5" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل">

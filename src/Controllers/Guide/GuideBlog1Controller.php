@@ -30,6 +30,14 @@ class GuideBlog1Controller {
         // 2. جلب بيانات الصفحة ودمجها بطريقة آمنة
         $raw_guide_data = class_exists('App\Models\GuideBlogOneModel') ? GuideBlogOneModel::getGuideData() : [];
         
+        // --- كود الفحص المؤقت لمعرفة ما يقرأه السيرفر فعلياً ---
+        echo "<pre style='background:#f4f4f4; padding:15px; direction:ltr; text-align:left;'>";
+        echo "<strong>RAW GUIDE DATA FROM MODEL:</strong><br>";
+        print_r($raw_guide_data);
+        echo "</pre>";
+        exit;
+        // -----------------------------------------------------
+
         // التأكد من استخراج المصفوفة الداخلية سواء كانت مغلفة بمفتاح أو لا
         $guide_data = $raw_guide_data['guide_blog1'] ?? $raw_guide_data;
         

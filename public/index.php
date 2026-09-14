@@ -184,8 +184,6 @@ $router->add('GET', 'impressum', [LegalController::class, 'impressum']);
 $router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
 
 $router->add('GET', 'switch-lang', [App\Controllers\HomeController::class, 'switchLang']);
-
-
 // ==========================================
 // 3. معالجة الـ URI والـ Dispatch (دعم كامل لسيرفر PHP المحلي و ?url=)
 // ==========================================

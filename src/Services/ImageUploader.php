@@ -48,20 +48,22 @@ class ImageUploader
 
     /**
      * رفع ومعالجة ملف مرفوع بالطريقة العادية ($_FILES)
+     * @param array $file ملف الـ $_FILES
+     * @param string|null $oldFilename اسم الصورة القديمة لحذفها إن وجدت
      */
-    public function upload(array $file): string
+    public function upload(array $file, ?string $oldFilename = null): string
     {
         $this->validateUploadError($file['error'] ?? UPLOAD_ERR_NO_FILE);
         $this->validateFileSize($file['size'] ?? 0);
         $this->validateFileExtension($file['name'] ?? '');
         
-        return $this->processAndUploadFile($file['tmp_name']);
+        return $this->processAndUploadFile($file['tmp_name'], $oldFilename);
     }
 
     /**
-     * دالة عامة ومرنة لمعالجة أي مسار مؤقت لصورة (تستخدمها الكنترولرات مثل SettingsController)
+     * دالة عامة ومرنة لمعالجة أي مسار مؤقت لصورة
      */
-    public function processAndUploadFile(string $tmpPath): string
+    public function processAndUploadFile(string $tmpPath, ?string $oldFilename = null): string
     {
         $detectedMime = $this->detectAndValidateMime($tmpPath);
 
@@ -74,8 +76,14 @@ class ImageUploader
         }
 
         try {
+            // معالجة وحفظ الصورة الجديدة بصيغة WebP
             $this->processAndConvertToWebP($tmpPath, $destinationPath, $detectedMime);
             $this->saveToDatabase($finalFilename);
+
+            // حذف الصورة القديمة من المجلد ومن قاعدة البيانات إذا كانت موجودة
+            if (!empty($oldFilename)) {
+                $this->deleteOldImage($oldFilename);
+            }
             
             return $finalFilename;
         } catch (Exception $e) {
@@ -83,6 +91,27 @@ class ImageUploader
                 @unlink($destinationPath);
             }
             throw new RuntimeException('فشلت معالجة الصورة: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * دالة لحذف الصورة القديمة من السيرفر وجدول قاعدة البيانات
+     */
+    private function deleteOldImage(string $filename): void
+    {
+        // 1. حذف الملف الفعلي من المجلد
+        $filePath = $this->uploadDir . basename($filename);
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
+
+        // 2. حذف السجل من قاعدة البيانات لتنظيف الجدول
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare('DELETE FROM uploaded_images WHERE filename = :filename');
+            $stmt->execute(['filename' => $filename]);
+        } catch (Exception $e) {
+            error_log('Failed to delete old image record from database: ' . $e->getMessage());
         }
     }
 
@@ -182,19 +211,17 @@ class ImageUploader
             $newWidth = (int)($width * $ratio);
             $newHeight = (int)($height * $ratio);
 
-            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            $locationImage = imagecreatetruecolor($newWidth, $newHeight);
             
             if ($mimeType === 'image/png' || $mimeType === 'image/webp') {
-                imagealphablending($newImage, false);
-                imagesavealpha($newImage, true);
-                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+                imagealphablending($locationImage, false);
+                imagesavealpha($locationImage, true);
+                $transparent = imagecolorallocatealpha($locationImage, 255, 255, 255, 127);
+                imagefilledrectangle($locationImage, 0, 0, $newWidth, $newHeight, $transparent);
             }
 
-            imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-            
-            // التعديل هنا: تم إزالة استدعاء imagedestroy() لأنها أصبحت ملغاة (Deprecated) في PHP 8.5
-            $image = $newImage;
+            imagecopyresampled($locationImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            $image = $locationImage;
         }
 
         if (!imagewebp($image, $destinationPath, $this->webpQuality)) {

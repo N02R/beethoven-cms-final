@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+// تحديد اللغة والاتجاه الحاليين من الجلسة (افتراضياً العربية)
+$current_lang = $_SESSION['site_lang'] ?? 'ar';
+$current_dir = ($current_lang === 'en') ? 'ltr' : 'rtl';
+$current_lang_code = ($current_lang === 'en') ? 'en' : 'ar';
+
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
@@ -37,7 +42,7 @@ $is_visible = ($is_published && $is_in_time);
 ?>
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<?php echo $current_lang_code; ?>" dir="<?php echo $current_dir; ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,7 +117,7 @@ $is_visible = ($is_published && $is_in_time);
               
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
-                    <marquee behavior="scroll" direction="right"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً لكم!'); ?></marquee>
+                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً لكم!'); ?></marquee>
                   </div>
                 <?php else: ?>
                   <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
@@ -187,13 +192,12 @@ $is_visible = ($is_published && $is_in_time);
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20">
-                  <span><?php echo htmlspecialchars($current_lang_name ?? 'العربية'); ?></span>
+                  <span><?php echo ($current_lang === 'en') ? 'English' : 'العربية'; ?></span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach ($languages as $lang): ?>
-                      <li><a class="dropdown-item" href="/<?php echo ltrim(htmlspecialchars($lang['url'] ?? ''), '/'); ?>"><?php echo htmlspecialchars($lang['name'] ?? ''); ?></a></li>
-                  <?php endforeach; ?>
+                  <li><a class="dropdown-item" href="/switch-lang.php?lang=ar">العربية</a></li>
+                  <li><a class="dropdown-item" href="/switch-lang.php?lang=en">English</a></li>
               </ul>
           </div>
         </div>

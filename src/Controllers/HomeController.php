@@ -13,6 +13,7 @@ class HomeController {
 
         // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
+            fprintf(STDERR, "");
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
@@ -68,5 +69,17 @@ class HomeController {
         } else {
             echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
         }
+    }
+
+    public function switchLang(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en'], true)) {
+            $_SESSION['site_lang'] = $_GET['lang'];
+        }
+        $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
+        header('Location: ' . $redirect_url);
+        exit;
     }
 }

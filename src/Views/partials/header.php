@@ -195,11 +195,10 @@ $is_visible = ($is_published && $is_in_time);
                   <span><?php echo ($current_lang === 'en') ? 'English' : 'العربية'; ?></span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-    <li><a class="dropdown-item" href="/switch-lang.php?lang=ar">العربية</a></li>
-    <li><a class="dropdown-item" href="/switch-lang.php?lang=en">English</a></li>
+<ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="/switch-lang?lang=ar">العربية</a></li>
+    <li><a class="dropdown-item" href="/switch-lang?lang=en">English</a></li>
 </ul>
-
           </div>
         </div>
       </div>

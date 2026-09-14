@@ -183,6 +183,7 @@ $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save'])
 $router->add('GET', 'impressum', [LegalController::class, 'impressum']);
 $router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
 
+$router->add('GET', 'switch-lang', [App\Controllers\HomeController::class, 'switchLang']);
 
 
 // ==========================================

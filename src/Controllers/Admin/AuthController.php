@@ -132,15 +132,6 @@ class AuthController {
             error_log("Auth Error: " . $e->getMessage());
         }
 
-        // حساب الطوارئ/الاحتياطي في حال تعثر الاتصال بقاعدة البيانات
-        if (!$admin_logged_in && $email === 'admin@beethoven-cms.local' && $password === 'password') {
-            $admin_logged_in = true;
-            $admin_data = [
-                'role' => 'super_admin',
-                'name' => 'Nour Admin',
-                'id'   => 1
-            ];
-        }
 
         // 5. حفظ الجلسة والتوجيه للوحة التحكم عند نجاح المصادقة
         if ($admin_logged_in) {

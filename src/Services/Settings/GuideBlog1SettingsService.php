@@ -19,16 +19,17 @@ class GuideBlog1SettingsService
 
     public function handleAction(string $action, PDO $pdo, array $currentSettings): bool
     {
-        // التحقق مما إذا كان الإكشن يخص المقال الأول أو المقال الثاني
+        // التحقق مما إذا كان الإكشن يخص المقال الأول، الثاني، أو الثالث
         $isBlog1 = str_starts_with($action, 'update_guide_blog1_');
         $isBlog2 = str_starts_with($action, 'update_guide_blog2_');
+        $isBlog3 = str_starts_with($action, 'update_guide_blog3_');
 
-        if (!$isBlog1 && !$isBlog2) {
+        if (!$isBlog1 && !$isBlog2 && !$isBlog3) {
             return false;
         }
 
-        // تحديد المفتاح وقاعدة البيانات المناسبة بناءً على نوع المقال
-        $settingKey = $isBlog1 ? 'guide_blog1_page' : 'guide_blog2_page';
+        // تحديد المفتاح المناسب في جدول الإعدادات بناءً على نوع المقال
+        $settingKey = $isBlog1 ? 'guide_blog1_page' : ($isBlog2 ? 'guide_blog2_page' : 'guide_blog3_page');
 
         // جلب البيانات الحالية المخزنة كـ JSON وفكها
         $guideData = isset($currentSettings[$settingKey]) ? json_decode($currentSettings[$settingKey], true) : [];
@@ -39,137 +40,211 @@ class GuideBlog1SettingsService
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:key, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // --- معالجة إكشنات المقال الأول (Blog 1) ---
-        if ($action === 'update_guide_blog1_breadcrumb') {
-            $guideData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
-            $guideData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
-        } 
-        elseif ($action === 'update_guide_blog1_hero') {
-            $heroImg = $_POST['old_guide_hero_img'] ?? '';
-            if (isset($_FILES['guide_hero_img']) && $_FILES['guide_hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($heroImg)) {
-                    $this->deleteOldImageFile($heroImg);
-                }
-                $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_hero_img']['tmp_name']);
-                $heroImg = 'assets/uploads/' . $filename;
-            }
-            $guideData['hero_img'] = $heroImg;
-        }
-        elseif ($action === 'update_guide_blog1_main') {
-            $guideData['main_title'] = $_POST['main_title'] ?? '';
-            $guideData['main_desc'] = $_POST['main_desc'] ?? '';
-        }
-        elseif ($action === 'update_guide_blog1_notes') {
-            $guideData['notes_title'] = $_POST['notes_title'] ?? '';
-            $notesInput = $_POST['notes'] ?? [];
-            $guideData['notes_items'] = array_values($notesInput);
-        }
-        elseif ($action === 'update_guide_blog1_why') {
-            $guideData['why_title'] = $_POST['why_title'] ?? '';
-            $guideData['why_desc'] = $_POST['why_desc'] ?? '';
-            
-            $whyCards = $_POST['why_cards'] ?? [];
-            foreach ($whyCards as $index => $card) {
-                $fileKey = 'why_img_' . $index;
-                if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($card['old_img'])) {
-                        $this->deleteOldImageFile($card['old_img']);
+        if ($isBlog1) {
+            if ($action === 'update_guide_blog1_breadcrumb') {
+                $guideData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $guideData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            } 
+            elseif ($action === 'update_guide_blog1_hero') {
+                $heroImg = $_POST['old_guide_hero_img'] ?? '';
+                if (isset($_FILES['guide_hero_img']) && $_FILES['guide_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($heroImg)) {
+                        $this->deleteOldImageFile($heroImg);
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                    $whyCards[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $whyCards[$index]['img'] = $card['old_img'] ?? '';
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
                 }
-                unset($whyCards[$index]['old_img']);
+                $guideData['hero_img'] = $heroImg;
             }
-            $guideData['why_cards'] = array_values($whyCards);
-        }
-        elseif ($action === 'update_guide_blog1_timeline') {
-            $guideData['timeline_title'] = $_POST['timeline_title'] ?? '';
-            $guideData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
-
-            $timelineSteps = $_POST['timeline'] ?? [];
-            foreach ($timelineSteps as $index => $step) {
-                $fileKey = 'timeline_icon_' . $index;
-                if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($step['old_icon'])) {
-                        $this->deleteOldImageFile($step['old_icon']);
+            elseif ($action === 'update_guide_blog1_main') {
+                $guideData['main_title'] = $_POST['main_title'] ?? '';
+                $guideData['main_desc'] = $_POST['main_desc'] ?? '';
+            }
+            elseif ($action === 'update_guide_blog1_notes') {
+                $guideData['notes_title'] = $_POST['notes_title'] ?? '';
+                $notesInput = $_POST['notes'] ?? [];
+                $guideData['notes_items'] = array_values($notesInput);
+            }
+            elseif ($action === 'update_guide_blog1_why') {
+                $guideData['why_title'] = $_POST['why_title'] ?? '';
+                $guideData['why_desc'] = $_POST['why_desc'] ?? '';
+                
+                $whyCards = $_POST['why_cards'] ?? [];
+                foreach ($whyCards as $index => $card) {
+                    $fileKey = 'why_img_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($card['old_img'])) {
+                            $this->deleteOldImageFile($card['old_img']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $whyCards[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $whyCards[$index]['img'] = $card['old_img'] ?? '';
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                    $timelineSteps[$index]['icon'] = 'assets/uploads/' . $filename;
-                } else {
-                    $timelineSteps[$index]['icon'] = $step['old_icon'] ?? '';
+                    unset($whyCards[$index]['old_img']);
                 }
-                unset($timelineSteps[$index]['old_icon']);
+                $guideData['why_cards'] = array_values($whyCards);
             }
-            $guideData['timeline_steps'] = array_values($timelineSteps);
-        }
+            elseif ($action === 'update_guide_blog1_timeline') {
+                $guideData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $guideData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
 
+                $timelineSteps = $_POST['timeline'] ?? [];
+                foreach ($timelineSteps as $index => $step) {
+                    $fileKey = 'timeline_icon_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($step['old_icon'])) {
+                            $this->deleteOldImageFile($step['old_icon']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $timelineSteps[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $timelineSteps[$index]['icon'] = $step['old_icon'] ?? '';
+                    }
+                    unset($timelineSteps[$index]['old_icon']);
+                }
+                $guideData['timeline_steps'] = array_values($timelineSteps);
+            } else {
+                return false;
+            }
+        }
         // --- معالجة إكشنات المقال الثاني (Blog 2) ---
-        elseif ($action === 'update_guide_blog2_breadcrumb') {
-            $guideData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
-            $guideData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
-        }
-        elseif ($action === 'update_guide_blog2_hero') {
-            $heroImg = $_POST['old_guide_hero_img'] ?? '';
-            if (isset($_FILES['guide_hero_img']) && $_FILES['guide_hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($heroImg)) {
-                    $this->deleteOldImageFile($heroImg);
-                }
-                $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_hero_img']['tmp_name']);
-                $heroImg = 'assets/uploads/' . $filename;
+        elseif ($isBlog2) {
+            if ($action === 'update_guide_blog2_breadcrumb') {
+                $guideData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $guideData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
             }
-            $guideData['hero_img'] = $heroImg;
-        }
-        elseif ($action === 'update_guide_blog2_main') {
-            $guideData['main_title'] = $_POST['main_title'] ?? '';
-            $guideData['main_desc'] = $_POST['main_desc'] ?? '';
-        }
-        elseif ($action === 'update_guide_blog2_services') { // قسم الخدمات الخاص بـ Blog 2
-            $guideData['services_advice_title'] = $_POST['services_advice_title'] ?? '';
-            $servicesInput = $_POST['services_advice_points'] ?? [];
-            $guideData['services_advice_points'] = array_values($servicesInput);
-        }
-        elseif ($action === 'update_guide_blog2_why') {
-            $guideData['why_title'] = $_POST['why_title'] ?? '';
-            $guideData['why_desc'] = $_POST['why_desc'] ?? '';
-            
-            $whyCards = $_POST['why_cards'] ?? [];
-            foreach ($whyCards as $index => $card) {
-                $fileKey = 'why_img_' . $index;
-                if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($card['old_img'])) {
-                        $this->deleteOldImageFile($card['old_img']);
+            elseif ($action === 'update_guide_blog2_hero') {
+                $heroImg = $_POST['old_guide_hero_img'] ?? '';
+                if (isset($_FILES['guide_hero_img']) && $_FILES['guide_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($heroImg)) {
+                        $this->deleteOldImageFile($heroImg);
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                    $whyCards[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $whyCards[$index]['img'] = $card['old_img'] ?? '';
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
                 }
-                unset($whyCards[$index]['old_img']);
+                $guideData['hero_img'] = $heroImg;
             }
-            $guideData['why_cards'] = array_values($whyCards);
-        }
-        elseif ($action === 'update_guide_blog2_timeline') {
-            $guideData['timeline_title'] = $_POST['timeline_title'] ?? '';
-            $guideData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
+            elseif ($action === 'update_guide_blog2_main') {
+                $guideData['main_title'] = $_POST['main_title'] ?? '';
+                $guideData['main_desc'] = $_POST['main_desc'] ?? '';
+            }
+            elseif ($action === 'update_guide_blog2_services') {
+                $guideData['services_advice_title'] = $_POST['services_advice_title'] ?? '';
+                $servicesInput = $_POST['services_advice_points'] ?? [];
+                $guideData['services_advice_points'] = array_values($servicesInput);
+            }
+            elseif ($action === 'update_guide_blog2_why') {
+                $guideData['why_title'] = $_POST['why_title'] ?? '';
+                $guideData['why_desc'] = $_POST['why_desc'] ?? '';
+                
+                $whyCards = $_POST['why_cards'] ?? [];
+                foreach ($whyCards as $index => $card) {
+                    $fileKey = 'why_img_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($card['old_img'])) {
+                            $this->deleteOldImageFile($card['old_img']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $whyCards[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $whyCards[$index]['img'] = $card['old_img'] ?? '';
+                    }
+                    unset($whyCards[$index]['old_img']);
+                }
+                $guideData['why_cards'] = array_values($whyCards);
+            }
+            elseif ($action === 'update_guide_blog2_timeline') {
+                $guideData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $guideData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
 
-            $timelineSteps = $_POST['timeline'] ?? [];
-            foreach ($timelineSteps as $index => $step) {
-                $fileKey = 'timeline_icon_' . $index;
-                if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($step['old_icon'])) {
-                        $this->deleteOldImageFile($step['old_icon']);
+                $timelineSteps = $_POST['timeline'] ?? [];
+                foreach ($timelineSteps as $index => $step) {
+                    $fileKey = 'timeline_icon_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($step['old_icon'])) {
+                            $this->deleteOldImageFile($step['old_icon']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $timelineSteps[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $timelineSteps[$index]['icon'] = $step['old_icon'] ?? '';
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
-                    $timelineSteps[$index]['icon'] = 'assets/uploads/' . $filename;
-                } else {
-                    $timelineSteps[$index]['icon'] = $step['old_icon'] ?? '';
+                    unset($timelineSteps[$index]['old_icon']);
                 }
-                unset($timelineSteps[$index]['old_icon']);
+                $guideData['timeline_steps'] = array_values($timelineSteps);
+            } else {
+                return false;
             }
-            $guideData['timeline_steps'] = array_values($timelineSteps);
-        } else {
-            return false;
+        }
+        // --- معالجة إكشنات المقال الثالث (Blog 3) ---
+        elseif ($isBlog3) {
+            if ($action === 'update_guide_blog3_breadcrumb') {
+                $guideData['page_breadcrumb'] = $_POST['page_breadcrumb'] ?? '';
+                $guideData['page_breadcrumb_url'] = $_POST['page_breadcrumb_url'] ?? '#';
+            }
+            elseif ($action === 'update_guide_blog3_hero') {
+                $heroImg = $_POST['old_guide_hero_img'] ?? '';
+                if (isset($_FILES['guide_hero_img']) && $_FILES['guide_hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($heroImg)) {
+                        $this->deleteOldImageFile($heroImg);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                }
+                $guideData['hero_img'] = $heroImg;
+            }
+            elseif ($action === 'update_guide_blog3_main') {
+                $guideData['main_title'] = $_POST['main_title'] ?? '';
+                $guideData['main_desc'] = $_POST['main_desc'] ?? '';
+            }
+            elseif ($action === 'update_guide_blog3_notes') { // قابلة للتعديل حسب محتوى المقال الثالث
+                $guideData['notes_title'] = $_POST['notes_title'] ?? '';
+                $notesInput = $_POST['notes'] ?? [];
+                $guideData['notes_items'] = array_values($notesInput);
+            }
+            elseif ($action === 'update_guide_blog3_why') {
+                $guideData['why_title'] = $_POST['why_title'] ?? '';
+                $guideData['why_desc'] = $_POST['why_desc'] ?? '';
+                
+                $whyCards = $_POST['why_cards'] ?? [];
+                foreach ($whyCards as $index => $card) {
+                    $fileKey = 'why_img_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($card['old_img'])) {
+                            $this->deleteOldImageFile($card['old_img']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $whyCards[$index]['img'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $whyCards[$index]['img'] = $card['old_img'] ?? '';
+                    }
+                    unset($whyCards[$index]['old_img']);
+                }
+                $guideData['why_cards'] = array_values($whyCards);
+            }
+            elseif ($action === 'update_guide_blog3_timeline') {
+                $guideData['timeline_title'] = $_POST['timeline_title'] ?? '';
+                $guideData['timeline_desc'] = $_POST['timeline_desc'] ?? '';
+
+                $timelineSteps = $_POST['timeline'] ?? [];
+                foreach ($timelineSteps as $index => $step) {
+                    $fileKey = 'timeline_icon_' . $index;
+                    if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($step['old_icon'])) {
+                            $this->deleteOldImageFile($step['old_icon']);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES[$fileKey]['tmp_name']);
+                        $timelineSteps[$index]['icon'] = 'assets/uploads/' . $filename;
+                    } else {
+                        $timelineSteps[$index]['icon'] = $step['old_icon'] ?? '';
+                    }
+                    unset($timelineSteps[$index]['old_icon']);
+                }
+                $guideData['timeline_steps'] = array_values($timelineSteps);
+            } else {
+                return false;
+            }
         }
 
         $jsonVal = json_encode($guideData, JSON_UNESCAPED_UNICODE);

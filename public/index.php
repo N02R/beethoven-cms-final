@@ -36,6 +36,16 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 }
 
+// معالجة تغيير اللغة مركزياً وآمنياً
+if (isset($_GET['action']) && $_GET['action'] === 'switch-lang') {
+    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en'], true)) {
+        $_SESSION['site_lang'] = $_GET['lang'];
+    }
+    $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
+    header('Location: ' . $redirect_url);
+    exit;
+}
+
 // 2. تفعيل رؤوس الأمان الشاملة (Security Headers)
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");

@@ -42,7 +42,7 @@ if (!isset($path_prefix)) {
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted mb-3" style="font-size: 0.95rem; line-height: 1.6;">
-                    لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في <a href="<?php echo $path_prefix; ?>privacy.php" target="_blank" class="text-primary text-decoration-underline">سياسة الخصوصية</a>.
+                    لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في <a href="<?php echo $path_prefix; ?>index.php?url=datenschutz" target="_blank" class="text-primary text-decoration-underline">سياسة الخصوصية</a>.
                 </p>
                 <div class="form-check bg-light p-3 rounded border">
                     <input class="form-check-input float-end ms-2" type="checkbox" id="modalPrivacyCheckbox">
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h5><?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا'); ?></h5>
                 <div class="contact-link">
                     <?php 
-                    // معالجة وحماية آمنة لمتغير روابط التواصل (مع جلب البيانات من ID 123 في قاعدة البيانات)
+                    // معالجة وحماية آمنة لمتغير روابط التواصل
                     $footer_col3_links = $data['footer_col3_links'] ?? [];
                     if (is_string($footer_col3_links)) {
                         $footer_col3_links = json_decode($footer_col3_links, true) ?? [];
@@ -167,9 +167,13 @@ document.addEventListener('DOMContentLoaded', function() {
         <hr class="my-4">
         <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
             <p class="mb-0 text-center text-md-start">
-                <span>&copy;</span> جميع الحقوق محفوظة | Beethoven City Services
+                <span>&copy;</span> <?php echo date('Y'); ?> Beethoven City Services. Alle Rechte vorbehalten.
             </p>
-            <a href="<?php echo $path_prefix; ?>privacy.php">سياسة الخصوصية وشروط الإستخدام</a>
+            <div class="legal-links d-flex gap-3 align-items-center">
+                <a href="<?php echo $path_prefix; ?>index.php?url=impressum" class="text-muted text-decoration-none small">Impressum</a>
+                <span class="text-muted">|</span>
+                <a href="<?php echo $path_prefix; ?>index.php?url=datenschutz" class="text-muted text-decoration-none small">Datenschutzerklärung</a>
+            </div>
         </div>
     </div>
 </footer>
@@ -196,7 +200,7 @@ if (isset($page_js) && is_array($page_js)) {
 <div id="cookie-banner" class="cookie-banner" style="display: none;">
     <div class="cookie-content">
         <p>
-            نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في <a href="<?php echo $path_prefix; ?>privacy" target="_blank" style="color: #fff; text-decoration: underline;">سياسة الخصوصية</a>.
+            نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في <a href="<?php echo $path_prefix; ?>index.php?url=datenschutz" target="_blank" style="color: #fff; text-decoration: underline;">سياسة الخصوصية</a>.
         </p>
         <div class="cookie-buttons">
             <button id="accept-cookies" class="btn-accept">قبول الكل</button>

@@ -1,16 +1,24 @@
 <?php
 declare(strict_types=1);
-// سطر فحص مؤقت
-echo "Active Lang: " . ($_SESSION['site_lang'] ?? 'None'); 
-// تحديد اللغة والاتجاه الحاليين من الجلسة (افتراضياً الألمانية أو العربية حسب تهيئتك، سنعتمد دالة get_current_lang())
+
+// تحديد اللغة والاتجاه الحاليين من النظام
 $current_lang = get_current_lang();
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 $current_lang_code = $current_lang;
 
+// تنظيف المسار الحالي من أي بادئة لغة سابقة لمنع تكرارها (مثل /en/de/home)
+$request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+$path_segments = explode('/', trim($request_path, '/'));
+if (!empty($path_segments[0]) && in_array($path_segments[0], ['ar', 'en', 'de'], true)) {
+    array_shift($path_segments);
+}
+$clean_uri = '/' . implode('/', $path_segments);
+$clean_uri = ($clean_uri === '/') ? '' : $clean_uri;
+
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
-// جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح (مع دعم تلقائي للغات عبر get_setting)
+// جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح
 $site_logo_path  = get_setting('site_logo_path', 'assets/img/logo.png');
 
 $menu_links      = get_setting('menu_links', []);
@@ -72,7 +80,7 @@ $is_visible = ($is_published && $is_in_time);
     .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
   </style>
 
-  <!-- ملفات الـ CSS الخاصة بالصفحات الفردية (توضع هنا أخيراً لتأخذ الأسبقية العليا) -->
+  <!-- ملفات الـ CSS الخاصة بالصفحات الفردية -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {
       foreach ($page_css as $css_file) {
@@ -97,7 +105,7 @@ $is_visible = ($is_published && $is_in_time);
               </button>
           <?php endif; ?>
 
-          <a class="navbar-brand m-0" href="/">
+          <a class="navbar-brand m-0" href="/<?php echo $current_lang_code; ?>">
             <img src="<?php echo get_image_url($site_logo_path, '/assets/img/logo.png'); ?>" width="178" height="72" loading="lazy" alt="Logo">
           </a>
         </div>
@@ -156,7 +164,7 @@ $is_visible = ($is_published && $is_in_time);
         
         <!-- اللوجو (Mobile Only) -->
         <div class="d-lg-none">
-          <a class="navbar-brand" href="/">
+          <a class="navbar-brand" href="/<?php echo $current_lang_code; ?>">
             <img src="<?php echo get_image_url($site_logo_path, '/assets/img/logo.png'); ?>" alt="Logo" height="50">
           </a>
         </div>
@@ -172,7 +180,7 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
+                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo $current_lang_code; ?>/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
                     <?php echo htmlspecialchars($link['title'] ?? ''); ?>
                   </a>
                 </li>
@@ -202,13 +210,13 @@ $is_visible = ($is_published && $is_in_time);
                   </span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
-<ul class="dropdown-menu dropdown-menu-end">
-    <li><a class="dropdown-item" href="/de<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">Deutsch</a></li>
-    <li><a class="dropdown-item" href="/en<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">English</a></li>
-    <li><a class="dropdown-item" href="/ar<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">العربية</a></li>
-</ul>
 
-
+              <!-- روابط تبديل اللغات النظيفة بدون تراكم -->
+              <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="/de<?php echo $clean_uri; ?>">Deutsch</a></li>
+                  <li><a class="dropdown-item" href="/en<?php echo $clean_uri; ?>">English</a></li>
+                  <li><a class="dropdown-item" href="/ar<?php echo $clean_uri; ?>">العربية</a></li>
+              </ul>
           </div>
         </div>
       </div>
@@ -226,7 +234,7 @@ $is_visible = ($is_published && $is_in_time);
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): ?>
                 <li class="nav-item">
-                  <a class="nav-link" href="/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
+                  <a class="nav-link" href="/<?php echo $current_lang_code; ?>/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
                     <?php echo htmlspecialchars($link['title'] ?? ''); ?>
                   </a>
                 </li>

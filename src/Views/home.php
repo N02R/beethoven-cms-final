@@ -192,28 +192,44 @@
 
   
 <!-- review start -->
-<section class="reviews py-5" style="position: relative;">
+<section class="reviews py-5 editable-wrapper" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات">
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
 
     <div class="reviews-bg">
         <div class="custom-container">
+            <?php 
+            // معالجة عنوان قسم التقييمات متعدد اللغات
+            $reviews_title_raw = get_setting('reviews_title', 'شاهد ماذا يقول عملاؤنا عنا');
+            if (is_string($reviews_title_raw) && str_starts_with(trim($reviews_title_raw), '{')) {
+                $reviews_title_arr = json_decode($reviews_title_raw, true) ?? [];
+                $reviews_title = $reviews_title_arr[$current_lang] ?? $reviews_title_arr['de'] ?? $reviews_title_arr['ar'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+            } else {
+                $reviews_title = $reviews_title_raw;
+            }
+            ?>
             <h2 class="py-5 text-center sec-title">
-                <?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'); ?>
+                <?php echo htmlspecialchars($reviews_title); ?>
             </h2>
         </div>
     </div>
 
     <div class="custom-container">
         <div class="reviews-carousel-wrapper">
-            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="rtl">
+            <!-- تحديد اتجاه الكاروسيل ديناميكياً بناءً على لغة النظام -->
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
                 
                 <div class="carousel-inner">
-                    <?php if (!empty($data['reviews_items'])): ?>
-                        <?php foreach ($data['reviews_items'] as $index => $item): ?>
+                    <?php 
+                    $reviews_items_raw = get_setting('reviews_items', []);
+                    $reviews_items = is_string($reviews_items_raw) ? (json_decode($reviews_items_raw, true) ?? []) : $reviews_items_raw;
+
+                    if (!empty($reviews_items)): 
+                        foreach ($reviews_items as $index => $item): 
+                    ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
@@ -228,8 +244,8 @@
                 </div>
 
                 <div class="dots mt-4">
-                    <?php if (!empty($data['reviews_items'])): ?>
-                        <?php foreach ($data['reviews_items'] as $index => $item): ?>
+                    <?php if (!empty($reviews_items)): ?>
+                        <?php foreach ($reviews_items as $index => $item): ?>
                             <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
                                   data-bs-target="#carousel-reviews" 
                                   data-bs-slide-to="<?php echo $index; ?>">

@@ -5,7 +5,7 @@ use App\Config\Database;
 
 if (!function_exists('get_setting')) {
     /**
-     * جلب قيمة إعداد معين مع دعم تلقائي للغات (de, en, ar)
+     * جلب قيمة إعداد معين مع دعم تلقائي للغات (de, en, ar) والـ JSON متعدد اللغات
      */
     function get_setting(string $key, mixed $default = ''): mixed {
         try {
@@ -17,6 +17,8 @@ if (!function_exists('get_setting')) {
             $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
             $stmt->execute([$langKey]);
             $result = $stmt->fetch();
+
+            $value = null;
 
             // 2. إذا وجدنا قيمة خاصة باللغة، نرجعها
             if ($result && isset($result['setting_value']) && $result['setting_value'] !== '') {
@@ -33,9 +35,15 @@ if (!function_exists('get_setting')) {
                 }
             }
             
-            // محاولة فك الـ JSON إذا كانت القيمة مخزنة كمصفوفة
+            // محاولة فك الـ JSON
             $decoded = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                // إذا كان الـ JSON يحتوي على مفاتيح للغات (ar, en, de)، نقوم باختيار اللغة الحالية تلقائياً
+                if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
+                    // إرجاع بيانات اللغة الحالية، وإذا لم تكن موجودة نرجع العربية كاحتياطي، وإذا لم تتوفر نرجع الـ decoded كاملاً
+                    return $decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded);
+                }
+                
                 return $decoded;
             }
             
@@ -48,7 +56,6 @@ if (!function_exists('get_setting')) {
         return $default;
     }
 }
-
 
 if (!function_exists('get_image_url')) {
     /**

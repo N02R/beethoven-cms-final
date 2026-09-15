@@ -36,9 +36,17 @@ if (is_string($languages)) {
     $languages = json_decode($languages, true) ?? [];
 }
 
-$ad              = get_setting('announcement', []);
-if (is_string($ad)) {
-    $ad = json_decode($ad, true) ?? [];
+$ad_raw          = get_setting('announcement', []);
+$ad              = is_string($ad_raw) ? (json_decode($ad_raw, true) ?? []) : $ad_raw;
+
+// استخراج نص الإعلان بناءً على اللغة الحالية مع دعم القيم الاحتياطية
+$announcement_text = '';
+if (isset($ad[$current_lang]['announcement_text'])) {
+    $announcement_text = $ad[$current_lang]['announcement_text'];
+} elseif (isset($ad['de']['announcement_text'])) {
+    $announcement_text = $ad['de']['announcement_text'];
+} elseif (isset($ad['announcement_text'])) {
+    $announcement_text = $ad['announcement_text'];
 }
 
 // حساب حالة ظهور الإعلان
@@ -126,7 +134,7 @@ $is_visible = ($is_published && $is_in_time);
               
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
-                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>"><?php echo htmlspecialchars($ad['announcement_text'] ?? __('home', 'مرحباً لكم!')); ?></marquee>
+                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>"><?php echo htmlspecialchars($announcement_text ?: 'Welcome!'); ?></marquee>
                   </div>
                 <?php else: ?>
                   <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
@@ -178,10 +186,14 @@ $is_visible = ($is_published && $is_in_time);
           <?php endif; ?>
 
           <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link): ?>
+            <?php foreach ($menu_links as $link): 
+                $link_url = ltrim($link['url'] ?? '', '/');
+                // استخراج العنوان حسب اللغة الحالية من هيكلية الـ JSON الجديدة مع بدائل آمنة
+                $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
+            ?>
                 <li class="nav-item">
-                  <a class="nav-link <?php echo (($link['active'] ?? 0) == 1 || ($link['is_active'] ?? 0) == 1) ? 'active' : ''; ?>" href="/<?php echo $current_lang_code; ?>/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
-                    <?php echo htmlspecialchars($link['title'] ?? ''); ?>
+                  <a class="nav-link" href="/<?php echo $current_lang_code . '/' . $link_url; ?>">
+                    <?php echo htmlspecialchars($link_title); ?>
                   </a>
                 </li>
             <?php endforeach; ?>
@@ -232,10 +244,13 @@ $is_visible = ($is_published && $is_in_time);
       </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
-            <?php foreach ($menu_links as $link): ?>
+            <?php foreach ($menu_links as $link): 
+                $link_url = ltrim($link['url'] ?? '', '/');
+                $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
+            ?>
                 <li class="nav-item">
-                  <a class="nav-link" href="/<?php echo $current_lang_code; ?>/<?php echo ltrim(htmlspecialchars($link['url'] ?? ''), '/'); ?>">
-                    <?php echo htmlspecialchars($link['title'] ?? ''); ?>
+                  <a class="nav-link" href="/<?php echo $current_lang_code . '/' . $link_url; ?>">
+                    <?php echo htmlspecialchars($link_title); ?>
                   </a>
                 </li>
             <?php endforeach; ?>

@@ -71,15 +71,19 @@ class HomeController {
         }
     }
 
-        public function switchLang(): void {
+            public function switchLang(): void {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        
+        // السماح باللغات الثلاث: العربية، الإنجليزية، والألمانية
         if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en', 'de'], true)) {
             $_SESSION['site_lang'] = $_GET['lang'];
         }
+        
         $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
         header('Location: ' . $redirect_url);
         exit;
     }
+
 }

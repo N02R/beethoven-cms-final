@@ -261,40 +261,81 @@
 <!-- review end -->
 
 <!-- ===== GUIDE HOME SECTION START ===== -->
-<section class="guide py-2" style="position: relative;">
+<section class="guide py-2 editable-wrapper" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
   <div class="custom-container">
     <?php 
-        $guide_title = $data['guide_title'] ?? 'دليل بيتهوفن الشامل';
-        $guide_desc  = $data['guide_desc'] ?? 'هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، حيث يمكنك أن تولد مثل هذا النص من مولد النص العربي.';
-        $guide_items = $data['guide_items'] ?? [];
+        // معالجة عنوان الدليل متعدد اللغات
+        $guide_title_raw = get_setting('guide_title', 'دليل بيتهوفن الشامل');
+        if (is_string($guide_title_raw) && str_starts_with(trim($guide_title_raw), '{')) {
+            $gt_arr = json_decode($guide_title_raw, true) ?? [];
+            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['de'] ?? $gt_arr['ar'] ?? 'دليل بيتهوفن الشامل';
+        } else {
+            $guide_title = $guide_title_raw;
+        }
+
+        // معالجة وصف الدليل متعدد اللغات
+        $guide_desc_raw = get_setting('guide_desc', '');
+        if (is_string($guide_desc_raw) && str_starts_with(trim($guide_desc_raw), '{')) {
+            $gd_arr = json_decode($guide_desc_raw, true) ?? [];
+            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['de'] ?? $gd_arr['ar'] ?? '';
+        } else {
+            $guide_desc = $guide_desc_raw;
+        }
+
+        // معالجة نص زر "قراءة المزيد"
+        $rm_raw = get_setting('read_more_btn', 'قراءة المزيد');
+        if (is_string($rm_raw) && str_starts_with(trim($rm_raw), '{')) {
+            $rm_arr = json_decode($rm_raw, true) ?? [];
+            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['de'] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
+        } else {
+            $read_more_text = $rm_raw;
+        }
+
+        $guide_items_raw = get_setting('guide_items', []);
+        $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : $guide_items_raw;
     ?>
     <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars($guide_title); ?></h2>
-    <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc)); ?></p>
+    <?php if (!empty($guide_desc)): ?>
+        <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc)); ?></p>
+    <?php endif; ?>
 
-    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
-      <div class="carousel-inner" dir="rtl">
+    <div id="carousel-guide" class="carousel slide <?php echo ($current_dir === 'rtl') ? 'carousel-rtl' : 'carousel-ltr'; ?>" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
+      <div class="carousel-inner">
         <?php if (!empty($guide_items)): ?>
           <?php 
-            // تقسيم المقالات إلى مجموعات (كل مجموعة تحتوي على 3 كروت كحد أقصى لتوافق الـ Carousel)
             $chunks = array_chunk($guide_items, 3);
           ?>
           <?php foreach ($chunks as $index => $slide_items): ?>
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
               <div class="row g-4">
-                <?php foreach ($slide_items as $item): ?>
+                <?php foreach ($slide_items as $item): 
+                  // استخراج عنوان ووصف المقال حسب اللغة الحالية
+                  $item_title = $item[$current_lang]['title'] ?? $item['de']['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
+                  $item_desc  = $item[$current_lang]['desc'] ?? $item['de']['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+                  
+                  $item_img = get_image_url($item['img'] ?? null);
+                  $raw_url = $item['url'] ?? '#';
+                  $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
+                ?>
                   <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card h-100 border-0 shadow-sm">
-                      <?php if (!empty($item['img'])): ?>
+                      <?php if (!empty($item_img)): ?>
                         <div class="card-img-wrapper">
-                          <img src="<?php echo get_image_url($item['img']); ?>" alt="<?php echo htmlspecialchars($item['title'] ?? 'guide image'); ?>" class="img-fluid guide-img">
+                          <img src="<?php echo htmlspecialchars($item_img); ?>" alt="<?php echo htmlspecialchars($item_title); ?>" class="img-fluid guide-img">
                         </div>
                       <?php endif; ?>
                       <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item['title'] ?? ''); ?></h5>
-                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item['desc'] ?? ''); ?></p>
-                        <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
-                          قراءة المزيد 
-                          <img src="<?php echo get_image_url('assets/img/ArrowLeft.svg.webp'); ?>" alt="arrow" class="me-2" width="18">
+                        <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title); ?></h5>
+                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc); ?></p>
+                        <a href="<?php echo htmlspecialchars($final_url); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
+                          <?php echo htmlspecialchars($read_more_text); ?>
+                          <img src="<?php echo get_image_url('assets/img/ArrowLeft.svg.webp'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                         </a>
                       </div>
                     </div>
@@ -312,7 +353,6 @@
         <?php endif; ?>
       </div>
 
-      <!-- Dots (Indicators) بناءً على عدد الشرائح المتوفرة ديناميكياً -->
       <?php if (!empty($chunks)): ?>
         <div class="dots mt-4">
           <?php foreach ($chunks as $index => $slide): ?>

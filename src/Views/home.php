@@ -20,14 +20,23 @@
   <div class="custom-container">
     <?php 
     $hero_raw = get_setting('hero', []);
-    $hero = is_string($hero_raw) ? (json_decode($hero_raw, true) ?? []) : $hero_raw;
+    
+    // تأكيد فك الـ JSON بشكل صحيح
+    if (is_string($hero_raw)) {
+        $hero = json_decode($hero_raw, true) ?? [];
+    } else {
+        $hero = $hero_raw;
+    }
     
     $hero_bg = get_image_url($hero['img'] ?? null, '/assets/img/home/home1.png');
 
-    // استخراج النصوص حسب اللغة الحالية مع بدائل آمنة
-    $hero_title = $hero[$current_lang]['title'] ?? $hero['de']['title'] ?? $hero['ar']['title'] ?? 'عنوان افتراضي';
-    $hero_desc  = $hero[$current_lang]['desc'] ?? $hero['de']['desc'] ?? $hero['ar']['desc'] ?? 'وصف افتراضي للقسم';
-    $hero_btn   = $hero[$current_lang]['btn_text'] ?? $hero['de']['btn_text'] ?? $hero['ar']['btn_text'] ?? 'اضغط هنا';
+    // اختيار اللغة بناءً على المتغير أو ضبط احتياطي
+    $lang = $current_lang ?? 'ar';
+
+    // استخراج النصوص مع التأكد من وجود المفتاح للغة الحالية
+    $hero_title = isset($hero[$lang]['title']) ? $hero[$lang]['title'] : ($hero['de']['title'] ?? $hero['title'] ?? 'عنوان افتراضي');
+    $hero_desc  = isset($hero[$lang]['desc']) ? $hero[$lang]['desc'] : ($hero['de']['desc'] ?? $hero['desc'] ?? 'وصف افتراضي للقسم');
+    $hero_btn   = isset($hero[$lang]['btn_text']) ? $hero[$lang]['btn_text'] : ($hero['de']['btn_text'] ?? $hero['btn_text'] ?? 'اضغط هنا');
     $hero_url   = $hero['btn_url'] ?? '#';
     ?>
     

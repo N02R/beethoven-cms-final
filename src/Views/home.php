@@ -52,9 +52,8 @@
   </div>
 </section>
 <!-- hero end -->
-
 <!-- services start -->
-<section class="services py-5" style="position: relative;">
+<section class="services py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
@@ -62,27 +61,53 @@
   <?php endif; ?>
 
   <div class="custom-container">
+    <?php 
+    // جلب ومعالجة عنوان القسم
+    $sec_title_raw = get_setting('services_section_title', 'خدماتنا المميزة');
+    if (is_string($sec_title_raw) && str_starts_with(trim($sec_title_raw), '{')) {
+        $sec_title_arr = json_decode($sec_title_raw, true) ?? [];
+        $sec_title = $sec_title_arr[$current_lang] ?? $sec_title_arr['de'] ?? $sec_title_arr['ar'] ?? 'خدماتنا المميزة';
+    } else {
+        $sec_title = $sec_title_raw;
+    }
+
+    // جلب ومعالجة وصف القسم
+    $sec_desc_raw = get_setting('services_section_desc', '');
+    $sec_desc = '';
+    if (is_string($sec_desc_raw) && str_starts_with(trim($sec_desc_raw), '{')) {
+        $sec_desc_arr = json_decode($sec_desc_raw, true) ?? [];
+        $sec_desc = $sec_desc_arr[$current_lang] ?? $sec_desc_arr['de'] ?? $sec_desc_arr['ar'] ?? '';
+    } else {
+        $sec_desc = $sec_desc_raw;
+    }
+    ?>
+
     <h2 class="mb-3 sec-title">
-        <?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة'); ?>
+        <?php echo htmlspecialchars($sec_title); ?>
     </h2>
     
-    <?php if (!empty($data['services_section_desc'])): ?>
+    <?php if (!empty($sec_desc)): ?>
           <p class="mb-5 text-muted" style="max-width: 700px;">
-            <?php echo htmlspecialchars($data['services_section_desc']); ?>
+            <?php echo htmlspecialchars($sec_desc); ?>
         </p>
     <?php endif; ?>
 
     <div class="row g-4">
       <?php 
-      $services = $data['services'] ?? []; 
+      $services_raw = get_setting('services', []);
+      $services = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : $services_raw;
+      
       foreach ($services as $service): 
         $service_img = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
+        
+        // استخراج عنوان الخدمة حسب اللغة الحالية مع بدائل آمنة
+        $service_title = $service[$current_lang]['title'] ?? $service['de']['title'] ?? $service['ar']['title'] ?? ($service['title'] ?? 'عنوان الخدمة');
       ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
           <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
             <div class="card" style="background: url('<?php echo htmlspecialchars($service_img); ?>') no-repeat center/cover;">
               <div class="card-info">
-                <h3><?php echo htmlspecialchars($service['title'] ?? 'عنوان الخدمة'); ?></h3>
+                <h3><?php echo htmlspecialchars($service_title); ?></h3>
                 <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" alt="Arrow">
               </div>
             </div>
@@ -93,6 +118,7 @@
   </div>
 </section>
 <!-- services end -->
+
 
 <!-- choose start -->
 <section class="choose py-5" style="position: relative;">

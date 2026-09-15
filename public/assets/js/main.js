@@ -12,8 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ================= 2. Active Link Header ================= */
   const currentPath = window.location.pathname;
-  const currentFile = currentPath.split("/").pop() || "index.html";
-
   document.querySelectorAll("#main-header .nav-link").forEach(link => {
     try {
       const linkPath = new URL(link.href).pathname;
@@ -23,28 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ================= 3. Language Dropdown Logic ================= */
-  const langItems = document.querySelectorAll('.dropdown-item');
-  langItems.forEach(item => {
-    const text = item.textContent.trim();
-    if (currentFile.includes('-en')) {
-      if (text === 'العربية') {
-        item.setAttribute('href', currentFile.replace('-en', ''));
-      }
-    } else {
-      if (text === 'English') {
-        item.setAttribute('href', currentFile.replace('.html', '-en.html'));
-      }
-    }
-    if (item.getAttribute('href') === currentFile) {
-      item.classList.add('active');
-    }
-  });
-
-  /* ================= 4. Carousel Dot Control ================= */
+  /* ================= 3. Carousel Dot Control ================= */
   initCarouselDots();
 
-  /* ================= 5. Animated Counters ================= */
+  /* ================= 4. Animated Counters ================= */
   const counters = document.querySelectorAll(".count-info span");
   counters.forEach(counter => {
     const targetText = counter.textContent.trim();
@@ -66,10 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCounter();
   });
 
-  /* ================= 6. WordPress Settings & Menu Fetch ================= */
+  /* ================= 5. WordPress Settings & Menu Fetch ================= */
   initWordPressData();
 
-  /* ================= 7. Cookie Banner Consent (GDPR) ================= */
+  /* ================= 6. Cookie Banner Consent (GDPR) ================= */
   initCookieBanner();
 
 });
@@ -196,14 +176,6 @@ function initCookieBanner() {
 // دالة تفعيل أدوات التتبع (مثل Google Analytics أو الإعلانات)
 function enableTrackingScripts() {
   console.log("تم تفعيل الكوكيز الاختيارية وأدوات التتبع بناءً على موافقة المستخدم الصريحة.");
-  
-  // مثال: إذا كان لديك كود لـ Google Analytics يتم وضعه هنا:
-  /*
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'YOUR-GA-ID');
-  */
 }
 
 // دالة تعطيل/حظر أدوات التتبع

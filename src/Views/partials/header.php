@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-
+// سطر فحص مؤقت
+echo "Active Lang: " . ($_SESSION['site_lang'] ?? 'None'); 
 // تحديد اللغة والاتجاه الحاليين من الجلسة (افتراضياً الألمانية أو العربية حسب تهيئتك، سنعتمد دالة get_current_lang())
 $current_lang = get_current_lang();
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';

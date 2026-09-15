@@ -202,11 +202,12 @@ $is_visible = ($is_published && $is_in_time);
                   </span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="/switch-lang?lang=de">Deutsch</a></li>
-                  <li><a class="dropdown-item" href="/switch-lang?lang=en">English</a></li>
-                  <li><a class="dropdown-item" href="/switch-lang?lang=ar">العربية</a></li>
-              </ul>
+<ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item <?php echo ($current_lang === 'de') ? 'active' : ''; ?>" href="/switch-lang?lang=de">Deutsch</a></li>
+    <li><a class="dropdown-item <?php echo ($current_lang === 'en') ? 'active' : ''; ?>" href="/switch-lang?lang=en">English</a></li>
+    <li><a class="dropdown-item <?php echo ($current_lang === 'ar') ? 'active' : ''; ?>" href="/switch-lang?lang=ar">العربية</a></li>
+</ul>
+
           </div>
         </div>
       </div>

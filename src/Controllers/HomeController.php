@@ -71,12 +71,15 @@ class HomeController {
         }
     }
 
-            public function switchLang(): void {
+                public function switchLang(): void {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        // السماح باللغات الثلاث: العربية، الإنجليزية، والألمانية
+        // فحص مؤقت لنرى ما يرسله المتصفح بالضبط
+        echo "Received Lang parameter: " . htmlspecialchars($_GET['lang'] ?? 'None');
+        exit;
+        
         if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en', 'de'], true)) {
             $_SESSION['site_lang'] = $_GET['lang'];
         }
@@ -85,5 +88,4 @@ class HomeController {
         header('Location: ' . $redirect_url);
         exit;
     }
-
 }

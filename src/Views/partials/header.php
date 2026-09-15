@@ -19,7 +19,15 @@ $clean_uri = ($clean_uri === '/') ? '' : $clean_uri;
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
 // جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح
-$site_logo_path  = get_setting('site_logo_path', 'assets/img/logo.png');
+$site_logo_raw  = get_setting('site_logo_path', 'assets/img/logo.png');
+
+// معالجة اللوجو ليكون متعدد اللغات بناءً على الـ JSON أو مسار نصي عادي
+if (is_string($site_logo_raw) && str_starts_with(trim($site_logo_raw), '{')) {
+    $site_logo_array = json_decode($site_logo_raw, true) ?? [];
+    $site_logo_path = $site_logo_array[$current_lang] ?? $site_logo_array['de'] ?? $site_logo_array['ar'] ?? 'assets/img/logo.png';
+} else {
+    $site_logo_path = $site_logo_raw;
+}
 
 $menu_links      = get_setting('menu_links', []);
 if (is_string($menu_links)) {

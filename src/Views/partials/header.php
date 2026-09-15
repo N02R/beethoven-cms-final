@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-// تحديد اللغة والاتجاه الحاليين من الجلسة (افتراضياً العربية)
-$current_lang = $_SESSION['site_lang'] ?? 'ar';
-$current_dir = ($current_lang === 'en') ? 'ltr' : 'rtl';
-$current_lang_code = ($current_lang === 'en') ? 'en' : 'ar';
+// تحديد اللغة والاتجاه الحاليين من الجلسة (افتراضياً الألمانية أو العربية حسب تهيئتك، سنعتمد دالة get_current_lang())
+$current_lang = get_current_lang();
+$current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
+$current_lang_code = $current_lang;
 
 // التحقق من صلاحيات المشرف باستخدام جلسة النظام المركزي
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
-// جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح
+// جلب الإعدادات مع معالجة آمنة لضمان تحويل بيانات الـ JSON إلى مصفوفات بشكل صحيح (مع دعم تلقائي للغات عبر get_setting)
 $site_logo_path  = get_setting('site_logo_path', 'assets/img/logo.png');
 
 $menu_links      = get_setting('menu_links', []);
@@ -117,7 +117,7 @@ $is_visible = ($is_published && $is_in_time);
               
                 <?php if (($ad['type'] ?? 'text') === 'text'): ?>
                   <div class="p-2 rounded shadow-sm" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
-                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>"><?php echo htmlspecialchars($ad['announcement_text'] ?? 'مرحباً لكم!'); ?></marquee>
+                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>"><?php echo htmlspecialchars($ad['announcement_text'] ?? __('home', 'مرحباً لكم!')); ?></marquee>
                   </div>
                 <?php else: ?>
                   <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
@@ -192,15 +192,20 @@ $is_visible = ($is_published && $is_in_time);
               
               <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
                   <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20">
-                  <span><?php echo ($current_lang === 'en') ? 'English' : 'العربية'; ?></span>
+                  <span>
+                    <?php 
+                        if ($current_lang === 'en') echo 'English';
+                        elseif ($current_lang === 'ar') echo 'العربية';
+                        else echo 'Deutsch';
+                    ?>
+                  </span>
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
-<ul class="dropdown-menu dropdown-menu-end">
-    <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=ar">العربية</a></li>
-    <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=en">English</a></li>
-</ul>
-
-
+              <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=de">Deutsch</a></li>
+                  <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=en">English</a></li>
+                  <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=ar">العربية</a></li>
+              </ul>
           </div>
         </div>
       </div>

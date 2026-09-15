@@ -5,33 +5,50 @@ use App\Config\Database;
 
 if (!function_exists('get_setting')) {
     /**
-     * جلب قيمة إعداد معين من قاعدة البيانات (تدعم النصوص والمصفوفات)
+     * جلب قيمة إعداد معين مع دعم تلقائي للغات (de, en, ar)
      */
     function get_setting(string $key, mixed $default = ''): mixed {
         try {
             $db = Database::getConnection();
+            $currentLang = get_current_lang(); // جلب اللغة الحالية (de, en, ar)
+            
+            // 1. محاولة البحث عن المفتاح مضافاً إليه اللغة (مثلاً: site_title_ar)
+            $langKey = $key . '_' . $currentLang;
             $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
-            $stmt->execute([$key]);
+            $stmt->execute([$langKey]);
             $result = $stmt->fetch();
 
-            if ($result && isset($result['setting_value'])) {
+            // 2. إذا وجدنا قيمة خاصة باللغة، نرجعها
+            if ($result && isset($result['setting_value']) && $result['setting_value'] !== '') {
                 $value = $result['setting_value'];
+            } else {
+                // 3. إن لم يوجد، نحاول جلب المفتاح الأساسي الافتراضي
+                $stmt->execute([$key]);
+                $result = $stmt->fetch();
                 
-                // محاولة فك الـ JSON إذا كانت القيمة مخزنة كمصفوفة
-                $decoded = json_decode($value, true);
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    return $decoded;
+                if ($result && isset($result['setting_value'])) {
+                    $value = $result['setting_value'];
+                } else {
+                    return $default;
                 }
-                
-                return $value;
             }
+            
+            // محاولة فك الـ JSON إذا كانت القيمة مخزنة كمصفوفة
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
+            }
+            
+            return $value;
+
         } catch (\Exception $e) {
-            // في حال حدوث أي خطأ
+            // في حال حدوث أي خطأ في قاعدة البيانات
         }
         
         return $default;
     }
 }
+
 
 if (!function_exists('get_image_url')) {
     /**
@@ -75,5 +92,28 @@ if (!function_exists('get_current_lang')) {
      */
     function get_current_lang(): string {
         return $_SESSION['site_lang'] ?? 'de';
+    }
+}
+
+if (!function_exists('__')) {
+    /**
+     * دالة ترجمة النصوص الثابتة بناءً على لغة الجلسة الحالية
+     */
+    function __(string $key, string $default = ''): string {
+        static $langData = [];
+        $currentLang = get_current_lang();
+
+        // تحميل ملف اللغة مرة واحدة فقط لكل طلب (Performance Optimization)
+        if (!isset($langData[$currentLang])) {
+            $langFile = __DIR__ . '/../Lang/' . $currentLang . '.php';
+            if (file_exists($langFile)) {
+                $langData[$currentLang] = require $langFile;
+            } else {
+                $langData[$currentLang] = [];
+            }
+        }
+
+        // إرجاع الترجمة إن وجدت، أو النص الافتراضي أو المفتاح نفسه
+        return $langData[$currentLang][$key] ?? ($default !== '' ? $default : $key);
     }
 }

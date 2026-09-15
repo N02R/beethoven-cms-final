@@ -108,7 +108,10 @@
             <div class="card" style="background: url('<?php echo htmlspecialchars($service_img); ?>') no-repeat center/cover;">
               <div class="card-info">
                 <h3><?php echo htmlspecialchars($service_title); ?></h3>
-                <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" alt="Arrow">
+               <img src="<?php echo get_image_url('assets/img/home/ArrowLink.svg.webp'); ?>" 
+     alt="Arrow" 
+     style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+
               </div>
             </div>
           </a>

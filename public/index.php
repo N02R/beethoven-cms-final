@@ -34,16 +34,6 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 }
 
-// معالجة تغيير اللغة مركزياً وآمنياً
-if (isset($_GET['action']) && $_GET['action'] === 'switch-lang') {
-    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en', 'de'], true)) {
-        $_SESSION['site_lang'] = $_GET['lang'];
-    }
-    $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
-    header('Location: ' . $redirect_url);
-    exit;
-}
-
 // 2. تفعيل رؤوس الأمان الشاملة (Security Headers)
 header("X-Frame-Options: DENY");
 header("X-Content-Type-Options: nosniff");
@@ -180,7 +170,7 @@ $router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
 $router->add('GET', 'switch-lang', [HomeController::class, 'switchLang']);
 
 // ==========================================
-// 3. معالجة الـ URI والـ Dispatch
+// 3. معالجة الـ URI واستخراج اللغة من الرابط
 // ==========================================
 if (isset($_GET['url'])) {
     $uri = '/' . trim($_GET['url'], '/');
@@ -196,6 +186,19 @@ if (isset($_GET['url'])) {
         $uri = substr($uri, strlen($scriptName));
     }
 }
+
+// تنظيف الـ URI واستخراج بادئة اللغة إن وجدت (مثل /en/home أو /ar/about)
+$uriSegments = explode('/', trim($uri, '/'));
+$currentLang = 'de'; // الافتراضي
+
+if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], true)) {
+    $currentLang = $uriSegments[0];
+    array_shift($uriSegments); // حذف الجزء الخاص باللغة لنترك مسار الصفحة الحقيقي للراوتر
+    $uri = '/' . implode('/', $uriSegments);
+}
+
+// حفظ اللغة الحالية في الجلسة لتتطابق مع بقية الدوال
+$_SESSION['site_lang'] = $currentLang;
 
 $method = $_SERVER['REQUEST_METHOD'];
 $router->dispatch($uri, $method);

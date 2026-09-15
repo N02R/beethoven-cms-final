@@ -203,9 +203,9 @@ $is_visible = ($is_published && $is_in_time);
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
 <ul class="dropdown-menu dropdown-menu-end">
-    <li><a class="dropdown-item" href="/switch-lang?lang=de&v=2">Deutsch</a></li>
-    <li><a class="dropdown-item" href="/switch-lang?lang=en&v=2">English</a></li>
-    <li><a class="dropdown-item" href="/switch-lang?lang=ar&v=2">Arabic</a></li>
+    <li><a class="dropdown-item" href="/de<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">Deutsch</a></li>
+    <li><a class="dropdown-item" href="/en<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">English</a></li>
+    <li><a class="dropdown-item" href="/ar<?php echo parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); ?>">العربية</a></li>
 </ul>
 
 

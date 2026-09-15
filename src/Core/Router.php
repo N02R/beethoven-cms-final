@@ -7,6 +7,9 @@ use ReflectionMethod;
 
 class Router {
     private array $routes = [];
+    
+    // قائمة اللغات المدعومة حالياً ومستقبلاً (قابلة للتوسعة بسهولة)
+    private array $supportedLangs = ['de', 'en', 'ar'];
 
     public function add(string $method, string $path, array $controllerAction): void {
         $path = strtolower(trim($path, '/'));
@@ -19,11 +22,11 @@ class Router {
 
         $segments = explode('/', $uri);
         
-        // تحديد اللغة من الجلسة أو الاعتماد على الألمانية كافتراضي
+        // 1. تحديد اللغة من الجلسة كخيار افتراضي أولي
         $lang = $_SESSION['site_lang'] ?? 'de';
         
-        // التحقق من لغة الموقع في بداية الرابط
-        if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
+        // 2. التحقق من وجود لغة في بداية المسار وتحديثها ديناميكياً
+        if (!empty($segments[0]) && in_array($segments[0], $this->supportedLangs, true)) {
             $lang = array_shift($segments);
             $_SESSION['site_lang'] = $lang;
             $uri = implode('/', $segments);

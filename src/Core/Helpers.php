@@ -95,9 +95,19 @@ if (!function_exists('get_image_url')) {
 
 if (!function_exists('get_current_lang')) {
     /**
-     * جلب اللغة الحالية للنظام
+     * جلب اللغة الحالية للنظام بناءً على الرابط أو الجلسة
      */
     function get_current_lang(): string {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $segments = explode('/', trim(parse_url($uri, PHP_URL_PATH) ?? '', '/'));
+        
+        // التحقق إذا كان الجزء الأول من الرابط يمثل لغة معتمدة
+        foreach ($segments as $segment) {
+            if (in_array($segment, ['ar', 'en', 'de'], true)) {
+                return $segment;
+            }
+        }
+        
         return $_SESSION['site_lang'] ?? 'de';
     }
 }

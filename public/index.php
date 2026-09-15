@@ -5,8 +5,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 
-
-
 /**
  * Beethoven CMS - Entry Point (public/index.php)
  * إدارة الجلسات الآمنة ورؤوس الأمان والتوجيه المركزي للمشروع
@@ -38,7 +36,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // معالجة تغيير اللغة مركزياً وآمنياً
 if (isset($_GET['action']) && $_GET['action'] === 'switch-lang') {
-    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en'], true)) {
+    if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en', 'de'], true)) {
         $_SESSION['site_lang'] = $_GET['lang'];
     }
     $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
@@ -118,14 +116,12 @@ use App\Controllers\Guide\GuideBlog3Controller;
 use App\Controllers\MediaController;
 use App\Controllers\LegalController;
 
-
 // Controllers الخاصة بلوحة التحكم (Admin)
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\SettingsController;
 use App\Controllers\Admin\UploadController;
 use App\Controllers\Admin\AuthController;
 use App\Controllers\Admin\AnnouncementController;
-
 
 $router = new Router();
 
@@ -158,7 +154,6 @@ $router->add('GET', 'edu-services/pakeges', [OffersController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
 $router->add('GET', 'edu-services/medical-pakeges', [MedicalPackageController::class, 'index']);
 $router->add('GET', 'edu-services/medical-traning', [JobAgreementsController::class, 'index']);
-// تم نقل مسار الاختصاصات الطبية ليصبح تحت edu-services بدلاً من job-services
 $router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);
 
@@ -182,10 +177,10 @@ $router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
 $router->add('GET', 'impressum', [LegalController::class, 'impressum']);
 $router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
+$router->add('GET', 'switch-lang', [HomeController::class, 'switchLang']);
 
-$router->add('GET', 'switch-lang', [App\Controllers\HomeController::class, 'switchLang']);
 // ==========================================
-// 3. معالجة الـ URI والـ Dispatch (دعم كامل لسيرفر PHP المحلي و ?url=)
+// 3. معالجة الـ URI والـ Dispatch
 // ==========================================
 if (isset($_GET['url'])) {
     $uri = '/' . trim($_GET['url'], '/');

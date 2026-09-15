@@ -68,3 +68,12 @@ if (!function_exists('get_image_url')) {
         return $default;
     }
 }
+
+if (!function_exists('get_current_lang')) {
+    /**
+     * جلب اللغة الحالية للنظام
+     */
+    function get_current_lang(): string {
+        return $_SESSION['site_lang'] ?? 'de';
+    }
+}

@@ -25,41 +25,69 @@ class SiteModel {
     }
 
     /**
-     * دالة موحدة لجلب وتجهيز بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
+     * دالة موحدة لجلب وتجهيز بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع مع دعم اللغات
      */
     public static function getGlobalData(): array {
         $settings = self::getSettings();
+        $lang = $_SESSION['site_lang'] ?? 'ar';
+
+        // دوال مساعدة لاستخراج البيانات والنصوص حسب اللغة الحالية
+        $getLangData = function(string $key, $default = []) use ($settings, $lang) {
+            if (!isset($settings[$key])) {
+                return $default;
+            }
+            $decoded = json_decode($settings[$key], true);
+            
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+                return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
+            }
+            
+            return $decoded ?? $default;
+        };
+
+        $getLangString = function(string $key, string $default = '') use ($settings, $lang) {
+            if (!isset($settings[$key])) {
+                return $default;
+            }
+            $decoded = json_decode($settings[$key], true);
+            
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+                return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
+            }
+            
+            return $settings[$key] ?? $default;
+        };
         
         return [
-            'site_title'        => $settings['site_title'] ?? 'Beethoven Services',
+            'site_title'        => $getLangString('site_title', 'Beethoven Services'),
             'site_email'        => $settings['site_email'] ?? '',
             'site_logo_path'    => $settings['site_logo_path'] ?? '',
             'social_links'      => isset($settings['social_links']) ? json_decode($settings['social_links'], true) : [],
-            'menu_links'        => isset($settings['menu_links']) ? json_decode($settings['menu_links'], true) : [],
+            'menu_links'        => $getLangData('menu_links', []),
             'languages'         => isset($settings['languages']) ? json_decode($settings['languages'], true) : [],
-            'announcement'      => isset($settings['announcement']) ? json_decode($settings['announcement'], true) : [],
+            'announcement'      => $getLangData('announcement', []),
             
-            // بيانات قسم الخدمات المشترك بين الصفحات
-            'services_section_title' => $settings['services_section_title'] ?? 'خدماتنا المميزة',
-            'services_section_desc'  => $settings['services_section_desc'] ?? '',
-            'services'               => isset($settings['services']) ? json_decode($settings['services'], true) : [],
+            // بيانات قسم الخدمات المشترك بين الصفحات (مدعومة باللغات)
+            'services_section_title' => $getLangString('services_section_title', 'خدماتنا المميزة'),
+            'services_section_desc'  => $getLangString('services_section_desc', ''),
+            'services'               => $getLangData('services', []),
 
             // بيانات قسم الاستشارة في الفوتر
-            'consult_title'     => $settings['consult_title'] ?? 'احصل على استشارة مجانية',
-            'consult_desc'      => $settings['consult_desc'] ?? '',
+            'consult_title'     => $getLangString('consult_title', 'احصل على استشارة مجانية'),
+            'consult_desc'      => $getLangString('consult_desc', ''),
             
             // بيانات أعمدة الفوتر
-            'footer_desc'       => $settings['footer_desc'] ?? '',
-            'footer_col2_title' => $settings['footer_col2_title'] ?? 'روابط سريعة',
-            'footer_col3_title' => $settings['footer_col3_title'] ?? 'تواصل معنا',
+            'footer_desc'       => $getLangString('footer_desc', ''),
+            'footer_col2_title' => $getLangString('footer_col2_title', 'روابط سريعة'),
+            'footer_col3_title' => $getLangString('footer_col3_title', 'تواصل معنا'),
             
             // روابط تواصل معنا
             'footer_col3_links' => isset($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
             
-            // بيانات صفحة الدليل الشامل (محدثة لتعرض التعديلات فوراً)
-            'guide_title'       => $settings['guide_title'] ?? 'دليل بيتهوفن الشامل',
-            'guide_desc'        => $settings['guide_desc'] ?? '',
-            'guide_items'       => isset($settings['guide_items']) ? (is_string($settings['guide_items']) ? json_decode($settings['guide_items'], true) : $settings['guide_items']) : [],
+            // بيانات صفحة الدليل الشامل
+            'guide_title'       => $getLangString('guide_title', 'دليل بيتهوفن الشامل'),
+            'guide_desc'        => $getLangString('guide_desc', ''),
+            'guide_items'       => $getLangData('guide_items', []),
         ];
     }
 

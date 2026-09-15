@@ -18,11 +18,14 @@ class Router {
         $method = strtoupper($method);
 
         $segments = explode('/', $uri);
-        $lang = 'de';
+        
+        // تحديد اللغة من الجلسة أو الاعتماد على الألمانية كافتراضي
+        $lang = $_SESSION['site_lang'] ?? 'de';
         
         // التحقق من لغة الموقع في بداية الرابط
         if (!empty($segments[0]) && in_array($segments[0], ['de', 'en', 'ar'], true)) {
             $lang = array_shift($segments);
+            $_SESSION['site_lang'] = $lang;
             $uri = implode('/', $segments);
         }
 

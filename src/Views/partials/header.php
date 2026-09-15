@@ -196,8 +196,8 @@ $is_visible = ($is_published && $is_in_time);
                   <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
               </button>
 <ul class="dropdown-menu dropdown-menu-end">
-    <li><a class="dropdown-item" href="/switch-lang?lang=ar">العربية</a></li>
-    <li><a class="dropdown-item" href="/switch-lang?lang=en">English</a></li>
+    <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=ar">العربية</a></li>
+    <li><a class="dropdown-item" href="/index.php?action=switch-lang&lang=en">English</a></li>
 </ul>
 
 

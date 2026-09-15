@@ -10,7 +10,7 @@
   echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
 ?>
 <!-- hero start -->
-<section class="hero py-5" aria-label="قسم البداية" style="position: relative;">
+<section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
@@ -19,15 +19,24 @@
 
   <div class="custom-container">
     <?php 
-    $hero = $data['hero'] ?? [];
+    $hero_raw = get_setting('hero', []);
+    $hero = is_string($hero_raw) ? (json_decode($hero_raw, true) ?? []) : $hero_raw;
+    
     $hero_bg = get_image_url($hero['img'] ?? null, '/assets/img/home/home1.png');
+
+    // استخراج النصوص حسب اللغة الحالية مع بدائل آمنة
+    $hero_title = $hero[$current_lang]['title'] ?? $hero['de']['title'] ?? $hero['ar']['title'] ?? 'عنوان افتراضي';
+    $hero_desc  = $hero[$current_lang]['desc'] ?? $hero['de']['desc'] ?? $hero['ar']['desc'] ?? 'وصف افتراضي للقسم';
+    $hero_btn   = $hero[$current_lang]['btn_text'] ?? $hero['de']['btn_text'] ?? $hero['ar']['btn_text'] ?? 'اضغط هنا';
+    $hero_url   = $hero['btn_url'] ?? '#';
     ?>
+    
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
       <div class="hero-content">
-        <h1><?php echo htmlspecialchars($hero['title'] ?? 'عنوان افتراضي'); ?></h1>
-        <p><?php echo htmlspecialchars($hero['desc'] ?? 'وصف افتراضي للقسم'); ?></p>
-        <a href="<?php echo htmlspecialchars($hero['btn_url'] ?? '#'); ?>" class="btn btn-lg hero-btn">
-          <?php echo htmlspecialchars($hero['btn_text'] ?? 'اضغط هنا'); ?>
+        <h1><?php echo htmlspecialchars($hero_title); ?></h1>
+        <p><?php echo htmlspecialchars($hero_desc); ?></p>
+        <a href="<?php echo htmlspecialchars($hero_url); ?>" class="btn btn-lg hero-btn">
+          <?php echo htmlspecialchars($hero_btn); ?>
         </a>
       </div>
     </div>

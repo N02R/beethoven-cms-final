@@ -394,14 +394,16 @@ section.popular .accordion-button::after {
   flex-shrink: 0;
   width: 1.25rem;
   height: 1.25rem;
-  margin-left: 0;
-  margin-right: auto;
+  /* جعل الهامش يتكيف تلقائياً حسب اتجاه الصفحة RTL أو LTR */
+  margin-inline-start: auto;
+  margin-inline-end: 0;
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12 20L12 4M12 4L18 10M12 4L6 10' stroke='%2366aeee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-size: 1.25rem;
   transition: transform .3s ease-in-out;
   transform: rotate(180deg);
 }
+
 
 section.popular .accordion-button[aria-expanded="true"]::after {
   transform: rotate(0deg);

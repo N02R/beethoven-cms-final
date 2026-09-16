@@ -561,7 +561,7 @@ section.popular .call button:hover {
 /* انعكاس سهم زر الاستشارة في اللغة العربية ليتجه لليسار لأعلى بشكل صحيح */
 [dir="rtl"] .consult-banner-form button img,
 html[lang="ar"] .consult-banner-form button img {
-  transform: scaleX(1);
+  transform: scaleX(-1);
 }
 
 .footer-section {

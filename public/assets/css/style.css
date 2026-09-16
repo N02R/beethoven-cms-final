@@ -564,15 +564,15 @@ section.popular .call button:hover {
   background-color: #1a1a1a;
 }
 
-/* الوضع الافتراضي (في اللغة العربية): يبقى السهم كما هو أو نضبطه ليتجه لليسار لأعلى */
+/* إذا كانت اللغات الأجنبية هي الافتراضية في الكود الأصلي للصورة: */
 .consult-banner-form button img {
-  transform: none;
+  transform: scaleX(-1); /* اتجاه الإنجليزية والألمانية */
 }
 
-/* في اللغات الأجنبية (LTR / الإنجليزية والألمانية): نقوم بقلب السهم أفقياً ليتجه لليمين لأعلى */
-[dir="ltr"] .consult-banner-form button img,
-html:not([lang="ar"]) .consult-banner-form button img {
-  transform: scaleX(-1);
+/* عندما يكون الموقع بالعربية (تأكدي من أن عنصر الـ html أو body يحمل dir="rtl"): */
+html[dir="rtl"] .consult-banner-form button img,
+body[dir="rtl"] .consult-banner-form button img {
+  transform: none; /* اتجاه اللغة العربية */
 }
 
 .footer-section {

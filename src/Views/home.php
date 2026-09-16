@@ -367,52 +367,82 @@
 <!-- FAQ section start -->
 <section class="popular py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
   <div class="container-fluid custom-container">
     <?php 
-        // معالجة عنوان الأسئلة الشائعة متعدد اللغات
+        // 1. معالجة عنوان الأسئلة الشائعة بطريقة آمنة
         $faq_title_raw = get_setting('faq_title', 'الأسئلة الشائعة');
+        $faq_title = 'الأسئلة الشائعة';
         if (is_string($faq_title_raw) && str_starts_with(trim($faq_title_raw), '{')) {
-            $ft_arr = json_decode($faq_title_raw, true) ?? [];
-            $faq_title = $ft_arr[$current_lang] ?? $ft_arr['ar'] ?? 'الأسئلة الشائعة';
-        } else {
+            $ft_arr = json_decode($faq_title_raw, true);
+            if (is_array($ft_arr)) {
+                $faq_title = $ft_arr[$current_lang] ?? $ft_arr['ar'] ?? $ft_arr['de'] ?? 'الأسئلة الشائعة';
+            }
+        } elseif (!empty($faq_title_raw)) {
             $faq_title = $faq_title_raw;
         }
 
-        // جلب عناصر الأسئلة وتحويلها من JSON إن وجدت
+        // 2. معالجة عناصر الأسئلة بطريقة آمنة تمنع الاختفاء
         $faq_items_raw = get_setting('faq_items', []);
-        $faq_items = is_string($faq_items_raw) ? (json_decode($faq_items_raw, true) ?? []) : $faq_items_raw;
+        $faq_items = [];
+        
+        if (is_string($faq_items_raw)) {
+            $decoded = json_decode($faq_items_raw, true);
+            if (is_array($decoded)) {
+                $faq_items = $decoded;
+            }
+        } elseif (is_array($faq_items_raw)) {
+            $faq_items = $faq_items_raw;
+        }
+
+        // في حال لم تكن هناك بيانات مخزنة، نعرض أسئلة افتراضية لكي لا يظهر القسم فارغاً
+        if (empty($faq_items)) {
+            $faq_items = [
+                [
+                    'ar' => ['question' => 'ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟', 'answer' => 'تحتاج إلى شهادة الثانوية العامة أو ما يعادلها، إثبات كفاءة في اللغة الألمانية أو الإنجليزية.'],
+                    'en' => ['question' => 'What are the basic requirements to apply to German universities?', 'answer' => 'You need a high school diploma or equivalent, proof of proficiency in German or English.'],
+                    'de' => ['question' => 'Was sind die Grundvoraussetzungen für die Bewerbung?', 'answer' => 'Sie benötigen ein Abitur oder gleichwertigen Abschluss, Sprachnachweise.']
+                ]
+            ];
+        }
     ?>
 
     <h2 class="sec-title mb-5"><?php echo htmlspecialchars($faq_title); ?></h2>
     
     <div class="accordion mb-5" id="accordionExample">
-      <?php if (!empty($faq_items)): ?>
-        <?php foreach ($faq_items as $index => $item): 
-            // استخراج السؤال والجواب حسب اللغة الحالية مع بديل آمن للعربية
-            $faq_question = $item[$current_lang]['question'] ?? $item['ar']['question'] ?? ($item['question'] ?? '');
-            $faq_answer   = $item[$current_lang]['answer'] ?? $item['ar']['answer'] ?? ($item['answer'] ?? '');
-        ?>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-              <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
-                <?php echo htmlspecialchars($faq_question); ?>
-              </button>
-            </h2>
-            <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-              <div class="accordion-body"><?php echo htmlspecialchars($faq_answer); ?></div>
-            </div>
+      <?php foreach ($faq_items as $index => $item): 
+            // استخراج السؤال والجواب بناءً على اللغة الحالية مع بدائل آمنة
+            $faq_question = '';
+            $faq_answer = '';
+
+            if (is_array($item)) {
+                if (isset($item[$current_lang])) {
+                    $faq_question = $item[$current_lang]['question'] ?? '';
+                    $faq_answer   = $item[$current_lang]['answer'] ?? '';
+                } elseif (isset($item['ar'])) {
+                    $faq_question = $item['ar']['question'] ?? '';
+                    $faq_answer   = $item['ar']['answer'] ?? '';
+                } else {
+                    // للتوافق مع الشكل القديم إن وجد
+                    $faq_question = $item['question'] ?? '';
+                    $faq_answer   = $item['answer'] ?? '';
+                }
+            }
+      ?>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading<?php echo $index; ?>">
+            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
+              <?php echo htmlspecialchars($faq_question); ?>
+            </button>
+          </h2>
+          <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
+            <div class="accordion-body"><?php echo htmlspecialchars($faq_answer); ?></div>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <p class="text-center text-muted">لا توجد أسئلة شائعة مضافة حالياً.</p>
-      <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
 <!-- FAQ section end -->
-

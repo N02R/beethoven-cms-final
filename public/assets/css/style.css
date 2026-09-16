@@ -564,9 +564,14 @@ section.popular .call button:hover {
   background-color: #1a1a1a;
 }
 
-/* انعكاس سهم زر الاستشارة تلقائياً بناءً على اتجاه لغة الموقع */
-[dir="rtl"] .consult-banner-form button img,
-html[lang="ar"] .consult-banner-form button img {
+/* الوضع الافتراضي (في اللغة العربية): يبقى السهم كما هو أو نضبطه ليتجه لليسار لأعلى */
+.consult-banner-form button img {
+  transform: none;
+}
+
+/* في اللغات الأجنبية (LTR / الإنجليزية والألمانية): نقوم بقلب السهم أفقياً ليتجه لليمين لأعلى */
+[dir="ltr"] .consult-banner-form button img,
+html:not([lang="ar"]) .consult-banner-form button img {
   transform: scaleX(-1);
 }
 

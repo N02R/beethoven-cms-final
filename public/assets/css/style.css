@@ -394,16 +394,14 @@ section.popular .accordion-button::after {
   flex-shrink: 0;
   width: 1.25rem;
   height: 1.25rem;
-  /* جعل الهامش يتكيف تلقائياً حسب اتجاه الصفحة RTL أو LTR */
-  margin-inline-start: auto;
-  margin-inline-end: 0;
+  margin-left: 0;
+  margin-right: auto;
   background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12 20L12 4M12 4L18 10M12 4L6 10' stroke='%2366aeee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-size: 1.25rem;
   transition: transform .3s ease-in-out;
   transform: rotate(180deg);
 }
-
 
 section.popular .accordion-button[aria-expanded="true"]::after {
   transform: rotate(0deg);
@@ -560,6 +558,12 @@ section.popular .call button:hover {
   background-color: #1a1a1a;
 }
 
+/* انعكاس سهم زر الاستشارة تلقائياً في حالة اللغة العربية */
+[dir="rtl"] .consult-banner-form button img,
+html[lang="ar"] .consult-banner-form button img {
+  transform: scaleX(-1);
+}
+
 .footer-section {
   background: rgba(233, 244, 253, .2);
   padding-top: 80px !important;
@@ -592,13 +596,16 @@ section.popular .call button:hover {
   text-decoration: none;
   color: rgba(79, 79, 79, 1);
   position: relative;
-  padding-right: 24px;
+  /* استخدام الخصائص المنطقية (Logical Properties) لكي تتكيف تلقائياً مع الـ RTL و LTR */
+  padding-inline-start: 24px;
+  padding-inline-end: 0;
 }
 
 .quick-link a::before {
   content: "";
   position: absolute;
-  right: 0;
+  /* تتوافق تلقائياً مع الجهة الصحيحة بناءً على اتجاه الموقع */
+  inset-inline-start: 0; 
   top: 7px;
   width: 14px;
   height: 14px;
@@ -643,13 +650,11 @@ section.popular .call button:hover {
   opacity: .24;
 }
 
-/* اجعل الكاروسيل يتحرك من اليمين لليسار */
+/* اجعل الكاروسيل يتحرك من اليمين لليسار 
 .carousel-rtl .carousel-inner {
   direction: rtl;
-  /* قلب اتجاه الانزلاق */
 }
 
 .carousel-rtl .carousel-item {
   float: right;
-  /* اجعل العناصر تتجه يميناً */
 }

@@ -14,11 +14,11 @@
 
   <div class="custom-container">
     <?php 
-        // معالجة عنوان الدليل متعدد اللغات
+        // معالجة عنوان الدليل متعدد اللغات (الأولوية للغة الحالية ثم العربية)
         $guide_title_raw = get_setting('guide_title', 'الدليل الشامل');
         if (is_string($guide_title_raw) && str_starts_with(trim($guide_title_raw), '{')) {
             $gt_arr = json_decode($guide_title_raw, true) ?? [];
-            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['de'] ?? $gt_arr['ar'] ?? 'الدليل الشامل';
+            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['ar'] ?? 'الدليل الشامل';
         } else {
             $guide_title = $guide_title_raw;
         }
@@ -27,7 +27,7 @@
         $guide_desc_raw = get_setting('guide_desc', '');
         if (is_string($guide_desc_raw) && str_starts_with(trim($guide_desc_raw), '{')) {
             $gd_arr = json_decode($guide_desc_raw, true) ?? [];
-            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['de'] ?? $gd_arr['ar'] ?? '';
+            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['ar'] ?? '';
         } else {
             $guide_desc = $guide_desc_raw;
         }
@@ -36,7 +36,7 @@
         $rm_raw = get_setting('read_more_btn', 'قراءة المزيد');
         if (is_string($rm_raw) && str_starts_with(trim($rm_raw), '{')) {
             $rm_arr = json_decode($rm_raw, true) ?? [];
-            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['de'] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
+            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
         } else {
             $read_more_text = $rm_raw;
         }
@@ -57,8 +57,8 @@
     <div class="row g-4">
       <?php if (!empty($guide_items)): ?>
         <?php foreach ($guide_items as $item): 
-            $item_title = $item[$current_lang]['title'] ?? $item['de']['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
-            $item_desc  = $item[$current_lang]['desc'] ?? $item['de']['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+            $item_title = $item[$current_lang]['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
+            $item_desc  = $item[$current_lang]['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
 
             $item_img = get_image_url($item['img'] ?? null);
             $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');

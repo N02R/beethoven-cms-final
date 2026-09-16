@@ -270,20 +270,19 @@
 
   <div class="custom-container">
     <?php 
-        // معالجة عنوان الدليل متعدد اللغات
+        // جلب العنوان والوصف باللغة الحالية مباشرة (الأولوية للغة الحالية ثم العربية)
         $guide_title_raw = get_setting('guide_title', 'دليل بيتهوفن الشامل');
         if (is_string($guide_title_raw) && str_starts_with(trim($guide_title_raw), '{')) {
             $gt_arr = json_decode($guide_title_raw, true) ?? [];
-            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['de'] ?? $gt_arr['ar'] ?? 'دليل بيتهوفن الشامل';
+            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['ar'] ?? 'دليل بيتهوفن الشامل';
         } else {
             $guide_title = $guide_title_raw;
         }
 
-        // معالجة وصف الدليل متعدد اللغات
         $guide_desc_raw = get_setting('guide_desc', '');
         if (is_string($guide_desc_raw) && str_starts_with(trim($guide_desc_raw), '{')) {
             $gd_arr = json_decode($guide_desc_raw, true) ?? [];
-            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['de'] ?? $gd_arr['ar'] ?? '';
+            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['ar'] ?? '';
         } else {
             $guide_desc = $guide_desc_raw;
         }
@@ -292,7 +291,7 @@
         $rm_raw = get_setting('read_more_btn', 'قراءة المزيد');
         if (is_string($rm_raw) && str_starts_with(trim($rm_raw), '{')) {
             $rm_arr = json_decode($rm_raw, true) ?? [];
-            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['de'] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
+            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
         } else {
             $read_more_text = $rm_raw;
         }
@@ -305,7 +304,7 @@
         <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc)); ?></p>
     <?php endif; ?>
 
-    <div id="carousel-guide" class="carousel slide <?php echo ($current_dir === 'rtl') ? 'carousel-rtl' : 'carousel-ltr'; ?>" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
+    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
       <div class="carousel-inner">
         <?php if (!empty($guide_items)): ?>
           <?php 
@@ -315,9 +314,9 @@
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
               <div class="row g-4">
                 <?php foreach ($slide_items as $item): 
-                  // استخراج عنوان ووصف المقال حسب اللغة الحالية
-                  $item_title = $item[$current_lang]['title'] ?? $item['de']['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
-                  $item_desc  = $item[$current_lang]['desc'] ?? $item['de']['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+                  // استخراج عنوان ووصف المقال حسب اللغة الحالية مع البديل العربي
+                  $item_title = $item[$current_lang]['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
+                  $item_desc  = $item[$current_lang]['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
                   
                   $item_img = get_image_url($item['img'] ?? null);
                   $raw_url = $item['url'] ?? '#';

@@ -124,6 +124,19 @@
     }
 </style>
 
+<?php
+// دالة مساعدة محلية لمنع أخطاء المصفوفات مع htmlspecialchars في المودالات
+if (!function_exists('safe_admin_string')) {
+    function safe_admin_string($val, $current_lang = 'ar') {
+        if (is_array($val)) {
+            return $val[$current_lang] ?? $val['ar'] ?? $val['de'] ?? reset($val) ?? '';
+        }
+        return (string)($val ?? '');
+    }
+}
+$current_lang = $current_lang ?? 'ar';
+?>
+
 <!-- 1. Social Links Modal -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -135,7 +148,7 @@
             <div class="modal-body p-4">
                 <form id="socialLinksForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
@@ -146,24 +159,24 @@
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-4">
                                     <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
-                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($link['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
+                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
                                 </div>
                                 <div class="col-md-8">
                                     <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
-                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                 </div>
                                 <div class="col-md-11">
                                     <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($link['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Social Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($link['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Social Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" class="form-control social-file" name="social_img_<?php echo $index; ?>" accept="image/*">
                                     </div>
                                 </div>
-                                <input type="hidden" class="social-old-img" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" class="social-old-img" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="col-md-1 text-center pt-3">
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_<?php echo $index; ?>')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
                                 </div>
@@ -196,12 +209,12 @@
             </div>
             <div class="modal-body p-4 text-center">
                 <form id="logoEditForm" enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
                     
                     <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path ?? ''), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 90px; object-fit: contain;">
+                            <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($site_logo_path ?? ''), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="max-height: 90px; object-fit: contain;">
                         </div>
                     </div>
                     
@@ -231,7 +244,7 @@
             <div class="modal-body p-4">
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_announcement">
-                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars($data['announcement']['image_path'] ?? 'assets/img/default-ad.png', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-gear text-primary me-1"></i> حالة الإعلان والتوقيت</div>
@@ -239,17 +252,17 @@
                             <div class="col-md-4">
                                 <label class="small fw-bold mb-1">حالة العرض</label>
                                 <select class="form-select" name="status">
-                                    <option value="Draft" <?php echo (($data['announcement']['status'] ?? '') == 'Draft' ? 'selected' : ''); ?>>مخفي (مسودة)</option>
-                                    <option value="Published" <?php echo (($data['announcement']['status'] ?? '') == 'Published' ? 'selected' : ''); ?>>نشط (يظهر للزوار)</option>
+                                    <option value="Draft" <?php echo ((safe_admin_string($data['announcement']['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>>مخفي (مسودة)</option>
+                                    <option value="Published" <?php echo ((safe_admin_string($data['announcement']['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>>نشط (يظهر للزوار)</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
                                 <label class="small fw-bold mb-1">تاريخ البدء</label>
-                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['start_date'] ?? ''); ?>">
+                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($data['announcement']['start_date'] ?? '', $current_lang)); ?>">
                             </div>
                             <div class="col-md-4">
                                 <label class="small fw-bold mb-1">تاريخ الانتهاء</label>
-                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', $data['announcement']['end_date'] ?? ''); ?>">
+                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($data['announcement']['end_date'] ?? '', $current_lang)); ?>">
                             </div>
                         </div>
                     </div>
@@ -258,34 +271,34 @@
                         <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-pencil-square text-primary me-1"></i> محتوى الإعلان</div>
                         <label class="small fw-bold mb-1">نوع الإعلان:</label>
                         <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo (($data['announcement']['type'] ?? 'text') == 'text' ? 'selected' : ''); ?>>نص متحرك (اختر هذا لنص سريع)</option>
-                            <option value="image" <?php echo (($data['announcement']['type'] ?? 'text') == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي كامل)</option>
+                            <option value="text" <?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>>نص متحرك (اختر هذا لنص سريع)</option>
+                            <option value="image" <?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>>صورة (بانر دعائي كامل)</option>
                         </select>
 
-                        <div id="textEditor" class="<?php echo (($data['announcement']['type'] ?? 'text') == 'text' ? '' : 'd-none'); ?>">
+                        <div id="textEditor" class="<?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'text' ? '' : 'd-none'); ?>">
                             <label class="small fw-bold mb-1">نص الإعلان (الرسالة التي ستظهر للزوار):</label>
-                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars($data['announcement']['announcement_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars(safe_admin_string($data['announcement']['announcement_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             <div class="row g-2">
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1">لون الخلفية</label>
-                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars($data['announcement']['bg_color'] ?? '#f1f5f9', ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['bg_color'] ?? '#f1f5f9', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1">لون الخط</label>
-                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars($data['announcement']['text_color'] ?? '#1e293b', ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['text_color'] ?? '#1e293b', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1">حجم الخط</label>
-                                    <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars($data['announcement']['font_size'] ?? '16', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['font_size'] ?? '16', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>
 
-                        <div id="imageEditor" class="<?php echo (($data['announcement']['type'] ?? 'text') == 'image' ? '' : 'd-none'); ?>">
+                        <div id="imageEditor" class="<?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'image' ? '' : 'd-none'); ?>">
                             <label class="small fw-bold mb-1">ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):</label>
                             <?php if (!empty($data['announcement']['image_path'])): ?>
                                 <div class="mb-2 p-2 bg-light rounded border d-inline-block">
-                                    <img src="<?php echo htmlspecialchars(get_image_url($data['announcement']['image_path']), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($data['announcement']['image_path']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="ad_image" style="height: auto; padding: 10px 16px;">
@@ -294,7 +307,7 @@
 
                     <div class="p-3 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-2 text-secondary" style="font-size: 0.95rem;"><i class="bi bi-link-45deg text-primary me-1"></i> رابط التوجيه (اختياري)</div>
-                        <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars($data['announcement']['link'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
+                        <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['link'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
                     </div>
                 </form>
             </div>
@@ -320,7 +333,7 @@
             <div class="modal-body p-4">
                 <form id="menuLinksForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_menu">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
@@ -331,15 +344,15 @@
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-5">
                                     <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
-                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
+                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
-                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
+                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
                                 </div>
                                 <div class="col-md-2">
                                     <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
-                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($link['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
                                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
@@ -377,7 +390,7 @@
             <div class="modal-body p-4">
                 <form id="langEditForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_languages">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="langRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
@@ -389,11 +402,11 @@
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($lang['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($lang['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
                                         </div>
                                         <div class="col-md-5">
                                             <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($lang['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($lang['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
                                             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
@@ -437,19 +450,19 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars($h['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars(safe_admin_string($h['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary">النص الوصفي</label>
-                                <textarea class="form-control" name="hero_desc" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($h['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control" name="hero_desc" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($h['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
-                                <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars($h['btn_text'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary">رابط الزر</label>
-                                <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars($h['btn_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary">صورة الخلفية</label>
@@ -457,7 +470,7 @@
                                 <?php if (!empty($h['img'])): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
                                         <span class="d-block small text-muted mb-2">الصورة الحالية:</span>
-                                        <img src="<?php echo htmlspecialchars(get_image_url($h['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($h['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
                                              style="max-height: 120px; object-fit: cover;">
@@ -465,7 +478,7 @@
                                 <?php endif; ?>
 
                                 <input type="file" class="form-control" name="hero_img" accept="image/*">
-                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($h['img'] ?? 'assets/img/hero-bg.jpg', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars(safe_admin_string($h['img'] ?? 'assets/img/hero-bg.jpg', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     </div>
@@ -494,11 +507,11 @@
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($data['services_section_title'] ?? 'خدماتنا المميزة', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars(safe_admin_string($data['services_section_title'] ?? 'خدماتنا المميزة', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
-                            <textarea class="form-control" name="services_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['services_section_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="services_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['services_section_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -511,18 +524,18 @@
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($service['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($service['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                     </div>
                                     <div class="col-md-11">
                                         <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($service['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($service['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($service['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Service Image" 
                                                          class="rounded-2" 
                                                          style="width: 40px; height: 40px; object-fit: cover;">
@@ -531,7 +544,7 @@
                                             <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($service['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                                     </div>
@@ -564,16 +577,16 @@
             <div class="modal-body p-4">
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
-                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['choose_section_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['choose_section_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -587,11 +600,11 @@
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                         </div>
 
                                         <div class="col-md-11">
@@ -599,7 +612,7 @@
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($item['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                              alt="Choose Item Icon" 
                                                              class="rounded-2" 
                                                              style="width: 40px; height: 40px; object-fit: cover;">
@@ -608,7 +621,7 @@
 
                                                 <input type="file" class="form-control choose-file" name="choose_img_<?php echo $index; ?>" accept="image/*">
                                             </div>
-                                            <input type="hidden" class="choose-old-img" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="choose-old-img" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
                                             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف الميزة">
@@ -646,11 +659,11 @@
             <div class="modal-body p-4">
                 <form id="reviewsForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_reviews">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                        <input type="text" class="form-control" name="reviews_title" value="<?php echo htmlspecialchars($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="text" class="form-control" name="reviews_title" value="<?php echo htmlspecialchars(safe_admin_string($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
 
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
@@ -662,7 +675,7 @@
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-11">
                                         <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
-                                        <input type="text" class="form-control review-url" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($review['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
+                                        <input type="text" class="form-control review-url" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($review['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="حذف الفيديو">
@@ -698,16 +711,16 @@
             <div class="modal-body p-4">
                 <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars($data['guide_title'] ?? 'دليل بيتهوفن الشامل', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars(safe_admin_string($data['guide_title'] ?? 'دليل بيتهوفن الشامل', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="guide_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['guide_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="guide_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['guide_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -720,16 +733,16 @@
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                                        <input type="text" class="form-control guide-title" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
+                                        <input type="text" class="form-control guide-title" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                                        <input type="text" class="form-control guide-url" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                        <input type="text" class="form-control guide-url" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($item['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
                                     </div>
                                     
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <input type="text" class="form-control guide-desc" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                        <input type="text" class="form-control guide-desc" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                     </div>
 
                                     <div class="col-md-5">
@@ -737,7 +750,7 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($item['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Guide Item Image" 
                                                          class="rounded-2" 
                                                          style="width: 40px; height: 40px; object-fit: cover;">
@@ -745,7 +758,7 @@
                                             <?php endif; ?>
                                             <input type="file" class="form-control guide-file" name="guide_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
-                                        <input type="hidden" class="guide-old-img" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" class="guide-old-img" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     
                                     <div class="col-md-1 text-center pt-3">
@@ -783,11 +796,11 @@
             <div class="modal-body p-4">
                 <form id="faqForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_faq">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة', ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars(safe_admin_string($data['faq_title'] ?? 'الأسئلة الشائعة', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
 
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
@@ -799,11 +812,11 @@
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                                        <input type="text" class="form-control faq-question" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
+                                        <input type="text" class="form-control faq-question" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars(safe_admin_string($item['question'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
                                     </div>
                                     <div class="col-md-5">
                                         <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                                        <input type="text" class="form-control faq-answer" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                        <input type="text" class="form-control faq-answer" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars(safe_admin_string($item['answer'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="حذف السؤال">
@@ -840,7 +853,7 @@
             <div class="modal-body p-4">
                 <form id="footerForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_footer">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="row mb-4">
                         <div class="col-12">
@@ -849,11 +862,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label class="small fw-bold mb-1 text-secondary">عنوان الاستشارة</label>
-                                        <input type="text" class="form-control consult-title" name="consult_title" value="<?php echo htmlspecialchars($data['consult_title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control consult-title" name="consult_title" value="<?php echo htmlspecialchars(safe_admin_string($data['consult_title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-8">
                                         <label class="small fw-bold mb-1 text-secondary">وصف الاستشارة</label>
-                                        <input type="text" class="form-control consult-desc" name="consult_desc" value="<?php echo htmlspecialchars($data['consult_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control consult-desc" name="consult_desc" value="<?php echo htmlspecialchars(safe_admin_string($data['consult_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -865,7 +878,7 @@
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
                                 <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
-                                <textarea class="form-control footer-desc" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['footer_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control footer-desc" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['footer_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
@@ -873,7 +886,7 @@
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
                                 <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                <input type="text" class="form-control mb-3 footer-col2-title" name="footer_col2_title" value="<?php echo htmlspecialchars($data['footer_col2_title'] ?? 'روابط سريعة', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control mb-3 footer-col2-title" name="footer_col2_title" value="<?php echo htmlspecialchars(safe_admin_string($data['footer_col2_title'] ?? 'روابط سريعة', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
                                     <i class="bi bi-info-circle me-1"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
                                 </div>
@@ -887,7 +900,7 @@
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
                                 <div class="mb-3" style="max-width: 400px;">
                                     <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                    <input type="text" class="form-control footer-col3-title" name="footer_col3_title" value="<?php echo htmlspecialchars($data['footer_col3_title'] ?? 'تواصل معنا', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="text" class="form-control footer-col3-title" name="footer_col3_title" value="<?php echo htmlspecialchars(safe_admin_string($data['footer_col3_title'] ?? 'تواصل معنا', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
@@ -900,12 +913,12 @@
                                                 
                                                 <div class="col-md-4">
                                                     <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars($link['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
                                                 </div>
 
                                                 <div class="col-md-4">
                                                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars($link['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                                 </div>
 
                                                 <div class="col-md-3">
@@ -913,7 +926,7 @@
                                                     <div class="d-flex align-items-center gap-2">
                                                         <?php if (!empty($link['img'])): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                                <img src="<?php echo htmlspecialchars(get_image_url($link['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                                <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($link['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                                      alt="Contact Icon" 
                                                                      class="rounded-2" 
                                                                      style="width: 36px; height: 36px; object-fit: cover;">
@@ -929,7 +942,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <input type="hidden" class="footer-col3-old-img" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($link['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="footer-col3-old-img" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                     <?php endforeach; ?>
                                 </div>

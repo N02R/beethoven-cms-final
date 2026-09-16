@@ -365,27 +365,54 @@
 <!-- ===== GUIDE HOME SECTION END ===== -->
 
 <!-- FAQ section start -->
-<section class="popular py-5" style="position: relative;">
+<section class="popular py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
   <?php endif; ?>
 
   <div class="container-fluid custom-container">
-    <h2 class="sec-title mb-5"><?php echo htmlspecialchars($data['faq_title'] ?? 'الأسئلة الشائعة'); ?></h2>
+    <?php 
+        // معالجة عنوان الأسئلة الشائعة متعدد اللغات
+        $faq_title_raw = get_setting('faq_title', 'الأسئلة الشائعة');
+        if (is_string($faq_title_raw) && str_starts_with(trim($faq_title_raw), '{')) {
+            $ft_arr = json_decode($faq_title_raw, true) ?? [];
+            $faq_title = $ft_arr[$current_lang] ?? $ft_arr['ar'] ?? 'الأسئلة الشائعة';
+        } else {
+            $faq_title = $faq_title_raw;
+        }
+
+        // جلب عناصر الأسئلة وتحويلها من JSON إن وجدت
+        $faq_items_raw = get_setting('faq_items', []);
+        $faq_items = is_string($faq_items_raw) ? (json_decode($faq_items_raw, true) ?? []) : $faq_items_raw;
+    ?>
+
+    <h2 class="sec-title mb-5"><?php echo htmlspecialchars($faq_title); ?></h2>
+    
     <div class="accordion mb-5" id="accordionExample">
-      <?php foreach (($data['faq_items'] ?? []) as $index => $item): ?>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
-              <?php echo htmlspecialchars($item['question'] ?? ''); ?>
-            </button>
-          </h2>
-          <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-            <div class="accordion-body"><?php echo htmlspecialchars($item['answer'] ?? ''); ?></div>
+      <?php if (!empty($faq_items)): ?>
+        <?php foreach ($faq_items as $index => $item): 
+            // استخراج السؤال والجواب حسب اللغة الحالية مع بديل آمن للعربية
+            $faq_question = $item[$current_lang]['question'] ?? $item['ar']['question'] ?? ($item['question'] ?? '');
+            $faq_answer   = $item[$current_lang]['answer'] ?? $item['ar']['answer'] ?? ($item['answer'] ?? '');
+        ?>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading<?php echo $index; ?>">
+              <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
+                <?php echo htmlspecialchars($faq_question); ?>
+              </button>
+            </h2>
+            <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
+              <div class="accordion-body"><?php echo htmlspecialchars($faq_answer); ?></div>
+            </div>
           </div>
-        </div>
-      <?php endforeach; ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="text-center text-muted">لا توجد أسئلة شائعة مضافة حالياً.</p>
+      <?php endif; ?>
     </div>
   </div>
 </section>
 <!-- FAQ section end -->
+

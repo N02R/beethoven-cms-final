@@ -93,6 +93,16 @@ $modal_dir = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
 ?>
 
+<!-- تنسيق خاص لعكس اتجاه الأسهم تلقائياً في حالة اللغة العربية (RTL) -->
+<style>
+    <?php if ($current_lang === 'ar'): ?>
+    .consult-banner-form button img,
+    .contact-link a img {
+        transform: scaleX(-1);
+    }
+    <?php endif; ?>
+</style>
+
 <!--footer start -->
 <section class="consult-banner-section" style="position: relative;">
     <?php if (!empty($is_admin)): ?>
@@ -218,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col2_title'] ?? '', $current_lang, ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links')))); ?></h5>
                 <div class="quick-link">
                     <?php 
-                    // جلب الروابط من دالة الإعدادات العامة أو المتغير المعرف مسبقاً، مع دعم الهياكل المتعددة
                     $menu_links = $menu_links ?? ($data['menu_links'] ?? get_setting('menu_links', []));
                     if (is_string($menu_links)) {
                         $menu_links = json_decode($menu_links, true) ?? [];
@@ -228,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         foreach ($menu_links as $link) {
                             $link_url = ltrim(is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? ''), '/');
                             
-                            // استخراج العنوان حسب اللغة الحالية بنفس هيكلية وعمل الهيدر
                             $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
                             if (is_array($link_title)) {
                                 $link_title = get_multilang_text($link_title, $current_lang);

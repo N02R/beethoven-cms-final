@@ -196,7 +196,6 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): 
                 $link_url = ltrim($link['url'] ?? '', '/');
-                // استخراج العنوان حسب اللغة الحالية من هيكلية الـ JSON الجديدة مع بدائل آمنة
                 $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
             ?>
                 <li class="nav-item">
@@ -212,31 +211,33 @@ $is_visible = ($is_published && $is_in_time);
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
           
-          <div class="dropdown editable-wrapper">
+          <!-- حاوية اللغات وزر التعديل المعزول برمجياً -->
+          <div class="d-flex align-items-center position-relative">
               <?php if ($is_admin): ?>
-                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
+                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات" style="position: absolute; top: -12px; right: -8px; z-index: 1060;">
                       <i class="bi bi-pencil-fill"></i>
                   </button>
               <?php endif; ?>
-              
-              <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20">
-                  <span>
-                    <?php 
-                        if ($current_lang === 'en') echo 'English';
-                        elseif ($current_lang === 'ar') echo 'العربية';
-                        else echo 'Deutsch';
-                    ?>
-                  </span>
-                  <img src="<?php echo get_image_url('assets/img/home/arowwdown.svg.webp'); ?>" alt="arrow" width="15">
-              </button>
 
-              <!-- روابط تبديل اللغات النظيفة بدون تراكم -->
-              <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="/de<?php echo $clean_uri; ?>">Deutsch</a></li>
-                  <li><a class="dropdown-item" href="/en<?php echo $clean_uri; ?>">English</a></li>
-                  <li><a class="dropdown-item" href="/ar<?php echo $clean_uri; ?>">العربية</a></li>
-              </ul>
+              <div class="dropdown">
+                  <button class="btn lang-switch d-flex align-items-center justify-content-between dropdown-toggle" type="button" id="languageDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                      <img src="<?php echo get_image_url('assets/img/home/global.svg.webp'); ?>" alt="lang" width="20" class="me-1">
+                      <span>
+                        <?php 
+                            if ($current_lang === 'en') echo 'English';
+                            elseif ($current_lang === 'ar') echo 'العربية';
+                            else echo 'Deutsch';
+                        ?>
+                      </span>
+                  </button>
+
+                  <!-- روابط تبديل اللغات النظيفة -->
+                  <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="languageDropdownButton" style="z-index: 1070;">
+                      <li><a class="dropdown-item py-2" href="/de<?php echo $clean_uri; ?>">Deutsch</a></li>
+                      <li><a class="dropdown-item py-2" href="/en<?php echo $clean_uri; ?>">English</a></li>
+                      <li><a class="dropdown-item py-2" href="/ar<?php echo $clean_uri; ?>">العربية</a></li>
+                  </ul>
+              </div>
           </div>
         </div>
       </div>

@@ -292,10 +292,20 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- footer end -->
 
 <?php 
-$admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
-if (!empty($is_admin) && file_exists($admin_modals_file)) { 
-    include_once $admin_modals_file; 
-} 
+// استدعاء ملفات مودالات الإدارة بشكل آمن من داخل الفوتر
+if (!empty($is_admin)) {
+    // 1. استدعاء ملف المودالات الرئيسي (الهيدر والأقسام العامة)
+    $admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
+    if (file_exists($admin_modals_file)) { 
+        include_once $admin_modals_file; 
+    } 
+
+    // 2. استدعاء ملف مودالات إضافية (مثل التعليم أو غيره إن وجد)
+    $edu_modals_file = __DIR__ . '/../admin/admin_edu_modals.php';
+    if (file_exists($edu_modals_file)) { 
+        include_once $edu_modals_file; 
+    }
+}
 ?>
 
 <?php 
@@ -319,6 +329,7 @@ if (isset($page_js) && is_array($page_js)) {
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?php echo $path_prefix; ?>assets/js/main.js"></script>
 

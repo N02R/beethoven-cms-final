@@ -564,6 +564,11 @@ section.popular .call button:hover {
   background-color: #1a1a1a;
 }
 
+/* انعكاس سهم زر الاستشارة تلقائياً بناءً على اتجاه لغة الموقع */
+[dir="rtl"] .consult-banner-form button img,
+html[lang="ar"] .consult-banner-form button img {
+  transform: scaleX(-1);
+}
 
 .footer-section {
   background: rgba(233, 244, 253, .2);

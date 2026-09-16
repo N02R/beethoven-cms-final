@@ -142,7 +142,7 @@ $current_lang = $current_lang ?? 'ar';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-share-fill text-primary"></i> إدارة منصات التواصل</h5>
+                <h5 class="modal-title"><i class="bi bi-share-fill text-primary"></i> <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -158,15 +158,15 @@ $current_lang = $current_lang ?? 'ar';
                         <div class="p-3 shadow-sm social-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
-                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?></label>
+                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['name_placeholder'] ?? 'الاسم'; ?>">
                                 </div>
                                 <div class="col-md-8">
-                                    <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
-                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?></label>
+                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['url_placeholder'] ?? 'الرابط'; ?>">
                                 </div>
                                 <div class="col-md-11">
-                                    <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?></label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -178,7 +178,7 @@ $current_lang = $current_lang ?? 'ar';
                                 </div>
                                 <input type="hidden" class="social-old-img" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_<?php echo $index; ?>')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_<?php echo $index; ?>')" title="<?php echo $lang['delete_platform'] ?? 'حذف المنصة'; ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -186,18 +186,17 @@ $current_lang = $current_lang ?? 'ar';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addSocialRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة منصة جديدة
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo $lang['add_new_platform'] ?? 'إضافة منصة جديدة'; ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="socialLinksForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="socialLinksForm" class="btn-premium"><?php echo $lang['save_changes'] ?? 'حفظ التغييرات'; ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo $lang['cancel'] ?? 'إلغاء'; ?></button>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">

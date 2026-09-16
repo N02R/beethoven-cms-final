@@ -213,26 +213,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="footer-desc"><?php echo htmlspecialchars(get_multilang_text($data['footer_desc'] ?? '', $current_lang, '')); ?></p>
             </div>
 
+            <!-- قسم الروابط السريعة (مجلوبة مباشرة من منيو الهيدر) -->
             <div class="col-12 col-md-6 col-lg-3">
-                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col2_title'] ?? '', $current_lang, 'روابط سريعة')); ?></h5>
+                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col2_title'] ?? '', $current_lang, ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links')))); ?></h5>
                 <div class="quick-link">
                     <?php 
-                    $menu_links = $data['menu_links'] ?? [];
+                    // جلب الروابط من دالة الإعدادات العامة أو المتغير المعرف مسبقاً، مع دعم الهياكل المتعددة
+                    $menu_links = $menu_links ?? ($data['menu_links'] ?? get_setting('menu_links', []));
                     if (is_string($menu_links)) {
                         $menu_links = json_decode($menu_links, true) ?? [];
                     }
-                    foreach((is_array($menu_links) ? $menu_links : []) as $link): 
-                        // استخراج آمن للنص لضمان أنه String دائماً
-                        $link_title = get_multilang_text($link['title'] ?? '', $current_lang);
-                        $link_url = is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? '#');
+                    
+                    if (is_array($menu_links)) {
+                        foreach ($menu_links as $link) {
+                            $link_url = ltrim(is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? ''), '/');
+                            
+                            // استخراج العنوان حسب اللغة الحالية بنفس هيكلية وعمل الهيدر
+                            $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
+                            if (is_array($link_title)) {
+                                $link_title = get_multilang_text($link_title, $current_lang);
+                            }
+                            ?>
+                            <a href="/<?php echo $current_lang_code . '/' . $link_url; ?>">
+                                <?php echo htmlspecialchars((string)$link_title); ?>
+                            </a>
+                            <?php 
+                        }
+                    }
                     ?>
-                        <a href="<?php echo htmlspecialchars((string)$link_url); ?>"><?php echo htmlspecialchars($link_title); ?></a>
-                    <?php endforeach; ?>
                 </div>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col3_title'] ?? '', $current_lang, 'تواصل معنا')); ?></h5>
+                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col3_title'] ?? '', $current_lang, 'תواصل معنا')); ?></h5>
                 <div class="contact-link">
                     <?php 
                     $footer_col3_links = $data['footer_col3_links'] ?? [];

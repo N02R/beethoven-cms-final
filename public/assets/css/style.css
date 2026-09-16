@@ -558,11 +558,10 @@ section.popular .call button:hover {
   background-color: #1a1a1a;
 }
 
-/* انعكاس سهم زر الاستشارة تلقائياً في حالة اللغة العربية */
+/* انعكاس سهم زر الاستشارة في اللغة العربية ليتجه لليسار لأعلى بشكل صحيح */
 [dir="rtl"] .consult-banner-form button img,
 html[lang="ar"] .consult-banner-form button img {
-  transform: rotate(180deg);
-  /* يمكنك تجربة 90deg أو -90deg بحسب اتجاه السهم الأصلي */
+  transform: scaleX(-1);
 }
 
 .footer-section {

@@ -259,7 +259,7 @@ body {
   للغة العربية (RTL): 
   يبدأ من اليمين (padding-left: 100%) ويتحرك نحو اليسار (translateX(-100%))
 */
-[dir="rtl"] .announcement-ticker-track {
+[dir="ltr"] .announcement-ticker-track {
   padding-left: 100%;
   animation-name: tickerRTL;
 }
@@ -268,17 +268,17 @@ body {
   للغة الإنجليزية/الألمانية (LTR): 
   يبدأ من اليسار (padding-right: 100%) ويتحرك نحو اليمين (translateX(100%))
 */
-[dir="ltr"] .announcement-ticker-track {
+[dir="rtl"] .announcement-ticker-track {
   padding-right: 100%;
   animation-name: tickerLTR;
 }
 
-@keyframes tickerRTL {
+@keyframes tickerLTR {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-100%); }
 }
 
-@keyframes tickerLTR {
+@keyframes tickerRTL {
   0%   { transform: translateX(0); }
   100% { transform: translateX(100%); }
 }

@@ -25,16 +25,40 @@ class HeaderSettingsService
 
         $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-        // 1. تحديث الشعار
+        // 1. تحديث الشعار مع دعم اللغات المتعددة (ar, en, de) بصيغة JSON
         if ($action === 'update_logo') {
             if (isset($_FILES['logo_img']) && $_FILES['logo_img']['error'] === UPLOAD_ERR_OK) {
-                $oldLogo = $currentSettings['site_logo_path'] ?? '';
-                $this->deleteOldImageFile($oldLogo);
+                // استهداف اللغة المحددة من المودل (أو الافتراضية ar)
+                $targetLang = $_POST['logo_lang'] ?? 'ar';
 
+                // جلب الشعارات القديمة المخزنة كـ JSON أو تحويل النص القديم لمصفوفة
+                $rawLogoSetting = $currentSettings['site_logo_path'] ?? ($currentSettings['site_logo'] ?? '');
+                $logos = json_decode($rawLogoSetting, true);
+                if (!is_array($logos)) {
+                    $logos = [];
+                    // إذا كان القديم نصاً عادياً وليس JSON، نعتبره شعاراً للغة العربية مبدئياً
+                    if (!empty($rawLogoSetting)) {
+                        $logos['ar'] = $rawLogoSetting;
+                    }
+                }
+
+                // حذف الشعار القديم الخاص بهذه اللغة فقط إن وجد
+                if (!empty($logos[$targetLang])) {
+                    $this->deleteOldImageFile($logos[$targetLang]);
+                }
+
+                // رفع الشعار الجديد وتوليد مساره
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['logo_img']['tmp_name']);
                 $logoPath = 'assets/uploads/' . $filename;
                 
-                $stmt->execute(['k' => 'site_logo_path', 'v' => $logoPath, 'v_update' => $logoPath]);
+                // تحديث مصفوفة الشعار للغة المستهدفة
+                $logos[$targetLang] = $logoPath;
+
+                $jsonVal = json_encode($logos, JSON_UNESCAPED_UNICODE);
+
+                // حفظه في الحقلين للتوافقية الكاملة مع بقية النظام
+                $stmt->execute(['k' => 'site_logo_path', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+                $stmt->execute(['k' => 'site_logo', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
         }
 

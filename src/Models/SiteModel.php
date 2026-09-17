@@ -38,7 +38,7 @@ class SiteModel {
             }
             $decoded = json_decode($settings[$key], true);
             
-            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de']))) {
                 return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
             }
             
@@ -51,17 +51,27 @@ class SiteModel {
             }
             $decoded = json_decode($settings[$key], true);
             
-            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de']))) {
                 return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
             }
             
             return $settings[$key] ?? $default;
         };
         
+        // استخراج الشعار مع دعم اللغات بشكل متوافق (JSON أو نص قديم)
+        $rawLogo = $settings['site_logo_path'] ?? ($settings['site_logo'] ?? '');
+        $decodedLogo = json_decode($rawLogo, true);
+        if (is_array($decodedLogo) && (isset($decodedLogo['ar']) || isset($decodedLogo['en']) || isset($decodedLogo['de']))) {
+            $site_logo_path = $decodedLogo[$lang] ?? ($decodedLogo['ar'] ?? '');
+        } else {
+            $site_logo_path = $rawLogo;
+        }
+
         return [
             'site_title'        => $getLangString('site_title', 'Beethoven Services'),
             'site_email'        => $settings['site_email'] ?? '',
-            'site_logo_path'    => $settings['site_logo_path'] ?? '',
+            'site_logo_path'    => $site_logo_path,
+            'site_logo'         => $site_logo_path,
             'social_links'      => isset($settings['social_links']) ? json_decode($settings['social_links'], true) : [],
             'menu_links'        => $getLangData('menu_links', []),
             'languages'         => isset($settings['languages']) ? json_decode($settings['languages'], true) : [],

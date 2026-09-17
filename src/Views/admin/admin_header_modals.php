@@ -486,7 +486,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 6. Hero Edit Modal (مصحح ومضمون لاستقبال البيانات) -->
+<!-- 6. Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -499,7 +499,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-body p-4">
                 <form id="heroEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
-                    <!-- نمرر اللغة الحالية مع الفورم لتعرف الباك إند لأي لغة سيتم تخزين البيانات -->
                     <input type="hidden" name="current_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 

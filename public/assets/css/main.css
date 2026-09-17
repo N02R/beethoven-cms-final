@@ -237,7 +237,7 @@ body {
 
 
 /* =========================================
-   شريط الإعلانات المضبوط 100% حسب اتجاه القراءة
+   شريط الإعلانات - الاتجاه الصحيح 100%
    ========================================= */
 .announcement-ticker-container {
   overflow: hidden;
@@ -256,29 +256,29 @@ body {
 }
 
 /* 
-  للغة الإنجليزية/الألمانية (LTR): 
-  يبدأ من اليمين (خارج الشاشة) ويتجه نحو اليسار 
-*/
-[dir="ltr"] .announcement-ticker-track {
-  padding-left: 100%;
-  animation-name: tickerLTR;
-}
-
-/* 
   للغة العربية (RTL): 
-  يبدأ من اليسار (خارج الشاشة) ويتجه نحو اليمين 
+  يبدأ من اليمين (padding-left: 100%) ويتحرك نحو اليسار (translateX(-100%))
 */
 [dir="rtl"] .announcement-ticker-track {
-  padding-right: 100%;
+  padding-left: 100%;
   animation-name: tickerRTL;
 }
 
-@keyframes tickerLTR {
+/* 
+  للغة الإنجليزية/الألمانية (LTR): 
+  يبدأ من اليسار (padding-right: 100%) ويتحرك نحو اليمين (translateX(100%))
+*/
+[dir="ltr"] .announcement-ticker-track {
+  padding-right: 100%;
+  animation-name: tickerLTR;
+}
+
+@keyframes tickerRTL {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-100%); }
 }
 
-@keyframes tickerRTL {
+@keyframes tickerLTR {
   0%   { transform: translateX(0); }
   100% { transform: translateX(100%); }
 }

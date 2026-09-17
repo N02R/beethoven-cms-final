@@ -205,27 +205,48 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
             }
 
-            // 7. تحديث قسم الهيرو (Hero)
+            // 7. تحديث قسم الهيرو (Hero) مع دعم اللغات المتعددة (ar, en, de)
             elseif ($action === 'update_hero') {
-                $heroImg = $_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg';
-                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                    $oldHeroData = json_decode($currentSettings['hero'] ?? '', true);
-                    if (!empty($oldHeroData['img'])) {
-                        $this->deleteOldImageFile($root_path, $oldHeroData['img']);
-                    }
+                $targetLang = $_POST['hero_lang'] ?? 'ar';
 
-                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
-                    $heroImg = 'assets/uploads/' . $filename;
+                $rawHeroSetting = $currentSettings['hero'] ?? '';
+                $heroAllLangs = json_decode($rawHeroSetting, true);
+                if (!is_array($heroAllLangs)) {
+                    $heroAllLangs = [];
+                    if (!empty($rawHeroSetting)) {
+                        $legacyData = json_decode($rawHeroSetting, true);
+                        if (is_array($legacyData)) {
+                            // إذا كانت البيانات القديمة مفردة مسطحة، نعتبرها للغة العربية
+                            $heroAllLangs['ar'] = $legacyData;
+                        }
+                    }
                 }
 
-                $heroData = [
+                $oldHeroImg = $heroAllLangs[$targetLang]['img'] ?? ($heroAllLangs['img'] ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg'));
+                
+                if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldHeroImg) && $oldHeroImg !== 'assets/img/hero-bg.jpg') {
+                        $this->deleteOldImageFile($root_path, $oldHeroImg);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
+                    $heroImg = 'assets/uploads/' . $filename;
+                } else {
+                    $heroImg = $oldHeroImg;
+                }
+
+                $langHeroData = [
                     'title'    => $_POST['hero_title'] ?? '',
                     'desc'     => $_POST['hero_desc'] ?? '',
                     'btn_text' => $_POST['hero_btn_text'] ?? '',
                     'btn_url'  => $_POST['hero_btn_url'] ?? '',
                     'img'      => $heroImg
                 ];
-                $jsonVal = json_encode($heroData, JSON_UNESCAPED_UNICODE);
+
+                // حفظ بيانات اللغة المحددة فقط داخل مصفوفة اللغات الشاملة
+                $heroAllLangs[$targetLang] = $langHeroData;
+                $heroAllLangs['img'] = $heroImg; // للحفاظ على توافقية الصورة العامة إن وجدت
+
+                $jsonVal = json_encode($heroAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 

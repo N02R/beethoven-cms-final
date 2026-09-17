@@ -134,7 +134,9 @@ if (!function_exists('safe_admin_string')) {
         return (string)($val ?? '');
     }
 }
-$current_lang = $current_lang ?? 'ar';
+
+// جلب اللغة الحالية للنظام ديناميكياً
+$current_lang = function_exists('get_current_lang') ? get_current_lang() : ($_SESSION['site_lang'] ?? 'ar');
 
 // تحديد الاتجاه بناءً على اللغة الحالية (العربية rtl، والبقية ltr مثل الإنجليزية والألمانية)
 $is_rtl = ($current_lang === 'ar');

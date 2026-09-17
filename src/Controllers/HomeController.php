@@ -13,7 +13,6 @@ class HomeController {
 
         // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
-            fprintf(STDERR, "");
             ini_set('session.cookie_httponly', '1');
             ini_set('session.use_strict_mode', '1');
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
@@ -21,6 +20,17 @@ class HomeController {
             }
             session_start();
         }
+
+        // ==========================================
+        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات
+        // ==========================================
+        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
+        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+
+        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
+        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
+        $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+        // ==========================================
 
         // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');

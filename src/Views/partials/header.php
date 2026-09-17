@@ -126,47 +126,45 @@ $is_visible = ($is_published && $is_in_time);
           </a>
         </div>
 
-<!-- منطقة الإعلان -->
-        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
-          <?php 
-            // استخراج إعلان اللغة الحالية من مصفوفة الإعلانات المخزنة في قاعدة البيانات
-            $allAds = json_decode($site_settings['announcement'] ?? '', true) ?? [];
-            $ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? []);
-            
-            // التحقق من حالة العرض والتاريخ
-            $status = $ad['status'] ?? 'Draft';
-            $is_visible = ($status === 'Published'); // يمكن إضافة شرط التواريخ هنا إن وجد
-          ?>
+<!-- منطقة الإعلان المحدثة -->
+<div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
+  <?php 
+    $allAds = json_decode($site_settings['announcement'] ?? '', true) ?? [];
+    $ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? []);
+    
+    $status = $ad['status'] ?? 'Draft';
+    $is_visible = ($status === 'Published');
+  ?>
 
-          <?php if ($is_visible || ($is_admin ?? false)): ?>
-            <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
-              <?php if ($is_admin ?? false): ?>
-                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
-                      <i class="bi bi-pencil-fill"></i>
-                  </button>
-              <?php endif; ?>
+  <?php if ($is_visible || ($is_admin ?? false)): ?>
+    <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
+      <?php if ($is_admin ?? false): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+      <?php endif; ?>
 
-              <?php if (!empty($ad['link'])): ?>
-                  <a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank" rel="noopener noreferrer"' : ''); ?>>
-              <?php endif; ?>
-              
-                <?php if (($ad['type'] ?? 'text') === 'text'): ?>
-                  <div class="p-2 rounded shadow-sm" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
-                    <!-- يمكنك تثبيت اتجاه الحركة ليبدأ دائماً من جهة معينة أو جعله يتبع اتجاه اللغة -->
-                    <marquee behavior="scroll" direction="<?php echo ($current_dir === 'rtl') ? 'right' : 'left'; ?>">
-                        <?php echo htmlspecialchars($ad['announcement_text'] ?? 'Welcome!'); ?>
-                    </marquee>
-                  </div>
-                <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
-                    <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png')); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
-                  </div>
-                <?php endif; ?>
-                
-              <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
+      <?php if (!empty($ad['link'])): ?>
+          <a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank" rel="noopener noreferrer"' : ''); ?>>
+      <?php endif; ?>
+      
+        <?php if (($ad['type'] ?? 'text') === 'text'): ?>
+          <div class="p-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
+            <div class="announcement-ticker-track">
+                <span><?php echo htmlspecialchars($ad['announcement_text'] ?? 'Welcome!'); ?></span>
             </div>
-          <?php endif; ?>
-        </div>
+          </div>
+        <?php else: ?>
+          <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
+            <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png')); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
+          </div>
+        <?php endif; ?>
+        
+      <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
+    </div>
+  <?php endif; ?>
+</div>
+
 
 
         <!-- السوشيال ميديا -->

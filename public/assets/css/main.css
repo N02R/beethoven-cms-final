@@ -234,3 +234,45 @@ body {
     border-right: 4px solid #0d6efd;
     padding-right: 10px;
 }
+
+
+/* حاوية الإعلان المخفية الزوائد */
+.announcement-ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+}
+
+/* مسار النص المتحرك */
+.announcement-ticker-track {
+  display: inline-block;
+  padding-left: 100%;
+  animation: announcementScroll 18s linear infinite;
+}
+
+/* إيقاف الحركة عند تمرير الماوس فوق الإعلان (اختياري لراحة المستخدم) */
+.announcement-ticker-container:hover .announcement-ticker-track {
+  animation-play-state: paused;
+}
+
+/* تكييف اتجاه الحركة بحسب لغة الموقع */
+[dir="rtl"] .announcement-ticker-track {
+  animation-name: announcementScrollRTL;
+}
+
+[dir="ltr"] .announcement-ticker-track {
+  animation-name: announcementScrollLTR;
+}
+
+/* حركة اللغات الأجنبية (من اليمين إلى اليسار) */
+@keyframes announcementScrollLTR {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+
+/* حركة اللغة العربية (من اليسار إلى اليمين لتتوافق مع طبيعة القراءة) */
+@keyframes announcementScrollRTL {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(100%, 0); }
+}

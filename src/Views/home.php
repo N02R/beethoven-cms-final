@@ -21,27 +21,63 @@
     <?php 
     $hero_raw = get_setting('hero', []);
     
-    // تأكيد فك الـ JSON بشكل صحيح
+    // فك الـ JSON بطريقة آمنة
     if (is_string($hero_raw)) {
         $hero = json_decode($hero_raw, true) ?? [];
     } else {
-        $hero = $hero_raw;
+        $hero = is_array($hero_raw) ? $hero_raw : [];
     }
     
-    // اختيار اللغة الحالية
-    $lang = $current_lang ?? 'ar';
+    // استخراج المحتوى بطريقة ذكية تدعم متعدد اللغات والبيانات القديمة
+    $hero_title = '';
+    $hero_desc  = '';
+    $hero_btn   = '';
+    $hero_url   = '#';
+    $bg_img_path = null;
 
-    // استخراج بيانات الصورة بحسب اللغة الحالية، أو الرجوع للصورة العامة، أو القيمة الافتراضية
-    $bg_img_path = $hero[$lang]['img'] ?? ($hero['img'] ?? null);
-    $hero_bg = get_image_url($bg_img_path, '/assets/img/home/home1.png');
+    // 1. التحقق إذا كانت البيانات مخزنة بالهيكلة الجديدة للغات (ar, en, de)
+    if (isset($hero[$current_lang]) && is_array($hero[$current_lang])) {
+        $curr_data  = $hero[$current_lang];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $bg_img_path = $curr_data['img'] ?? null;
+    } 
+    // 2. بدائل احتياطية في حال لم تتوفر اللغة الحالية (تجربة الألمانية ثم العربية)
+    elseif (isset($hero['de']) && is_array($hero['de'])) {
+        $curr_data  = $hero['de'];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $bg_img_path = $curr_data['img'] ?? null;
+    } 
+    elseif (isset($hero['ar']) && is_array($hero['ar'])) {
+        $curr_data  = $hero['ar'];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $bg_img_path = $curr_data['img'] ?? null;
+    }
 
-    // استخراج النصوص بشكل مستقل تماماً لكل لغة مع Fallback آمن
-    $hero_title = $hero[$lang]['title'] ?? ($hero['title'] ?? 'عنوان افتراضي');
-    $hero_desc  = $hero[$lang]['desc'] ?? ($hero['desc'] ?? 'وصف افتراضي للقسم');
-    $hero_btn   = $hero[$lang]['btn_text'] ?? ($hero['btn_text'] ?? 'اضغط هنا');
+    // 3. إذا كانت البيانات مخزنة بالشكل القديم المسطح (مباشرة بدون مفاتيح لغات)
+    if (empty($hero_title) && isset($hero['title'])) {
+        $hero_title = $hero['title'];
+        $hero_desc  = $hero['desc'] ?? '';
+        $hero_btn   = $hero['btn_text'] ?? '';
+        $hero_url   = $hero['btn_url'] ?? '#';
+        $bg_img_path = $hero['img'] ?? null;
+    }
+
+    // القيم الافتراضية النهائية في حال كانت القاعدة فارغة تماماً
+    $hero_title = !empty($hero_title) ? $hero_title : 'عنوان افتراضي';
+    $hero_desc  = !empty($hero_desc) ? $hero_desc : 'وصف افتراضي للقسم';
+    $hero_btn   = !empty($hero_btn) ? $hero_btn : 'اضغط هنا';
     
-    // رابط الزر يمكن أن يكون مشتركاً أو خاصاً باللغة
-    $hero_url   = $hero[$lang]['btn_url'] ?? ($hero['btn_url'] ?? '#');
+    // جلب رابط الصورة النهائي
+    $hero_bg = get_image_url($bg_img_path ?? $hero['img'] ?? null, '/assets/img/home/home1.png');
     ?>
     
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
@@ -56,7 +92,6 @@
   </div>
 </section>
 <!-- hero end -->
-
 <!-- services start -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>

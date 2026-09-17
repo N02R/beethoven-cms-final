@@ -237,7 +237,7 @@ body {
 
 
 /* =========================================
-   شريط الإعلانات - الاتجاه الصحيح 100%
+   شريط الإعلانات - الحل النهائي المباشر
    ========================================= */
 .announcement-ticker-container {
   overflow: hidden;
@@ -248,7 +248,9 @@ body {
 
 .announcement-ticker-track {
   display: inline-block;
-  animation: tickerMove 20s linear infinite;
+  animation-duration: 20s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 .announcement-ticker-container:hover .announcement-ticker-track {
@@ -256,29 +258,28 @@ body {
 }
 
 /* 
-  للغة العربية (RTL): 
-  يبدأ من اليمين (padding-left: 100%) ويتحرك نحو اليسار (translateX(-100%))
-*/
-[dir="ltr"] .announcement-ticker-track {
-  padding-left: 100%;
-  animation-name: tickerRTL;
-}
-
-/* 
-  للغة الإنجليزية/الألمانية (LTR): 
-  يبدأ من اليسار (padding-right: 100%) ويتحرك نحو اليمين (translateX(100%))
+  1. اللغة العربية (RTL): 
+  نريد النص: يبدأ من اليمين ويتحرك إلى اليسار.
 */
 [dir="rtl"] .announcement-ticker-track {
-  padding-right: 100%;
-  animation-name: tickerLTR;
+  animation-name: scrollRightToLeft;
 }
 
-@keyframes tickerLTR {
-  0%   { transform: translateX(0); }
+@keyframes scrollRightToLeft {
+  0%   { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
-@keyframes tickerRTL {
-  0%   { transform: translateX(0); }
+
+/* 
+  2. اللغات الأجنبية (LTR): 
+  نريد النص: يبدأ من اليسار ويتحرك إلى اليمين.
+*/
+[dir="ltr"] .announcement-ticker-track {
+  animation-name: scrollLeftToRight;
+}
+
+@keyframes scrollLeftToRight {
+  0%   { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }

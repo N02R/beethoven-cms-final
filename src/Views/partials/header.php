@@ -95,36 +95,6 @@ $is_visible = (($status === 'Published' || $status === 'active' || $hasText || $
         box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s ease;
     }
     .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
-
-    /* أنظمة التنسيق والحركة الحديثة لـ Ticker الإعلانات بدلاً من الـ Marquee */
-    .announcement-ticker-container {
-      overflow: hidden;
-      white-space: nowrap;
-      position: relative;
-      width: 100%;
-    }
-    .announcement-ticker-track {
-      display: inline-block;
-      padding-left: 100%;
-      animation: announcementScroll 18s linear infinite;
-    }
-    .announcement-ticker-container:hover .announcement-ticker-track {
-      animation-play-state: paused;
-    }
-    [dir="rtl"] .announcement-ticker-track {
-      animation-name: announcementScrollRTL;
-    }
-    [dir="ltr"] .announcement-ticker-track {
-      animation-name: announcementScrollLTR;
-    }
-    @keyframes announcementScrollLTR {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(-100%, 0); }
-    }
-    @keyframes announcementScrollRTL {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(100%, 0); }
-    }
   </style>
 
   <!-- ملفات الـ CSS الخاصة بالصفحات الفردية -->

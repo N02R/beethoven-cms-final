@@ -135,15 +135,20 @@ if (!function_exists('safe_admin_string')) {
     }
 }
 $current_lang = $current_lang ?? 'ar';
+
+// إعدادات الاتجاه والمحاذاة ديناميكياً حسب اللغة الحالية
+$is_english = ($current_lang === 'en');
+$modal_dir = $is_english ? 'ltr' : 'rtl';
+$modal_align = $is_english ? 'text-start' : 'text-end';
 ?>
 
 <!-- 1. Social Links Modal -->
-<div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-share-fill text-primary"></i> <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title"><i class="bi bi-share-fill text-primary <?php echo $is_english ? 'me-2' : 'ms-2'; ?>"></i> <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?></h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="socialLinksForm" enctype="multipart/form-data">
@@ -158,15 +163,15 @@ $current_lang = $current_lang ?? 'ar';
                         <div class="p-3 shadow-sm social-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?></label>
                                     <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['name_placeholder'] ?? 'الاسم'; ?>">
                                 </div>
                                 <div class="col-md-8">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?></label>
                                     <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['url_placeholder'] ?? 'الرابط'; ?>">
                                 </div>
                                 <div class="col-md-11">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?></label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -186,7 +191,7 @@ $current_lang = $current_lang ?? 'ar';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addSocialRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo $lang['add_new_platform'] ?? 'إضافة منصة جديدة'; ?>
+                        <i class="bi bi-plus-circle <?php echo $is_english ? 'me-1' : 'ms-1'; ?>"></i> <?php echo $lang['add_new_platform'] ?? 'إضافة منصة جديدة'; ?>
                     </button>
                 </form>
             </div>

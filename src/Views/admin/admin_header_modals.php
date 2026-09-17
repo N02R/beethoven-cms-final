@@ -208,6 +208,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
+
 <!-- 2. Logo Modal -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1">
     <div class="modal-dialog">

@@ -44,26 +44,27 @@ if (is_string($languages)) {
     $languages = json_decode($languages, true) ?? [];
 }
 
-$ad_raw          = get_setting('announcement', []);
-$ad              = is_string($ad_raw) ? (json_decode($ad_raw, true) ?? []) : $ad_raw;
-
-// استخراج نص الإعلان بناءً على اللغة الحالية مع دعم القيم الاحتياطية
-$announcement_text = '';
-if (isset($ad[$current_lang]['announcement_text'])) {
-    $announcement_text = $ad[$current_lang]['announcement_text'];
-} elseif (isset($ad['de']['announcement_text'])) {
-    $announcement_text = $ad['de']['announcement_text'];
-} elseif (isset($ad['announcement_text'])) {
-    $announcement_text = $ad['announcement_text'];
+// استخراج بيانات الإعلان مع دعم التوافق التام مع بنية المودال
+$rawAnnouncement = get_setting('announcement', []);
+if (is_string($rawAnnouncement)) {
+    $allAds = json_decode($rawAnnouncement, true) ?? [];
+} else {
+    $allAds = is_array($rawAnnouncement) ? $rawAnnouncement : [];
 }
 
-// حساب حالة ظهور الإعلان
-$is_published = ($ad['status'] ?? 'Draft') === 'Published';
+$ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? ($allAds['de'] ?? (is_array($rawAnnouncement) ? $rawAnnouncement : [])));
+
+// حساب حالة ظهور الإعلان بمرونة عالية لمنع اختفائه بسبب اختلاف حالات الحفظ
+$hasText = !empty($ad['announcement_text']);
+$hasImage = !empty($ad['image_path']) && $ad['image_path'] !== 'assets/img/default-ad.png';
+$status = $ad['status'] ?? 'Draft';
 $current_time = date('Y-m-d\TH:i');
+
 $is_in_time = true;
 if (!empty($ad['start_date']) && $current_time < $ad['start_date']) { $is_in_time = false; }
 if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_in_time = false; }
-$is_visible = ($is_published && $is_in_time);
+
+$is_visible = (($status === 'Published' || $status === 'active' || $hasText || $hasImage) && $is_in_time);
 ?>
 
 <!DOCTYPE html>
@@ -94,6 +95,36 @@ $is_visible = ($is_published && $is_in_time);
         box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s ease;
     }
     .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
+
+    /* أنظمة التنسيق والحركة الحديثة لـ Ticker الإعلانات بدلاً من الـ Marquee */
+    .announcement-ticker-container {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      width: 100%;
+    }
+    .announcement-ticker-track {
+      display: inline-block;
+      padding-left: 100%;
+      animation: announcementScroll 18s linear infinite;
+    }
+    .announcement-ticker-container:hover .announcement-ticker-track {
+      animation-play-state: paused;
+    }
+    [dir="rtl"] .announcement-ticker-track {
+      animation-name: announcementScrollRTL;
+    }
+    [dir="ltr"] .announcement-ticker-track {
+      animation-name: announcementScrollLTR;
+    }
+    @keyframes announcementScrollLTR {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-100%, 0); }
+    }
+    @keyframes announcementScrollRTL {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(100%, 0); }
+    }
   </style>
 
   <!-- ملفات الـ CSS الخاصة بالصفحات الفردية -->
@@ -126,52 +157,39 @@ $is_visible = ($is_published && $is_in_time);
           </a>
         </div>
 
-<!-- منطقة الإعلان المتوافقة مع المودال -->
-<div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
-  <?php 
-    // استخراج إعلان اللغة الحالية بنفس طريقة المودال تماماً
-    $rawAnnouncement = $site_settings['announcement'] ?? $data['announcement'] ?? '';
-    if (is_string($rawAnnouncement)) {
-        $allAds = json_decode($rawAnnouncement, true) ?? [];
-    } else {
-        $allAds = is_array($rawAnnouncement) ? $rawAnnouncement : [];
-    }
-    
-    // جلب إعلان اللغة الحالية، أو الرجوع للعربية كاحتياط
-    $ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? []);
-    
-    $status = $ad['status'] ?? 'Draft';
-    $is_visible = ($status === 'Published');
-  ?>
+        <!-- منطقة الإعلان المحدثة والمتوافقة بالكامل -->
+        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
+          <?php if ($is_visible || $is_admin): ?>
+            <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
+              <?php if ($is_admin): ?>
+                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
 
-  <?php if ($is_visible || ($is_admin ?? false)): ?>
-    <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
-      <?php if ($is_admin ?? false): ?>
-          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
-              <i class="bi bi-pencil-fill"></i>
-          </button>
-      <?php endif; ?>
-
-      <?php if (!empty($ad['link'])): ?>
-          <a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank" rel="noopener noreferrer"' : ''); ?>>
-      <?php endif; ?>
-      
-        <?php if (($ad['type'] ?? 'text') === 'text'): ?>
-          <div class="p-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
-            <div class="announcement-ticker-track">
-                <span><?php echo htmlspecialchars($ad['announcement_text'] ?? ''); ?></span>
+              <?php if (!empty($ad['link'])): ?>
+                  <a href="<?php echo htmlspecialchars($ad['link']); ?>" <?php echo (($ad['open_new_tab'] ?? 0) == 1 ? 'target="_blank" rel="noopener noreferrer"' : ''); ?>>
+              <?php endif; ?>
+              
+                <?php if (($ad['type'] ?? 'text') === 'text'): ?>
+                  <?php if (!empty($ad['announcement_text'])): ?>
+                    <div class="p-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
+                      <div class="announcement-ticker-track">
+                          <span><?php echo htmlspecialchars($ad['announcement_text']); ?></span>
+                      </div>
+                    </div>
+                  <?php endif; ?>
+                <?php else: ?>
+                  <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
+                    <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png')); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
+                  </div>
+                <?php endif; ?>
+                
+              <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
             </div>
-          </div>
-        <?php else: ?>
-          <div class="rounded overflow-hidden shadow-sm" style="max-height: 65px;">
-            <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png')); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
-          </div>
-        <?php endif; ?>
-        
-      <?php if (!empty($ad['link'])): ?></a><?php endif; ?>
-    </div>
-  <?php endif; ?>
-</div>
+          <?php endif; ?>
+        </div>
+
         <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
           <?php if ($is_admin): ?>
@@ -213,7 +231,6 @@ $is_visible = ($is_published && $is_in_time);
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): 
                 $link_url = ltrim($link['url'] ?? '', '/');
-                // استخراج العنوان حسب اللغة الحالية من هيكلية الـ JSON الجديدة مع بدائل آمنة
                 $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
             ?>
                 <li class="nav-item">

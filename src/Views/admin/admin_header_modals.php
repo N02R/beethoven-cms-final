@@ -499,10 +499,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-body p-4">
                 <form id="heroEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
+                    <!-- حقل إلزامي لتحديد اللغة المستهدفة عند الحفظ -->
+                    <input type="hidden" name="hero_lang" value="<?php echo htmlspecialchars($current_lang); ?>">
                     
                     <?php 
                     $hero_raw = $currentSettings['hero'] ?? '';
-                    $h = json_decode($hero_raw, true) ?? [];
+                    $hero_all = json_decode($hero_raw, true) ?? [];
+                    
+                    // استخراج بيانات اللغة الحالية أو الاعتماد على البيانات القديمة المسطحة إن وجدت كخيار احتياطي
+                    $h = $hero_all[$current_lang] ?? (isset($hero_all['title']) ? $hero_all : []);
+                    
+                    // تحديد الصورة الحالية (سواء الخاصة باللغة أو الصورة العامة)
+                    $current_img_val = $h['img'] ?? ($hero_all['img'] ?? 'assets/img/hero-bg.jpg');
                     ?>
                     
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -526,10 +534,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_bg_image') ?? 'صورة الخلفية'; ?></label>
                                 
-                                <?php if (!empty($h['img'])): ?>
+                                <?php if (!empty($current_img_val)): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
                                         <span class="d-block small text-muted mb-2"><?php echo __('current_image') ?? 'الصورة الحالية:'; ?></span>
-                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($h['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($current_img_val), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
                                              style="max-height: 120px; object-fit: cover;">
@@ -537,7 +545,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <?php endif; ?>
 
                                 <input type="file" class="form-control" name="hero_img" accept="image/*">
-                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars(safe_admin_string($h['img'] ?? 'assets/img/hero-bg.jpg', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars(safe_admin_string($current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     </div>
@@ -550,7 +558,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         </div>
     </div>
 </div>
-
 <!-- 7. Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

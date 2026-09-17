@@ -28,16 +28,20 @@
         $hero = $hero_raw;
     }
     
-    $hero_bg = get_image_url($hero['img'] ?? null, '/assets/img/home/home1.png');
-
-    // اختيار اللغة بناءً على المتغير أو ضبط احتياطي
+    // اختيار اللغة الحالية
     $lang = $current_lang ?? 'ar';
 
-    // استخراج النصوص مع التأكد من وجود المفتاح للغة الحالية
-    $hero_title = isset($hero[$lang]['title']) ? $hero[$lang]['title'] : ($hero['de']['title'] ?? $hero['title'] ?? 'عنوان افتراضي');
-    $hero_desc  = isset($hero[$lang]['desc']) ? $hero[$lang]['desc'] : ($hero['de']['desc'] ?? $hero['desc'] ?? 'وصف افتراضي للقسم');
-    $hero_btn   = isset($hero[$lang]['btn_text']) ? $hero[$lang]['btn_text'] : ($hero['de']['btn_text'] ?? $hero['btn_text'] ?? 'اضغط هنا');
-    $hero_url   = $hero['btn_url'] ?? '#';
+    // استخراج بيانات الصورة بحسب اللغة الحالية، أو الرجوع للصورة العامة، أو القيمة الافتراضية
+    $bg_img_path = $hero[$lang]['img'] ?? ($hero['img'] ?? null);
+    $hero_bg = get_image_url($bg_img_path, '/assets/img/home/home1.png');
+
+    // استخراج النصوص بشكل مستقل تماماً لكل لغة مع Fallback آمن
+    $hero_title = $hero[$lang]['title'] ?? ($hero['title'] ?? 'عنوان افتراضي');
+    $hero_desc  = $hero[$lang]['desc'] ?? ($hero['desc'] ?? 'وصف افتراضي للقسم');
+    $hero_btn   = $hero[$lang]['btn_text'] ?? ($hero['btn_text'] ?? 'اضغط هنا');
+    
+    // رابط الزر يمكن أن يكون مشتركاً أو خاصاً باللغة
+    $hero_url   = $hero[$lang]['btn_url'] ?? ($hero['btn_url'] ?? '#');
     ?>
     
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
@@ -52,6 +56,7 @@
   </div>
 </section>
 <!-- hero end -->
+
 <!-- services start -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>

@@ -436,7 +436,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-translate text-primary"></i> إدارة اللغات
+                    <i class="bi bi-translate text-primary"></i> <?php echo __('manage_languages') ?? 'إدارة اللغات'; ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -455,15 +455,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($lang['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_name') ?? 'اسم اللغة'; ?></label>
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($lang['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_name_placeholder') ?? 'اسم اللغة'; ?>">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($lang['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_url') ?? 'الرابط'; ?></label>
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($lang['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_url_placeholder') ?? 'الرابط'; ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo __('delete_language') ?? 'حذف اللغة'; ?>"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -473,19 +473,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة لغة جديدة
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo __('add_new_language') ?? 'إضافة لغة جديدة'; ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="langEditForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="langEditForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- 6. Hero Edit Modal -->
 <div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">

@@ -50,4 +50,13 @@ return [
     'order'                   => 'الترتيب',
     'delete_link'             => 'حذف الرابط',
     'add_new_link'            => 'إضافة رابط جديد',
+        // ترجمات مودل إدارة اللغات
+    'manage_languages'        => 'إدارة اللغات',
+    'language_name'           => 'اسم اللغة',
+    'language_name_placeholder'=> 'اسم اللغة',
+    'language_url'            => 'الرابط',
+    'language_url_placeholder'=> 'الرابط',
+    'delete_language'         => 'حذف اللغة',
+    'add_new_language'        => 'إضافة لغة جديدة',
+
 ];

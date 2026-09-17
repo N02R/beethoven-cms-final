@@ -50,4 +50,14 @@ return [
     'order'                   => 'Order',
     'delete_link'             => 'Delete Link',
     'add_new_link'            => 'Add New Link',
+    
+        // Sprachen verwalten Modal
+    'manage_languages'        => 'Sprachen verwalten',
+    'language_name'           => 'Sprachname',
+    'language_name_placeholder'=> 'Sprachname',
+    'language_url'            => 'URL',
+    'language_url_placeholder'=> 'URL',
+    'delete_language'         => 'Sprache löschen',
+    'add_new_language'        => 'Neue Sprache hinzufügen',
+
 ];

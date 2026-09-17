@@ -282,7 +282,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="announcementEditForm" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_announcement">
-                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="announcement_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <?php 
+                        // استخراج إعلان اللغة الحالية بأمان من مصفوفة اللغات
+                        $currentAd = is_array($data['announcement'] ?? null) ? ($data['announcement'][$current_lang] ?? ($data['announcement'] ?? [])) : [];
+                    ?>
+                    <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;">
@@ -293,17 +299,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo $lang['display_status'] ?? 'حالة العرض'; ?></label>
                                 <select class="form-select" name="status">
-                                    <option value="Draft" <?php echo ((safe_admin_string($data['announcement']['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>><?php echo $lang['status_draft'] ?? 'مخفي (مسودة)'; ?></option>
-                                    <option value="Published" <?php echo ((safe_admin_string($data['announcement']['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>><?php echo $lang['status_published'] ?? 'نشط (يظهر للزوار)'; ?></option>
+                                    <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>><?php echo $lang['status_draft'] ?? 'مخفي (مسودة)'; ?></option>
+                                    <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>><?php echo $lang['status_published'] ?? 'نشط (يظهر للزوار)'; ?></option>
                                 </select>
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo $lang['start_date'] ?? 'تاريخ البدء'; ?></label>
-                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($data['announcement']['start_date'] ?? '', $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['start_date'] ?? '', $current_lang)); ?>">
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo $lang['end_date'] ?? 'تاريخ الانتهاء'; ?></label>
-                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($data['announcement']['end_date'] ?? '', $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['end_date'] ?? '', $current_lang)); ?>">
                             </div>
                         </div>
                     </div>
@@ -315,34 +321,34 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                         <label class="small fw-bold mb-1"><?php echo $lang['ad_type'] ?? 'نوع الإعلان:'; ?></label>
                         <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo $lang['ad_type_text'] ?? 'نص متحرك (اختر هذا لنص سريع)'; ?></option>
-                            <option value="image" <?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo $lang['ad_type_image'] ?? 'صورة (بانر دعائي كامل)'; ?></option>
+                            <option value="text" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo $lang['ad_type_text'] ?? 'نص متحرك (اختر هذا لنص سريع)'; ?></option>
+                            <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo $lang['ad_type_image'] ?? 'صورة (بانر دعائي كامل)'; ?></option>
                         </select>
 
-                        <div id="textEditor" class="<?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
+                        <div id="textEditor" class="<?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1"><?php echo $lang['announcement_text_label'] ?? 'نص الإعلان (الرسالة التي ستظهر للزوار):'; ?></label>
-                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars(safe_admin_string($data['announcement']['announcement_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars(safe_admin_string($currentAd['announcement_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             <div class="row g-2">
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1"><?php echo $lang['bg_color'] ?? 'لون الخلفية'; ?></label>
-                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['bg_color'] ?? '#f1f5f9', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                    <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['bg_color'] ?? '#f1f5f9', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1"><?php echo $lang['text_color'] ?? 'لون الخط'; ?></label>
-                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['text_color'] ?? '#1e293b', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
+                                    <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['text_color'] ?? '#1e293b', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
                                     <label class="small fw-bold mb-1"><?php echo $lang['font_size'] ?? 'حجم الخط'; ?></label>
-                                    <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['font_size'] ?? '16', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['font_size'] ?? '16', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>
 
-                        <div id="imageEditor" class="<?php echo ((safe_admin_string($data['announcement']['type'] ?? 'text', $current_lang)) == 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
+                        <div id="imageEditor" class="<?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1"><?php echo $lang['upload_ad_image'] ?? 'ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):'; ?></label>
-                            <?php if (!empty($data['announcement']['image_path'])): ?>
+                            <?php if (!empty($currentAd['image_path'])): ?>
                                 <div class="mb-2 p-2 bg-light rounded border d-inline-block">
-                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($data['announcement']['image_path']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($currentAd['image_path']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="ad_image" style="height: auto; padding: 10px 16px;" accept="image/png, image/jpeg, image/webp">
@@ -354,7 +360,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <i class="bi bi-link-45deg text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> 
                             <?php echo $lang['redirect_link'] ?? 'رابط التوجيه (اختياري)'; ?>
                         </div>
-                        <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars(safe_admin_string($data['announcement']['link'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
+                        <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['link'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
                     </div>
                 </form>
             </div>

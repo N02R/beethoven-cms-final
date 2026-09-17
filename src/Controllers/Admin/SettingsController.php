@@ -108,7 +108,7 @@ class SettingsController
                 exit;
             }
 
-            // 0.ز. فحص أقسام مقال الدليل الأول (GuideBlog1) - [تم نقله للمكان الصحيح هنا]
+            // 0.ز. فحص أقسام مقال الدليل الأول (GuideBlog1)
             $guideBlog1Service = new GuideBlog1SettingsService($root_path, $imageUploader);
             if ($guideBlog1Service->handleAction($action, $pdo, $currentSettings)) {
                 $pdo->commit();
@@ -123,17 +123,34 @@ class SettingsController
                 $stmt->execute(['k' => 'languages', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 5. تحديث الإعلان (Announcement)
+            // 5. تحديث الإعلان (Announcement) مع دعم اللغات المتعددة (ar, en, de)
             elseif ($action === 'update_announcement') {
-                $adImage = $_POST['old_ad_image'] ?? 'assets/img/default-ad.png';
+                $targetLang = $_POST['announcement_lang'] ?? 'ar';
+
+                $rawAnnouncementSetting = $currentSettings['announcement'] ?? '';
+                $announcements = json_decode($rawAnnouncementSetting, true);
+                if (!is_array($announcements)) {
+                    $announcements = [];
+                    if (!empty($rawAnnouncementSetting)) {
+                        $legacyData = json_decode($rawAnnouncementSetting, true);
+                        if (is_array($legacyData)) {
+                            // إذا كانت البيانات القديمة عبارة عن مصفوفة إعلان واحدة مفردة، نعتبرها للغة العربية
+                            $announcements['ar'] = $legacyData;
+                        }
+                    }
+                }
+
+                $oldAdImage = $announcements[$targetLang]['image_path'] ?? ($_POST['old_ad_image'] ?? 'assets/img/default-ad.png');
+                
                 if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-                    $oldAdData = json_decode($currentSettings['announcement'] ?? '', true);
-                    if (!empty($oldAdData['image_path'])) {
-                        $this->deleteOldImageFile($root_path, $oldAdData['image_path']);
+                    if (!empty($announcements[$targetLang]['image_path'])) {
+                        $this->deleteOldImageFile($root_path, $announcements[$targetLang]['image_path']);
                     }
 
                     $filename = $imageUploader->processAndUploadFile($_FILES['ad_image']['tmp_name']);
                     $adImage = 'assets/uploads/' . $filename;
+                } else {
+                    $adImage = $oldAdImage;
                 }
 
                 $adData = [
@@ -148,7 +165,11 @@ class SettingsController
                     'link'              => $_POST['link'] ?? '',
                     'image_path'        => $adImage
                 ];
-                $jsonVal = json_encode($adData, JSON_UNESCAPED_UNICODE);
+
+                // حفظ إعلان اللغة المحددة فقط داخل مصفوفة اللغات
+                $announcements[$targetLang] = $adData;
+
+                $jsonVal = json_encode($announcements, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 

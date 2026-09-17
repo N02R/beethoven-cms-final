@@ -136,10 +136,10 @@ if (!function_exists('safe_admin_string')) {
 }
 $current_lang = $current_lang ?? 'ar';
 
-// إعدادات الاتجاه والمحاذاة ديناميكياً حسب اللغة الحالية
-$is_english = ($current_lang === 'en');
-$modal_dir = $is_english ? 'ltr' : 'rtl';
-$modal_align = $is_english ? 'text-start' : 'text-end';
+// تحديد الاتجاه بناءً على اللغة الحالية (العربية rtl، والبقية ltr مثل الإنجليزية والألمانية)
+$is_rtl = ($current_lang === 'ar');
+$modal_dir = $is_rtl ? 'rtl' : 'ltr';
+$modal_align = $is_rtl ? 'text-end' : 'text-start';
 ?>
 
 <!-- 1. Social Links Modal -->
@@ -147,7 +147,10 @@ $modal_align = $is_english ? 'text-start' : 'text-end';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between align-items-center">
-                <h5 class="modal-title"><i class="bi bi-share-fill text-primary <?php echo $is_english ? 'me-2' : 'ms-2'; ?>"></i> <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?></h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-share-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?>
+                </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -191,7 +194,7 @@ $modal_align = $is_english ? 'text-start' : 'text-end';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addSocialRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_english ? 'me-1' : 'ms-1'; ?>"></i> <?php echo $lang['add_new_platform'] ?? 'إضافة منصة جديدة'; ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo $lang['add_new_platform'] ?? 'إضافة منصة جديدة'; ?>
                     </button>
                 </form>
             </div>

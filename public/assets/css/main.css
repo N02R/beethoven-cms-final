@@ -248,7 +248,7 @@ body {
 
 .announcement-ticker-track {
   display: inline-block;
-  animation-duration: 20s;
+  animation-duration: 10s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }

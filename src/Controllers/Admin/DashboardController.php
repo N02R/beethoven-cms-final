@@ -27,6 +27,20 @@ class DashboardController {
             exit();
         }
 
+        // ==========================================
+        // 🌟 التحديث الأساسي: جلب لغة الجلسة وتحميل ملف الترجمة للمودلات
+        // ==========================================
+        $current_lang = $_SESSION['site_lang'] ?? 'de';
+        $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
+        if (!file_exists($lang_file)) {
+            $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
+        }
+        $lang = file_exists($lang_file) ? require $lang_file : [];
+        if (!is_array($lang)) {
+            $lang = [];
+        }
+        // ==========================================
+
         // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel الأصلي
         $dashboardModel = new DashboardModel();
         $config_data = $dashboardModel->getDashboardData();

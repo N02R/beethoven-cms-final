@@ -126,10 +126,18 @@ $is_visible = ($is_published && $is_in_time);
           </a>
         </div>
 
-<!-- منطقة الإعلان المحدثة -->
+<!-- منطقة الإعلان المتوافقة مع المودال -->
 <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
   <?php 
-    $allAds = json_decode($site_settings['announcement'] ?? '', true) ?? [];
+    // استخراج إعلان اللغة الحالية بنفس طريقة المودال تماماً
+    $rawAnnouncement = $site_settings['announcement'] ?? $data['announcement'] ?? '';
+    if (is_string($rawAnnouncement)) {
+        $allAds = json_decode($rawAnnouncement, true) ?? [];
+    } else {
+        $allAds = is_array($rawAnnouncement) ? $rawAnnouncement : [];
+    }
+    
+    // جلب إعلان اللغة الحالية، أو الرجوع للعربية كاحتياط
     $ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? []);
     
     $status = $ad['status'] ?? 'Draft';
@@ -151,7 +159,7 @@ $is_visible = ($is_published && $is_in_time);
         <?php if (($ad['type'] ?? 'text') === 'text'): ?>
           <div class="p-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars($ad['bg_color'] ?? '#f1f5f9'); ?>; color: <?php echo htmlspecialchars($ad['text_color'] ?? '#1e293b'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16')); ?>px;">
             <div class="announcement-ticker-track">
-                <span><?php echo htmlspecialchars($ad['announcement_text'] ?? 'Welcome!'); ?></span>
+                <span><?php echo htmlspecialchars($ad['announcement_text'] ?? ''); ?></span>
             </div>
           </div>
         <?php else: ?>
@@ -164,9 +172,6 @@ $is_visible = ($is_published && $is_in_time);
     </div>
   <?php endif; ?>
 </div>
-
-
-
         <!-- السوشيال ميديا -->
         <div class="editable-wrapper d-none d-lg-flex">
           <?php if ($is_admin): ?>

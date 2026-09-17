@@ -247,12 +247,12 @@ body {
 }
 
 .announcement-ticker-track {
-  display: inline-block;
-  animation-duration: 10s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+    display: inline-block;
+    animation-duration: 5s;
+    /* كلما قل الرقم زادت السرعة (جربي 8s أو 10s) */
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
-
 .announcement-ticker-container:hover .announcement-ticker-track {
   animation-play-state: paused;
 }

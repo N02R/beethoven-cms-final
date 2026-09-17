@@ -138,9 +138,16 @@ if (!function_exists('safe_admin_string')) {
 // جلب اللغة الحالية للنظام ديناميكياً
 $current_lang = function_exists('get_current_lang') ? get_current_lang() : ($_SESSION['site_lang'] ?? 'ar');
 
-// تحميل ملف الترجمة الخاص باللغة الحالية مباشرة لضمان تغيير النصوص تلقائياً
+// تحميل ملف الترجمة بأمان تام مع التحقق من المسار (سواء Lang أو lang)
 $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
-$lang = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+if (!file_exists($lang_file)) {
+    $lang_file = __DIR__ . '/../lang/' . $current_lang . '.php';
+}
+
+$lang = file_exists($lang_file) ? require $lang_file : [];
+if (!is_array($lang)) {
+    $lang = [];
+}
 
 // تحديد الاتجاه بناءً على اللغة الحالية (العربية rtl، والبقية ltr مثل الإنجليزية والألمانية)
 $is_rtl = ($current_lang === 'ar');

@@ -22,5 +22,24 @@ return [
     'delete_platform'         => 'حذف المنصة',
     'add_new_platform'        => 'إضافة منصة جديدة',
     'save_changes'            => 'حفظ التغييرات',
-    'cancel'                  => 'إلغاء'
+    'cancel'                  => 'إلغاء',
+    
+    'announcement_settings' => 'إعدادات لوحة الإعلانات',
+'ad_status_timing' => 'حالة الإعلان والتوقيت',
+'display_status' => 'حالة العرض',
+'status_draft' => 'مخفي (مسودة)',
+'status_published' => 'نشط (يظهر للزوار)',
+'start_date' => 'تاريخ البدء',
+'end_date' => 'تاريخ الانتهاء',
+'announcement_content' => 'محتوى الإعلان',
+'ad_type' => 'نوع الإعلان:',
+'ad_type_text' => 'نص متحرك (اختر هذا لنص سريع)',
+'ad_type_image' => 'صورة (بانر دعائي كامل)',
+'announcement_text_label' => 'نص الإعلان (الرسالة التي ستظهر للزوار):',
+'bg_color' => 'لون الخلفية',
+'text_color' => 'لون الخط',
+'font_size' => 'حجم الخط',
+'upload_ad_image' => 'ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):',
+'redirect_link' => 'رابط التوجيه (اختياري)',
+
 ];

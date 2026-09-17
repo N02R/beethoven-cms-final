@@ -20,6 +20,25 @@ return [
     'delete_platform'         => 'Delete Platform',
     'add_new_platform'        => 'Add New Platform',
     'save_changes'            => 'Save Changes',
-    'cancel'                  => 'Cancel'
+    'cancel'                  => 'Cancel',
+    
+    'announcement_settings' => 'Announcement Bar Settings',
+'ad_status_timing' => 'Announcement Status & Timing',
+'display_status' => 'Display Status',
+'status_draft' => 'Hidden (Draft)',
+'status_published' => 'Active (Visible to Visitors)',
+'start_date' => 'Start Date',
+'end_date' => 'End Date',
+'announcement_content' => 'Announcement Content',
+'ad_type' => 'Announcement Type:',
+'ad_type_text' => 'Scrolling Text (Select for quick text)',
+'ad_type_image' => 'Image (Full Promotional Banner)',
+'announcement_text_label' => 'Announcement Text (Message visible to visitors):',
+'bg_color' => 'Background Color',
+'text_color' => 'Text Color',
+'font_size' => 'Font Size',
+'upload_ad_image' => 'Upload Announcement Image (WebP or PNG preferred):',
+'redirect_link' => 'Redirect Link (Optional)',
+
 
 ];

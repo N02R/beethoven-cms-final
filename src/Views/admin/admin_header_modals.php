@@ -372,18 +372,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 4. Menu Edit Modal (محدث ليدعم تعدد اللغات) -->
+<!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-list-nested text-primary"></i> 
-                    <?php 
-                        if ($current_lang === 'ar') echo 'إدارة القائمة الرئيسية';
-                        elseif ($current_lang === 'en') echo 'Manage Main Menu';
-                        else echo 'Hauptmenü verwalten';
-                    ?>
+                    <i class="bi bi-list-nested text-primary"></i> <?php echo __('manage_main_menu') ?? 'إدارة القائمة الرئيسية'; ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -397,46 +392,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <?php 
                         $menuLinksData = is_array($menu_links ?? null) ? $menu_links : [];
                         foreach ($menuLinksData as $index => $link): 
-                            // استخراج العنوان حسب اللغة الحالية أو الاعتماد على الهيكل المتعدد
                             $title_val = $link[$current_lang]['title'] ?? $link['title'] ?? '';
                         ?>
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-5">
-                                    <label class="small fw-bold mb-1 text-secondary">
-                                        <?php 
-                                            if ($current_lang === 'ar') echo 'عنوان الرابط (' . strtoupper($current_lang) . ')';
-                                            elseif ($current_lang === 'en') echo 'Link Title (' . strtoupper($current_lang) . ')';
-                                            else echo 'Link-Titel (' . strtoupper($current_lang) . ')';
-                                        ?>
-                                    </label>
-                                    <!-- نحفظ العنوان تحت مفتاح اللغة الحالية ليتوافق مع نظام العرض في القائمة -->
-                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($title_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الرابط">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('link_title') ?? 'عنوان الرابط'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($title_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('link_title_placeholder') ?? 'عنوان الرابط'; ?>">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary">
-                                        <?php 
-                                            if ($current_lang === 'ar') echo 'الرابط (URL)';
-                                            elseif ($current_lang === 'en') echo 'URL Path';
-                                            else echo 'URL-Pfad';
-                                        ?>
-                                    </label>
-                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط (URL)">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('platform_url') ?? 'الرابط (URL)'; ?></label>
+                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('url_placeholder') ?? 'الرابط (URL)'; ?>">
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="small fw-bold mb-1 text-secondary">
-                                        <?php 
-                                            if ($current_lang === 'ar') echo 'الترتيب';
-                                            elseif ($current_lang === 'en') echo 'Order';
-                                            else echo 'Reihenfolge';
-                                        ?>
-                                    </label>
-                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('order') ?? 'الترتيب'; ?></label>
+                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('order') ?? 'الترتيب'; ?>">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="حذف الرابط">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo __('delete_link') ?? 'حذف الرابط'; ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -444,31 +417,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> 
-                        <?php 
-                            if ($current_lang === 'ar') echo 'إضافة رابط جديد';
-                            elseif ($current_lang === 'en') echo 'Add New Link';
-                            else echo 'Neuen Link hinzufügen';
-                        ?>
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo __('add_new_link') ?? 'إضافة رابط جديد'; ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="menuLinksForm" class="btn-premium">
-                    <?php 
-                        if ($current_lang === 'ar') echo 'حفظ التغييرات';
-                        elseif ($current_lang === 'en') echo 'Save Changes';
-                        else echo 'Änderungen speichern';
-                    ?>
-                </button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
-                    <?php 
-                        if ($current_lang === 'ar') echo 'إلغاء';
-                        elseif ($current_lang === 'en') echo 'Cancel';
-                        else echo 'Abbrechen';
-                    ?>
-                </button>
+                <button type="submit" form="menuLinksForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
             </div>
         </div>
     </div>

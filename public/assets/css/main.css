@@ -237,7 +237,7 @@ body {
 
 
 /* =========================================
-   تنسيقات وحركات Ticker الإعلانات (محدث)
+   شريط الإعلانات المضبوط 100% حسب اتجاه القراءة
    ========================================= */
 .announcement-ticker-container {
   overflow: hidden;
@@ -248,30 +248,37 @@ body {
 
 .announcement-ticker-track {
   display: inline-block;
-  animation: announcementScroll 20s linear infinite;
+  animation: tickerMove 20s linear infinite;
 }
 
 .announcement-ticker-container:hover .announcement-ticker-track {
   animation-play-state: paused;
 }
 
-/* ربط الاتجاهات تلقائياً مع لغة الموقع */
-[dir="rtl"] .announcement-ticker-track {
-  animation-name: announcementScrollRTL;
-}
-
+/* 
+  للغة الإنجليزية/الألمانية (LTR): 
+  يبدأ من اليمين (خارج الشاشة) ويتجه نحو اليسار 
+*/
 [dir="ltr"] .announcement-ticker-track {
-  animation-name: announcementScrollLTR;
+  padding-left: 100%;
+  animation-name: tickerLTR;
 }
 
-/* حركة اللغات الأجنبية (Ltr) */
-@keyframes announcementScrollLTR {
-  0% { transform: translateX(100%); }
+/* 
+  للغة العربية (RTL): 
+  يبدأ من اليسار (خارج الشاشة) ويتجه نحو اليمين 
+*/
+[dir="rtl"] .announcement-ticker-track {
+  padding-right: 100%;
+  animation-name: tickerRTL;
+}
+
+@keyframes tickerLTR {
+  0%   { transform: translateX(0); }
   100% { transform: translateX(-100%); }
 }
 
-/* حركة اللغة العربية (Rtl) - اتجاه صحيح وسلس */
-@keyframes announcementScrollRTL {
-  0% { transform: translateX(-100%); }
+@keyframes tickerRTL {
+  0%   { transform: translateX(0); }
   100% { transform: translateX(100%); }
 }

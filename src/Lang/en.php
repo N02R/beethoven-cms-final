@@ -59,5 +59,15 @@ return [
     'language_url_placeholder'=> 'URL',
     'delete_language'         => 'Sprache löschen',
     'add_new_language'        => 'Neue Sprache hinzufügen',
+    
+        // Hero Section Modal
+    'edit_hero_section'       => 'Edit Hero Section',
+    'hero_title'              => 'Title',
+    'hero_desc'               => 'Description',
+    'hero_btn_text'           => 'Button Text',
+    'hero_btn_url'            => 'Button URL',
+    'hero_bg_image'           => 'Background Image',
+    'current_image'           => 'Current Image:',
+
 
 ];

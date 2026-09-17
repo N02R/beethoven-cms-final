@@ -59,4 +59,13 @@ return [
     'delete_language'         => 'حذف اللغة',
     'add_new_language'        => 'إضافة لغة جديدة',
 
+    // ترجمات مودل قسم البداية (Hero)
+    'edit_hero_section'       => 'تعديل قسم البداية (Hero)',
+    'hero_title'              => 'العنوان',
+    'hero_desc'               => 'النص الوصفي',
+    'hero_btn_text'           => 'نص الزر',
+    'hero_btn_url'            => 'رابط الزر',
+    'hero_bg_image'           => 'صورة الخلفية',
+    'current_image'           => 'الصورة الحالية:',
+
 ];

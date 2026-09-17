@@ -491,7 +491,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-gear text-primary"></i> تعديل قسم البداية (Hero)</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-gear text-primary"></i> <?php echo __('edit_hero_section') ?? 'تعديل قسم البداية (Hero)'; ?>
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -502,27 +504,27 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_title') ?? 'العنوان'; ?></label>
                                 <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars(safe_admin_string($h['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary">النص الوصفي</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_desc') ?? 'النص الوصفي'; ?></label>
                                 <textarea class="form-control" name="hero_desc" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($h['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_text') ?? 'نص الزر'; ?></label>
                                 <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">رابط الزر</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?></label>
                                 <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary">صورة الخلفية</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_bg_image') ?? 'صورة الخلفية'; ?></label>
                                 
                                 <?php if (!empty($h['img'])): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                        <span class="d-block small text-muted mb-2">الصورة الحالية:</span>
+                                        <span class="d-block small text-muted mb-2"><?php echo __('current_image') ?? 'الصورة الحالية:'; ?></span>
                                         <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($h['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
@@ -538,8 +540,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="heroEditForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="heroEditForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
             </div>
         </div>
     </div>

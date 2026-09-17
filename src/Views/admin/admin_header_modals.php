@@ -450,17 +450,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <?php 
                         $languagesData = is_array($data['languages'] ?? null) ? $data['languages'] : [];
                         if (!empty($languagesData)): 
-                            foreach ($languagesData as $index => $lang): 
+                            foreach ($languagesData as $index => $langItem): 
                         ?>
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_name') ?? 'اسم اللغة'; ?></label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($lang['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_name_placeholder') ?? 'اسم اللغة'; ?>">
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_name_placeholder') ?? 'اسم اللغة'; ?>">
                                         </div>
                                         <div class="col-md-5">
                                             <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_url') ?? 'الرابط'; ?></label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($lang['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_url_placeholder') ?? 'الرابط'; ?>">
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_url_placeholder') ?? 'الرابط'; ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
                                             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo __('delete_language') ?? 'حذف اللغة'; ?>"><i class="bi bi-trash"></i></button>
@@ -558,6 +558,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         </div>
     </div>
 </div>
+
 <!-- 7. Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -850,7 +851,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-
 <!-- 11. FAQ Edit Modal -->
 <div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -906,7 +906,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         </div>
     </div>
 </div>
-
 
 <!-- 12. Footer Edit Modal -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
@@ -1072,6 +1071,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }, 4000);
     }
 
+    function toggleAdContent(val) {
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if (val === 'image') {
+            if (textEditor) textEditor.classList.add('d-none');
+            if (imageEditor) imageEditor.classList.remove('d-none');
+        } else {
+            if (textEditor) textEditor.classList.remove('d-none');
+            if (imageEditor) imageEditor.classList.add('d-none');
+        }
+    }
+
     let socialCount = <?php echo is_array($data['social_links'] ?? null) ? count($data['social_links']) : 0; ?>;
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -1160,15 +1171,27 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3';
+        div.className = 'p-3 shadow-sm mb-3 service-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'service_row_' + serviceCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-3"><input type="text" class="form-control" name="services[${serviceCount}][title]" placeholder="العنوان"></div>
-                <div class="col-md-4"><input type="text" class="form-control" name="services[${serviceCount}][url]" placeholder="الرابط"></div>
-                <div class="col-md-4"><input type="file" class="form-control" name="service_img_${serviceCount}"></div>
-                <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger btn-sm p-2 w-100" onclick="removeRow('service_row_${serviceCount}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button></div>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control service-title" name="services[${serviceCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control service-url" name="services[${serviceCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <input type="file" class="form-control service-file" name="service_img_${serviceCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="service-old-img" name="services[${serviceCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${serviceCount}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                </div>
             </div>`;
         container.appendChild(div);
         serviceCount++;
@@ -1194,8 +1217,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                     <input type="file" class="form-control choose-file" name="choose_img_${chooseCount}" accept="image/*">
+                    <input type="hidden" class="choose-old-img" name="choose[${chooseCount}][old_img]" value="">
                 </div>
-                <input type="hidden" class="choose-old-img" name="choose[${chooseCount}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${chooseCount}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
                 </div>
@@ -1249,8 +1272,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">الصورة</label>
                     <input type="file" class="form-control guide-file" name="guide_img_${guideCount}" accept="image/*">
+                    <input type="hidden" class="guide-old-img" name="guide[${guideCount}][old_img]" value="">
                 </div>
-                <input type="hidden" class="guide-old-img" name="guide[${guideCount}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${guideCount}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
@@ -1288,7 +1311,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
+        div.className = 'p-3 shadow-sm footer-col3-item mb-3';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
         div.id = 'col3_' + col3Count;
         div.innerHTML = `
@@ -1305,59 +1328,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                     <input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                 </div>
-                <input type="hidden" class="footer-col3-old-img" name="col3[${col3Count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
-            </div>`;
+            </div>
+            <input type="hidden" class="footer-col3-old-img" name="col3[${col3Count}][old_img]" value="">`;
         container.appendChild(div);
         col3Count++;
     }
-
-    function toggleAdContent(val) { 
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if(textEditor) textEditor.classList.toggle('d-none', val !== 'text'); 
-        if(imageEditor) imageEditor.classList.toggle('d-none', val !== 'image'); 
-    }
-
-    document.querySelectorAll('.custom-modal form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                    }
-                } catch (e) {
-                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
-                }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-            });
-        });
-    });
 </script>

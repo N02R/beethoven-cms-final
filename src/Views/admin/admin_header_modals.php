@@ -499,7 +499,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-body p-4">
                 <form id="heroEditForm" enctype="multipart/form-data" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_hero">
-                    <!-- حقل حماية الـ CSRF مطابق لبقية المودلات -->
+                    <!-- حقل حماية الـ CSRF -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <!-- حقل إلزامي لتحديد اللغة المستهدفة عند الحفظ -->
                     <input type="hidden" name="hero_lang" value="<?php echo htmlspecialchars($current_lang); ?>">
@@ -508,37 +508,50 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $hero_raw = $currentSettings['hero'] ?? '';
                     $hero_all = json_decode($hero_raw, true) ?? [];
                     
-                    // استخراج بيانات اللغة الحالية أو الاعتماد على البيانات القديمة المسطحة إن وجدت كخيار احتياطي
-                    $h = $hero_all[$current_lang] ?? (isset($hero_all['title']) ? $hero_all : []);
+                    // استخراج بيانات اللغة الحالية بدقة بناءً على الهيكل المخزن (ar, en, de) أو الاعتماد على البيانات القديمة المسطحة
+                    $h = $hero_all[$current_lang] ?? [];
                     
-                    // تحديد الصورة الحالية (سواء الخاصة باللغة أو الصورة العامة)
+                    // استخراج الحقول الخاصة باللغة الحالية أو البدائل المسطحة القديمة
+                    $val_title   = $h['title'] ?? ($hero_all['title'] ?? '');
+                    $val_desc    = $h['desc'] ?? ($hero_all['desc'] ?? '');
+                    $val_btn_txt = $h['btn_text'] ?? ($hero_all['btn_text'] ?? '');
+                    $val_btn_url = $h['btn_url'] ?? ($hero_all['btn_url'] ?? '#');
+                    
+                    // تحديد الصورة الحالية (البحث أولاً في مصفوفة اللغة الحالية، ثم في المستوى العام، مع الاحتياطي الافتراضي)
                     $current_img_val = $h['img'] ?? ($hero_all['img'] ?? 'assets/img/hero-bg.jpg');
                     ?>
                     
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
-                            <!-- تعديل الـ name ليطابق هيكلية تخزين اللغات المتعددة -->
+                            <!-- العنوان الخاص باللغة الحالية -->
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_title') ?? 'العنوان'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($h['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($val_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
+                            
+                            <!-- النص الوصفي الخاص باللغة الحالية -->
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_desc') ?? 'النص الوصفي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($h['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($val_desc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
+                            
+                            <!-- نص الزر الخاص باللغة الحالية -->
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_text') ?? 'نص الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_txt, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
+                            
+                            <!-- رابط الزر (تم جعله يتبع اللغة أيضاً لضمان حفظه بشكل سليم داخل مصفوفة اللغة الحالية) -->
                             <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?></label>
-                                <!-- رابط الزر عادة يكون عاماً أو موحداً لكل اللغات، ويمكن جعله عاماً أو تابعاً للغة حسب رغبتك، وهنا جعلناه عاماً كالسابق أو ضمن مصفوفة الهيرو العامة -->
-                                <input type="text" class="form-control" name="hero[btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_url, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
+                            
+                            <!-- صورة الخلفية -->
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_bg_image') ?? 'صورة الخلفية'; ?></label>
                                 
-                                <?php if (!empty($current_img_val)): ?>
+                                <?php if (!empty($current_img_val) && $current_img_val !== 'assets/img/hero-bg.jpg'): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
                                         <span class="d-block small text-muted mb-2"><?php echo __('current_image') ?? 'الصورة الحالية:'; ?></span>
                                         <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($current_img_val), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 

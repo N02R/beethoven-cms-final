@@ -497,8 +497,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="heroEditForm" enctype="multipart/form-data">
+                <form id="heroEditForm" enctype="multipart/form-data" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_hero">
+                    <!-- حقل حماية الـ CSRF مطابق لبقية المودلات -->
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <!-- حقل إلزامي لتحديد اللغة المستهدفة عند الحفظ -->
                     <input type="hidden" name="hero_lang" value="<?php echo htmlspecialchars($current_lang); ?>">
                     
@@ -515,21 +517,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
+                            <!-- تعديل الـ name ليطابق هيكلية تخزين اللغات المتعددة -->
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_title') ?? 'العنوان'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <input type="text" class="form-control" name="hero_title" value="<?php echo htmlspecialchars(safe_admin_string($h['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($h['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_desc') ?? 'النص الوصفي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <textarea class="form-control" name="hero_desc" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($h['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($h['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_text') ?? 'نص الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                <input type="text" class="form-control" name="hero_btn_text" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?></label>
-                                <input type="text" class="form-control" name="hero_btn_url" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <!-- رابط الزر عادة يكون عاماً أو موحداً لكل اللغات، ويمكن جعله عاماً أو تابعاً للغة حسب رغبتك، وهنا جعلناه عاماً كالسابق أو ضمن مصفوفة الهيرو العامة -->
+                                <input type="text" class="form-control" name="hero[btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($h['btn_url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_bg_image') ?? 'صورة الخلفية'; ?></label>

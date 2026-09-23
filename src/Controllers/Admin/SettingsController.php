@@ -234,15 +234,18 @@ class SettingsController
                     $heroImg = $oldHeroImg;
                 }
 
+                // استقبال البيانات سواء جاءت عبر مصفوفة hero[$targetLang] أو الحقول المنفردة
+                $postedHero = $_POST['hero'][$targetLang] ?? [];
+
                 $langHeroData = [
-                    'title'    => $_POST['hero_title'] ?? '',
-                    'desc'     => $_POST['hero_desc'] ?? '',
-                    'btn_text' => $_POST['hero_btn_text'] ?? '',
-                    'btn_url'  => $_POST['hero_btn_url'] ?? '',
+                    'title'    => $postedHero['title'] ?? ($_POST['hero_title'] ?? ''),
+                    'desc'     => $postedHero['desc'] ?? ($_POST['hero_desc'] ?? ''),
+                    'btn_text' => $postedHero['btn_text'] ?? ($_POST['hero_btn_text'] ?? ''),
+                    'btn_url'  => $postedHero['btn_url'] ?? ($_POST['hero_btn_url'] ?? ''),
                     'img'      => $heroImg
                 ];
 
-                // حفظ بيانات اللغة المحددة فقط داخل مصفوفة اللغات الشاملة
+                // حفظ بيانات اللغة المحددة فقط داخل مصفوفة اللغات الشاملة مع الحفاظ على باقي اللغات
                 $heroAllLangs[$targetLang] = $langHeroData;
                 $heroAllLangs['img'] = $heroImg; // للحفاظ على توافقية الصورة العامة إن وجدت
 

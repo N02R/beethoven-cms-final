@@ -134,7 +134,6 @@ class SettingsController
                     if (!empty($rawAnnouncementSetting)) {
                         $legacyData = json_decode($rawAnnouncementSetting, true);
                         if (is_array($legacyData)) {
-                            // إذا كانت البيانات القديمة عبارة عن مصفوفة إعلان واحدة مفردة، نعتبرها للغة العربية
                             $announcements['ar'] = $legacyData;
                         }
                     }
@@ -166,7 +165,6 @@ class SettingsController
                     'image_path'        => $adImage
                 ];
 
-                // حفظ إعلان اللغة المحددة فقط داخل مصفوفة اللغات
                 $announcements[$targetLang] = $adData;
 
                 $jsonVal = json_encode($announcements, JSON_UNESCAPED_UNICODE);
@@ -216,7 +214,6 @@ class SettingsController
                     if (!empty($rawHeroSetting)) {
                         $legacyData = json_decode($rawHeroSetting, true);
                         if (is_array($legacyData)) {
-                            // إذا كانت البيانات القديمة مفردة مسطحة، نعتبرها للغة العربية
                             $heroAllLangs['ar'] = $legacyData;
                         }
                     }
@@ -234,18 +231,18 @@ class SettingsController
                     $heroImg = $oldHeroImg;
                 }
 
-                // استقبال البيانات سواء جاءت عبر مصفوفة hero[$targetLang] أو الحقول المنفردة
+                // التقاط البيانات المرسلة عبر مصفوفة hero[$targetLang] مع بدائل احتياطية
                 $postedHero = $_POST['hero'][$targetLang] ?? [];
 
                 $langHeroData = [
                     'title'    => $postedHero['title'] ?? ($_POST['hero_title'] ?? ''),
                     'desc'     => $postedHero['desc'] ?? ($_POST['hero_desc'] ?? ''),
                     'btn_text' => $postedHero['btn_text'] ?? ($_POST['hero_btn_text'] ?? ''),
-                    'btn_url'  => $postedHero['btn_url'] ?? ($_POST['hero_btn_url'] ?? ''),
+                    'btn_url'  => $postedHero['btn_url'] ?? ($_POST['hero_btn_url'] ?? '#'),
                     'img'      => $heroImg
                 ];
 
-                // حفظ بيانات اللغة المحددة فقط داخل مصفوفة اللغات الشاملة مع الحفاظ على باقي اللغات
+                // تحديث بيانات اللغة المحددة فقط والحفاظ على باقي اللغات
                 $heroAllLangs[$targetLang] = $langHeroData;
                 $heroAllLangs['img'] = $heroImg; // للحفاظ على توافقية الصورة العامة إن وجدت
 

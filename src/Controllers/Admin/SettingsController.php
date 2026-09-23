@@ -203,10 +203,11 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
             }
 
-            // 7. تحديث قسم الهيرو (Hero) مع دعم اللغات المتعددة (ar, en, de)
+            // 7. تحديث قسم الهيرو (Hero) مع دعم اللغات المتعددة (ar, en, de) وبدون فقدان البيانات
             elseif ($action === 'update_hero') {
                 $targetLang = $_POST['hero_lang'] ?? 'ar';
 
+                // 1. جلب البيانات القديمة الموجودة في القاعدة وفكها كـ Array
                 $rawHeroSetting = $currentSettings['hero'] ?? '';
                 $heroAllLangs = json_decode($rawHeroSetting, true);
                 if (!is_array($heroAllLangs)) {
@@ -219,10 +220,12 @@ class SettingsController
                     }
                 }
 
+                // 2. الاحتفاظ بالصورة القديمة للغة الحالية أو الصورة العامة إن وجدت
                 $oldHeroImg = $heroAllLangs[$targetLang]['img'] ?? ($heroAllLangs['img'] ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg'));
                 
+                // 3. معالجة رفع الصورة الجديدة إن وجدت
                 if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($oldHeroImg) && $oldHeroImg !== 'assets/img/hero-bg.jpg') {
+                    if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/hero-bg.jpg') {
                         $this->deleteOldImageFile($root_path, $oldHeroImg);
                     }
                     $filename = $imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
@@ -231,7 +234,7 @@ class SettingsController
                     $heroImg = $oldHeroImg;
                 }
 
-                // التقاط البيانات المرسلة عبر مصفوفة hero[$targetLang] مع بدائل احتياطية
+                // 4. التقاط البيانات المرسلة من الفورم بدقة (مع دعم مصفوفة اللغة والحقول الفردية)
                 $postedHero = $_POST['hero'][$targetLang] ?? [];
 
                 $langHeroData = [
@@ -242,10 +245,11 @@ class SettingsController
                     'img'      => $heroImg
                 ];
 
-                // تحديث بيانات اللغة المحددة فقط والحفاظ على باقي اللغات
+                // 5. تحديث لغة معينة فقط داخل المصفوفة الشاملة مع الحفاظ التام على اللغات الأخرى (مثل de و en)
                 $heroAllLangs[$targetLang] = $langHeroData;
-                $heroAllLangs['img'] = $heroImg; // للحفاظ على توافقية الصورة العامة إن وجدت
+                $heroAllLangs['img'] = $heroImg; // تحديث الصورة العامة كاحتياط
 
+                // 6. الحفظ في القاعدة بصيغة JSON سليمة
                 $jsonVal = json_encode($heroAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }

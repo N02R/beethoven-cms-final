@@ -615,7 +615,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
-                        <?>
                         <?php 
                         $servicesData = is_array($data['services'] ?? null) ? $data['services'] : [];
                         foreach ($servicesData as $index => $service): 

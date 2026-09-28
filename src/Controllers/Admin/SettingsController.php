@@ -207,7 +207,6 @@ class SettingsController
             elseif ($action === 'update_hero') {
                 $targetLang = $_POST['hero_lang'] ?? 'ar';
 
-                // 1. جلب البيانات القديمة الموجودة في القاعدة وفكها كـ Array
                 $rawHeroSetting = $currentSettings['hero'] ?? '';
                 $heroAllLangs = json_decode($rawHeroSetting, true);
                 if (!is_array($heroAllLangs)) {
@@ -220,10 +219,8 @@ class SettingsController
                     }
                 }
 
-                // 2. الاحتفاظ بالصورة القديمة للغة الحالية أو الصورة العامة إن وجدت
                 $oldHeroImg = $heroAllLangs[$targetLang]['img'] ?? ($heroAllLangs['img'] ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg'));
                 
-                // 3. معالجة رفع الصورة الجديدة إن وجدت
                 if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/hero-bg.jpg') {
                         $this->deleteOldImageFile($root_path, $oldHeroImg);
@@ -234,7 +231,6 @@ class SettingsController
                     $heroImg = $oldHeroImg;
                 }
 
-                // 4. التقاط البيانات المرسلة من الفورم بدقة (مع دعم مصفوفة اللغة والحقول الفردية)
                 $postedHero = $_POST['hero'][$targetLang] ?? [];
 
                 $langHeroData = [
@@ -245,25 +241,21 @@ class SettingsController
                     'img'      => $heroImg
                 ];
 
-                // 5. تحديث لغة معينة فقط داخل المصفوفة الشاملة مع الحفاظ التام على اللغات الأخرى (مثل de و en)
                 $heroAllLangs[$targetLang] = $langHeroData;
-                $heroAllLangs['img'] = $heroImg; // تحديث الصورة العامة كاحتياط
+                $heroAllLangs['img'] = $heroImg;
 
-                // 6. الحفظ في القاعدة بصيغة JSON سليمة
                 $jsonVal = json_encode($heroAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
             // 8. تحديث الخدمات (Services) مع دعم اللغات المتعددة (ar, en, de)
             elseif ($action === 'update_services') {
-                $targetLang = $_POST['announcement_lang'] ?? $_POST['lang'] ?? 'ar';
+                $targetLang = $_POST['services_lang'] ?? $_POST['lang'] ?? 'ar';
 
-                // 1. جلب البيانات القديمة للخدمات من القاعدة وفكها كـ Array
                 $rawServicesSetting = $currentSettings['services'] ?? '';
                 $servicesAllLangs = json_decode($rawServicesSetting, true);
                 if (!is_array($servicesAllLangs)) {
                     $servicesAllLangs = [];
-                    // دعم البيانات القديمة إن وجدت بشكل مسطح
                     if (!empty($rawServicesSetting)) {
                         $legacyData = json_decode($rawServicesSetting, true);
                         if (is_array($legacyData)) {
@@ -276,14 +268,11 @@ class SettingsController
                     }
                 }
 
-                // 2. معالجة مصفوفة الخدمات الحالية وصورها للغة المستهدفة
                 $servicesData = $_POST['services'] ?? [];
                 $existingLangData = $servicesAllLangs[$targetLang]['services'] ?? [];
 
                 foreach ($servicesData as $index => $item) {
                     $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
-                    
-                    // الاحتفاظ بالصورة القديمة إن لم يتم رفع صورة جديدة
                     $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
 
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
@@ -298,87 +287,169 @@ class SettingsController
                     unset($servicesData[$index]['old_img']);
                 }
 
-                // 3. تجهيز بيانات اللغة الحالية
                 $servicesAllLangs[$targetLang] = [
                     'services_section_title' => $_POST['services_title'] ?? '',
                     'services_section_desc'  => $_POST['services_desc'] ?? '',
                     'services'               => array_values($servicesData)
                 ];
 
-                // 4. الحفظ في القاعدة بصيغة JSON سليمة تعزل كل لغة لوحدها
                 $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 10. تحديث الأسئلة الشائعة (FAQ)
+            // 10. تحديث الأسئلة الشائعة (FAQ) مع دعم اللغات المتعددة
             elseif ($action === 'update_faq') {
-                $faqTitle = $_POST['faq_title'] ?? 'الأسئلة الشائعة';
-                $stmt->execute(['k' => 'faq_title', 'v' => $faqTitle, 'v_update' => $faqTitle]);
+                $targetLang = $_POST['faq_lang'] ?? $_POST['lang'] ?? 'ar';
+
+                $rawFaqSetting = $currentSettings['faq_items'] ?? '';
+                $faqAllLangs = json_decode($rawFaqSetting, true);
+                if (!is_array($faqAllLangs)) {
+                    $faqAllLangs = [];
+                    if (!empty($rawFaqSetting)) {
+                        $legacyData = json_decode($rawFaqSetting, true);
+                        if (is_array($legacyData)) {
+                            $faqAllLangs['ar'] = [
+                                'faq_title' => $currentSettings['faq_title'] ?? 'الأسئلة الشائعة',
+                                'items'     => $legacyData
+                            ];
+                        }
+                    }
+                }
 
                 $faqData = $_POST['faq'] ?? [];
-                $jsonVal = json_encode(array_values($faqData), JSON_UNESCAPED_UNICODE);
+                $faqAllLangs[$targetLang] = [
+                    'faq_title' => $_POST['faq_title'] ?? 'الأسئلة الشائعة',
+                    'items'     => array_values($faqData)
+                ];
+
+                $jsonVal = json_encode($faqAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 11. تحديث التقييمات (Reviews)
+            // 11. تحديث التقييمات (Reviews) مع دعم اللغات المتعددة
             elseif ($action === 'update_reviews') {
-                $reviewsTitle = $_POST['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
-                $stmt->execute(['k' => 'reviews_title', 'v' => $reviewsTitle, 'v_update' => $reviewsTitle]);
+                $targetLang = $_POST['reviews_lang'] ?? $_POST['lang'] ?? 'ar';
+
+                $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
+                $reviewsAllLangs = json_decode($rawReviewsSetting, true);
+                if (!is_array($reviewsAllLangs)) {
+                    $reviewsAllLangs = [];
+                    if (!empty($rawReviewsSetting)) {
+                        $legacyData = json_decode($rawReviewsSetting, true);
+                        if (is_array($legacyData)) {
+                            $reviewsAllLangs['ar'] = [
+                                'reviews_title' => $currentSettings['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا',
+                                'items'         => $legacyData
+                            ];
+                        }
+                    }
+                }
 
                 $reviewsData = $_POST['reviews'] ?? [];
-                $jsonVal = json_encode(array_values($reviewsData), JSON_UNESCAPED_UNICODE);
+                $reviewsAllLangs[$targetLang] = [
+                    'reviews_title' => $_POST['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا',
+                    'items'         => array_values($reviewsData)
+                ];
+
+                $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 12. تحديث المميزات (Choose)
+            // 12. تحديث المميزات (Choose) مع دعم اللغات المتعددة والصور
             elseif ($action === 'update_choose') {
-                $chooseTitle = $_POST['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
-                $chooseDesc  = $_POST['choose_desc'] ?? '';
-                $stmt->execute(['k' => 'choose_title', 'v' => $chooseTitle, 'v_update' => $chooseTitle]);
-                $stmt->execute(['k' => 'choose_section_desc', 'v' => $chooseDesc, 'v_update' => $chooseDesc]);
+                $targetLang = $_POST['choose_lang'] ?? $_POST['lang'] ?? 'ar';
+
+                $rawChooseSetting = $currentSettings['choose_items'] ?? '';
+                $chooseAllLangs = json_decode($rawChooseSetting, true);
+                if (!is_array($chooseAllLangs)) {
+                    $chooseAllLangs = [];
+                    if (!empty($rawChooseSetting)) {
+                        $legacyData = json_decode($rawChooseSetting, true);
+                        if (is_array($legacyData)) {
+                            $chooseAllLangs['ar'] = [
+                                'choose_title'        => $currentSettings['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي',
+                                'choose_section_desc' => $currentSettings['choose_section_desc'] ?? '',
+                                'items'               => $legacyData
+                            ];
+                        }
+                    }
+                }
 
                 $chooseData = $_POST['choose'] ?? [];
+                $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
+
                 foreach ($chooseData as $index => $item) {
                     $fileToCheck = $_FILES['choose_img_' . $index] ?? ($_FILES['choose'][$index]['img'] ?? null);
-                    
+                    $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
+
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($item['old_img'])) {
-                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        if (!empty($oldImg)) {
+                            $this->deleteOldImageFile($root_path, $oldImg);
                         }
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $chooseData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
-                        $chooseData[$index]['img'] = $item['old_img'] ?? '';
+                        $chooseData[$index]['img'] = $oldImg;
                     }
                     unset($chooseData[$index]['old_img']);
                 }
-                $jsonVal = json_encode(array_values($chooseData), JSON_UNESCAPED_UNICODE);
+
+                $chooseAllLangs[$targetLang] = [
+                    'choose_title'        => $_POST['choose_title'] ?? '',
+                    'choose_section_desc' => $_POST['choose_desc'] ?? '',
+                    'items'               => array_values($chooseData)
+                ];
+
+                $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 13. تحديث الدليل الشامل (Guide)
+            // 13. تحديث الدليل الشامل (Guide) مع دعم اللغات المتعددة والصور
             elseif ($action === 'update_guide') {
-                $guideTitle = $_POST['guide_title'] ?? 'دليل بيتهوفن الشامل';
-                $guideDesc  = $_POST['guide_desc'] ?? '';
-                $stmt->execute(['k' => 'guide_title', 'v' => $guideTitle, 'v_update' => $guideTitle]);
-                $stmt->execute(['k' => 'guide_desc', 'v' => $guideDesc, 'v_update' => $guideDesc]);
+                $targetLang = $_POST['guide_lang'] ?? $_POST['lang'] ?? 'ar';
+
+                $rawGuideSetting = $currentSettings['guide_items'] ?? '';
+                $guideAllLangs = json_decode($rawGuideSetting, true);
+                if (!is_array($guideAllLangs)) {
+                    $guideAllLangs = [];
+                    if (!empty($rawGuideSetting)) {
+                        $legacyData = json_decode($rawGuideSetting, true);
+                        if (is_array($legacyData)) {
+                            $guideAllLangs['ar'] = [
+                                'guide_title' => $currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل',
+                                'guide_desc'  => $currentSettings['guide_desc'] ?? '',
+                                'items'       => $legacyData
+                            ];
+                        }
+                    }
+                }
 
                 $guideData = $_POST['guide'] ?? [];
+                $existingLangData = $guideAllLangs[$targetLang]['items'] ?? [];
+
                 foreach ($guideData as $index => $item) {
                     $fileToCheck = $_FILES['guide_img_' . $index] ?? ($_FILES['guide'][$index]['img'] ?? null);
-                    
+                    $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
+
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($item['old_img'])) {
-                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        if (!empty($oldImg)) {
+                            $this->deleteOldImageFile($root_path, $oldImg);
                         }
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $guideData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
-                        $guideData[$index]['img'] = $item['old_img'] ?? '';
+                        $guideData[$index]['img'] = $oldImg;
                     }
                     unset($guideData[$index]['old_img']);
                 }
-                $jsonVal = json_encode(array_values($guideData), JSON_UNESCAPED_UNICODE);
+
+                $guideAllLangs[$targetLang] = [
+                    'guide_title' => $_POST['guide_title'] ?? '',
+                    'guide_desc'  => $_POST['guide_desc'] ?? '',
+                    'items'       => array_values($guideData)
+                ];
+
+                $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
             else {

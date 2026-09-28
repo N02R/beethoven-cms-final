@@ -1,3 +1,6 @@
+<?php
+// /src/Views/admin/admin_header_modals.php
+?>
 <style>
     /* Modal Glassmorphism & Custom Styling */
     .custom-modal .modal-content { 
@@ -373,7 +376,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 4. Menu Edit Modal -->
-<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -431,7 +434,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 5. Lang Edit Modal -->
-<div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="langEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -666,7 +669,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 8. Choose Edit Modal -->
-<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -748,7 +751,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 9. Reviews Edit Modal -->
-<div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -800,7 +803,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 10. Guide Edit Modal -->
-<div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -884,7 +887,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 11. FAQ Edit Modal -->
-<div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -940,7 +943,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 12. Footer Edit Modal -->
-<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -1152,11 +1155,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.className = 'p-3 shadow-sm mb-3 menu-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'menu_row_' + menuCount;
+        // تصحيح مفتاح إدخال المنيو ليتطابق ديناميكياً مع لغة النظام الحالية
+        const currentLang = '<?php echo $current_lang; ?>';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
-                    <input type="text" class="form-control menu-title" name="menu[${menuCount}][title]" placeholder="عنوان الرابط">
+                    <input type="text" class="form-control menu-title" name="menu[${menuCount}][${currentLang}][title]" placeholder="عنوان الرابط">
                 </div>
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>

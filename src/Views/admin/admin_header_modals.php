@@ -487,14 +487,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 6. Hero Edit Modal -->
-<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="heroEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-                    <i class="bi bi-gear text-primary"></i> <?php echo __('edit_hero_section') ?? 'تعديل قسم البداية (Hero)'; ?> (<?php echo strtoupper($current_lang); ?>)
+                    <i class="bi bi-gear text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo $lang['edit_hero_section'] ?? 'تعديل قسم البداية (Hero)'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="heroEditForm" enctype="multipart/form-data" class="admin-settings-form">
@@ -525,36 +526,46 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <!-- العنوان الخاص باللغة الحالية -->
-                            <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_title') ?? 'العنوان'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo $lang['hero_title'] ?? $lang['title'] ?? 'العنوان'; ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($val_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <!-- النص الوصفي الخاص باللغة الحالية -->
-                            <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_desc') ?? 'النص الوصفي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo $lang['hero_desc'] ?? $lang['description'] ?? 'النص الوصفي'; ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
                                 <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($val_desc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             
                             <!-- نص الزر الخاص باللغة الحالية -->
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_text') ?? 'نص الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <div class="col-md-6 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo $lang['hero_btn_text'] ?? $lang['button_text'] ?? 'نص الزر'; ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_txt, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <!-- رابط الزر -->
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <div class="col-md-6 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo $lang['hero_btn_url'] ?? $lang['button_url'] ?? 'رابط الزر'; ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_url, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <!-- صورة الخلفية -->
-                            <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_bg_image') ?? 'صورة الخلفية'; ?></label>
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo $lang['hero_bg_image'] ?? $lang['background_image'] ?? 'صورة الخلفية'; ?>
+                                </label>
                                 
                                 <?php if (!empty($current_img_val) && $current_img_val !== 'assets/img/hero-bg.jpg'): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                        <span class="d-block small text-muted mb-2"><?php echo __('current_image') ?? 'الصورة الحالية:'; ?></span>
+                                        <span class="d-block small text-muted mb-2"><?php echo $lang['current_image'] ?? 'الصورة الحالية:'; ?></span>
                                         <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($current_img_val), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
@@ -570,8 +581,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="heroEditForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
+                <button type="submit" form="heroEditForm" class="btn-premium"><?php echo $lang['save_changes'] ?? 'حفظ التغييرات'; ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo $lang['cancel'] ?? 'إلغاء'; ?></button>
             </div>
         </div>
     </div>

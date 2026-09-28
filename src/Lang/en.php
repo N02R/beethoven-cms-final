@@ -51,16 +51,16 @@ return [
     'delete_link'             => 'Delete Link',
     'add_new_link'            => 'Add New Link',
     
-        // Sprachen verwalten Modal
-    'manage_languages'        => 'Sprachen verwalten',
-    'language_name'           => 'Sprachname',
-    'language_name_placeholder'=> 'Sprachname',
+    // Manage Languages Modal
+    'manage_languages'        => 'Manage Languages',
+    'language_name'           => 'Language Name',
+    'language_name_placeholder'=> 'Language Name',
     'language_url'            => 'URL',
     'language_url_placeholder'=> 'URL',
-    'delete_language'         => 'Sprache löschen',
-    'add_new_language'        => 'Neue Sprache hinzufügen',
+    'delete_language'         => 'Delete Language',
+    'add_new_language'        => 'Add New Language',
     
-        // Hero Section Modal
+    // Hero Section Modal
     'edit_hero_section'       => 'Edit Hero Section',
     'hero_title'              => 'Title',
     'hero_desc'               => 'Description',
@@ -69,5 +69,14 @@ return [
     'hero_bg_image'           => 'Background Image',
     'current_image'           => 'Current Image:',
 
-
+    // Services Modal
+    'edit_services'           => 'Edit Services',
+    'services_section_title'  => 'Main Section Title',
+    'services_section_desc'   => 'Section Description (Optional)',
+    'services_desc_placeholder'=> 'Add a description here or leave it blank to hide',
+    'title'                   => 'Title',
+    'url'                     => 'URL',
+    'image_icon'              => 'Image / Icon',
+    'delete_service'          => 'Delete Service',
+    'add_new_service'         => 'Add New Service',
 ];

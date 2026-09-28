@@ -50,7 +50,8 @@ return [
     'order'                   => 'الترتيب',
     'delete_link'             => 'حذف الرابط',
     'add_new_link'            => 'إضافة رابط جديد',
-        // ترجمات مودل إدارة اللغات
+
+    // ترجمات مودل إدارة اللغات
     'manage_languages'        => 'إدارة اللغات',
     'language_name'           => 'اسم اللغة',
     'language_name_placeholder'=> 'اسم اللغة',
@@ -68,4 +69,14 @@ return [
     'hero_bg_image'           => 'صورة الخلفية',
     'current_image'           => 'الصورة الحالية:',
 
+    // ترجمات مودل الخدمات (Services Modal)
+    'edit_services'           => 'تعديل الخدمات',
+    'services_section_title'  => 'عنوان القسم الرئيسي',
+    'services_section_desc'   => 'وصف القسم (اختياري)',
+    'services_desc_placeholder'=> 'أضف وصفاً هنا أو اتركه فارغاً للإخفاء',
+    'title'                   => 'العنوان',
+    'url'                     => 'الرابط',
+    'image_icon'              => 'الصورة / الأيقونة',
+    'delete_service'          => 'حذف الخدمة',
+    'add_new_service'         => 'إضافة خدمة جديدة',
 ];

@@ -51,7 +51,7 @@ return [
     'delete_link'             => 'Link löschen',
     'add_new_link'            => 'Neuen Link hinzufügen',
     
-        // Sprachen verwalten Modal
+    // Sprachen verwalten Modal
     'manage_languages'        => 'Sprachen verwalten',
     'language_name'           => 'Sprachname',
     'language_name_placeholder'=> 'Sprachname',
@@ -60,7 +60,7 @@ return [
     'delete_language'         => 'Sprache löschen',
     'add_new_language'        => 'Neue Sprache hinzufügen',
     
-        // Hero-Sektion Modal
+    // Hero-Sektion Modal
     'edit_hero_section'       => 'Hero-Bereich bearbeiten',
     'hero_title'              => 'Titel',
     'hero_desc'               => 'Beschreibung',
@@ -69,5 +69,14 @@ return [
     'hero_bg_image'           => 'Hintergrundbild',
     'current_image'           => 'Aktuelles Bild:',
 
-
+    // Services Modal
+    'edit_services'           => 'Dienstleistungen bearbeiten',
+    'services_section_title'  => 'Hauptabschnittstitel',
+    'services_section_desc'   => 'Abschnittsbeschreibung (Optional)',
+    'services_desc_placeholder'=> 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer, um sie auszublenden',
+    'title'                   => 'Titel',
+    'url'                     => 'URL',
+    'image_icon'              => 'Bild / Symbol',
+    'delete_service'          => 'Dienstleistung löschen',
+    'add_new_service'         => 'Neue Dienstleistung hinzufügen',
 ];

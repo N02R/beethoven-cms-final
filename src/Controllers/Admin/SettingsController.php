@@ -254,29 +254,59 @@ class SettingsController
                 $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 
-            // 8. تحديث الخدمات (Services)
+            // 8. تحديث الخدمات (Services) مع دعم اللغات المتعددة (ar, en, de)
             elseif ($action === 'update_services') {
-                $servTitle = $_POST['services_title'] ?? '';
-                $servDesc  = $_POST['services_desc'] ?? '';
-                $stmt->execute(['k' => 'services_section_title', 'v' => $servTitle, 'v_update' => $servTitle]);
-                $stmt->execute(['k' => 'services_section_desc', 'v' => $servDesc, 'v_update' => $servDesc]);
+                $targetLang = $_POST['announcement_lang'] ?? $_POST['lang'] ?? 'ar';
 
+                // 1. جلب البيانات القديمة للخدمات من القاعدة وفكها كـ Array
+                $rawServicesSetting = $currentSettings['services'] ?? '';
+                $servicesAllLangs = json_decode($rawServicesSetting, true);
+                if (!is_array($servicesAllLangs)) {
+                    $servicesAllLangs = [];
+                    // دعم البيانات القديمة إن وجدت بشكل مسطح
+                    if (!empty($rawServicesSetting)) {
+                        $legacyData = json_decode($rawServicesSetting, true);
+                        if (is_array($legacyData)) {
+                            $servicesAllLangs['ar'] = [
+                                'services_section_title' => $currentSettings['services_section_title'] ?? 'خدماتنا المميزة',
+                                'services_section_desc'  => $currentSettings['services_section_desc'] ?? '',
+                                'services'               => $legacyData
+                            ];
+                        }
+                    }
+                }
+
+                // 2. معالجة مصفوفة الخدمات الحالية وصورها للغة المستهدفة
                 $servicesData = $_POST['services'] ?? [];
+                $existingLangData = $servicesAllLangs[$targetLang]['services'] ?? [];
+
                 foreach ($servicesData as $index => $item) {
                     $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
                     
+                    // الاحتفاظ بالصورة القديمة إن لم يتم رفع صورة جديدة
+                    $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
+
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($item['old_img'])) {
-                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                        if (!empty($oldImg)) {
+                            $this->deleteOldImageFile($root_path, $oldImg);
                         }
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
                     } else {
-                        $servicesData[$index]['img'] = $item['old_img'] ?? '';
+                        $servicesData[$index]['img'] = $oldImg;
                     }
                     unset($servicesData[$index]['old_img']);
                 }
-                $jsonVal = json_encode(array_values($servicesData), JSON_UNESCAPED_UNICODE);
+
+                // 3. تجهيز بيانات اللغة الحالية
+                $servicesAllLangs[$targetLang] = [
+                    'services_section_title' => $_POST['services_title'] ?? '',
+                    'services_section_desc'  => $_POST['services_desc'] ?? '',
+                    'services'               => array_values($servicesData)
+                ];
+
+                // 4. الحفظ في القاعدة بصيغة JSON سليمة تعزل كل لغة لوحدها
+                $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
 

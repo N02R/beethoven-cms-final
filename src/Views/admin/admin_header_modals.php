@@ -501,23 +501,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="action" value="update_hero">
                     <!-- حقل حماية الـ CSRF -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
-                    <!-- حقل إلزامي لتحديد اللغة المستهدفة عند الحفظ -->
                     <input type="hidden" name="hero_lang" value="<?php echo htmlspecialchars($current_lang); ?>">
                     
                     <?php 
-                    $hero_raw = $currentSettings['hero'] ?? '';
-                    $hero_all = json_decode($hero_raw, true) ?? [];
+                    $hero_raw = $currentSettings['hero'] ?? ($data['hero'] ?? '');
+                    if (is_string($hero_raw)) {
+                        $hero_all = json_decode($hero_raw, true) ?? [];
+                    } else {
+                        $hero_all = is_array($hero_raw) ? $hero_raw : [];
+                    }
                     
-                    // استخراج بيانات اللغة الحالية بدقة بناءً على الهيكل المخزن (ar, en, de) أو الاعتماد على البيانات القديمة المسطحة
-                    $h = $hero_all[$current_lang] ?? [];
+                    // استخراج بيانات اللغة الحالية أو البدائل المسطحة القديمة
+                    $h = isset($hero_all[$current_lang]) && is_array($hero_all[$current_lang]) ? $hero_all[$current_lang] : [];
                     
-                    // استخراج الحقول الخاصة باللغة الحالية أو البدائل المسطحة القديمة
                     $val_title   = $h['title'] ?? ($hero_all['title'] ?? '');
                     $val_desc    = $h['desc'] ?? ($hero_all['desc'] ?? '');
                     $val_btn_txt = $h['btn_text'] ?? ($hero_all['btn_text'] ?? '');
                     $val_btn_url = $h['btn_url'] ?? ($hero_all['btn_url'] ?? '#');
                     
-                    // تحديد الصورة الحالية (البحث أولاً في مصفوفة اللغة الحالية، ثم في المستوى العام، مع الاحتياطي الافتراضي)
                     $current_img_val = $h['img'] ?? ($hero_all['img'] ?? 'assets/img/hero-bg.jpg');
                     ?>
                     
@@ -541,7 +542,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_txt, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
-                            <!-- رابط الزر (تم جعله يتبع اللغة أيضاً لضمان حفظه بشكل سليم داخل مصفوفة اللغة الحالية) -->
+                            <!-- رابط الزر -->
                             <div class="col-md-6">
                                 <label class="small fw-bold mb-1 text-secondary"><?php echo __('hero_btn_url') ?? 'رابط الزر'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_url, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
@@ -562,7 +563,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <?php endif; ?>
 
                                 <input type="file" class="form-control" name="hero_img" accept="image/*">
-                                <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars(safe_admin_string($current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="hero[<?php echo $current_lang; ?>][img]" value="<?php echo htmlspecialchars(safe_admin_string($current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     </div>

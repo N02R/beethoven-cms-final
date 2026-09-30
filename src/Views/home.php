@@ -97,24 +97,16 @@
 
   <div class="custom-container">
     <?php
-    // جلب ومعالجة عنوان القسم
-    $sec_title_raw = get_setting('services_section_title', 'خدماتنا المميزة');
-    if (is_string($sec_title_raw) && str_starts_with(trim($sec_title_raw), '{')) {
-        $sec_title_arr = json_decode($sec_title_raw, true) ?? [];
-        $sec_title = $sec_title_arr[$current_lang] ?? $sec_title_arr['de'] ?? $sec_title_arr['ar'] ?? 'خدماتنا المميزة';
-    } else {
-        $sec_title = $sec_title_raw;
-    }
-
-    // جلب ومعالجة وصف القسم
-    $sec_desc_raw = get_setting('services_section_desc', '');
-    $sec_desc = '';
-    if (is_string($sec_desc_raw) && str_starts_with(trim($sec_desc_raw), '{')) {
-        $sec_desc_arr = json_decode($sec_desc_raw, true) ?? [];
-        $sec_desc = $sec_desc_arr[$current_lang] ?? $sec_desc_arr['de'] ?? $sec_desc_arr['ar'] ?? '';
-    } else {
-        $sec_desc = $sec_desc_raw;
-    }
+    // جلب بيانات الخدمات الموحدة للغة الحالية (عبر HomeModel أو دالة get_setting)
+    $services_raw = get_setting('services', []);
+    $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : $services_raw;
+    
+    // استخراج بيانات اللغة الحالية مع بدائل آمنة
+    $lang_data = $services_all[$current_lang] ?? ($services_all['de'] ?? ($services_all['ar'] ?? []));
+    
+    $sec_title = $lang_data['title'] ?? 'خدماتنا المميزة';
+    $sec_desc  = $lang_data['desc'] ?? '';
+    $services  = $lang_data['items'] ?? [];
     ?>
 
     <h2 class="mb-3 sec-title">
@@ -128,15 +120,9 @@
     <?php endif; ?>
 
     <div class="row g-4">
-      <?php
-      $services_raw = get_setting('services', []);
-      $services = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : $services_raw;
-      
-      foreach ($services as $service): 
+      <?php foreach ($services as $service): 
         $service_img = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
-        
-        // استخراج عنوان الخدمة حسب اللغة الحالية مع بدائل آمنة
-        $service_title = $service[$current_lang]['title'] ?? $service['de']['title'] ?? $service['ar']['title'] ?? ($service['title'] ?? 'عنوان الخدمة');
+        $service_title = $service['title'] ?? 'عنوان الخدمة';
       ?>
         <div class="col-lg-6 col-md-6 col-sm-12">
           <a href="<?php echo htmlspecialchars($service['url'] ?? '#'); ?>" class="card-link text-decoration-none d-block">
@@ -155,7 +141,6 @@
   </div>
 </section>
 <!-- services end -->
-
 
 <!-- choose start -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">

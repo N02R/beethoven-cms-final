@@ -1375,4 +1375,230 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
         col3Count++;
     }
+        let menuCount = <?php echo is_array($menu_links ?? null) ? count($menu_links) : 0; ?>;
+    function addMenuRow() {
+        const container = document.getElementById('menuRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm menu-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'menu_row_' + menuCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (<?php echo strtoupper($current_lang); ?>)</label>
+                    <input type="text" class="form-control menu-title" name="menu[${menuCount}][<?php echo $current_lang; ?>][title]" placeholder="عنوان الرابط">
+                </div>
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                    <input type="text" class="form-control menu-url" name="menu[${menuCount}][url]" placeholder="الرابط (URL)">
+                </div>
+                <div class="col-md-2">
+                    <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
+                    <input type="number" class="form-control menu-order" name="menu[${menuCount}][order]" value="${menuCount}" placeholder="الترتيب">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${menuCount}')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        menuCount++;
+    }
+
+    let langCount = <?php echo is_array($data['languages'] ?? null) ? count($data['languages']) : 0; ?>;
+    function addLangRow() {
+        const container = document.getElementById('langRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm lang-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'lang_row_' + langCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <input type="text" class="form-control lang-name" name="lang[${langCount}][name]" placeholder="اسم اللغة">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control lang-url" name="lang[${langCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${langCount}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        langCount++;
+    }
+
+    let serviceCount = <?php echo is_array($data['services'] ?? null) ? count($data['services']) : 0; ?>;
+    function addServiceRow() {
+        const container = document.getElementById('servicesRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm service-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'service_row_' + serviceCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control service-title" name="services[${serviceCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control service-url" name="services[${serviceCount}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <input type="file" class="form-control service-file" name="service_img_${serviceCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="service-old-img" name="services[${serviceCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${serviceCount}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        serviceCount++;
+    }
+
+    let chooseCount = <?php echo is_array($data['choose_items'] ?? null) ? count($data['choose_items']) : 0; ?>;
+    function addChooseRow() {
+        const container = document.getElementById('chooseRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm choose-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'choose_row_' + chooseCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control choose-title" name="choose[${chooseCount}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control choose-desc" name="choose[${chooseCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <input type="file" class="form-control choose-file" name="choose_img_${chooseCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="choose-old-img" name="choose[${chooseCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${chooseCount}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        chooseCount++;
+    }
+
+    let reviewCount = <?php echo is_array($data['reviews_items'] ?? null) ? count($data['reviews_items']) : 0; ?>;
+    function addReviewRow() {
+        const container = document.getElementById('reviewsRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm review-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'rev_row_' + reviewCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
+                    <input type="text" class="form-control review-url" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب (Embed URL)">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${reviewCount}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        reviewCount++;
+    }
+
+    let guideCount = <?php echo is_array($data['guide_items'] ?? null) ? count($data['guide_items']) : 0; ?>;
+    function addGuideRow() {
+        const container = document.getElementById('guideRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm guide-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'guide_row_' + guideCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                    <input type="text" class="form-control guide-title" name="guide[${guideCount}][title]" placeholder="عنوان المقال">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                    <input type="text" class="form-control guide-url" name="guide[${guideCount}][url]" placeholder="رابط الصفحة">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${guideCount}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                    <input type="file" class="form-control guide-file" name="guide_img_${guideCount}" accept="image/*">
+                    <input type="hidden" class="guide-old-img" name="guide[${guideCount}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${guideCount}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        guideCount++;
+    }
+
+    let faqCount = <?php echo is_array($data['faq_items'] ?? null) ? count($data['faq_items']) : 0; ?>;
+    function addFaqRow() {
+        const container = document.getElementById('faqRowsContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm faq-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'faq_row_' + faqCount;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                    <input type="text" class="form-control faq-question" name="faq[${faqCount}][question]" placeholder="السؤال">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${faqCount}][answer]" placeholder="الإجابة">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${faqCount}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        faqCount++;
+    }
+
+    let col3Count = <?php echo is_array($data['footer_col3_links'] ?? null) ? count($data['footer_col3_links']) : 0; ?>;
+    function addCol3Link() {
+        const container = document.getElementById('col3LinksContainer');
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm footer-col3-item';
+        div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'col3_' + col3Count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
+                    <input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                </div>
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
+                    <input type="hidden" class="footer-col3-old-img" name="col3[${col3Count}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+        col3Count++;
+    }
+
 </script>

@@ -256,20 +256,10 @@ class SettingsController
                 $servicesAllLangs = json_decode($rawServicesSetting, true);
                 if (!is_array($servicesAllLangs)) {
                     $servicesAllLangs = [];
-                    if (!empty($rawServicesSetting)) {
-                        $legacyData = json_decode($rawServicesSetting, true);
-                        if (is_array($legacyData)) {
-                            $servicesAllLangs['ar'] = [
-                                'services_section_title' => $currentSettings['services_section_title'] ?? 'خدماتنا المميزة',
-                                'services_section_desc'  => $currentSettings['services_section_desc'] ?? '',
-                                'services'               => $legacyData
-                            ];
-                        }
-                    }
                 }
 
                 $servicesData = $_POST['services'] ?? [];
-                $existingLangData = $servicesAllLangs[$targetLang]['services'] ?? [];
+                $existingLangData = $servicesAllLangs[$targetLang]['items'] ?? [];
 
                 foreach ($servicesData as $index => $item) {
                     $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
@@ -287,10 +277,11 @@ class SettingsController
                     unset($servicesData[$index]['old_img']);
                 }
 
+                // توحيد المفاتيح (title, desc, items) لتتطابق تماماً مع HomeModel
                 $servicesAllLangs[$targetLang] = [
-                    'services_section_title' => $_POST['services_title'] ?? '',
-                    'services_section_desc'  => $_POST['services_desc'] ?? '',
-                    'services'               => array_values($servicesData)
+                    'title' => $_POST['services_title'] ?? '',
+                    'desc'  => $_POST['services_desc'] ?? '',
+                    'items' => array_values($servicesData)
                 ];
 
                 $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);

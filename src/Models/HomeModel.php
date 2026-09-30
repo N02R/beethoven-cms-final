@@ -23,8 +23,8 @@ class HomeModel {
             }
             $decoded = json_decode($settings[$key], true);
             
-            // إذا كان الـ JSON مخزناً بشكل تدعم اللغات مثل ['ar' => [...], 'en' => [...]]
-            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+            // إذا كان الـ JSON مخزناً بشكل يدعم اللغات مثل ['ar' => [...], 'en' => [...]]
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de']))) {
                 return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
             }
             
@@ -37,16 +37,25 @@ class HomeModel {
             }
             $decoded = json_decode($settings[$key], true);
             
-            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']))) {
+            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de']))) {
                 return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
             }
             
             return $settings[$key] ?? $default;
         };
 
+        // جلب بيانات الخدمات وتصفيتها حسب اللغة الحالية
+        $services_raw = $getLangData('services', []);
+        $services_data = [
+            'title' => $services_raw['title'] ?? 'خدماتنا المميزة',
+            'desc'  => $services_raw['desc'] ?? '',
+            'items' => $services_raw['items'] ?? []
+        ];
+
         // إرجاع مصفوفة منسقة للغة الحالية
         return [
             'hero'                  => $getLangData('hero', []),
+            'services_section'      => $services_data, // تم دمج العنوان والوصف والعناصر هنا بشكل أنيق
             'choose_title'          => $getLangString('choose_title', ''),
             'choose_section_desc'   => $getLangString('choose_section_desc', ''),
             'choose_items'          => $getLangData('choose_items', []),

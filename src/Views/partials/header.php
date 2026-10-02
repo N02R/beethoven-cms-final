@@ -33,6 +33,8 @@ $menu_links      = get_setting('menu_links', []);
 if (is_string($menu_links)) {
     $menu_links = json_decode($menu_links, true) ?? [];
 }
+// إعادة ترقيم المصفوفة لمنع مشاكل المفاتيح المفقودة وتأمين العرض بعد الحذف أو التعديل
+$menu_links = array_values(is_array($menu_links) ? $menu_links : []);
 
 $social_links    = get_setting('social_links', []);
 if (is_string($social_links)) {
@@ -201,7 +203,16 @@ $is_visible = (($status === 'Published' || $status === 'active' || $hasText || $
           <ul class="navbar-nav gap-3">
             <?php foreach ($menu_links as $link): 
                 $link_url = ltrim($link['url'] ?? '', '/');
-                $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
+                
+                // استخراج عنوان القائمة بدعم متعدد اللغات شامل ومحمي
+                $link_title = '';
+                if (isset($link[$current_lang]['title'])) {
+                    $link_title = $link[$current_lang]['title'];
+                } elseif (isset($link['title'])) {
+                    $link_title = is_array($link['title']) ? ($link['title'][$current_lang] ?? $link['title']['ar'] ?? '') : $link['title'];
+                } else {
+                    $link_title = $link['de']['title'] ?? $link['ar']['title'] ?? '';
+                }
             ?>
                 <li class="nav-item">
                   <a class="nav-link" href="/<?php echo $current_lang_code . '/' . $link_url; ?>">
@@ -258,7 +269,16 @@ $is_visible = (($status === 'Published' || $status === 'active' || $hasText || $
         <ul class="navbar-nav">
             <?php foreach ($menu_links as $link): 
                 $link_url = ltrim($link['url'] ?? '', '/');
-                $link_title = $link[$current_lang]['title'] ?? $link['de']['title'] ?? $link['ar']['title'] ?? ($link['title'] ?? '');
+                
+                // استخراج عنوان القائمة بدعم متعدد اللغات شامل ومحمي
+                $link_title = '';
+                if (isset($link[$current_lang]['title'])) {
+                    $link_title = $link[$current_lang]['title'];
+                } elseif (isset($link['title'])) {
+                    $link_title = is_array($link['title']) ? ($link['title'][$current_lang] ?? $link['title']['ar'] ?? '') : $link['title'];
+                } else {
+                    $link_title = $link['de']['title'] ?? $link['ar']['title'] ?? '';
+                }
             ?>
                 <li class="nav-item">
                   <a class="nav-link" href="/<?php echo $current_lang_code . '/' . $link_url; ?>">

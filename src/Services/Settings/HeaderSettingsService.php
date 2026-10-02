@@ -82,22 +82,43 @@ class HeaderSettingsService
             $stmt->execute(['k' => 'social_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 3. تحديث القائمة الرئيسية (Menu) مع دعم اللغات الحالية (ar, en, de) والترتيب
+        // 3. تحديث القائمة الرئيسية (Menu) حسب اللغة الحالية
         elseif ($action === 'update_menu') {
-            $menuInput = $_POST['menu'] ?? [];
+            $targetLang = $_POST['menu_lang'] ?? 'ar';
+            $menuInput  = $_POST['menu'] ?? [];
+
+            // جلب البيانات القديمة لتحديث اللغة المستهدفة فقط
+            $oldMenuRaw = $currentSettings['menu_links'] ?? '[]';
+            $oldMenuData = json_decode($oldMenuRaw, true);
+            if (!is_array($oldMenuData)) {
+                $oldMenuData = [];
+            }
+
             $formattedMenu = [];
 
-            foreach ($menuInput as $item) {
+            foreach ($menuInput as $index => $item) {
+                $oldItem = $oldMenuData[$index] ?? [];
+
+                // إعداد مصفوفة اللغات مع الحفاظ على البيانات السابقة
+                $itemLangs = [
+                    'ar' => ['title' => trim($oldItem['ar']['title'] ?? '')],
+                    'en' => ['title' => trim($oldItem['en']['title'] ?? '')],
+                    'de' => ['title' => trim($oldItem['de']['title'] ?? '')],
+                ];
+
+                // تحديث عنوان اللغة الحالية بالمدخل الجديد
+                $itemLangs[$targetLang]['title'] = trim($item['title'] ?? '');
+
                 $formattedMenu[] = [
-                    'ar' => ['title' => trim($item['ar']['title'] ?? '')],
-                    'en' => ['title' => trim($item['en']['title'] ?? '')],
-                    'de' => ['title' => trim($item['de']['title'] ?? '')],
-                    'url' => trim($item['url'] ?? ''),
-                    'order' => (int)($item['order'] ?? 0)
+                    'ar'    => $itemLangs['ar'],
+                    'en'    => $itemLangs['en'],
+                    'de'    => $itemLangs['de'],
+                    'url'   => trim($item['url'] ?? ($oldItem['url'] ?? '')),
+                    'order' => (int)($item['order'] ?? $index)
                 ];
             }
 
-            // ترتيب العناصر بحسب الترتيب المحدد إن وجد
+            // ترتيب عناصر القائمة
             usort($formattedMenu, function ($a, $b) {
                 return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
             });

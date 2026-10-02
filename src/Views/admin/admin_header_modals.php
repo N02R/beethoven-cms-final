@@ -375,47 +375,48 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
 <!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-                    <i class="bi bi-list-nested text-primary"></i> <?php echo function_exists('__') ? (__('manage_main_menu') ?: 'إدارة القائمة الرئيسية') : 'إدارة القائمة الرئيسية'; ?>
+                    <i class="bi bi-list-nested text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo function_exists('__') ? (__('manage_main_menu') ?: 'إدارة القائمة الرئيسية') : 'إدارة القائمة الرئيسية'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             
             <div class="modal-body p-4">
                 <form id="menuLinksForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_menu">
+                    <input type="hidden" name="menu_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="menuRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
                         $menuLinksData = is_array($menu_links ?? null) ? $menu_links : [];
                         foreach ($menuLinksData as $index => $link): 
-                            $title_ar  = $link['ar']['title'] ?? (is_string($link['title'] ?? null) ? $link['title'] : ($link['title']['ar'] ?? ''));
-                            $title_en  = $link['en']['title'] ?? ($link['title']['en'] ?? '');
-                            $title_de  = $link['de']['title'] ?? ($link['title']['de'] ?? '');
+                            // جلب عنوان الرابط للغة الحالية
+                            $title_val = '';
+                            if (isset($link[$current_lang]['title'])) {
+                                $title_val = $link[$current_lang]['title'];
+                            } elseif (isset($link['title'])) {
+                                $title_val = is_array($link['title']) ? ($link['title'][$current_lang] ?? reset($link['title'])) : $link['title'];
+                            } elseif (isset($link['ar']['title'])) {
+                                $title_val = $link['ar']['title'];
+                            }
+
                             $url_val   = $link['url'] ?? '';
                             $order_val = $link['order'] ?? $index;
                         ?>
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
-                                <div class="col-md-3">
-                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (AR)</label>
-                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][ar][title]" value="<?php echo htmlspecialchars($title_ar, ENT_QUOTES, 'UTF-8'); ?>" placeholder="العربية">
+                                <div class="col-md-6 <?php echo $modal_align; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['title'] ?? 'عنوان الرابط'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars((string)$title_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['title'] ?? 'العنوان'; ?>">
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (EN)</label>
-                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][en][title]" value="<?php echo htmlspecialchars($title_en, ENT_QUOTES, 'UTF-8'); ?>" placeholder="English">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (DE)</label>
-                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][de][title]" value="<?php echo htmlspecialchars($title_de, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Deutsch">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
-                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($url_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="url">
+                                <div class="col-md-5 <?php echo $modal_align; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['url'] ?? 'الرابط (URL)'; ?></label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars((string)$url_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="url">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
                                     <input type="hidden" name="menu[<?php echo $index; ?>][order]" value="<?php echo $order_val; ?>">
@@ -427,7 +428,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo $lang['add_new_link'] ?? 'إضافة رابط جديد'; ?>
                     </button>
                 </form>
             </div>
@@ -1158,6 +1159,33 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
+    function addMenuRow() {
+        const container = document.getElementById('menuRowsContainer');
+        const count = container.querySelectorAll('.menu-row-item').length;
+        const currentLang = '<?php echo $current_lang; ?>'.toUpperCase();
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 menu-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'menu_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6 <?php echo $modal_align; ?>">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang})</label>
+                    <input type="text" class="form-control" name="menu[${count}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-5 <?php echo $modal_align; ?>">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                    <input type="text" class="form-control" name="menu[${count}][url]" placeholder="url">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <input type="hidden" name="menu[${count}][order]" value="${count}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${count}')" title="حذف"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         const count = container.querySelectorAll('.choose-row-item').length;
@@ -1398,3 +1426,4 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         });
     });
 </script>
+

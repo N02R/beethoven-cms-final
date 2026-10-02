@@ -169,7 +169,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="socialLinksForm" enctype="multipart/form-data">
+                <form id="socialLinksForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
@@ -193,7 +193,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($link['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Social Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($link['img']) : $link['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Social Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" class="form-control social-file" name="social_img_<?php echo $index; ?>" accept="image/*">
@@ -233,7 +233,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" enctype="multipart/form-data">
+                <form id="logoEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
                     
@@ -251,7 +251,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
                     <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($site_logo_path ?? ''), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Site Logo" style="max-height: 90px; object-fit: contain;">
+                            <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($site_logo_path ?? '') : ($site_logo_path ?? ''), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Site Logo" style="max-height: 90px; object-fit: contain;">
                         </div>
                     </div>
                     
@@ -282,13 +282,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="announcementEditForm" enctype="multipart/form-data">
+                <form id="announcementEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_announcement">
                     <input type="hidden" name="announcement_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                        // استخراج إعلان اللغة الحالية بأمان من مصفوفة اللغات
                         $currentAd = is_array($data['announcement'] ?? null) ? ($data['announcement'][$current_lang] ?? ($data['announcement'] ?? [])) : [];
                     ?>
                     <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
@@ -351,7 +350,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <label class="small fw-bold mb-1"><?php echo $lang['upload_ad_image'] ?? 'ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):'; ?></label>
                             <?php if (!empty($currentAd['image_path'])): ?>
                                 <div class="mb-2 p-2 bg-light rounded border d-inline-block">
-                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($currentAd['image_path']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($currentAd['image_path']) : $currentAd['image_path'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="ad_image" style="height: auto; padding: 10px 16px;" accept="image/png, image/jpeg, image/webp">
@@ -381,7 +380,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-list-nested text-primary"></i> <?php echo __('manage_main_menu') ?? 'إدارة القائمة الرئيسية'; ?>
+                    <i class="bi bi-list-nested text-primary"></i> <?php echo function_exists('__') ? (__('manage_main_menu') ?: 'إدارة القائمة الرئيسية') : 'إدارة القائمة الرئيسية'; ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -400,19 +399,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-5">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('link_title') ?? 'عنوان الرابط'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($title_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('link_title_placeholder') ?? 'عنوان الرابط'; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'عنوان الرابط'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($title_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'عنوان الرابط'; ?>">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('platform_url') ?? 'الرابط (URL)'; ?></label>
-                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('url_placeholder') ?? 'الرابط (URL)'; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'الرابط (URL)'; ?></label>
+                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الرابط (URL)'; ?>">
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo __('order') ?? 'الترتيب'; ?></label>
-                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('order') ?? 'الترتيب'; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'الترتيب'; ?></label>
+                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الترتيب'; ?>">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo __('delete_link') ?? 'حذف الرابط'; ?>"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo 'حذف الرابط'; ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -420,14 +419,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo __('add_new_link') ?? 'إضافة رابط جديد'; ?>
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo 'إضافة رابط جديد'; ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="menuLinksForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
+                <button type="submit" form="menuLinksForm" class="btn-premium"><?php echo $lang['save_changes'] ?? 'حفظ التغييرات'; ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo $lang['cancel'] ?? 'إلغاء'; ?></button>
             </div>
         </div>
     </div>
@@ -439,7 +438,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-translate text-primary"></i> <?php echo __('manage_languages') ?? 'إدارة اللغات'; ?>
+                    <i class="bi bi-translate text-primary"></i> <?php echo 'إدارة اللغات'; ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -458,15 +457,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_name') ?? 'اسم اللغة'; ?></label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_name_placeholder') ?? 'اسم اللغة'; ?>">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo 'اسم اللغة'; ?></label>
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'اسم اللغة'; ?>">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo __('language_url') ?? 'الرابط'; ?></label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo __('language_url_placeholder') ?? 'الرابط'; ?>">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo 'الرابط'; ?></label>
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الرابط'; ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo __('delete_language') ?? 'حذف اللغة'; ?>"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo 'حذف اللغة'; ?>"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -476,14 +475,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo __('add_new_language') ?? 'إضافة لغة جديدة'; ?>
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo 'إضافة لغة جديدة'; ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="langEditForm" class="btn-premium"><?php echo __('save_changes'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo __('cancel'); ?></button>
+                <button type="submit" form="langEditForm" class="btn-premium"><?php echo $lang['save_changes'] ?? 'حفظ التغييرات'; ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo $lang['cancel'] ?? 'إلغاء'; ?></button>
             </div>
         </div>
     </div>
@@ -501,9 +500,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="heroEditForm" enctype="multipart/form-data" class="admin-settings-form">
+                <form id="heroEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_hero">
-                    <!-- حقل حماية الـ CSRF -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="hero_lang" value="<?php echo htmlspecialchars($current_lang); ?>">
                     
@@ -515,7 +513,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         $hero_all = is_array($hero_raw) ? $hero_raw : [];
                     }
                     
-                    // استخراج بيانات اللغة الحالية أو البدائل المسطحة القديمة
                     $h = isset($hero_all[$current_lang]) && is_array($hero_all[$current_lang]) ? $hero_all[$current_lang] : [];
                     
                     $val_title   = $h['title'] ?? ($hero_all['title'] ?? '');
@@ -528,7 +525,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
-                            <!-- العنوان الخاص باللغة الحالية -->
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo $lang['hero_title'] ?? $lang['title'] ?? 'العنوان'; ?> (<?php echo strtoupper($current_lang); ?>)
@@ -536,7 +532,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($val_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
-                            <!-- النص الوصفي الخاص باللغة الحالية -->
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo $lang['hero_desc'] ?? $lang['description'] ?? 'النص الوصفي'; ?> (<?php echo strtoupper($current_lang); ?>)
@@ -544,7 +539,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($val_desc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             
-                            <!-- نص الزر الخاص باللغة الحالية -->
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo $lang['hero_btn_text'] ?? $lang['button_text'] ?? 'نص الزر'; ?> (<?php echo strtoupper($current_lang); ?>)
@@ -552,7 +546,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_txt, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
-                            <!-- رابط الزر -->
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo $lang['hero_btn_url'] ?? $lang['button_url'] ?? 'رابط الزر'; ?> (<?php echo strtoupper($current_lang); ?>)
@@ -560,7 +553,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_url, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
-                            <!-- صورة الخلفية -->
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo $lang['hero_bg_image'] ?? $lang['background_image'] ?? 'صورة الخلفية'; ?>
@@ -569,7 +561,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <?php if (!empty($current_img_val) && $current_img_val !== 'assets/img/hero-bg.jpg'): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
                                         <span class="d-block small text-muted mb-2"><?php echo $lang['current_image'] ?? 'الصورة الحالية:'; ?></span>
-                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($current_img_val), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                        <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($current_img_val) : $current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
                                              style="max-height: 120px; object-fit: cover;">
@@ -604,7 +596,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات الخدمات الموحدة للغة الحالية والتحقق من الهيكل الجديد
                 $servicesAllLangs = is_string($currentSettings['services'] ?? null) ? json_decode($currentSettings['services'], true) : ($currentSettings['services'] ?? []);
                 $currentLangData  = $servicesAllLangs[$current_lang] ?? ($servicesAllLangs['de'] ?? ($servicesAllLangs['ar'] ?? []));
                 
@@ -613,13 +604,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $sec_desc     = $currentLangData['desc'] ?? '';
                 ?>
 
-                <!-- تم التأكد من أن الـ ID والـ Action متطابقان -->
-                <form id="servicesEditForm" enctype="multipart/form-data">
+                <form id="servicesEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_services">
-                    <!-- تمرير اللغة الحالية ليتعامل معها الـ Controller بدقة -->
                     <input type="hidden" name="services_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان ووصف القسم -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?></label>
@@ -631,10 +619,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
-                    <!-- حاوية صفوف الخدمات -->
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($servicesData as $index => $service): 
-                            // استخراج عنوان الخدمة للغة الحالية
                             $serv_title_val = $service['title'] ?? '';
                         ?>
                             <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
@@ -652,7 +638,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($service['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($service['img']), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($service['img']) : $service['img'], ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Service Image" 
                                                          class="rounded-2" 
                                                          style="width: 40px; height: 40px; object-fit: cover;">
@@ -661,7 +647,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <!-- الاحتفاظ بالصورة القديمة -->
                                     <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
@@ -730,7 +715,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($item['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                              alt="Choose Item Icon" 
                                                              class="rounded-2" 
                                                              style="width: 40px; height: 40px; object-fit: cover;">
@@ -868,7 +853,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($item['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Guide Item Image" 
                                                          class="rounded-2" 
                                                          style="width: 40px; height: 40px; object-fit: cover;">
@@ -1042,7 +1027,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                     <div class="d-flex align-items-center gap-2">
                                                         <?php if (!empty($link['img'])): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                                <img src="<?php echo htmlspecialchars(safe_admin_string(get_image_url($link['img']), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                                <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($link['img']) : $link['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                                      alt="Contact Icon" 
                                                                      class="rounded-2" 
                                                                      style="width: 36px; height: 36px; object-fit: cover;">
@@ -1176,16 +1161,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang.toUpperCase()})</label>
                     <input type="text" class="form-control menu-title" name="menu[${menuCount}][${currentLang}][title]" placeholder="عنوان الرابط">
                 </div>
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
-                    <input type="text" class="form-control menu-url" name="menu[${menuCount}][url]" placeholder="الرابط (URL)">
+                    <input type="text" class="form-control menu-url" name="menu[${menuCount}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-2">
                     <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
-                    <input type="number" class="form-control menu-order" name="menu[${menuCount}][order]" value="${menuCount}" placeholder="الترتيب">
+                    <input type="number" class="form-control menu-order" name="menu[${menuCount}][order]" value="${menuCount}">
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${menuCount}')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
@@ -1196,23 +1181,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
-        const langCount = container.querySelectorAll('.lang-row-item').length;
+        const count = container.querySelectorAll('.lang-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 lang-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'lang_row_' + langCount;
+        div.id = 'lang_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                    <input type="text" class="form-control lang-name" name="lang[${langCount}][name]" placeholder="اسم اللغة">
+                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="اسم اللغة">
                 </div>
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control lang-url" name="lang[${langCount}][url]" placeholder="الرابط">
+                    <input type="text" class="form-control lang-url" name="lang[${count}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${langCount}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${count}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1220,29 +1205,28 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
-        const serviceCount = container.querySelectorAll('.service-row-item').length;
-        
+        const count = container.querySelectorAll('.service-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 service-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'service_row_' + serviceCount;
+        div.id = 'service_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${serviceCount}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control service-title" name="services[${count}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${serviceCount}][url]" placeholder="الرابط">
+                    <input type="text" class="form-control service-url" name="services[${count}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control service-file" name="service_img_${serviceCount}" accept="image/*">
+                    <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
                 </div>
-                <input type="hidden" class="service-old-img" name="services[${serviceCount}][old_img]" value="">
+                <input type="hidden" class="service-old-img" name="services[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${serviceCount}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${count}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1250,28 +1234,28 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
-        const chooseCount = container.querySelectorAll('.choose-row-item').length;
+        const count = container.querySelectorAll('.choose-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 choose-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'choose_row_' + chooseCount;
+        div.id = 'choose_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control choose-title" name="choose[${chooseCount}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control choose-title" name="choose[${count}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control choose-desc" name="choose[${chooseCount}][desc]" placeholder="الوصف">
+                    <input type="text" class="form-control choose-desc" name="choose[${count}][desc]" placeholder="الوصف">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" class="form-control choose-file" name="choose_img_${chooseCount}" accept="image/*">
+                    <input type="file" class="form-control choose-file" name="choose_img_${count}" accept="image/*">
+                    <input type="hidden" class="choose-old-img" name="choose[${count}][old_img]" value="">
                 </div>
-                <input type="hidden" class="choose-old-img" name="choose[${chooseCount}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${chooseCount}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${count}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1279,19 +1263,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
-        const reviewCount = container.querySelectorAll('.review-row-item').length;
+        const count = container.querySelectorAll('.review-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 review-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'rev_row_' + reviewCount;
+        div.id = 'rev_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
-                    <input type="text" class="form-control review-url" name="reviews[${reviewCount}][url]" placeholder="رابط اليوتيوب (Embed URL)">
+                    <input type="text" class="form-control review-url" name="reviews[${count}][url]" placeholder="رابط اليوتيوب">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${reviewCount}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${count}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1299,32 +1283,32 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
-        const guideCount = container.querySelectorAll('.guide-row-item').length;
+        const count = container.querySelectorAll('.guide-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 guide-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'guide_row_' + guideCount;
+        div.id = 'guide_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                    <input type="text" class="form-control guide-title" name="guide[${guideCount}][title]" placeholder="عنوان المقال">
+                    <input type="text" class="form-control guide-title" name="guide[${count}][title]" placeholder="عنوان المقال">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                    <input type="text" class="form-control guide-url" name="guide[${guideCount}][url]" placeholder="رابط الصفحة">
+                    <input type="text" class="form-control guide-url" name="guide[${count}][url]" placeholder="رابط الصفحة">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control guide-desc" name="guide[${guideCount}][desc]" placeholder="الوصف">
+                    <input type="text" class="form-control guide-desc" name="guide[${count}][desc]" placeholder="الوصف">
                 </div>
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">الصورة</label>
-                    <input type="file" class="form-control guide-file" name="guide_img_${guideCount}" accept="image/*">
-                    <input type="hidden" class="guide-old-img" name="guide[${guideCount}][old_img]" value="">
+                    <input type="file" class="form-control guide-file" name="guide_img_${count}" accept="image/*">
+                    <input type="hidden" class="guide-old-img" name="guide[${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${guideCount}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${count}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1332,23 +1316,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
-        const faqCount = container.querySelectorAll('.faq-row-item').length;
+        const count = container.querySelectorAll('.faq-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 faq-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'faq_row_' + faqCount;
+        div.id = 'faq_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                    <input type="text" class="form-control faq-question" name="faq[${faqCount}][question]" placeholder="السؤال">
+                    <input type="text" class="form-control faq-question" name="faq[${count}][question]" placeholder="السؤال">
                 </div>
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                    <input type="text" class="form-control faq-answer" name="faq[${faqCount}][answer]" placeholder="الإجابة">
+                    <input type="text" class="form-control faq-answer" name="faq[${count}][answer]" placeholder="الإجابة">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${faqCount}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${count}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1356,73 +1340,74 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
-        const col3Count = container.querySelectorAll('.footer-col3-item').length;
+        const count = container.querySelectorAll('.footer-col3-item').length;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm footer-col3-item mb-3';
+        div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'col3_' + col3Count;
+        div.id = 'col3_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
-                    <input type="text" name="col3[${col3Count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة">
+                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white" placeholder="مثلاً: واتساب">
                 </div>
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" name="col3[${col3Count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
+                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white" placeholder="الرابط">
                 </div>
                 <div class="col-md-3">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" name="col3_img_${col3Count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
+                    <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white" accept="image/*">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${col3Count}')" style="border-radius: 8px;" title="حذف">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${count}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
-            <input type="hidden" class="footer-col3-old-img" name="col3[${col3Count}][old_img]" value="">`;
+            <input type="hidden" name="col3[${count}][old_img]" value="">`;
         container.appendChild(div);
     }
 
     // معالج النماذج الشامل للإرسال بـ AJAX وإظهار استجابة السيرفر الحقيقية
-    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
-            
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
-
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                    }
-                } catch (e) {
-                    showNotification('استجابة غير متوقعة من السيرفر (انظر الـ Console)', 'danger');
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.admin-settings-form, #heroEditForm, #servicesEditForm, #logoEditForm');
+        
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const submitBtn = document.querySelector(`button[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
+                
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.dataset.originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري الحفظ...';
                 }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+
+                fetch('admin/update-settings.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' || data.success) {
+                        showNotification(data.message || 'تم حفظ التغييرات بنجاح', 'success');
+                        setTimeout(() => location.reload(), 1200);
+                    } else {
+                        showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = submitBtn.dataset.originalText;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('حدث خطأ في الاتصال بالخادم', 'danger');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = submitBtn.dataset.originalText;
+                    }
+                });
             });
         });
     });

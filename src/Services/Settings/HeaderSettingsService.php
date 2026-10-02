@@ -82,13 +82,27 @@ class HeaderSettingsService
             $stmt->execute(['k' => 'social_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 3. تحديث القائمة الرئيسية (Menu)
+        // 3. تحديث القائمة الرئيسية (Menu) مع دعم اللغات الحالية (ar, en, de) والترتيب
         elseif ($action === 'update_menu') {
-            $menuData = $_POST['menu'] ?? [];
-            usort($menuData, function($a, $b) {
+            $menuInput = $_POST['menu'] ?? [];
+            $formattedMenu = [];
+
+            foreach ($menuInput as $item) {
+                $formattedMenu[] = [
+                    'ar' => ['title' => trim($item['ar']['title'] ?? '')],
+                    'en' => ['title' => trim($item['en']['title'] ?? '')],
+                    'de' => ['title' => trim($item['de']['title'] ?? '')],
+                    'url' => trim($item['url'] ?? ''),
+                    'order' => (int)($item['order'] ?? 0)
+                ];
+            }
+
+            // ترتيب العناصر بحسب الترتيب المحدد إن وجد
+            usort($formattedMenu, function ($a, $b) {
                 return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
             });
-            $jsonVal = json_encode(array_values($menuData), JSON_UNESCAPED_UNICODE);
+
+            $jsonVal = json_encode(array_values($formattedMenu), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'menu_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

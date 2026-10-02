@@ -237,7 +237,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
                     
-                    <!-- اختيار اللغة المخصصة للشعار -->
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold small text-secondary">
                             <?php echo $lang['logo_language'] ?? 'لغة الشعار (اللغة المستهدفة)'; ?>
@@ -376,7 +375,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
 <!-- 4. Menu Edit Modal -->
 <div class="modal fade custom-modal" id="menuEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -394,24 +393,33 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <?php 
                         $menuLinksData = is_array($menu_links ?? null) ? $menu_links : [];
                         foreach ($menuLinksData as $index => $link): 
-                            $title_val = $link[$current_lang]['title'] ?? $link['title'] ?? '';
+                            $title_ar  = $link['ar']['title'] ?? (is_string($link['title'] ?? null) ? $link['title'] : ($link['title']['ar'] ?? ''));
+                            $title_en  = $link['en']['title'] ?? ($link['title']['en'] ?? '');
+                            $title_de  = $link['de']['title'] ?? ($link['title']['de'] ?? '');
+                            $url_val   = $link['url'] ?? '';
+                            $order_val = $link['order'] ?? $index;
                         ?>
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
-                                <div class="col-md-5">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'عنوان الرابط'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                    <input type="text" class="form-control menu-title" name="menu[<?php echo $index; ?>][<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($title_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'عنوان الرابط'; ?>">
+                                <div class="col-md-3">
+                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (AR)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][ar][title]" value="<?php echo htmlspecialchars($title_ar, ENT_QUOTES, 'UTF-8'); ?>" placeholder="العربية">
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'الرابط (URL)'; ?></label>
-                                    <input type="text" class="form-control menu-url" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الرابط (URL)'; ?>">
+                                <div class="col-md-3">
+                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (EN)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][en][title]" value="<?php echo htmlspecialchars($title_en, ENT_QUOTES, 'UTF-8'); ?>" placeholder="English">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (DE)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][de][title]" value="<?php echo htmlspecialchars($title_de, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Deutsch">
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo 'الترتيب'; ?></label>
-                                    <input type="number" class="form-control menu-order" name="menu[<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars(safe_admin_string($link['order'] ?? $index, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الترتيب'; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($url_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="url">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo 'حذف الرابط'; ?>"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" name="menu[<?php echo $index; ?>][order]" value="<?php echo $order_val; ?>">
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="حذف"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -419,7 +427,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo 'إضافة رابط جديد'; ?>
+                        <i class="bi bi-plus-circle me-1"></i> إضافة رابط جديد
                     </button>
                 </form>
             </div>
@@ -438,7 +446,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-translate text-primary"></i> <?php echo 'إدارة اللغات'; ?>
+                    <i class="bi bi-translate text-primary"></i> إدارة اللغات
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -457,15 +465,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo 'اسم اللغة'; ?></label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'اسم اللغة'; ?>">
+                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo 'الرابط'; ?></label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo 'الرابط'; ?>">
+                                            <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo 'حذف اللغة'; ?>"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -475,7 +483,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo 'إضافة لغة جديدة'; ?>
+                        <i class="bi bi-plus-circle me-1"></i> إضافة لغة جديدة
                     </button>
                 </form>
             </div>
@@ -1071,7 +1079,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -1146,89 +1153,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_${socialCount}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
                 </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addMenuRow() {
-        const container = document.getElementById('menuRowsContainer');
-        const menuCount = container.querySelectorAll('.menu-row-item').length;
-        const currentLang = '<?php echo $current_lang ?? "ar"; ?>';
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 menu-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'menu_row_' + menuCount;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang.toUpperCase()})</label>
-                    <input type="text" class="form-control menu-title" name="menu[${menuCount}][${currentLang}][title]" placeholder="عنوان الرابط">
-                </div>
-                <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
-                    <input type="text" class="form-control menu-url" name="menu[${menuCount}][url]" placeholder="الرابط">
-                </div>
-                <div class="col-md-2">
-                    <label class="small fw-bold mb-1 text-secondary">الترتيب</label>
-                    <input type="number" class="form-control menu-order" name="menu[${menuCount}][order]" value="${menuCount}">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${menuCount}')" title="حذف الرابط"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addLangRow() {
-        const container = document.getElementById('langRowsContainer');
-        const count = container.querySelectorAll('.lang-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 lang-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'lang_row_' + count;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="اسم اللغة">
-                </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control lang-url" name="lang[${count}][url]" placeholder="الرابط">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${count}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addServiceRow() {
-        const container = document.getElementById('servicesRowsContainer');
-        const count = container.querySelectorAll('.service-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 service-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'service_row_' + count;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${count}][title]" placeholder="العنوان">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${count}][url]" placeholder="الرابط">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
-                </div>
-                <input type="hidden" class="service-old-img" name="services[${count}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${count}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(div);
     }
 
@@ -1257,7 +1183,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${count}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
                 </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(div);
     }
 
@@ -1272,12 +1199,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
-                    <input type="text" class="form-control review-url" name="reviews[${count}][url]" placeholder="رابط اليوتيوب">
+                    <input type="text" class="form-control review-url" name="reviews[${count}][url]" placeholder="رابط اليوتيوب (Embed URL)">
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${count}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
                 </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(div);
     }
 
@@ -1310,7 +1238,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${count}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(div);
     }
 
@@ -1334,7 +1263,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${count}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
                 </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(div);
     }
 
@@ -1349,41 +1279,95 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
-                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white" placeholder="مثلاً: واتساب">
+                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة (مثلاً: واتساب)">
                 </div>
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white" placeholder="الرابط">
+                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
                 </div>
                 <div class="col-md-3">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white" accept="image/*">
+                    <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${count}')" style="border-radius: 8px;"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
-            <input type="hidden" name="col3[${count}][old_img]" value="">`;
+            <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
+        `;
         container.appendChild(div);
     }
 
-    // معالج النماذج الشامل للإرسال بـ AJAX وإظهار استجابة السيرفر الحقيقية
+    function addLangRow() {
+        const container = document.getElementById('langRowsContainer');
+        const count = container.querySelectorAll('.lang-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 lang-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'lang_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="اسم اللغة">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control lang-url" name="lang[${count}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${count}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function addServiceRow() {
+        const container = document.getElementById('servicesRowsContainer');
+        const count = container.querySelectorAll('.service-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 service-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'service_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control service-title" name="services[${count}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control service-url" name="services[${count}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
+                    <input type="hidden" class="service-old-img" name="services[${count}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${count}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('.admin-settings-form, #heroEditForm, #servicesEditForm, #logoEditForm');
-        
+        const forms = document.querySelectorAll('.admin-settings-form');
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
                 const submitBtn = document.querySelector(`button[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
-                
+                let originalText = '';
                 if (submitBtn) {
+                    originalText = submitBtn.innerHTML;
                     submitBtn.disabled = true;
-                    submitBtn.dataset.originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري الحفظ...';
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> جاري الحفظ...';
                 }
 
-                fetch('admin/update-settings.php', {
+                fetch('admin_actions.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -1391,12 +1375,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 .then(data => {
                     if (data.status === 'success' || data.success) {
                         showNotification(data.message || 'تم حفظ التغييرات بنجاح', 'success');
-                        setTimeout(() => location.reload(), 1200);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1200);
                     } else {
                         showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.innerHTML = submitBtn.dataset.originalText;
+                            submitBtn.innerHTML = originalText;
                         }
                     }
                 })
@@ -1405,7 +1391,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     showNotification('حدث خطأ في الاتصال بالخادم', 'danger');
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = submitBtn.dataset.originalText;
+                        submitBtn.innerHTML = originalText;
                     }
                 });
             });

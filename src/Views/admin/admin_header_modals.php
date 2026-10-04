@@ -609,19 +609,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     ? json_decode($currentSettings['services'], true) 
                     : ($currentSettings['services'] ?? []);
 
-                // جلب بيانات اللغة الحالية بدقة، وإذا كانت العناصر فارغة يتراجع للغة العربية أو الألمانية لتعبئة النموذج
+                // جلب بيانات اللغة الحالية حُصراً لمنع تداخل بيانات اللغات عند الحفظ
                 $currentLangData = $servicesAllLangs[$current_lang] ?? [];
                 
-                if (empty($currentLangData['items']) && !empty($servicesAllLangs['ar']['items'])) {
-                    $servicesData = $servicesAllLangs['ar']['items'];
-                } elseif (empty($currentLangData['items']) && !empty($servicesAllLangs['de']['items'])) {
-                    $servicesData = $servicesAllLangs['de']['items'];
-                } else {
-                    $servicesData = $currentLangData['items'] ?? [];
-                }
-
-                $sec_title = $currentLangData['title'] ?? ($servicesAllLangs['ar']['title'] ?? 'خدماتنا المميزة');
-                $sec_desc  = $currentLangData['desc'] ?? ($servicesAllLangs['ar']['desc'] ?? '');
+                $servicesData = $currentLangData['items'] ?? [];
+                $sec_title    = $currentLangData['title'] ?? '';
+                $sec_desc     = $currentLangData['desc'] ?? '';
                 ?>
 
                 <form id="servicesEditForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -632,11 +625,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?>" placeholder="أدخل عنوان القسم للغة الحالية">
                         </div>
                         <div class="<?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_desc'] ?? 'وصف القسم (اختياري)'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <textarea class="form-control" name="services_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="services_desc" rows="2" style="height: auto; padding: 12px 16px;" placeholder="أدخل وصف القسم للغة الحالية"><?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -1363,28 +1356,40 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
-        const count = container.querySelectorAll('.service-row-item').length;
+        
+        // حساب أعلى رقم index مستخدم حالياً لمنع تضارب المفاتيح عند حذف أسطر سابقة
+        const existingRows = container.querySelectorAll('.service-row-item');
+        let maxIndex = -1;
+        existingRows.forEach(row => {
+            const idParts = row.id.split('_');
+            const rowNum = parseInt(idParts[idParts.length - 1]);
+            if (!isNaN(rowNum) && rowNum > maxIndex) {
+                maxIndex = rowNum;
+            }
+        });
+        const nextIndex = maxIndex + 1;
+
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 service-row-item';
+        div.className = 'p-3 shadow-sm service-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'service_row_' + count;
+        div.id = 'service_row_' + nextIndex;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${count}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control service-title" name="services[${nextIndex}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${count}][url]" placeholder="الرابط">
+                    <input type="text" class="form-control service-url" name="services[${nextIndex}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
-                    <input type="hidden" class="service-old-img" name="services[${count}][old_img]" value="">
+                    <input type="file" class="form-control service-file" name="service_img_${nextIndex}" accept="image/*">
+                    <input type="hidden" class="service-old-img" name="services[${nextIndex}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${count}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${nextIndex}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1436,4 +1441,3 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         });
     });
 </script>
-

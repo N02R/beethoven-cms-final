@@ -614,7 +614,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 
                 $sec_title     = $s['section_title'] ?? ($s['title'] ?? ($services_all['section_title'] ?? ''));
                 $sec_subtitle  = $s['section_subtitle'] ?? ($s['desc'] ?? ($services_all['section_subtitle'] ?? ''));
-                $service_items = $s['items'] ?? ($services_all['items'] ?? []);
+                $service_items = $s['items'] ?? ($services_all['items'] ?? $services_all);
+                if (!is_array($service_items)) $service_items = [];
                 ?>
 
                 <form id="servicesEditForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -637,64 +638,43 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
-                    <!-- قائمة خدمات المضافة بالتصميم الجديد -->
+                    <!-- قائمة الخدمات المضافة - مطابقة تماماً لشكل addServiceRow() -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">الخدمات المضافة</h6>
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
-                        <?php if (!empty($service_items) && is_array($service_items)): ?>
-                            <?php foreach ($service_items as $idx => $item): ?>
-                                <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $idx; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                    <!-- حفظ صورة الخدمة القديمة -->
-                                    <input type="hidden" class="service-old-img" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][old_img]" value="<?php echo htmlspecialchars($item['old_img'] ?? $item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['title'] ?? 'اسم الخدمة'; ?></label>
-                                            <input type="text" class="form-control service-title" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخدمة">
-                                        </div>
+                        <?php foreach ($service_items as $index => $item): ?>
+                            <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخدمة">
+                                    </div>
 
-                                        <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['url'] ?? 'الرابط'; ?></label>
-                                            <input type="text" class="form-control service-url" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الخدمة">
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الخدمة">
+                                    </div>
 
-                                        <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary">الأيقونة (Bootstrap Icon)</label>
-                                            <input type="text" class="form-control" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][icon]" value="<?php echo htmlspecialchars($item['icon'] ?? 'bi bi-star', ENT_QUOTES, 'UTF-8'); ?>" placeholder="bi bi-star">
-                                        </div>
-
-                                        <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['image_icon'] ?? 'صورة الخدمة'; ?></label>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <input type="file" class="form-control service-file" name="service_items[<?php echo $idx; ?>][img]" accept="image/*">
-                                                <?php 
-                                                    $imgPath = $item['img'] ?? ($item['old_img'] ?? '');
-                                                    if (!empty($imgPath)): 
-                                                ?>
-                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($imgPath) : $imgPath, ENT_QUOTES, 'UTF-8'); ?>" 
-                                                             alt="Service Image" 
-                                                             class="rounded-2" 
-                                                             style="width: 40px; height: 40px; object-fit: cover;">
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-11 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary">وصف الخدمة</label>
-                                            <textarea class="form-control" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][desc]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="وصف الخدمة"><?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                        </div>
-                                        
-                                        <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $idx; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                    <div class="col-md-11">
+                                        <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
+                                            <?php if (!empty($item['img'])): ?>
+                                                <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], ENT_QUOTES, 'UTF-8'); ?>" alt="Service Preview" class="rounded border" style="width: 38px; height: 38px; object-fit: cover; flex-shrink: 0;">
+                                            <?php endif; ?>
                                         </div>
                                     </div>
+
+                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? $item['old_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                    </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
 
-                    <!-- زر إضافة خدمة جديدة بالتصميم المحدث -->
+                    <!-- زر إضافة خدمة جديدة -->
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo $lang['add_new_service'] ?? 'إضافة خدمة جديدة'; ?>
                     </button>

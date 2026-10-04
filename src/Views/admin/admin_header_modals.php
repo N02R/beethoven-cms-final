@@ -1085,16 +1085,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
+    // دالة حذف الصفوف العامة
     function removeRow(id) {
         const el = document.getElementById(id);
         if (el) el.remove();
     }
 
+    // دالة عرض التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
 
-        let bgClass = 'alert-success', icon = 'bi-check-circle-fill', title = 'تم بنجاح!';
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
         if (type === 'danger') {
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
@@ -1113,12 +1118,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         alertDiv.innerHTML = `
             <div class="d-flex align-items-center gap-2">
                 <i class="bi ${icon} fs-4"></i>
-                <div><strong>${title}</strong><div class="small">${message}</div></div>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
                 <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
 
         document.body.appendChild(alertDiv);
+
         setTimeout(() => {
             if (alertDiv) {
                 alertDiv.classList.remove('show');
@@ -1127,6 +1136,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }, 4000);
     }
 
+    // التبديل بين المحتوى النصي والصورة في الإعلانات
     function toggleAdContent(val) {
         const textEditor = document.getElementById('textEditor');
         const imageEditor = document.getElementById('imageEditor');
@@ -1139,30 +1149,35 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }
     }
 
+    /* ==========================================================================
+       دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders)
+       ========================================================================== */
+
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
-        const socialCount = container.querySelectorAll('.social-row-item').length;
+        if (!container) return;
+        const count = container.querySelectorAll('.social-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 social-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'row_' + socialCount;
+        div.id = 'row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
-                    <input type="text" class="form-control social-name" name="social[${socialCount}][name]" placeholder="الاسم">
+                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-8">
                     <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
-                    <input type="url" class="form-control social-url" name="social[${socialCount}][url]" placeholder="الرابط">
+                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
-                    <input type="file" class="form-control social-file" name="social_img_${socialCount}" accept="image/*">
+                    <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
                 </div>
-                <input type="hidden" class="social-old-img" name="social[${socialCount}][old_img]" value="">
+                <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_${socialCount}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_${count}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1171,6 +1186,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.menu-row-item').length;
         const currentLang = '<?php echo $current_lang; ?>'.toUpperCase();
         const div = document.createElement('div');
@@ -1181,14 +1197,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 <?php echo $modal_align; ?>">
                     <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang})</label>
-                    <input type="text" class="form-control" name="menu[${count}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control menu-title" name="menu[${count}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-5 <?php echo $modal_align; ?>">
                     <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
-                    <input type="text" class="form-control" name="menu[${count}][url]" placeholder="url">
+                    <input type="text" class="form-control menu-url" name="menu[${count}][url]" placeholder="url">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <input type="hidden" name="menu[${count}][order]" value="${count}">
+                    <input type="hidden" class="menu-order" name="menu[${count}][order]" value="${count}">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${count}')" title="حذف"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
@@ -1198,6 +1214,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.choose-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 choose-row-item';
@@ -1228,6 +1245,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.review-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 review-row-item';
@@ -1249,6 +1267,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 guide-row-item';
@@ -1283,6 +1302,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.faq-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 faq-row-item';
@@ -1308,6 +1328,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.footer-col3-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
@@ -1338,6 +1359,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
+        if (!container) return;
         const count = container.querySelectorAll('.lang-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 lang-row-item';
@@ -1362,47 +1384,261 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     }
 
     function addServiceRow() {
-    const container = document.getElementById('servicesRowsContainer');
-    const index = container.querySelectorAll('.service-row-item').length;
-    
-    const html = `
-        <div class="p-3 shadow-sm service-row-item" id="service_row_${index}" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${index}][title]" placeholder="عنوان الخدمة">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${index}][url]" value="#" placeholder="رابط الخدمة">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
-                </div>
-                <input type="hidden" class="service-old-img" name="services[${index}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${index}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+        const container = document.getElementById('servicesRowsContainer');
+        if (!container) return;
+        const index = container.querySelectorAll('.service-row-item').length;
+        const html = `
+            <div class="p-3 shadow-sm mb-3 service-row-item" id="service_row_${index}" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                        <input type="text" class="form-control service-title" name="services[${index}][title]" placeholder="عنوان الخدمة">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                        <input type="text" class="form-control service-url" name="services[${index}][url]" value="#" placeholder="رابط الخدمة">
+                    </div>
+                    <div class="col-md-11">
+                        <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                        <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
+                    </div>
+                    <input type="hidden" class="service-old-img" name="services[${index}][old_img]" value="">
+                    <div class="col-md-1 text-center pt-3">
+                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${index}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', html);
-}
-
-function removeRow(rowId) {
-    const row = document.getElementById(rowId);
-    if (row) {
-        row.remove();
+        `;
+        container.insertAdjacentHTML('beforeend', html);
     }
-}
+
+    function addTeamRow() {
+        const container = document.getElementById('teamRowsContainer');
+        if (!container) return;
+        const teamCount = container.querySelectorAll('.team-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 team-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'team_row_' + teamCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label for="team_name_${teamCount}" class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
+                    <input type="text" id="team_name_${teamCount}" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
+                </div>
+                <div class="col-md-3">
+                    <label for="team_role_${teamCount}" class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
+                    <input type="text" id="team_role_${teamCount}" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                </div>
+                <div class="col-md-5">
+                    <label for="team_file_${teamCount}" class="form-label fw-semibold small text-secondary">صورة العضو</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="team_file_${teamCount}" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
+                <div class="col-md-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    function addCountRow() {
+        const container = document.getElementById('countsRowsContainer');
+        if (!container) return;
+        const countsCount = container.querySelectorAll('.count-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 count-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'count_row_' + countsCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label for="count_number_${countsCount}" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                    <input type="text" id="count_number_${countsCount}" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
+                </div>
+                <div class="col-md-4">
+                    <label for="count_title_${countsCount}" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                    <input type="text" id="count_title_${countsCount}" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
+                </div>
+                <div class="col-md-4">
+                    <label for="count_file_${countsCount}" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="count_file_${countsCount}" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
+                <div class="col-md-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    function addPartnerRow() {
+        const container = document.getElementById('partnersRowsContainer');
+        if (!container) return;
+        const partnerCount = container.querySelectorAll('.partner-row-item').length;
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 partner-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'partner_row_' + partnerCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-end">
+                <div class="col-md-11">
+                    <label for="partner_file_${partnerCount}" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" id="partner_file_${partnerCount}" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
+                <div class="col-md-1 text-center pb-1">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    /* ==========================================================================
+       معالج النماذج الموحد مع إعادة الترقيم الشامل والإرسال عبر AJAX
+       ========================================================================== */
 
     document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('.admin-settings-form');
-        forms.forEach(form => {
+        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
+
+                // 1. إعادة ترقيم صفوف الخدمات (Services)
+                form.querySelectorAll('.service-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.service-title');
+                    const url = row.querySelector('.service-url');
+                    const file = row.querySelector('.service-file');
+                    const oldImg = row.querySelector('.service-old-img');
+                    if (title) title.name = `services[${index}][title]`;
+                    if (url) url.name = `services[${index}][url]`;
+                    if (file) file.name = `service_img_${index}`;
+                    if (oldImg) oldImg.name = `services[${index}][old_img]`;
+                });
+
+                // 2. إعادة ترقيم صفوف الفريق (Team)
+                form.querySelectorAll('.team-row-item').forEach((row, index) => {
+                    const nameInput = row.querySelector('.team-name');
+                    const roleInput = row.querySelector('.team-role');
+                    const fileInput = row.querySelector('.team-file');
+                    const oldImgInput = row.querySelector('.team-old-img');
+                    if (nameInput) nameInput.name = `team[${index}][name]`;
+                    if (roleInput) roleInput.name = `team[${index}][role]`;
+                    if (fileInput) fileInput.name = `team_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
+                });
+
+                // 3. إعادة ترقيم صفوف الإحصائيات (Counts)
+                form.querySelectorAll('.count-row-item').forEach((row, index) => {
+                    const numInput = row.querySelector('.count-number');
+                    const titleInput = row.querySelector('.count-title');
+                    const fileInput = row.querySelector('.count-file');
+                    const oldImgInput = row.querySelector('.count-old-img');
+                    if (numInput) numInput.name = `counts[${index}][number]`;
+                    if (titleInput) titleInput.name = `counts[${index}][title]`;
+                    if (fileInput) fileInput.name = `count_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
+                });
+
+                // 4. إعادة ترقيم صفوف الشركاء (Partners)
+                form.querySelectorAll('.partner-row-item').forEach((row, index) => {
+                    const fileInput = row.querySelector('.partner-file');
+                    const oldImgInput = row.querySelector('.partner-old-img');
+                    if (fileInput) fileInput.name = `partner_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `partners[${index}][old_img]`;
+                });
+
+                // 5. إعادة ترقيم وسائل التواصل الاجتماعية (Social)
+                form.querySelectorAll('.social-row-item').forEach((row, index) => {
+                    const nameInput = row.querySelector('.social-name');
+                    const urlInput = row.querySelector('.social-url');
+                    const fileInput = row.querySelector('.social-file');
+                    const oldImgInput = row.querySelector('.social-old-img');
+                    if (nameInput) nameInput.name = `social[${index}][name]`;
+                    if (urlInput) urlInput.name = `social[${index}][url]`;
+                    if (fileInput) fileInput.name = `social_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
+                });
+
+                // 6. إعادة ترقيم القائمة (Menu)
+                form.querySelectorAll('.menu-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.menu-title');
+                    const urlInput = row.querySelector('.menu-url');
+                    const orderInput = row.querySelector('.menu-order');
+                    if (titleInput) titleInput.name = `menu[${index}][title]`;
+                    if (urlInput) urlInput.name = `menu[${index}][url]`;
+                    if (orderInput) {
+                        orderInput.name = `menu[${index}][order]`;
+                        orderInput.value = index;
+                    }
+                });
+
+                // 7. إعادة ترقيم المميزات (Choose)
+                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.choose-title');
+                    const descInput = row.querySelector('.choose-desc');
+                    const fileInput = row.querySelector('.choose-file');
+                    const oldImgInput = row.querySelector('.choose-old-img');
+                    if (titleInput) titleInput.name = `choose[${index}][title]`;
+                    if (descInput) descInput.name = `choose[${index}][desc]`;
+                    if (fileInput) fileInput.name = `choose_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `choose[${index}][old_img]`;
+                });
+
+                // 8. إعادة ترقيم التقييمات (Reviews)
+                form.querySelectorAll('.review-row-item').forEach((row, index) => {
+                    const urlInput = row.querySelector('.review-url');
+                    if (urlInput) urlInput.name = `reviews[${index}][url]`;
+                });
+
+                // 9. إعادة ترقيم الأدلة/المقالات (Guide)
+                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.guide-title');
+                    const urlInput = row.querySelector('.guide-url');
+                    const descInput = row.querySelector('.guide-desc');
+                    const fileInput = row.querySelector('.guide-file');
+                    const oldImgInput = row.querySelector('.guide-old-img');
+                    if (titleInput) titleInput.name = `guide[${index}][title]`;
+                    if (urlInput) urlInput.name = `guide[${index}][url]`;
+                    if (descInput) descInput.name = `guide[${index}][desc]`;
+                    if (fileInput) fileInput.name = `guide_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `guide[${index}][old_img]`;
+                });
+
+                // 10. إعادة ترقيم الأسئلة الشائعة (FAQ)
+                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
+                    const qInput = row.querySelector('.faq-question');
+                    const aInput = row.querySelector('.faq-answer');
+                    if (qInput) qInput.name = `faq[${index}][question]`;
+                    if (aInput) aInput.name = `faq[${index}][answer]`;
+                });
+
+                // 11. إعادة ترقيم حقول الفوتر (Col3)
+                form.querySelectorAll('.footer-col3-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.footer-col3-title-input');
+                    const urlInput = row.querySelector('.footer-col3-url-input');
+                    const fileInput = row.querySelector('.footer-col3-file');
+                    const oldImgInput = row.querySelector('.footer-col3-old-img');
+                    if (titleInput) titleInput.name = `col3[${index}][title]`;
+                    if (urlInput) urlInput.name = `col3[${index}][url]`;
+                    if (fileInput) fileInput.name = `col3_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `col3[${index}][old_img]`;
+                });
+
+                // 12. إعادة ترقيم اللغات (Lang)
+                form.querySelectorAll('.lang-row-item').forEach((row, index) => {
+                    const nameInput = row.querySelector('.lang-name');
+                    const urlInput = row.querySelector('.lang-url');
+                    if (nameInput) nameInput.name = `lang[${index}][name]`;
+                    if (urlInput) urlInput.name = `lang[${index}][url]`;
+                });
+
+                // إعداد زر الحفظ أثناء الإرسال
                 const submitBtn = document.querySelector(`button[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
                 let originalText = '';
                 if (submitBtn) {
@@ -1411,28 +1647,47 @@ function removeRow(rowId) {
                     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> جاري الحفظ...';
                 }
 
-                fetch('admin_actions.php', {
+                const formData = new FormData(this);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
+                
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
+
+                fetch('index.php?url=admin/settings/save', {
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success' || data.success) {
-                        showNotification(data.message || 'تم حفظ التغييرات بنجاح', 'success');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1200);
-                    } else {
-                        showNotification(data.message || 'حدث خطأ أثناء الحفظ', 'danger');
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success || data.status === 'success') {
+                            showNotification(data.message || 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
+                            }
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                         if (submitBtn) {
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = originalText;
                         }
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('حدث خطأ في الاتصال بالخادم', 'danger');
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
@@ -1442,4 +1697,5 @@ function removeRow(rowId) {
         });
     });
 </script>
+
 

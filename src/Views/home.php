@@ -15,62 +15,63 @@
     <?php
     $hero_raw = get_setting('hero', []);
     
+    // فك الـ JSON بطريقة آمنة
     if (is_string($hero_raw)) {
         $hero = json_decode($hero_raw, true) ?? [];
     } else {
         $hero = is_array($hero_raw) ? $hero_raw : [];
     }
     
-    $hero_title  = '';
-    $hero_desc   = '';
-    $hero_btn    = '';
-    $hero_url    = '#';
+    // استخراج المحتوى بطريقة ذكية تدعم متعدد اللغات والبيانات القديمة
+    $hero_title = '';
+    $hero_desc  = '';
+    $hero_btn   = '';
+    $hero_url   = '#';
     $bg_img_path = null;
 
-    // 1. القراءة أولاً حسب اللغة الحالية
+    // 1. التحقق إذا كانت البيانات مخزنة بالهيكلة الجديدة للغات (ar, en, de)
     if (isset($hero[$current_lang]) && is_array($hero[$current_lang])) {
-        $curr_data   = $hero[$current_lang];
-        $hero_title  = $curr_data['title'] ?? '';
-        $hero_desc   = $curr_data['desc'] ?? '';
-        $hero_btn    = $curr_data['btn_text'] ?? '';
-        $hero_url    = $curr_data['btn_url'] ?? '#';
+        $curr_data  = $hero[$current_lang];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
         $bg_img_path = $curr_data['img'] ?? null;
     } 
-    // 2. بدائل احتياطية (العربية ثم الألمانية)
-    elseif (isset($hero['ar']) && is_array($hero['ar'])) {
-        $curr_data   = $hero['ar'];
-        $hero_title  = $curr_data['title'] ?? '';
-        $hero_desc   = $curr_data['desc'] ?? '';
-        $hero_btn    = $curr_data['btn_text'] ?? '';
-        $hero_url    = $curr_data['btn_url'] ?? '#';
-        $bg_img_path = $curr_data['img'] ?? null;
-    }
+    // 2. بدائل احتياطية في حال لم تتوفر اللغة الحالية (تجربة الألمانية ثم العربية)
     elseif (isset($hero['de']) && is_array($hero['de'])) {
-        $curr_data   = $hero['de'];
-        $hero_title  = $curr_data['title'] ?? '';
-        $hero_desc   = $curr_data['desc'] ?? '';
-        $hero_btn    = $curr_data['btn_text'] ?? '';
-        $hero_url    = $curr_data['btn_url'] ?? '#';
+        $curr_data  = $hero['de'];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $bg_img_path = $curr_data['img'] ?? null;
+    } 
+    elseif (isset($hero['ar']) && is_array($hero['ar'])) {
+        $curr_data  = $hero['ar'];
+        $hero_title = $curr_data['title'] ?? '';
+        $hero_desc  = $curr_data['desc'] ?? '';
+        $hero_btn   = $curr_data['btn_text'] ?? '';
+        $hero_url   = $curr_data['btn_url'] ?? '#';
         $bg_img_path = $curr_data['img'] ?? null;
     }
 
-    // 3. التحقق من الهيكلية القديمة
+    // 3. إذا كانت البيانات مخزنة بالشكل القديم المسطح (مباشرة بدون مفاتيح لغات)
     if (empty($hero_title) && isset($hero['title'])) {
-        $hero_title  = $hero['title'];
-        $hero_desc   = $hero['desc'] ?? '';
-        $hero_btn    = $hero['btn_text'] ?? '';
-        $hero_url    = $hero['btn_url'] ?? '#';
+        $hero_title = $hero['title'];
+        $hero_desc  = $hero['desc'] ?? '';
+        $hero_btn   = $hero['btn_text'] ?? '';
+        $hero_url   = $hero['btn_url'] ?? '#';
         $bg_img_path = $hero['img'] ?? null;
     }
 
-    // القيم الافتراضية للكل
+    // القيم الافتراضية النهائية في حال كانت القاعدة فارغة تماماً
     $hero_title = !empty($hero_title) ? $hero_title : 'عنوان افتراضي';
     $hero_desc  = !empty($hero_desc) ? $hero_desc : 'وصف افتراضي للقسم';
     $hero_btn   = !empty($hero_btn) ? $hero_btn : 'اضغط هنا';
     
-    // إسناد رابط الصورة
-    $final_bg = $bg_img_path ?? ($hero['img'] ?? null);
-    $hero_bg  = get_image_url($final_bg, '/assets/img/home/home1.png');
+    // جلب رابط الصورة النهائي
+    $hero_bg = get_image_url($bg_img_path ?? $hero['img'] ?? null, '/assets/img/home/home1.png');
     ?>
     
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
@@ -86,54 +87,78 @@
 </section>
 <!-- hero end -->
 
-<!-- Services Section Start -->
-<section class="services-section py-5 editable-wrapper" style="position: relative;">
+<!-- services start -->
+<section class="services py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="تعديل الخدمات">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
   <div class="custom-container">
     <?php
+    // 1. جلب البيانات من قاعدة البيانات وفك الـ JSON بأسلوب آمن
     $services_raw = get_setting('services', []);
-    $services = is_string($services_raw) ? json_decode($services_raw, true) : (is_array($services_raw) ? $services_raw : []);
+    $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
+    
+    // 2. استخراج بيانات اللغة الحالية مع بدائل احتياطية (ar ثم de)
+    $s_data = $services_all[$current_lang] ?? ($services_all['ar'] ?? ($services_all['de'] ?? $services_all));
+    
+    // 3. قراءة البيانات مع توافقية الأسماء القديمة والجديدة (title أو section_title)
+    $sec_title = $s_data['title'] ?? ($s_data['section_title'] ?? 'خدماتنا المميزة');
+    $sec_desc  = $s_data['desc'] ?? ($s_data['section_subtitle'] ?? '');
+    $services  = $s_data['items'] ?? [];
 
-    // 1. القراءة حسب اللغة الحالية
-    $s_data = $services[$current_lang] ?? $services['ar'] ?? $services['de'] ?? $services;
-
-    $sec_title    = $s_data['section_title'] ?? 'خدماتنا';
-    $sec_subtitle = $s_data['section_subtitle'] ?? '';
-    $items        = $s_data['items'] ?? [];
+    // بديل أخير للكروت إذا كانت مصفوفة اللغة الحالية فارغة
+    if (empty($services)) {
+        foreach (['ar', 'de', 'en'] as $fallback_lang) {
+            if (!empty($services_all[$fallback_lang]['items'])) {
+                $services = $services_all[$fallback_lang]['items'];
+                break;
+            }
+        }
+    }
     ?>
 
-    <div class="text-center mb-5">
-      <h2><?php echo htmlspecialchars($sec_title); ?></h2>
-      <?php if (!empty($sec_subtitle)): ?>
-        <p class="text-muted"><?php echo htmlspecialchars($sec_subtitle); ?></p>
-      <?php endif; ?>
-    </div>
+    <h2 class="mb-3 sec-title">
+        <?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?>
+    </h2>
+    
+    <?php if (!empty($sec_desc)): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;">
+            <?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?>
+        </p>
+    <?php endif; ?>
 
     <div class="row g-4">
-      <?php foreach ($items as $service): ?>
-        <div class="col-md-4">
-          <div class="service-card p-4 border rounded-3 text-center h-100">
-            <?php if (!empty($service['img'])): ?>
-              <img src="<?php echo htmlspecialchars(get_image_url($service['img'])); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>" class="img-fluid mb-3" style="max-height: 80px;">
-            <?php else: ?>
-              <i class="<?php echo htmlspecialchars($service['icon'] ?? 'bi bi-star'); ?> display-4 text-primary mb-3"></i>
-            <?php endif; ?>
-
-            <h4><?php echo htmlspecialchars($service['title'] ?? ''); ?></h4>
-            <p class="text-muted"><?php echo htmlspecialchars($service['desc'] ?? ''); ?></p>
+      <?php if (!empty($services)): ?>
+        <?php foreach ($services as $service): 
+          $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
+          $service_title = $service['title'] ?? 'عنوان الخدمة';
+          $service_url   = $service['url'] ?? '#';
+        ?>
+          <div class="col-lg-6 col-md-6 col-sm-12">
+            <a href="<?php echo htmlspecialchars($service_url, ENT_QUOTES, 'UTF-8'); ?>" class="card-link text-decoration-none d-block">
+              <div class="card" style="background: url('<?php echo htmlspecialchars($service_img, ENT_QUOTES, 'UTF-8'); ?>') no-repeat center/cover;">
+                <div class="card-info">
+                  <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
+                       alt="Arrow" 
+                       style="<?php echo (isset($current_dir) && $current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                </div>
+              </div>
+            </a>
           </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد خدمات مضافة حالياً.</p>
         </div>
-      <?php endforeach; ?>
+      <?php endif; ?>
     </div>
-
   </div>
 </section>
-<!-- Services Section End -->
+<!-- services end -->
 
 <!-- choose start -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">

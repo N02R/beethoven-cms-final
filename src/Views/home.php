@@ -15,63 +15,62 @@
     <?php
     $hero_raw = get_setting('hero', []);
     
-    // فك الـ JSON بطريقة آمنة
     if (is_string($hero_raw)) {
         $hero = json_decode($hero_raw, true) ?? [];
     } else {
         $hero = is_array($hero_raw) ? $hero_raw : [];
     }
     
-    // استخراج المحتوى بطريقة ذكية تدعم متعدد اللغات والبيانات القديمة
-    $hero_title = '';
-    $hero_desc  = '';
-    $hero_btn   = '';
-    $hero_url   = '#';
+    $hero_title  = '';
+    $hero_desc   = '';
+    $hero_btn    = '';
+    $hero_url    = '#';
     $bg_img_path = null;
 
-    // 1. التحقق إذا كانت البيانات مخزنة بالهيكلة الجديدة للغات (ar, en, de)
+    // 1. القراءة أولاً حسب اللغة الحالية
     if (isset($hero[$current_lang]) && is_array($hero[$current_lang])) {
-        $curr_data  = $hero[$current_lang];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $curr_data   = $hero[$current_lang];
+        $hero_title  = $curr_data['title'] ?? '';
+        $hero_desc   = $curr_data['desc'] ?? '';
+        $hero_btn    = $curr_data['btn_text'] ?? '';
+        $hero_url    = $curr_data['btn_url'] ?? '#';
         $bg_img_path = $curr_data['img'] ?? null;
     } 
-    // 2. بدائل احتياطية في حال لم تتوفر اللغة الحالية (تجربة الألمانية ثم العربية)
-    elseif (isset($hero['de']) && is_array($hero['de'])) {
-        $curr_data  = $hero['de'];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
-        $bg_img_path = $curr_data['img'] ?? null;
-    } 
+    // 2. بدائل احتياطية (العربية ثم الألمانية)
     elseif (isset($hero['ar']) && is_array($hero['ar'])) {
-        $curr_data  = $hero['ar'];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
+        $curr_data   = $hero['ar'];
+        $hero_title  = $curr_data['title'] ?? '';
+        $hero_desc   = $curr_data['desc'] ?? '';
+        $hero_btn    = $curr_data['btn_text'] ?? '';
+        $hero_url    = $curr_data['btn_url'] ?? '#';
+        $bg_img_path = $curr_data['img'] ?? null;
+    }
+    elseif (isset($hero['de']) && is_array($hero['de'])) {
+        $curr_data   = $hero['de'];
+        $hero_title  = $curr_data['title'] ?? '';
+        $hero_desc   = $curr_data['desc'] ?? '';
+        $hero_btn    = $curr_data['btn_text'] ?? '';
+        $hero_url    = $curr_data['btn_url'] ?? '#';
         $bg_img_path = $curr_data['img'] ?? null;
     }
 
-    // 3. إذا كانت البيانات مخزنة بالشكل القديم المسطح (مباشرة بدون مفاتيح لغات)
+    // 3. التحقق من الهيكلية القديمة
     if (empty($hero_title) && isset($hero['title'])) {
-        $hero_title = $hero['title'];
-        $hero_desc  = $hero['desc'] ?? '';
-        $hero_btn   = $hero['btn_text'] ?? '';
-        $hero_url   = $hero['btn_url'] ?? '#';
+        $hero_title  = $hero['title'];
+        $hero_desc   = $hero['desc'] ?? '';
+        $hero_btn    = $hero['btn_text'] ?? '';
+        $hero_url    = $hero['btn_url'] ?? '#';
         $bg_img_path = $hero['img'] ?? null;
     }
 
-    // القيم الافتراضية النهائية في حال كانت القاعدة فارغة تماماً
+    // القيم الافتراضية للكل
     $hero_title = !empty($hero_title) ? $hero_title : 'عنوان افتراضي';
     $hero_desc  = !empty($hero_desc) ? $hero_desc : 'وصف افتراضي للقسم';
     $hero_btn   = !empty($hero_btn) ? $hero_btn : 'اضغط هنا';
     
-    // جلب رابط الصورة النهائي
-    $hero_bg = get_image_url($bg_img_path ?? $hero['img'] ?? null, '/assets/img/home/home1.png');
+    // إسناد رابط الصورة
+    $final_bg = $bg_img_path ?? ($hero['img'] ?? null);
+    $hero_bg  = get_image_url($final_bg, '/assets/img/home/home1.png');
     ?>
     
     <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">

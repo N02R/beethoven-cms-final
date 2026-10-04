@@ -39,21 +39,27 @@ class HomeSettingsService
             $targetLang = $_POST['hero_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawHeroSetting = $currentSettings['hero'] ?? '';
-            $heroAllLangs = json_decode($rawHeroSetting, true);
+            $heroAllLangs = is_string($rawHeroSetting) ? json_decode($rawHeroSetting, true) : (is_array($rawHeroSetting) ? $rawHeroSetting : []);
+            
             if (!is_array($heroAllLangs)) {
                 $heroAllLangs = [];
-                if (!empty($rawHeroSetting)) {
-                    $legacyData = json_decode($rawHeroSetting, true);
-                    if (is_array($legacyData)) {
-                        $heroAllLangs['ar'] = $legacyData;
-                    }
-                }
             }
 
-            $oldHeroImg = $heroAllLangs[$targetLang]['img'] ?? ($heroAllLangs['img'] ?? ($_POST['old_hero_img'] ?? 'assets/img/hero-bg.jpg'));
+            // تحويل البيانات القديمة التي لم تكن مقسمة حسب اللغات إن وجدت
+            if (isset($heroAllLangs['title']) && !isset($heroAllLangs['ar'])) {
+                $oldData = $heroAllLangs;
+                $heroAllLangs = ['ar' => $oldData];
+            }
+
+            // تحديد مسار الصورة القديمة للغة الحالية أو للـ Hero العام
+            $oldHeroImg = $_POST['old_hero_img'] 
+                        ?? $heroAllLangs[$targetLang]['img'] 
+                        ?? $heroAllLangs['img'] 
+                        ?? 'assets/img/hero-bg.jpg';
             
             if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/hero-bg.jpg') {
+                // حذف الصورة القديمة إذا لم تكن افتراضية
+                if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/hero-bg.jpg' && $oldHeroImg !== 'assets/img/home/home1.png') {
                     $this->deleteOldImageFile($oldHeroImg);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
@@ -64,7 +70,8 @@ class HomeSettingsService
 
             $postedHero = $_POST['hero'][$targetLang] ?? [];
 
-            $langHeroData = [
+            // إعداد بيانات اللغة الحالية
+            $heroAllLangs[$targetLang] = [
                 'title'    => $postedHero['title'] ?? ($_POST['hero_title'] ?? ''),
                 'desc'     => $postedHero['desc'] ?? ($_POST['hero_desc'] ?? ''),
                 'btn_text' => $postedHero['btn_text'] ?? ($_POST['hero_btn_text'] ?? ''),
@@ -72,7 +79,7 @@ class HomeSettingsService
                 'img'      => $heroImg
             ];
 
-            $heroAllLangs[$targetLang] = $langHeroData;
+            // تحديث الصورة العامة كبديل احتياطي
             $heroAllLangs['img'] = $heroImg;
 
             $jsonVal = json_encode($heroAllLangs, JSON_UNESCAPED_UNICODE);

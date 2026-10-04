@@ -532,6 +532,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $current_img_val = $h['img'] ?? ($hero_all['img'] ?? 'assets/img/hero-bg.jpg');
                     ?>
                     
+                    <!-- حقل مخفي مخصص يحمل مسار الصورة القديمة للسيرفر -->
+                    <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($current_img_val, ENT_QUOTES, 'UTF-8'); ?>">
+
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
@@ -578,7 +581,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <?php endif; ?>
 
                                 <input type="file" class="form-control" name="hero_img" accept="image/*">
-                                <input type="hidden" name="hero[<?php echo $current_lang; ?>][img]" value="<?php echo htmlspecialchars(safe_admin_string($current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     </div>

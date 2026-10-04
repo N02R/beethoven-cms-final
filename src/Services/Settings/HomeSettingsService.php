@@ -86,57 +86,57 @@ class HomeSettingsService
             $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 2. تحديث الخدمات (Services) مع دعم اللغات المتعددة والتوافقية الرجعية
+                // 2. تحديث قسم الخدمات (Services) مع دعم اللغات المتعددة والصور
         elseif ($action === 'update_services') {
             $targetLang = $_POST['services_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawServicesSetting = $currentSettings['services'] ?? '';
-            $servicesAllLangs = json_decode($rawServicesSetting, true);
+            $servicesAllLangs = is_string($rawServicesSetting) ? json_decode($rawServicesSetting, true) : (is_array($rawServicesSetting) ? $rawServicesSetting : []);
+            
             if (!is_array($servicesAllLangs)) {
                 $servicesAllLangs = [];
-                if (!empty($rawServicesSetting)) {
-                    $legacyData = json_decode($rawServicesSetting, true);
-                    if (is_array($legacyData)) {
-                        $servicesAllLangs['ar'] = [
-                            'title' => $currentSettings['services_title'] ?? 'خدماتنا المميزة',
-                            'desc'  => $currentSettings['services_desc'] ?? '',
-                            'items' => $legacyData['items'] ?? $legacyData
-                        ];
-                    }
-                }
             }
 
-            // جلب البيانات القديمة للغة المحددة لحمايتها من الضياع
-            $existingLangData = $servicesAllLangs[$targetLang]['items'] ?? [];
-
-            // إذا أُرسلت كروت جديدة نأخذها، وإلا نحتفظ بالكروت القديمة لنفس اللغة
-            $servicesData = $_POST['services'] ?? $existingLangData;
-
-            foreach ($servicesData as $index => $item) {
-                $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
-                $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
-
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($oldImg)) {
-                        $this->deleteOldImageFile($oldImg);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $servicesData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $servicesData[$index]['img'] = $oldImg;
-                }
-                unset($servicesData[$index]['old_img']);
+            // تحويل الهيكلية القديمة غير المترجمة إن وجدت
+            if (isset($servicesAllLangs['title']) && !isset($servicesAllLangs['ar'])) {
+                $oldData = $servicesAllLangs;
+                $servicesAllLangs = ['ar' => $oldData];
             }
 
-            // أخذ العنوان والوصف الجديد، أو الحفاظ على القديم إن لم يُرسل
-            $newTitle = $_POST['services_title'] ?? ($servicesAllLangs[$targetLang]['title'] ?? 'خدماتنا المميزة');
-            $newDesc  = $_POST['services_desc'] ?? ($servicesAllLangs[$targetLang]['desc'] ?? '');
+            $postedServices = $_POST['services'][$targetLang] ?? [];
 
+            // معالجة البيانات النصية للقسم
             $servicesAllLangs[$targetLang] = [
-                'title' => $newTitle,
-                'desc'  => $newDesc,
-                'items' => array_values($servicesData)
+                'section_title'    => $postedServices['section_title'] ?? ($_POST['services_section_title'] ?? ''),
+                'section_subtitle' => $postedServices['section_subtitle'] ?? ($_POST['services_section_subtitle'] ?? ''),
+                'items'            => []
             ];
+
+            // معالجة كروت الخدمات الفردية (Items)
+            $items = $postedServices['items'] ?? $_POST['service_items'] ?? [];
+            if (is_array($items)) {
+                foreach ($items as $index => $item) {
+                    $oldImg = $item['old_img'] ?? ($servicesAllLangs[$targetLang]['items'][$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    // في حال رفع صورة/أيقونة جديدة للخدمة
+                    if (isset($_FILES['service_items']['tmp_name'][$index]['img']) && $_FILES['service_items']['error'][$index]['img'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['service_items']['tmp_name'][$index]['img']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $servicesAllLangs[$targetLang]['items'][] = [
+                        'title' => $item['title'] ?? '',
+                        'desc'  => $item['desc'] ?? '',
+                        'icon'  => $item['icon'] ?? 'bi bi-concierge-bell',
+                        'img'   => $img,
+                        'url'   => $item['url'] ?? '#'
+                    ];
+                }
+            }
 
             $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);

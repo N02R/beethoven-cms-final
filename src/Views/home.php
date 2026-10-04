@@ -86,81 +86,54 @@
 </section>
 <!-- hero end -->
 
-<!-- services start -->
-<section class="services py-5 editable-wrapper" style="position: relative;">
+<!-- Services Section Start -->
+<section class="services-section py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
   <div class="custom-container">
     <?php
-    // 1. جلب البيانات من قاعدة البيانات وفك الـ JSON
     $services_raw = get_setting('services', []);
-    $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
-    
-    // 2. البحث عن بيانات اللغة الحالية
-    $lang_data = $services_all[$current_lang] ?? null;
-    
-    // إذا لم تتوفر بيانات للغة الحالية ننتقل تدريجياً إلى اللغات الأخرى دون استبدال القوائم الفارغة عشوائياً
-    if (!$lang_data) {
-        $lang_data = $services_all['ar'] ?? $services_all['de'] ?? $services_all['en'] ?? [];
-    }
+    $services = is_string($services_raw) ? json_decode($services_raw, true) : (is_array($services_raw) ? $services_raw : []);
 
-    $sec_title = !empty($lang_data['title']) ? $lang_data['title'] : 'خدماتنا المميزة';
-    $sec_desc  = $lang_data['desc'] ?? '';
-    
-    // إذا كانت عناصر اللغة الحالية فارغة، نبحث عن أول لغة تحتوي على كروت خدمات
-    $services = $lang_data['items'] ?? [];
-    if (empty($services)) {
-        foreach (['ar', 'de', 'en'] as $fallback_lang) {
-            if (!empty($services_all[$fallback_lang]['items'])) {
-                $services = $services_all[$fallback_lang]['items'];
-                break;
-            }
-        }
-    }
+    // 1. القراءة حسب اللغة الحالية
+    $s_data = $services[$current_lang] ?? $services['ar'] ?? $services['de'] ?? $services;
+
+    $sec_title    = $s_data['section_title'] ?? 'خدماتنا';
+    $sec_subtitle = $s_data['section_subtitle'] ?? '';
+    $items        = $s_data['items'] ?? [];
     ?>
 
-    <h2 class="mb-3 sec-title">
-        <?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?>
-    </h2>
-    
-    <?php if (!empty($sec_desc)): ?>
-        <p class="mb-5 text-muted" style="max-width: 700px;">
-            <?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?>
-        </p>
-    <?php endif; ?>
-
-    <div class="row g-4">
-      <?php if (!empty($services)): ?>
-        <?php foreach ($services as $service): 
-          $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
-          $service_title = $service['title'] ?? 'عنوان الخدمة';
-        ?>
-          <div class="col-lg-6 col-md-6 col-sm-12">
-            <a href="<?php echo htmlspecialchars($service['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" class="card-link text-decoration-none d-block">
-              <div class="card" style="background: url('<?php echo htmlspecialchars($service_img, ENT_QUOTES, 'UTF-8'); ?>') no-repeat center/cover;">
-                <div class="card-info">
-                  <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
-                       alt="Arrow" 
-                       style="<?php echo (isset($current_dir) && $current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
-                </div>
-              </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <div class="col-12 text-center text-muted py-4">
-          <p>لا توجد خدمات مضافة حالياً.</p>
-        </div>
+    <div class="text-center mb-5">
+      <h2><?php echo htmlspecialchars($sec_title); ?></h2>
+      <?php if (!empty($sec_subtitle)): ?>
+        <p class="text-muted"><?php echo htmlspecialchars($sec_subtitle); ?></p>
       <?php endif; ?>
     </div>
+
+    <div class="row g-4">
+      <?php foreach ($items as $service): ?>
+        <div class="col-md-4">
+          <div class="service-card p-4 border rounded-3 text-center h-100">
+            <?php if (!empty($service['img'])): ?>
+              <img src="<?php echo htmlspecialchars(get_image_url($service['img'])); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>" class="img-fluid mb-3" style="max-height: 80px;">
+            <?php else: ?>
+              <i class="<?php echo htmlspecialchars($service['icon'] ?? 'bi bi-star'); ?> display-4 text-primary mb-3"></i>
+            <?php endif; ?>
+
+            <h4><?php echo htmlspecialchars($service['title'] ?? ''); ?></h4>
+            <p class="text-muted"><?php echo htmlspecialchars($service['desc'] ?? ''); ?></p>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
   </div>
 </section>
-<!-- services end -->
+<!-- Services Section End -->
 
 <!-- choose start -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">

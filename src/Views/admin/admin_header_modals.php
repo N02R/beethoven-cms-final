@@ -1362,34 +1362,40 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     }
 
     function addServiceRow() {
-        const container = document.getElementById('servicesRowsContainer');
-        const count = container.querySelectorAll('.service-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 service-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'service_row_' + count;
-        div.innerHTML = `
+    const container = document.getElementById('servicesRowsContainer');
+    const index = container.querySelectorAll('.service-row-item').length;
+    
+    const html = `
+        <div class="p-3 shadow-sm service-row-item" id="service_row_${index}" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${count}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control service-title" name="services[${index}][title]" placeholder="عنوان الخدمة">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${count}][url]" placeholder="الرابط">
+                    <input type="text" class="form-control service-url" name="services[${index}][url]" value="#" placeholder="رابط الخدمة">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                    <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
-                    <input type="hidden" class="service-old-img" name="services[${count}][old_img]" value="">
+                    <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
                 </div>
+                <input type="hidden" class="service-old-img" name="services[${index}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${count}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${index}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
-        `;
-        container.appendChild(div);
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+function removeRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
     }
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('.admin-settings-form');

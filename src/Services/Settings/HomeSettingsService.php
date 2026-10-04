@@ -99,8 +99,11 @@ class HomeSettingsService
                 }
             }
 
-            $servicesData = $_POST['services'] ?? [];
+            // جلب البيانات القديمة للغة المحددة لحمايتها من الضياع
             $existingLangData = $servicesAllLangs[$targetLang]['items'] ?? [];
+
+            // إذا أُرسلت كروت جديدة نأخذها، وإلا نحتفظ بالكروت القديمة لنفس اللغة
+            $servicesData = $_POST['services'] ?? $existingLangData;
 
             foreach ($servicesData as $index => $item) {
                 $fileToCheck = $_FILES['service_img_' . $index] ?? ($_FILES['services'][$index]['img'] ?? null);
@@ -118,9 +121,13 @@ class HomeSettingsService
                 unset($servicesData[$index]['old_img']);
             }
 
+            // أخذ العنوان والوصف الجديد، أو الحفاظ على القديم إن لم يُرسل
+            $newTitle = $_POST['services_title'] ?? ($servicesAllLangs[$targetLang]['title'] ?? 'خدماتنا المميزة');
+            $newDesc  = $_POST['services_desc'] ?? ($servicesAllLangs[$targetLang]['desc'] ?? '');
+
             $servicesAllLangs[$targetLang] = [
-                'title' => $_POST['services_title'] ?? '',
-                'desc'  => $_POST['services_desc'] ?? '',
+                'title' => $newTitle,
+                'desc'  => $newDesc,
                 'items' => array_values($servicesData)
             ];
 

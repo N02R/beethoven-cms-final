@@ -101,21 +101,27 @@
     $services_raw = get_setting('services', []);
     $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
     
-    // 2. تجربة جلب بيانات اللغة الحالية
+    // 2. البحث عن بيانات اللغة الحالية
     $lang_data = $services_all[$current_lang] ?? null;
     
-    // 3. التحقق الذكي: إذا كانت عناصر الكروت فارغة في اللغة الحالية، يتم التراجع للغة البديلة (de ثم ar)
-    if (empty($lang_data['items'])) {
-        if (!empty($services_all['de']['items'])) {
-            $lang_data = $services_all['de'];
-        } elseif (!empty($services_all['ar']['items'])) {
-            $lang_data = $services_all['ar'];
-        }
+    // إذا لم تتوفر بيانات للغة الحالية ننتقل تدريجياً إلى اللغات الأخرى دون استبدال القوائم الفارغة عشوائياً
+    if (!$lang_data) {
+        $lang_data = $services_all['ar'] ?? $services_all['de'] ?? $services_all['en'] ?? [];
     }
-    
+
     $sec_title = !empty($lang_data['title']) ? $lang_data['title'] : 'خدماتنا المميزة';
     $sec_desc  = $lang_data['desc'] ?? '';
-    $services  = $lang_data['items'] ?? [];
+    
+    // إذا كانت عناصر اللغة الحالية فارغة، نبحث عن أول لغة تحتوي على كروت خدمات
+    $services = $lang_data['items'] ?? [];
+    if (empty($services)) {
+        foreach (['ar', 'de', 'en'] as $fallback_lang) {
+            if (!empty($services_all[$fallback_lang]['items'])) {
+                $services = $services_all[$fallback_lang]['items'];
+                break;
+            }
+        }
+    }
     ?>
 
     <h2 class="mb-3 sec-title">
@@ -129,23 +135,29 @@
     <?php endif; ?>
 
     <div class="row g-4">
-      <?php foreach ($services as $service): 
-        $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
-        $service_title = $service['title'] ?? 'عنوان الخدمة';
-      ?>
-        <div class="col-lg-6 col-md-6 col-sm-12">
-          <a href="<?php echo htmlspecialchars($service['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" class="card-link text-decoration-none d-block">
-            <div class="card" style="background: url('<?php echo htmlspecialchars($service_img, ENT_QUOTES, 'UTF-8'); ?>') no-repeat center/cover;">
-              <div class="card-info">
-                <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
-                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
-                     alt="Arrow" 
-                     style="<?php echo (isset($current_dir) && $current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+      <?php if (!empty($services)): ?>
+        <?php foreach ($services as $service): 
+          $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
+          $service_title = $service['title'] ?? 'عنوان الخدمة';
+        ?>
+          <div class="col-lg-6 col-md-6 col-sm-12">
+            <a href="<?php echo htmlspecialchars($service['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" class="card-link text-decoration-none d-block">
+              <div class="card" style="background: url('<?php echo htmlspecialchars($service_img, ENT_QUOTES, 'UTF-8'); ?>') no-repeat center/cover;">
+                <div class="card-info">
+                  <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
+                       alt="Arrow" 
+                       style="<?php echo (isset($current_dir) && $current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد خدمات مضافة حالياً.</p>
         </div>
-      <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </div>
 </section>

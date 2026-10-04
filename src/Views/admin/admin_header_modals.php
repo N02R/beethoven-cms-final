@@ -605,38 +605,48 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                $servicesAllLangs = is_string($currentSettings['services'] ?? null) ? json_decode($currentSettings['services'], true) : ($currentSettings['services'] ?? []);
-                $currentLangData  = $servicesAllLangs[$current_lang] ?? ($servicesAllLangs['de'] ?? ($servicesAllLangs['ar'] ?? []));
+                $servicesAllLangs = is_string($currentSettings['services'] ?? null) 
+                    ? json_decode($currentSettings['services'], true) 
+                    : ($currentSettings['services'] ?? []);
+
+                // جلب بيانات اللغة الحالية بدقة، وإذا كانت العناصر فارغة يتراجع للغة العربية أو الألمانية لتعبئة النموذج
+                $currentLangData = $servicesAllLangs[$current_lang] ?? [];
                 
-                $servicesData = $currentLangData['items'] ?? [];
-                $sec_title    = $currentLangData['title'] ?? 'خدماتنا المميزة';
-                $sec_desc     = $currentLangData['desc'] ?? '';
+                if (empty($currentLangData['items']) && !empty($servicesAllLangs['ar']['items'])) {
+                    $servicesData = $servicesAllLangs['ar']['items'];
+                } elseif (empty($currentLangData['items']) && !empty($servicesAllLangs['de']['items'])) {
+                    $servicesData = $servicesAllLangs['de']['items'];
+                } else {
+                    $servicesData = $currentLangData['items'] ?? [];
+                }
+
+                $sec_title = $currentLangData['title'] ?? ($servicesAllLangs['ar']['title'] ?? 'خدماتنا المميزة');
+                $sec_desc  = $currentLangData['desc'] ?? ($servicesAllLangs['ar']['desc'] ?? '');
                 ?>
 
                 <form id="servicesEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_services">
                     <input type="hidden" name="services_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?></label>
+                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
                             <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="<?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_desc'] ?? 'وصف القسم (اختياري)'; ?></label>
+                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_desc'] ?? 'وصف القسم (اختياري)'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
                             <textarea class="form-control" name="services_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($servicesData as $index => $service): 
-                            $serv_title_val = $service['title'] ?? '';
-                        ?>
+                        <?php foreach ($servicesData as $index => $service): ?>
                             <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['title'] ?? 'العنوان'; ?></label>
-                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($serv_title_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['title'] ?? 'العنوان'; ?>">
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['title'] ?? 'العنوان'; ?>">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['url'] ?? 'الرابط'; ?></label>

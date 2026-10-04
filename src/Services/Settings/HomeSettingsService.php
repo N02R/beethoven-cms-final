@@ -36,7 +36,7 @@ class HomeSettingsService
 
         // 1. تحديث قسم الهيرو (Hero) مع دعم اللغات المتعددة وبدون فقدان البيانات
         if ($action === 'update_hero') {
-            $targetLang = $_POST['hero_lang'] ?? 'ar';
+            $targetLang = $_POST['hero_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawHeroSetting = $currentSettings['hero'] ?? '';
             $heroAllLangs = json_decode($rawHeroSetting, true);
@@ -79,14 +79,24 @@ class HomeSettingsService
             $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 2. تحديث الخدمات (Services) مع دعم اللغات المتعددة والصور
+        // 2. تحديث الخدمات (Services) مع دعم اللغات المتعددة والتوافقية الرجعية
         elseif ($action === 'update_services') {
-            $targetLang = $_POST['services_lang'] ?? $_POST['lang'] ?? 'ar';
+            $targetLang = $_POST['services_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawServicesSetting = $currentSettings['services'] ?? '';
             $servicesAllLangs = json_decode($rawServicesSetting, true);
             if (!is_array($servicesAllLangs)) {
                 $servicesAllLangs = [];
+                if (!empty($rawServicesSetting)) {
+                    $legacyData = json_decode($rawServicesSetting, true);
+                    if (is_array($legacyData)) {
+                        $servicesAllLangs['ar'] = [
+                            'title' => $currentSettings['services_title'] ?? 'خدماتنا المميزة',
+                            'desc'  => $currentSettings['services_desc'] ?? '',
+                            'items' => $legacyData['items'] ?? $legacyData
+                        ];
+                    }
+                }
             }
 
             $servicesData = $_POST['services'] ?? [];
@@ -120,7 +130,7 @@ class HomeSettingsService
 
         // 3. تحديث الأسئلة الشائعة (FAQ) مع دعم اللغات المتعددة
         elseif ($action === 'update_faq') {
-            $targetLang = $_POST['faq_lang'] ?? $_POST['lang'] ?? 'ar';
+            $targetLang = $_POST['faq_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawFaqSetting = $currentSettings['faq_items'] ?? '';
             $faqAllLangs = json_decode($rawFaqSetting, true);
@@ -149,7 +159,7 @@ class HomeSettingsService
 
         // 4. تحديث التقييمات (Reviews) مع دعم اللغات المتعددة
         elseif ($action === 'update_reviews') {
-            $targetLang = $_POST['reviews_lang'] ?? $_POST['lang'] ?? 'ar';
+            $targetLang = $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
             $reviewsAllLangs = json_decode($rawReviewsSetting, true);
@@ -178,7 +188,7 @@ class HomeSettingsService
 
         // 5. تحديث المميزات (Choose) مع دعم اللغات المتعددة والصور
         elseif ($action === 'update_choose') {
-            $targetLang = $_POST['choose_lang'] ?? $_POST['lang'] ?? 'ar';
+            $targetLang = $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawChooseSetting = $currentSettings['choose_items'] ?? '';
             $chooseAllLangs = json_decode($rawChooseSetting, true);
@@ -227,7 +237,7 @@ class HomeSettingsService
 
         // 6. تحديث الدليل الشامل (Guide) مع دعم اللغات المتعددة والصور
         elseif ($action === 'update_guide') {
-            $targetLang = $_POST['guide_lang'] ?? $_POST['lang'] ?? 'ar';
+            $targetLang = $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawGuideSetting = $currentSettings['guide_items'] ?? '';
             $guideAllLangs = json_decode($rawGuideSetting, true);

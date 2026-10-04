@@ -104,12 +104,12 @@
     // 2. استخراج بيانات اللغة الحالية مع بدائل احتياطية (ar ثم de)
     $s_data = $services_all[$current_lang] ?? ($services_all['ar'] ?? ($services_all['de'] ?? $services_all));
     
-    // 3. قراءة البيانات مع توافقية الأسماء القديمة والجديدة (title أو section_title)
-    $sec_title = $s_data['title'] ?? ($s_data['section_title'] ?? 'خدماتنا المميزة');
-    $sec_desc  = $s_data['desc'] ?? ($s_data['section_subtitle'] ?? '');
+    // 3. قراءة العنوان والعنوان الفرعي مع دعم المسميات المختلفة
+    $sec_title = $s_data['section_title'] ?? ($s_data['title'] ?? 'خدماتنا المميزة');
+    $sec_desc  = $s_data['section_subtitle'] ?? ($s_data['desc'] ?? '');
     $services  = $s_data['items'] ?? [];
 
-    // بديل أخير للكروت إذا كانت مصفوفة اللغة الحالية فارغة
+    // بديل أخير لكروت الخدمات إذا كانت فارغة في اللغة الحالية
     if (empty($services)) {
         foreach (['ar', 'de', 'en'] as $fallback_lang) {
             if (!empty($services_all[$fallback_lang]['items'])) {
@@ -133,6 +133,7 @@
     <div class="row g-4">
       <?php if (!empty($services)): ?>
         <?php foreach ($services as $service): 
+          // تحديد صورة خلفية الكرت
           $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
           $service_title = $service['title'] ?? 'عنوان الخدمة';
           $service_url   = $service['url'] ?? '#';

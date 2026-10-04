@@ -105,10 +105,11 @@ class HomeSettingsService
 
             $postedServices = $_POST['services'][$targetLang] ?? $_POST['services'] ?? [];
 
-            $secTitle = $postedServices['title'] ?? ($postedServices['section_title'] ?? ($_POST['services_section_title'] ?? 'خدماتنا المميزة'));
-            $secDesc  = $postedServices['desc'] ?? ($postedServices['section_subtitle'] ?? ($_POST['services_section_subtitle'] ?? ''));
+            // تحديد العنوان والوصف الرئيسي مع مرونة المفاتيح والقيم الافتراضية
+            $secTitle = $postedServices['section_title'] ?? ($postedServices['title'] ?? ($_POST['services_section_title'] ?? $_POST['services_title'] ?? 'خدماتنا المميزة'));
+            $secDesc  = $postedServices['section_subtitle'] ?? ($postedServices['desc'] ?? ($_POST['services_section_subtitle'] ?? $_POST['services_desc'] ?? ''));
 
-            // معالجة البيانات النصية للقسم بتمرير المفاتيح الجديدة والقديمة معاً للضمان
+            // معالجة البيانات النصية للقسم بتمرير المفاتيح الجديدة والقديمة معاً لضمان التوافقية
             $servicesAllLangs[$targetLang] = [
                 'title'            => $secTitle,
                 'desc'             => $secDesc,
@@ -117,7 +118,7 @@ class HomeSettingsService
                 'items'            => []
             ];
 
-            // استخراج العناصر بحسب هيكليات الـ POST المختلفة لتجنب الفقد
+            // استخراج العناصر بحسب هيكليات الـ POST المختلفة لتجنب فقد البيانات
             $items = $postedServices['items'] ?? $_POST['service_items'] ?? $_POST['services_items'] ?? [];
             if (is_array($items)) {
                 foreach ($items as $index => $item) {
@@ -139,6 +140,7 @@ class HomeSettingsService
                         $fileErr = $_FILES['service_img_' . $index]['error'];
                     }
 
+                    // معالجة الرفع واستبدال الملف القديم
                     if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
                             $this->deleteOldImageFile($oldImg);

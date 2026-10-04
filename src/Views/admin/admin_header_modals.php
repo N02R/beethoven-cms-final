@@ -594,87 +594,102 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 7. Services Edit Modal -->
+<!-- Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo $lang['edit_services'] ?? $lang['edit_services_section'] ?? 'تعديل الخدمات'; ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo $lang['edit_services_section'] ?? $lang['edit_services'] ?? 'تعديل قسم الخدمات'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <?php 
                 $services_raw = $currentSettings['services'] ?? ($data['services'] ?? '');
-                $servicesAllLangs = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
-
-                // جلب بيانات اللغة الحالية حُصراً لمنع تداخل بيانات اللغات عند الحفظ
-                $currentLangData = $servicesAllLangs[$current_lang] ?? ($servicesAllLangs['ar'] ?? ($servicesAllLangs['de'] ?? []));
+                $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
                 
-                $servicesData = $currentLangData['items'] ?? ($servicesAllLangs['items'] ?? []);
-                $sec_title    = $currentLangData['title'] ?? ($currentLangData['section_title'] ?? ($servicesAllLangs['section_title'] ?? ''));
-                $sec_desc     = $currentLangData['desc'] ?? ($currentLangData['section_subtitle'] ?? ($servicesAllLangs['section_subtitle'] ?? ''));
+                $s = isset($services_all[$current_lang]) && is_array($services_all[$current_lang]) ? $services_all[$current_lang] : [];
+                
+                $sec_title     = $s['section_title'] ?? ($s['title'] ?? ($services_all['section_title'] ?? ''));
+                $sec_subtitle  = $s['section_subtitle'] ?? ($s['desc'] ?? ($services_all['section_subtitle'] ?? ''));
+                $service_items = $s['items'] ?? ($services_all['items'] ?? []);
                 ?>
 
                 <form id="servicesEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_services">
-                    <input type="hidden" name="services_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="services_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- بيانات عنوان ووصف القسم -->
+                    <!-- بيانات عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <input type="text" class="form-control" name="services_title" value="<?php echo htmlspecialchars(safe_admin_string($sec_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="أدخل عنوان القسم للغة الحالية">
-                        </div>
-                        <div class="<?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_desc'] ?? 'وصف القسم (اختياري)'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <textarea class="form-control" name="services_desc" rows="2" style="height: auto; padding: 12px 16px;" placeholder="أدخل وصف القسم للغة الحالية"><?php echo htmlspecialchars(safe_admin_string($sec_desc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        <div class="row g-3">
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_title'] ?? 'عنوان القسم الرئيسي'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <input type="text" class="form-control" name="services[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($sec_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="أدخل عنوان القسم للغة الحالية">
+                            </div>
+                            
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['services_section_desc'] ?? 'العنوان الفرعي / الوصف'; ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <textarea class="form-control" name="services[<?php echo $current_lang; ?>][section_subtitle]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="أدخل وصف القسم للغة الحالية"><?php echo htmlspecialchars(safe_admin_string($sec_subtitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- قائمة كروت الخدمات بالحاوي والتصميم الأصلي -->
+                    <!-- قائمة خدمات المضافة بالتصميم الجديد -->
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">الخدمات المضافة</h6>
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($servicesData as $index => $service): ?>
-                            <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                        <?php foreach ($service_items as $idx => $item): ?>
+                            <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $idx; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                                <!-- حفظ صورة الخدمة القديمة -->
+                                <input type="hidden" class="service-old-img" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['title'] ?? 'العنوان'; ?></label>
-                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($service['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['title'] ?? 'العنوان'; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['title'] ?? 'اسم الخدمة'; ?></label>
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخدمة">
                                     </div>
+
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['url'] ?? 'الرابط'; ?></label>
-                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($service['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['url'] ?? 'الرابط'; ?>">
+                                        <input type="text" class="form-control service-url" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الخدمة">
                                     </div>
-                                    <div class="col-md-11 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['image_icon'] ?? 'الصورة / الأيقونة'; ?></label>
+
+                                    <div class="col-md-6 <?php echo $modal_align; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة (Bootstrap Icon)</label>
+                                        <input type="text" class="form-control" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][icon]" value="<?php echo htmlspecialchars($item['icon'] ?? 'bi bi-star', ENT_QUOTES, 'UTF-8'); ?>" placeholder="bi bi-star">
+                                    </div>
+
+                                    <div class="col-md-6 <?php echo $modal_align; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['image_icon'] ?? 'صورة الخدمة'; ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($service['img'])): ?>
+                                            <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($service['img']) : $service['img'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Service Image" 
                                                          class="rounded-2" 
                                                          style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control service-file" name="service_items[<?php echo $idx; ?>][img]" accept="image/*">
                                         </div>
                                     </div>
-                                    
-                                    <!-- حفظ مسار الصورة القديمة للخدمة -->
-                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($service['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-md-11 <?php echo $modal_align; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary">وصف الخدمة</label>
+                                        <textarea class="form-control" name="services[<?php echo $current_lang; ?>][items][<?php echo $idx; ?>][desc]" rows="2" style="height: auto; padding: 10px 14px;" placeholder="وصف الخدمة"><?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    </div>
                                     
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $idx; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- زر إضافة خدمة جديدة بالتصميم الأصلي -->
+                    <!-- زر إضافة خدمة جديدة بالتصميم المحدث -->
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo $lang['add_new_service'] ?? 'إضافة خدمة جديدة'; ?>
                     </button>

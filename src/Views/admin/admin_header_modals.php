@@ -614,7 +614,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 
                 $sec_title     = $s['section_title'] ?? ($s['title'] ?? ($services_all['section_title'] ?? ''));
                 $sec_subtitle  = $s['section_subtitle'] ?? ($s['desc'] ?? ($services_all['section_subtitle'] ?? ''));
-                $service_items = $s['items'] ?? ($services_all['items'] ?? $services_all);
+                $service_items = $s['items'] ?? ($services_all['items'] ?? (is_array($s) && isset($s[0]) ? $s : []));
                 if (!is_array($service_items)) $service_items = [];
                 ?>
 
@@ -638,7 +638,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
-                    <!-- قائمة الخدمات المضافة - مطابقة تماماً لشكل addServiceRow() -->
+                    <!-- قائمة الخدمات المضافة -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">الخدمات المضافة</h6>
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($service_items as $index => $item): ?>
@@ -646,12 +646,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control service-title" name="services[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخدمة">
+                                        <input type="text" class="form-control service-title" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الخدمة">
                                     </div>
 
                                     <div class="col-md-6">
                                         <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                        <input type="text" class="form-control service-url" name="services[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الخدمة">
+                                        <input type="text" class="form-control service-url" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الخدمة">
                                     </div>
 
                                     <div class="col-md-11">
@@ -664,7 +664,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         </div>
                                     </div>
 
-                                    <input type="hidden" class="service-old-img" name="services[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? $item['old_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="service-old-img" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? $item['old_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
@@ -1386,23 +1386,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         if (!container) return;
+        const currentLang = '<?php echo $current_lang; ?>';
         const index = container.querySelectorAll('.service-row-item').length;
         const html = `
             <div class="p-3 shadow-sm mb-3 service-row-item" id="service_row_${index}" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                 <div class="row g-3 align-items-center">
                     <div class="col-md-6">
                         <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                        <input type="text" class="form-control service-title" name="services[${index}][title]" placeholder="عنوان الخدمة">
+                        <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="عنوان الخدمة">
                     </div>
                     <div class="col-md-6">
                         <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                        <input type="text" class="form-control service-url" name="services[${index}][url]" value="#" placeholder="رابط الخدمة">
+                        <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="رابط الخدمة">
                     </div>
                     <div class="col-md-11">
                         <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
                         <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
                     </div>
-                    <input type="hidden" class="service-old-img" name="services[${index}][old_img]" value="">
+                    <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${index}][old_img]" value="">
                     <div class="col-md-1 text-center pt-3">
                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${index}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                     </div>
@@ -1509,16 +1510,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // 1. إعادة ترقيم صفوف الخدمات (Services)
+                // 1. إعادة ترقيم صفوف الخدمات (Services) مع مفتاح اللغة والحاوية items
+                const currentLang = '<?php echo $current_lang; ?>';
                 form.querySelectorAll('.service-row-item').forEach((row, index) => {
                     const title = row.querySelector('.service-title');
                     const url = row.querySelector('.service-url');
                     const file = row.querySelector('.service-file');
                     const oldImg = row.querySelector('.service-old-img');
-                    if (title) title.name = `services[${index}][title]`;
-                    if (url) url.name = `services[${index}][url]`;
+                    if (title) title.name = `services[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `services[${currentLang}][items][${index}][url]`;
                     if (file) file.name = `service_img_${index}`;
-                    if (oldImg) oldImg.name = `services[${index}][old_img]`;
+                    if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
                 });
 
                 // 2. إعادة ترقيم صفوف الفريق (Team)
@@ -1697,5 +1699,3 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         });
     });
 </script>
-
-

@@ -699,25 +699,40 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-body p-4">
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
+                    <!-- تمرير اللغة الحالية ليعرف الكونترولر أي لغة يتم تعديلها -->
+                    <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <?php 
+                    // فك تشفير JSON بأمان واستخراج لغة الجلسة الحالية
+                    $rawChoose = $data['choose_items'] ?? '';
+                    $chooseParsed = is_string($rawChoose) ? json_decode($rawChoose, true) : (is_array($rawChoose) ? $rawChoose : []);
+                    
+                    // استخراج بيانات اللغة الحالية أو البدائل الاحتياطية
+                    $langData = $chooseParsed[$current_lang] ?? $chooseParsed['ar'] ?? $chooseParsed['de'] ?? [];
+                    
+                    // العنوان والوصف
+                    $currentTitle = $langData['choose_title'] ?? $data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
+                    $currentDesc  = $langData['choose_section_desc'] ?? $data['choose_section_desc'] ?? '';
+                    
+                    // العناصر (Items)
+                    $chooseItemsList = $langData['items'] ?? (isset($chooseParsed[0]) ? $chooseParsed : []);
+                    ?>
+
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($current_lang); ?>)</label>
+                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
-                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['choose_section_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $chooseItemsData = is_array($data['choose_items'] ?? null) ? $data['choose_items'] : [];
-                        if (!empty($chooseItemsData)): 
-                            foreach ($chooseItemsData as $index => $item): 
-                        ?>
+                        <?php if (!empty($chooseItemsList)): ?>
+                            <?php foreach ($chooseItemsList as $index => $item): ?>
                                 <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
@@ -752,9 +767,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; 
-                        endif; 
-                        ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">

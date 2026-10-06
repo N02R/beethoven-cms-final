@@ -173,49 +173,52 @@
     <?php 
     // 1. جلب سجل choose_items بالكامل وفك الـ JSON
     $choose_raw  = get_setting('choose_items', '{}');
-    $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : $choose_raw;
+    $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
 
     // 2. اختيار بيانات اللغة الحالية مع Fallback للعربية ثم الألمانية
-    $lang_key       = $current_lang ?? 'ar';
+    $lang_key       = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
     $current_choose = $choose_data[$lang_key] ?? $choose_data['ar'] ?? $choose_data['de'] ?? [];
 
-    // 3. استخراج العنوان والوصف وقائمة الكروت للغة المحددة
-    $choose_title = $current_choose['title'] ?? '';
-    $choose_desc  = $current_choose['desc'] ?? '';
+    // 3. استخراج العنوان والوصف مع دعم المفاتيح القديمة والجديدة بمرونة كاملة
+    $choose_title = $current_choose['title'] ?? $current_choose['choose_title'] ?? '';
+    $choose_desc  = $current_choose['desc']  ?? $current_choose['choose_section_desc'] ?? '';
     $choose_items = $current_choose['items'] ?? [];
     ?>
 
     <?php if (!empty($choose_title)): ?>
-      <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($choose_title); ?></h2>
+      <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($choose_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php endif; ?>
     
     <?php if (!empty($choose_desc)): ?>
         <p class="mb-5 text-muted" style="max-width: 700px;">
-            <?php echo htmlspecialchars($choose_desc); ?>
+            <?php echo htmlspecialchars($choose_desc, ENT_QUOTES, 'UTF-8'); ?>
         </p>
     <?php endif; ?>
 
-    <div class="row g-3">
-      <?php 
-      foreach ($choose_items as $item): 
-        $item_img   = get_image_url($item['img'] ?? null);
-        $item_title = $item['title'] ?? '';
-        $item_desc  = $item['desc'] ?? '';
-        $item_url   = $item['url'] ?? '#';
-      ?>
-        <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-          <div class="card choose-card">
-            <div class="card-body">
-              <a href="<?php echo htmlspecialchars($item_url); ?>">
-                <img src="<?php echo htmlspecialchars($item_img); ?>" alt="<?php echo htmlspecialchars($item_title); ?>">
-              </a>
-              <h5 class="card-title"><?php echo htmlspecialchars($item_title); ?></h5>
-              <p class="card-text"><?php echo htmlspecialchars($item_desc); ?></p>
+    <?php if (!empty($choose_items) && is_array($choose_items)): ?>
+      <div class="row g-3">
+        <?php 
+        foreach ($choose_items as $item): 
+          $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
+          $item_img   = function_exists('get_image_url') ? get_image_url($raw_img) : $raw_img;
+          $item_title = $item['title'] ?? '';
+          $item_desc  = $item['desc'] ?? '';
+          $item_url   = $item['url'] ?? '#';
+        ?>
+          <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card choose-card">
+              <div class="card-body">
+                <a href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
+                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">
+                </a>
+                <h5 class="card-title"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
             </div>
           </div>
-        </div>
-      <?php endforeach; ?>
-    </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 <!-- choose end -->

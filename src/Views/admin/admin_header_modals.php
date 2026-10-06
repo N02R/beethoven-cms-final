@@ -689,40 +689,41 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 8. Choose Edit Modal -->
-<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-star text-primary"></i> تعديل المميزات</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title"><i class="bi bi-star text-primary me-2"></i> تعديل المميزات</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
-                    <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar'); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                    // 1. جلب البيانات من الـ Controller أو من get_setting مباشرة
+                    // 1. جلب البيانات واستخراجها بمرونة
                     $rawChoose = $data['choose_items'] ?? get_setting('choose_items', '{}');
-                    $chooseParsed = is_string($rawChoose) ? json_decode($rawChoose, true) : (is_array($rawChoose) ? $rawChoose : []);
+                    $chooseParsed = is_string($rawChoose) ? (json_decode($rawChoose, true) ?? []) : (is_array($rawChoose) ? $rawChoose : []);
                     
-                    // 2. تحديد لغة الجلسة أو اللغة الحالية
-                    $langKey  = $current_lang ?? 'ar';
+                    // 2. تحديد لغة الجلسة
+                    $langKey  = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
                     $langData = $chooseParsed[$langKey] ?? $chooseParsed['ar'] ?? $chooseParsed['de'] ?? [];
                     
-                    // 3. استخراج العنوان والوصف المطابق لمفاتيح SQL و HTML (title & desc)
-                    $currentTitle = $langData['title'] ?? '';
-                    $currentDesc  = $langData['desc'] ?? '';
+                    // 3. استخراج العنوان والوصف وقراءة المفاتيح القديمة والجديدة مرنًا (Backward Compatible)
+                    $currentTitle = $langData['title'] ?? $langData['choose_title'] ?? $langData['section_title'] ?? '';
+                    $currentDesc  = $langData['desc']  ?? $langData['choose_section_desc'] ?? $langData['section_subtitle'] ?? '';
                     
-                    // 4. استخراج العناصر (items)
+                    // 4. استخراج عناصر القائمة (items)
                     $chooseItemsList = $langData['items'] ?? [];
                     ?>
 
+                    <!-- الجزء الأول: عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($langKey); ?>)</label>
-                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان قسم لماذا تختارنا">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
@@ -730,26 +731,28 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
+                    <!-- الجزء الثاني: كروت وعناصر المميزات -->
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?php if (!empty($chooseItemsList)): ?>
+                        <?php if (!empty($chooseItemsList) && is_array($chooseItemsList)): ?>
                             <?php foreach ($chooseItemsList as $index => $item): ?>
                                 <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                         </div>
 
                                         <div class="col-md-11">
                                             <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
+                                                    <?php $imgUrl = function_exists('get_image_url') ? get_image_url($item['img']) : $item['img']; ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $langKey), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                        <img src="<?php echo htmlspecialchars(safe_admin_string($imgUrl, $langKey), ENT_QUOTES, 'UTF-8'); ?>" 
                                                              alt="Choose Item Icon" 
                                                              class="rounded-2" 
                                                              style="width: 40px; height: 40px; object-fit: cover;">

@@ -206,38 +206,58 @@ class HomeSettingsService
                 $chooseAllLangs = [];
             }
 
-            // استقبال العنوان والوصف العام للقسم للغة المحددة
-            $chooseTitle = $_POST['choose_title'] ?? ($_POST['choose_title'][$targetLang] ?? '');
-            $chooseDesc  = $_POST['choose_desc']  ?? ($_POST['choose_desc'][$targetLang] ?? '');
+            // استخراج المصفوفة الخاصة باللغة المستهدفة إن وجدت
+            $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
+
+            // قراءة عنوان ووصف القسم بمرونة تطابق أسلوب Services
+            $chooseTitle = $postedChoose['section_title'] 
+                        ?? ($postedChoose['title'] 
+                        ?? ($_POST['choose_title'][$targetLang] 
+                        ?? ($_POST['choose_title'] ?? '')));
+
+            $chooseDesc  = $postedChoose['section_subtitle'] 
+                        ?? ($postedChoose['desc'] 
+                        ?? ($_POST['choose_desc'][$targetLang] 
+                        ?? ($_POST['choose_desc'] ?? '')));
 
             // استقبال عناصر المميزات (items)
-            $chooseData = $_POST['choose'] ?? ($_POST['choose'][$targetLang] ?? []);
-            if (!is_array($chooseData)) {
-                $chooseData = [];
+            $items = $postedChoose['items'] ?? (is_array($_POST['choose'] ?? null) ? $_POST['choose'] : []);
+            if (!is_array($items)) {
+                $items = [];
             }
 
             $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
             $processedItems = [];
 
-            foreach ($chooseData as $index => $item) {
-                $fileToCheck = $_FILES['choose_img_' . $index] 
-                            ?? ($_FILES['choose']['tmp_name'][$targetLang][$index]['img'] ?? null)
-                            ?? ($_FILES['choose']['tmp_name'][$index]['img'] ?? null);
-                
+            foreach ($items as $index => $item) {
+                // تجنب قراءة المفاتيح غير الرقمية مثل ['title'] في حال كانت القيمة كائن رئيسي
+                if (!is_numeric($index) || !is_array($item)) {
+                    continue;
+                }
+
                 $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
                 $finalImg = $oldImg;
 
-                if ($fileToCheck) {
-                    $tmpPath = is_array($fileToCheck) ? ($fileToCheck['tmp_name'] ?? null) : $fileToCheck;
-                    $errorVal = is_array($fileToCheck) ? ($fileToCheck['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_OK;
+                $fileTmp = null;
+                $fileErr = UPLOAD_ERR_NO_FILE;
 
-                    if ($tmpPath && $errorVal === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($tmpPath);
-                        $finalImg = 'assets/uploads/' . $filename;
+                if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
+                    $fileErr = $_FILES['choose_img_' . $index]['error'];
+                } elseif (isset($_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['choose']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    $fileErr = $_FILES['choose']['error'][$targetLang]['items'][$index]['img'];
+                } elseif (isset($_FILES['choose']['tmp_name'][$index]['img']) && $_FILES['choose']['error'][$index]['img'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose']['tmp_name'][$index]['img'];
+                    $fileErr = $_FILES['choose']['error'][$index]['img'];
+                }
+
+                if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
+                    if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                        $this->deleteOldImageFile($oldImg);
                     }
+                    $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                    $finalImg = 'assets/uploads/' . $filename;
                 }
 
                 $processedItems[] = [
@@ -247,11 +267,13 @@ class HomeSettingsService
                 ];
             }
 
-            // توحيد مفاتيح JSON لتطابق SQL والـ HTML (title & desc)
+            // حفظ البيانات بأسلوب يدعم التوافق العكسي للمفاتيح
             $chooseAllLangs[$targetLang] = [
-                'title' => $chooseTitle,
-                'desc'  => $chooseDesc,
-                'items' => $processedItems
+                'title'               => $chooseTitle,
+                'desc'                => $chooseDesc,
+                'choose_title'        => $chooseTitle,
+                'choose_section_desc' => $chooseDesc,
+                'items'               => $processedItems
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);

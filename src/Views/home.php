@@ -171,51 +171,43 @@
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // معالجة عنوان القسم متعدد اللغات
-    $choose_title_raw = get_setting('choose_title', 'ما الذي يميز بيتهوفن سيتي');
-    if (is_string($choose_title_raw) && str_starts_with(trim($choose_title_raw), '{')) {
-        $choose_title_arr = json_decode($choose_title_raw, true) ?? [];
-        $choose_title = $choose_title_arr[$current_lang] ?? $choose_title_arr['de'] ?? $choose_title_arr['ar'] ?? 'ما الذي يميز بيتهوفن سيتي';
-    } else {
-        $choose_title = $choose_title_raw;
-    }
+    // 1. جلب سجل choose_items بالكامل وفك الـ JSON
+    $choose_raw  = get_setting('choose_items', '{}');
+    $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : $choose_raw;
 
-    // معالجة وصف القسم متعدد اللغات (إن وُجد)
-    $choose_desc_raw = get_setting('choose_section_desc', '');
-    $choose_sec_desc = '';
-    if (is_string($choose_desc_raw) && str_starts_with(trim($choose_desc_raw), '{')) {
-        $choose_desc_arr = json_decode($choose_desc_raw, true) ?? [];
-        $choose_sec_desc = $choose_desc_arr[$current_lang] ?? $choose_desc_arr['de'] ?? $choose_desc_arr['ar'] ?? '';
-    } else {
-        $choose_sec_desc = $choose_desc_raw;
-    }
+    // 2. اختيار بيانات اللغة الحالية مع Fallback للعربية ثم الألمانية
+    $lang_key       = $current_lang ?? 'ar';
+    $current_choose = $choose_data[$lang_key] ?? $choose_data['ar'] ?? $choose_data['de'] ?? [];
+
+    // 3. استخراج العنوان والوصف وقائمة الكروت للغة المحددة
+    $choose_title = $current_choose['title'] ?? '';
+    $choose_desc  = $current_choose['desc'] ?? '';
+    $choose_items = $current_choose['items'] ?? [];
     ?>
 
-    <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($choose_title); ?></h2>
+    <?php if (!empty($choose_title)): ?>
+      <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($choose_title); ?></h2>
+    <?php endif; ?>
     
-    <?php if (!empty($choose_sec_desc)): ?>
+    <?php if (!empty($choose_desc)): ?>
         <p class="mb-5 text-muted" style="max-width: 700px;">
-            <?php echo htmlspecialchars($choose_sec_desc); ?>
+            <?php echo htmlspecialchars($choose_desc); ?>
         </p>
     <?php endif; ?>
 
     <div class="row g-3">
       <?php 
-      $choose_items_raw = get_setting('choose_items', []);
-      $choose_items = is_string($choose_items_raw) ? (json_decode($choose_items_raw, true) ?? []) : $choose_items_raw;
-
       foreach ($choose_items as $item): 
-        $item_img = get_image_url($item['img'] ?? null);
-        
-        // استخراج العنوان والوصف الخاص بكل ميزة حسب اللغة الحالية مع بدائل آمنة
-        $item_title = $item[$current_lang]['title'] ?? $item['de']['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
-        $item_desc  = $item[$current_lang]['desc'] ?? $item['de']['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+        $item_img   = get_image_url($item['img'] ?? null);
+        $item_title = $item['title'] ?? '';
+        $item_desc  = $item['desc'] ?? '';
+        $item_url   = $item['url'] ?? '#';
       ?>
         <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
           <div class="card choose-card">
             <div class="card-body">
-              <a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>">
-                <img src="<?php echo htmlspecialchars($item_img); ?>" alt="icon">
+              <a href="<?php echo htmlspecialchars($item_url); ?>">
+                <img src="<?php echo htmlspecialchars($item_img); ?>" alt="<?php echo htmlspecialchars($item_title); ?>">
               </a>
               <h5 class="card-title"><?php echo htmlspecialchars($item_title); ?></h5>
               <p class="card-text"><?php echo htmlspecialchars($item_desc); ?></p>
@@ -228,7 +220,6 @@
 </section>
 <!-- choose end -->
 
-  
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
     <?php if (!empty($is_admin)): ?>

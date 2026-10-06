@@ -699,34 +699,34 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-body p-4">
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
-                    <!-- تمرير اللغة الحالية ليعرف الكونترولر أي لغة يتم تعديلها -->
                     <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                    // فك تشفير JSON بأمان واستخراج لغة الجلسة الحالية
-                    $rawChoose = $data['choose_items'] ?? '';
+                    // 1. جلب البيانات من الـ Controller أو من get_setting مباشرة
+                    $rawChoose = $data['choose_items'] ?? get_setting('choose_items', '{}');
                     $chooseParsed = is_string($rawChoose) ? json_decode($rawChoose, true) : (is_array($rawChoose) ? $rawChoose : []);
                     
-                    // استخراج بيانات اللغة الحالية أو البدائل الاحتياطية
-                    $langData = $chooseParsed[$current_lang] ?? $chooseParsed['ar'] ?? $chooseParsed['de'] ?? [];
+                    // 2. تحديد لغة الجلسة أو اللغة الحالية
+                    $langKey  = $current_lang ?? 'ar';
+                    $langData = $chooseParsed[$langKey] ?? $chooseParsed['ar'] ?? $chooseParsed['de'] ?? [];
                     
-                    // العنوان والوصف
-                    $currentTitle = $langData['choose_title'] ?? $data['choose_title'] ?? 'ما الذي يميز بيتهوفن سيتي';
-                    $currentDesc  = $langData['choose_section_desc'] ?? $data['choose_section_desc'] ?? '';
+                    // 3. استخراج العنوان والوصف المطابق لمفاتيح SQL و HTML (title & desc)
+                    $currentTitle = $langData['title'] ?? '';
+                    $currentDesc  = $langData['desc'] ?? '';
                     
-                    // العناصر (Items)
-                    $chooseItemsList = $langData['items'] ?? (isset($chooseParsed[0]) ? $chooseParsed : []);
+                    // 4. استخراج العناصر (items)
+                    $chooseItemsList = $langData['items'] ?? [];
                     ?>
 
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($current_lang); ?>)</label>
-                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($langKey); ?>)</label>
+                            <input type="text" class="form-control" name="choose_title" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">وصف القسم (اختياري)</label>
-                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="choose_desc" rows="2" placeholder="أضف وصفاً هنا أو اتركه فارغاً للإخفاء" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $langKey), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -737,11 +737,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                            <input type="text" class="form-control choose-title" name="choose[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                            <input type="text" class="form-control choose-desc" name="choose[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
                                         </div>
 
                                         <div class="col-md-11">
@@ -749,7 +749,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                        <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $langKey), ENT_QUOTES, 'UTF-8'); ?>" 
                                                              alt="Choose Item Icon" 
                                                              class="rounded-2" 
                                                              style="width: 40px; height: 40px; object-fit: cover;">
@@ -758,7 +758,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
                                                 <input type="file" class="form-control choose-file" name="choose_img_<?php echo $index; ?>" accept="image/*">
                                             </div>
-                                            <input type="hidden" class="choose-old-img" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="choose-old-img" name="choose[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
                                             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف الميزة">
@@ -1099,13 +1099,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
-    // دالة حذف الصفوف العامة
-    function removeRow(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
+    /**
+     * دالة حذف الصفوف العامة المحدثة
+     * تعتمد على العنصر المحذوف مباشرة وتمنع مشكلة التضارب في ID الصفوف
+     * @param {HTMLElement|string} target
+     */
+    function removeRow(target) {
+        if (typeof target === 'string') {
+            const el = document.getElementById(target);
+            if (el) el.remove();
+        } else if (target && target.nodeType) {
+            const row = target.closest('.social-row-item, .menu-row-item, .choose-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
+            if (row) row.remove();
+        }
     }
 
-    // دالة عرض التنبيهات الاحترافية
+    /**
+     * دالة عرض التنبيهات الاحترافية
+     */
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -1150,7 +1161,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }, 4000);
     }
 
-    // التبديل بين المحتوى النصي والصورة في الإعلانات
+    /**
+     * التبديل بين المحتوى النصي والصورة في الإعلانات
+     */
     function toggleAdContent(val) {
         const textEditor = document.getElementById('textEditor');
         const imageEditor = document.getElementById('imageEditor');
@@ -1165,6 +1178,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     /* ==========================================================================
        دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders)
+       تستخدم removeRow(this) لتجنب أخطاء تكرار الـ ID عند الحذف والتحسين
        ========================================================================== */
 
     function addSocialRow() {
@@ -1174,7 +1188,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 social-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
@@ -1191,7 +1204,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_${count}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المنصة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1202,24 +1215,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const container = document.getElementById('menuRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.menu-row-item').length;
-        const currentLang = '<?php echo $current_lang; ?>'.toUpperCase();
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>'.toUpperCase();
+        const alignClass = '<?php echo htmlspecialchars($modal_align ?? "text-start", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 menu-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'menu_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
-                <div class="col-md-6 <?php echo $modal_align; ?>">
+                <div class="col-md-6 ${alignClass}">
                     <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang})</label>
                     <input type="text" class="form-control menu-title" name="menu[${count}][title]" placeholder="العنوان">
                 </div>
-                <div class="col-md-5 <?php echo $modal_align; ?>">
+                <div class="col-md-5 ${alignClass}">
                     <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
                     <input type="text" class="form-control menu-url" name="menu[${count}][url]" placeholder="url">
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <input type="hidden" class="menu-order" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_${count}')" title="حذف"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1233,7 +1246,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 choose-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'choose_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1250,7 +1262,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" class="choose-old-img" name="choose[${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${count}')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الميزة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1264,7 +1276,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 review-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'rev_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
@@ -1272,7 +1283,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control review-url" name="reviews[${count}][url]" placeholder="رابط اليوتيوب (Embed URL)">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_${count}')" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1286,7 +1297,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 guide-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'guide_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1307,7 +1317,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" class="guide-old-img" name="guide[${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_${count}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1321,7 +1331,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 faq-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'faq_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1333,7 +1342,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control faq-answer" name="faq[${count}][answer]" placeholder="الإجابة">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_${count}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1347,7 +1356,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'col3_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
@@ -1363,7 +1371,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_${count}')" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
             <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
@@ -1378,7 +1386,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 lang-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'lang_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1390,7 +1397,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control lang-url" name="lang[${count}][url]" placeholder="الرابط">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_${count}')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف اللغة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1400,31 +1407,32 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         if (!container) return;
-        const currentLang = '<?php echo $current_lang; ?>';
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const index = container.querySelectorAll('.service-row-item').length;
-        const html = `
-            <div class="p-3 shadow-sm mb-3 service-row-item" id="service_row_${index}" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-6">
-                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                        <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="عنوان الخدمة">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                        <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="رابط الخدمة">
-                    </div>
-                    <div class="col-md-11">
-                        <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
-                        <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
-                    </div>
-                    <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${index}][old_img]" value="">
-                    <div class="col-md-1 text-center pt-3">
-                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_${index}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
-                    </div>
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 service-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
+                    <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="عنوان الخدمة">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="رابط الخدمة">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
+                </div>
+                <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${index}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
-        container.insertAdjacentHTML('beforeend', html);
+        container.appendChild(div);
     }
 
     function addTeamRow() {
@@ -1434,26 +1442,25 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 team-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'team_row_' + teamCount;
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label for="team_name_${teamCount}" class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
-                    <input type="text" id="team_name_${teamCount}" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
+                    <label class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
+                    <input type="text" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <label for="team_role_${teamCount}" class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
-                    <input type="text" id="team_role_${teamCount}" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <label class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
+                    <input type="text" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
-                    <label for="team_file_${teamCount}" class="form-label fw-semibold small text-secondary">صورة العضو</label>
+                    <label class="form-label fw-semibold small text-secondary">صورة العضو</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="team_file_${teamCount}" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
+                        <input type="file" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1466,26 +1473,25 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 count-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'count_row_' + countsCount;
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label for="count_number_${countsCount}" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
-                    <input type="text" id="count_number_${countsCount}" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
+                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
                 </div>
                 <div class="col-md-4">
-                    <label for="count_title_${countsCount}" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                    <input type="text" id="count_title_${countsCount}" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
+                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
                 </div>
                 <div class="col-md-4">
-                    <label for="count_file_${countsCount}" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
+                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="count_file_${countsCount}" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
+                        <input type="file" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1498,18 +1504,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 partner-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-11">
-                    <label for="partner_file_${partnerCount}" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
+                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="partner_file_${partnerCount}" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                        <input type="file" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -1525,7 +1530,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 e.preventDefault();
 
                 // 1. إعادة ترقيم صفوف الخدمات (Services) مع مفتاح اللغة والحاوية items
-                const currentLang = '<?php echo $current_lang; ?>';
+                const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
                 form.querySelectorAll('.service-row-item').forEach((row, index) => {
                     const title = row.querySelector('.service-title');
                     const url = row.querySelector('.service-url');
@@ -1654,8 +1659,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (urlInput) urlInput.name = `lang[${index}][url]`;
                 });
 
-                // إعداد زر الحفظ أثناء الإرسال
-                const submitBtn = document.querySelector(`button[form="${this.id}"]`) || this.querySelector('button[type="submit"]');
+                // البحث الآمن عن زر الحفظ المرتبط بالنموذج
+                const formId = this.getAttribute('id');
+                const submitBtn = (formId ? document.querySelector(`button[form="${formId}"]`) : null) || this.querySelector('button[type="submit"]');
                 let originalText = '';
                 if (submitBtn) {
                     originalText = submitBtn.innerHTML;
@@ -1664,8 +1670,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 }
 
                 const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
                 
+                // جلب CSRF Token بطريقة مضمونة
+                let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';
+                }
+
                 if (csrfToken && !formData.has('csrf_token')) {
                     formData.append('csrf_token', csrfToken);
                 }
@@ -1680,7 +1691,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 })
                 .then(response => response.text())
                 .then(text => {
-                    console.log("Raw Server Response:", text);
                     try {
                         const data = JSON.parse(text);
                         if (data.success || data.status === 'success') {
@@ -1694,7 +1704,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             }
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        showNotification('خطأ في إستجابة الخادم: ' + text, 'danger');
                         if (submitBtn) {
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = originalText;

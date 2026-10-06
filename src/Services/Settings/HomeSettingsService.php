@@ -206,31 +206,31 @@ class HomeSettingsService
                 $chooseAllLangs = [];
             }
 
-            // استخراج المصفوفة الخاصة باللغة المستهدفة إن وجدت
-            $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
+            // قراءة عنوان ووصف القسم بمرونة من كافة الحقول المحتملة
+            $chooseTitle = $_POST['choose_title'][$targetLang] 
+                        ?? ($_POST['choose_title'] 
+                        ?? ($_POST['choose'][$targetLang]['title'] 
+                        ?? ($_POST['choose']['title'] ?? '')));
 
-            // قراءة عنوان ووصف القسم بمرونة تطابق أسلوب Services
-            $chooseTitle = $postedChoose['section_title'] 
-                        ?? ($postedChoose['title'] 
-                        ?? ($_POST['choose_title'][$targetLang] 
-                        ?? ($_POST['choose_title'] ?? '')));
+            $chooseDesc  = $_POST['choose_desc'][$targetLang] 
+                        ?? ($_POST['choose_desc'] 
+                        ?? ($_POST['choose'][$targetLang]['desc'] 
+                        ?? ($_POST['choose']['desc'] ?? '')));
 
-            $chooseDesc  = $postedChoose['section_subtitle'] 
-                        ?? ($postedChoose['desc'] 
-                        ?? ($_POST['choose_desc'][$targetLang] 
-                        ?? ($_POST['choose_desc'] ?? '')));
+            // جلب عناصر المميزات (items) سواء جاءت بتركيب choose[0] أو choose[ar][items][0]
+            $rawItems = $_POST['choose'][$targetLang]['items'] 
+                     ?? ($_POST['choose']['items'] 
+                     ?? ($_POST['choose'] ?? []));
 
-            // استقبال عناصر المميزات (items)
-            $items = $postedChoose['items'] ?? (is_array($_POST['choose'] ?? null) ? $_POST['choose'] : []);
-            if (!is_array($items)) {
-                $items = [];
+            if (!is_array($rawItems)) {
+                $rawItems = [];
             }
 
             $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
             $processedItems = [];
 
-            foreach ($items as $index => $item) {
-                // تجنب قراءة المفاتيح غير الرقمية مثل ['title'] في حال كانت القيمة كائن رئيسي
+            foreach ($rawItems as $index => $item) {
+                // تخطي القيم غير المنسقة كمصفوفة صفوف (مثل مفاتيح العناوين إن وجدت)
                 if (!is_numeric($index) || !is_array($item)) {
                     continue;
                 }
@@ -241,6 +241,7 @@ class HomeSettingsService
                 $fileTmp = null;
                 $fileErr = UPLOAD_ERR_NO_FILE;
 
+                // فحص الملف المرفوع للصف
                 if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                     $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
                     $fileErr = $_FILES['choose_img_' . $index]['error'];
@@ -267,7 +268,7 @@ class HomeSettingsService
                 ];
             }
 
-            // حفظ البيانات بأسلوب يدعم التوافق العكسي للمفاتيح
+            // حفظ الهيكل النهائي في كائن اللغات
             $chooseAllLangs[$targetLang] = [
                 'title'               => $chooseTitle,
                 'desc'                => $chooseDesc,
@@ -277,6 +278,9 @@ class HomeSettingsService
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
+
+            // تنفيذ الاستعلام وحفظ البيانات في الجدول
+            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
             $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

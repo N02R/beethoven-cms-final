@@ -162,12 +162,28 @@ class HomeSettingsService
                 $faqAllLangs = [];
             }
 
-            $faqData = $_POST['faq'][$targetLang] ?? $_POST['faq'] ?? $_POST['faq_items'] ?? [];
-            $faqTitle = $_POST['faq_title'][$targetLang] ?? $_POST['faq_title'] ?? 'الأسئلة الشائعة';
+            $faqTitle = $_POST['faq_title'][$targetLang] ?? ($_POST['faq_title'] ?? ($_POST['faq'][$targetLang]['title'] ?? 'الأسئلة الشائعة'));
+            $faqDesc  = $_POST['faq_desc'][$targetLang] ?? ($_POST['faq_desc'] ?? ($_POST['faq'][$targetLang]['desc'] ?? ''));
+
+            $rawItems = $_POST['faq'][$targetLang]['items'] ?? ($_POST['faq']['items'] ?? ($_POST['faq'] ?? ($_POST['faq_items'] ?? [])));
+            $processedItems = [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_numeric($index) || !is_array($item)) continue;
+
+                    $processedItems[] = [
+                        'question' => $item['question'] ?? ($item['title'] ?? ''),
+                        'answer'   => $item['answer'] ?? ($item['desc'] ?? '')
+                    ];
+                }
+            }
 
             $faqAllLangs[$targetLang] = [
+                'title'     => $faqTitle,
+                'desc'      => $faqDesc,
                 'faq_title' => $faqTitle,
-                'items'     => array_values($faqData)
+                'items'     => $processedItems
             ];
 
             $jsonVal = json_encode($faqAllLangs, JSON_UNESCAPED_UNICODE);
@@ -184,12 +200,51 @@ class HomeSettingsService
                 $reviewsAllLangs = [];
             }
 
-            $reviewsData = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? $_POST['reviews_items'] ?? [];
-            $reviewsTitle = $_POST['reviews_title'][$targetLang] ?? $_POST['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+            $reviewsTitle = $_POST['reviews_title'][$targetLang] ?? ($_POST['reviews_title'] ?? ($_POST['reviews'][$targetLang]['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
+            $reviewsDesc  = $_POST['reviews_desc'][$targetLang] ?? ($_POST['reviews_desc'] ?? ($_POST['reviews'][$targetLang]['desc'] ?? ''));
+
+            $rawItems = $_POST['reviews'][$targetLang]['items'] ?? ($_POST['reviews']['items'] ?? ($_POST['reviews'] ?? ($_POST['reviews_items'] ?? [])));
+            $existingLangItems = $reviewsAllLangs[$targetLang]['items'] ?? [];
+            $processedItems = [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_numeric($index) || !is_array($item)) continue;
+
+                    $oldImg = $item['old_img'] ?? ($existingLangItems[$index]['img'] ?? ($existingLangItems[$index]['avatar'] ?? ''));
+                    $finalImg = $oldImg;
+
+                    $fileTmp = null;
+                    if (isset($_FILES['review_img_' . $index]) && $_FILES['review_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $fileTmp = $_FILES['review_img_' . $index]['tmp_name'];
+                    } elseif (isset($_FILES['reviews']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['reviews']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
+                        $fileTmp = $_FILES['reviews']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    }
+
+                    if ($fileTmp) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                        $finalImg = 'assets/uploads/' . $filename;
+                    }
+
+                    $processedItems[] = [
+                        'name'    => $item['name'] ?? ($item['title'] ?? ''),
+                        'role'    => $item['role'] ?? '',
+                        'comment' => $item['comment'] ?? ($item['desc'] ?? ''),
+                        'rating'  => $item['rating'] ?? '5',
+                        'img'     => $finalImg,
+                        'avatar'  => $finalImg
+                    ];
+                }
+            }
 
             $reviewsAllLangs[$targetLang] = [
+                'title'         => $reviewsTitle,
+                'desc'          => $reviewsDesc,
                 'reviews_title' => $reviewsTitle,
-                'items'         => array_values($reviewsData)
+                'items'         => $processedItems
             ];
 
             $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
@@ -206,7 +261,6 @@ class HomeSettingsService
                 $chooseAllLangs = [];
             }
 
-            // قراءة عنوان ووصف القسم بمرونة من كافة الحقول المحتملة
             $chooseTitle = $_POST['choose_title'][$targetLang] 
                         ?? ($_POST['choose_title'] 
                         ?? ($_POST['choose'][$targetLang]['title'] 
@@ -217,7 +271,6 @@ class HomeSettingsService
                         ?? ($_POST['choose'][$targetLang]['desc'] 
                         ?? ($_POST['choose']['desc'] ?? '')));
 
-            // جلب عناصر المميزات (items) سواء جاءت بتركيب choose[0] أو choose[ar][items][0]
             $rawItems = $_POST['choose'][$targetLang]['items'] 
                      ?? ($_POST['choose']['items'] 
                      ?? ($_POST['choose'] ?? []));
@@ -230,7 +283,6 @@ class HomeSettingsService
             $processedItems = [];
 
             foreach ($rawItems as $index => $item) {
-                // تخطي القيم غير المنسقة كمصفوفة صفوف (مثل مفاتيح العناوين إن وجدت)
                 if (!is_numeric($index) || !is_array($item)) {
                     continue;
                 }
@@ -241,7 +293,6 @@ class HomeSettingsService
                 $fileTmp = null;
                 $fileErr = UPLOAD_ERR_NO_FILE;
 
-                // فحص الملف المرفوع للصف
                 if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                     $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
                     $fileErr = $_FILES['choose_img_' . $index]['error'];
@@ -268,7 +319,6 @@ class HomeSettingsService
                 ];
             }
 
-            // حفظ الهيكل النهائي في كائن اللغات
             $chooseAllLangs[$targetLang] = [
                 'title'               => $chooseTitle,
                 'desc'                => $chooseDesc,
@@ -278,9 +328,6 @@ class HomeSettingsService
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
-
-            // تنفيذ الاستعلام وحفظ البيانات في الجدول
-            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
             $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
@@ -294,42 +341,50 @@ class HomeSettingsService
                 $guideAllLangs = [];
             }
 
-            $guideData = $_POST['guide'][$targetLang] ?? $_POST['guide'] ?? $_POST['guide_items'] ?? [];
-            $existingLangData = $guideAllLangs[$targetLang]['items'] ?? [];
+            $guideTitle = $_POST['guide_title'][$targetLang] ?? ($_POST['guide_title'] ?? ($_POST['guide'][$targetLang]['title'] ?? ''));
+            $guideDesc  = $_POST['guide_desc'][$targetLang] ?? ($_POST['guide_desc'] ?? ($_POST['guide'][$targetLang]['desc'] ?? ''));
 
-            foreach ($guideData as $index => $item) {
-                $fileToCheck = $_FILES['guide_img_' . $index] 
-                            ?? ($_FILES['guide']['tmp_name'][$targetLang][$index]['img'] ?? null)
-                            ?? ($_FILES['guide']['tmp_name'][$index]['img'] ?? null);
+            $rawItems = $_POST['guide'][$targetLang]['items'] ?? ($_POST['guide']['items'] ?? ($_POST['guide'] ?? ($_POST['guide_items'] ?? [])));
+            $existingLangItems = $guideAllLangs[$targetLang]['items'] ?? [];
+            $processedItems = [];
 
-                $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_numeric($index) || !is_array($item)) continue;
 
-                if ($fileToCheck) {
-                    $tmpPath = is_array($fileToCheck) ? ($fileToCheck['tmp_name'] ?? null) : $fileToCheck;
-                    $errorVal = is_array($fileToCheck) ? ($fileToCheck['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_OK;
+                    $oldImg = $item['old_img'] ?? ($existingLangItems[$index]['img'] ?? '');
+                    $finalImg = $oldImg;
 
-                    if ($tmpPath && $errorVal === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                    $fileTmp = null;
+                    if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $fileTmp = $_FILES['guide_img_' . $index]['tmp_name'];
+                    } elseif (isset($_FILES['guide']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['guide']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
+                        $fileTmp = $_FILES['guide']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    }
+
+                    if ($fileTmp) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        $filename = $this->imageUploader->processAndUploadFile($tmpPath);
-                        $guideData[$index]['img'] = 'assets/uploads/' . $filename;
-                    } else {
-                        $guideData[$index]['img'] = $oldImg;
+                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                        $finalImg = 'assets/uploads/' . $filename;
                     }
-                } else {
-                    $guideData[$index]['img'] = $oldImg;
+
+                    $processedItems[] = [
+                        'title' => $item['title'] ?? '',
+                        'desc'  => $item['desc'] ?? '',
+                        'link'  => $item['link'] ?? ($item['url'] ?? '#'),
+                        'img'   => $finalImg
+                    ];
                 }
-                unset($guideData[$index]['old_img']);
             }
 
-            $guideTitle = $_POST['guide_title'][$targetLang] ?? $_POST['guide_title'] ?? '';
-            $guideDesc  = $_POST['guide_desc'][$targetLang] ?? $_POST['guide_desc'] ?? '';
-
             $guideAllLangs[$targetLang] = [
+                'title'       => $guideTitle,
+                'desc'        => $guideDesc,
                 'guide_title' => $guideTitle,
                 'guide_desc'  => $guideDesc,
-                'items'       => array_values($guideData)
+                'items'       => $processedItems
             ];
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);

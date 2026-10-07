@@ -36,7 +36,7 @@ class HomeSettingsService
 
         // 1. تحديث قسم الهيرو (Hero)
         if ($action === 'update_hero') {
-            $targetLang = $_POST['hero_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['hero_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawHeroSetting = $currentSettings['hero'] ?? '';
             $heroAllLangs = is_string($rawHeroSetting) ? json_decode($rawHeroSetting, true) : (is_array($rawHeroSetting) ? $rawHeroSetting : []);
@@ -83,7 +83,7 @@ class HomeSettingsService
 
         // 2. تحديث قسم الخدمات (Services)
         elseif ($action === 'update_services') {
-            $targetLang = $_POST['services_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['services_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawServicesSetting = $currentSettings['services'] ?? '';
             $servicesAllLangs = is_string($rawServicesSetting) ? json_decode($rawServicesSetting, true) : (is_array($rawServicesSetting) ? $rawServicesSetting : []);
@@ -154,12 +154,17 @@ class HomeSettingsService
 
         // 3. تحديث الأسئلة الشائعة (FAQ)
         elseif ($action === 'update_faq') {
-            $targetLang = $_POST['faq_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['faq_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawFaqSetting = $currentSettings['faq_items'] ?? '';
             $faqAllLangs = is_string($rawFaqSetting) ? json_decode($rawFaqSetting, true) : (is_array($rawFaqSetting) ? $rawFaqSetting : []);
             if (!is_array($faqAllLangs)) {
                 $faqAllLangs = [];
+            }
+
+            if (isset($faqAllLangs['title']) && !isset($faqAllLangs['ar'])) {
+                $oldData = $faqAllLangs;
+                $faqAllLangs = ['ar' => $oldData];
             }
 
             $faqTitle = $_POST['faq_title'][$targetLang] ?? ($_POST['faq_title'] ?? ($_POST['faq'][$targetLang]['title'] ?? 'الأسئلة الشائعة'));
@@ -192,12 +197,17 @@ class HomeSettingsService
 
         // 4. تحديث التقييمات (Reviews)
         elseif ($action === 'update_reviews') {
-            $targetLang = $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
             $reviewsAllLangs = is_string($rawReviewsSetting) ? json_decode($rawReviewsSetting, true) : (is_array($rawReviewsSetting) ? $rawReviewsSetting : []);
             if (!is_array($reviewsAllLangs)) {
                 $reviewsAllLangs = [];
+            }
+
+            if (isset($reviewsAllLangs['title']) && !isset($reviewsAllLangs['ar'])) {
+                $oldData = $reviewsAllLangs;
+                $reviewsAllLangs = ['ar' => $oldData];
             }
 
             $reviewsTitle = $_POST['reviews_title'][$targetLang] ?? ($_POST['reviews_title'] ?? ($_POST['reviews'][$targetLang]['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
@@ -253,12 +263,17 @@ class HomeSettingsService
 
         // 5. تحديث المميزات (Choose Us)
         elseif ($action === 'update_choose') {
-            $targetLang = $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawChooseSetting = $currentSettings['choose_items'] ?? '';
             $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
             if (!is_array($chooseAllLangs)) {
                 $chooseAllLangs = [];
+            }
+
+            if (isset($chooseAllLangs['title']) && !isset($chooseAllLangs['ar'])) {
+                $oldData = $chooseAllLangs;
+                $chooseAllLangs = ['ar' => $oldData];
             }
 
             $chooseTitle = $_POST['choose_title'][$targetLang] 
@@ -333,12 +348,17 @@ class HomeSettingsService
 
         // 6. تحديث الدليل الشامل (Guide)
         elseif ($action === 'update_guide') {
-            $targetLang = $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawGuideSetting = $currentSettings['guide_items'] ?? '';
             $guideAllLangs = is_string($rawGuideSetting) ? json_decode($rawGuideSetting, true) : (is_array($rawGuideSetting) ? $rawGuideSetting : []);
             if (!is_array($guideAllLangs)) {
                 $guideAllLangs = [];
+            }
+
+            if (isset($guideAllLangs['title']) && !isset($guideAllLangs['ar'])) {
+                $oldData = $guideAllLangs;
+                $guideAllLangs = ['ar' => $oldData];
             }
 
             $guideTitle = $_POST['guide_title'][$targetLang] ?? ($_POST['guide_title'] ?? ($_POST['guide'][$targetLang]['title'] ?? ''));

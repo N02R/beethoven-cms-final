@@ -700,6 +700,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
                     <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
@@ -709,14 +710,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     // 2. تحديد لغة الجلسة
                     $langKey  = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
-                    $langData = $chooseParsed[$langKey] ?? $chooseParsed['ar'] ?? $chooseParsed['de'] ?? [];
                     
-                    // 3. استخراج العنوان والوصف وقراءة المفاتيح القديمة والجديدة مرنًا (Backward Compatible)
+                    // محاولة قراءة الهيكل حسب اللغة
+                    if (isset($chooseParsed[$langKey]) && is_array($chooseParsed[$langKey])) {
+                        $langData = $chooseParsed[$langKey];
+                    } elseif (isset($chooseParsed['ar']) && is_array($chooseParsed['ar'])) {
+                        $langData = $chooseParsed['ar'];
+                    } else {
+                        $langData = $chooseParsed;
+                    }
+                    
+                    // 3. استخراج العنوان والوصف وقراءة المفاتيح المرنة
                     $currentTitle = $langData['title'] ?? $langData['choose_title'] ?? $langData['section_title'] ?? '';
                     $currentDesc  = $langData['desc']  ?? $langData['choose_section_desc'] ?? $langData['section_subtitle'] ?? '';
                     
                     // 4. استخراج عناصر القائمة (items)
-                    $chooseItemsList = $langData['items'] ?? [];
+                    $chooseItemsList = $langData['items'] ?? (is_array($langData) && !isset($langData['title']) ? $langData : []);
                     ?>
 
                     <!-- الجزء الأول: عنوان ووصف القسم الرئيسي -->
@@ -1243,34 +1252,43 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     }
 
     function addChooseRow() {
-        const container = document.getElementById('chooseRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.choose-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 choose-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
+    const container = document.getElementById('chooseRowsContainer');
+    const index = container.querySelectorAll('.choose-row-item').length;
+    
+    const rowHtml = `
+        <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_${index}">
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control choose-title" name="choose[${count}][title]" placeholder="العنوان">
+                    <input type="text" class="form-control choose-title" name="choose[${index}][title]" value="" placeholder="عنوان الميزة">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control choose-desc" name="choose[${count}][desc]" placeholder="الوصف">
+                    <input type="text" class="form-control choose-desc" name="choose[${index}][desc]" value="" placeholder="وصف الميزة">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" class="form-control choose-file" name="choose_img_${count}" accept="image/*">
-                    <input type="hidden" class="choose-old-img" name="choose[${count}][old_img]" value="">
+                    <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
+                    <input type="hidden" class="choose-old-img" name="choose[${index}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الميزة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${index}')" title="حذف الميزة">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
-        `;
-        container.appendChild(div);
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', rowHtml);
+}
+
+function removeRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
     }
+}
 
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');

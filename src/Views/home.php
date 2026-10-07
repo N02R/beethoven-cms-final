@@ -171,18 +171,26 @@
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // 1. جلب سجل choose_items بالكامل وفك الـ JSON
-    $choose_raw  = get_setting('choose_items', '{}');
-    $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
-
-    // 2. اختيار بيانات اللغة الحالية مع Fallback للعربية ثم الألمانية
-    $lang_key       = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
-    $current_choose = $choose_data[$lang_key] ?? $choose_data['ar'] ?? $choose_data['de'] ?? [];
-
-    // 3. استخراج العنوان والوصف مع دعم المفاتيح القديمة والجديدة بمرونة كاملة
-    $choose_title = $current_choose['title'] ?? $current_choose['choose_title'] ?? '';
-    $choose_desc  = $current_choose['desc']  ?? $current_choose['choose_section_desc'] ?? '';
-    $choose_items = $current_choose['items'] ?? [];
+    // 1. القراءة إما من البيانات المجهزة من HomeModel أو قراءة مفتاح choose_items مباشرة
+    $choose_section = $data['choose_section'] ?? [];
+    
+    // Fallback في حال لم يمرر الكنترولر الموديل المحدث
+    if (empty($choose_section)) {
+        $choose_raw  = get_setting('choose_items', '{}');
+        $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
+        $lang_key    = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
+        
+        // استخراج كائن اللغة الحالية مع Fallback للعربية
+        $current_choose = $choose_data[$lang_key] ?? $choose_data['ar'] ?? $choose_data['de'] ?? [];
+        
+        $choose_title = $current_choose['title'] ?? $current_choose['choose_title'] ?? '';
+        $choose_desc  = $current_choose['desc']  ?? $current_choose['choose_section_desc'] ?? '';
+        $choose_items = $current_choose['items'] ?? (is_array($current_choose) && !isset($current_choose['title']) ? $current_choose : []);
+    } else {
+        $choose_title = $choose_section['title'] ?? '';
+        $choose_desc  = $choose_section['desc']  ?? '';
+        $choose_items = $choose_section['items'] ?? [];
+    }
     ?>
 
     <?php if (!empty($choose_title)): ?>

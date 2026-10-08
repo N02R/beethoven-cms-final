@@ -276,16 +276,40 @@ class HomeSettingsService
                 $chooseAllLangs = ['ar' => $oldData];
             }
 
-            $chooseTitle = $_POST['choose_title'][$targetLang] 
-                        ?? ($_POST['choose_title'] 
-                        ?? ($_POST['choose'][$targetLang]['title'] 
-                        ?? ($_POST['choose']['title'] ?? '')));
+            // جلب البيانات القديمة للغة المستهدفة لحمايتها في حال إرسال قيمة فارغة
+            $oldLangData = $chooseAllLangs[$targetLang] ?? [];
+            $oldTitle = $oldLangData['title'] ?? $oldLangData['choose_title'] ?? '';
+            $oldDesc  = $oldLangData['desc']  ?? $oldLangData['choose_section_desc'] ?? '';
 
-            $chooseDesc  = $_POST['choose_desc'][$targetLang] 
-                        ?? ($_POST['choose_desc'] 
-                        ?? ($_POST['choose'][$targetLang]['desc'] 
-                        ?? ($_POST['choose']['desc'] ?? '')));
+            // 1. استخراج العنوان الجديد مع الوقاية من القيم الفارغة
+            $inputTitle = $_POST['choose_title'][$targetLang] 
+                       ?? ($_POST['choose_title'] 
+                       ?? ($_POST['choose'][$targetLang]['title'] 
+                       ?? ($_POST['choose']['title'] ?? null)));
 
+            if (is_array($inputTitle)) {
+                $inputTitle = $inputTitle[$targetLang] ?? reset($inputTitle);
+            }
+
+            $chooseTitle = (!is_null($inputTitle) && trim((string)$inputTitle) !== '') 
+                         ? trim((string)$inputTitle) 
+                         : $oldTitle;
+
+            // 2. استخراج الوصف الجديد مع الوقاية من القيم الفارغة
+            $inputDesc  = $_POST['choose_desc'][$targetLang] 
+                       ?? ($_POST['choose_desc'] 
+                       ?? ($_POST['choose'][$targetLang]['desc'] 
+                       ?? ($_POST['choose']['desc'] ?? null)));
+
+            if (is_array($inputDesc)) {
+                $inputDesc = $inputDesc[$targetLang] ?? reset($inputDesc);
+            }
+
+            $chooseDesc  = (!is_null($inputDesc) && trim((string)$inputDesc) !== '') 
+                         ? trim((string)$inputDesc) 
+                         : $oldDesc;
+
+            // 3. معالجة عناصر المميزات (items)
             $rawItems = $_POST['choose'][$targetLang]['items'] 
                      ?? ($_POST['choose']['items'] 
                      ?? ($_POST['choose'] ?? []));
@@ -294,7 +318,7 @@ class HomeSettingsService
                 $rawItems = [];
             }
 
-            $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
+            $existingLangData = $oldLangData['items'] ?? [];
             $processedItems = [];
 
             foreach ($rawItems as $index => $item) {
@@ -334,6 +358,7 @@ class HomeSettingsService
                 ];
             }
 
+            // 4. دمج البيانات والحفظ النهائي
             $chooseAllLangs[$targetLang] = [
                 'title'               => $chooseTitle,
                 'desc'                => $chooseDesc,

@@ -1251,16 +1251,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    function addChooseRow() {
+  function addChooseRow() {
     const container = document.getElementById('chooseRowsContainer');
-    const index = container.querySelectorAll('.choose-row-item').length;
-    
-    const rowHtml = `
+    if (!container) return;
+
+    // استخدام أسلوب التوقيت لضمان Index فريد وعدم تكرار المفاتيح
+    const index = Date.now();
+
+    const rowHTML = `
         <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_${index}">
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control choose-title" name="choose[${index}][title]" value="" placeholder="عنوان الميزة">
+                    <input type="text" class="form-control choose-title" name="choose[${index}][title]" value="" placeholder="عنوان الميزة" required>
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">الوصف</label>
@@ -1268,7 +1271,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
+                    </div>
                     <input type="hidden" class="choose-old-img" name="choose[${index}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
@@ -1279,8 +1284,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', rowHtml);
+
+    container.insertAdjacentHTML('beforeend', rowHTML);
+}
+
+function removeRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
+    }
 }
 
 function removeRow(rowId) {

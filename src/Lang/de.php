@@ -79,4 +79,17 @@ return [
     'image_icon'              => 'Bild / Symbol',
     'delete_service'          => 'Dienstleistung löschen',
     'add_new_service'         => 'Neue Dienstleistung hinzufügen',
+    
+        // Features / Choose Us Modal Übersetzungen
+    'edit_features'              => 'Merkmale bearbeiten',
+    'section_main_title'         => 'Hauptabschnittstitel',
+    'choose_title_placeholder'   => 'Titel für "Warum uns wählen"',
+    'section_description_optional'=> 'Abschnittsbeschreibung (Optional)',
+    'choose_desc_placeholder'    => 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer',
+    'feature_title_placeholder'  => 'Merkmalstitel',
+    'feature_desc_placeholder'   => 'Merkmalsbeschreibung',
+    'icon_or_image'              => 'Symbol / Bild',
+    'delete_feature'             => 'Merkmal löschen',
+    'add_new_feature'            => 'Neues Merkmal hinzufügen',
+
 ];

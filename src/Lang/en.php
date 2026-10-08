@@ -79,4 +79,17 @@ return [
     'image_icon'              => 'Image / Icon',
     'delete_service'          => 'Delete Service',
     'add_new_service'         => 'Add New Service',
+    
+    // Features / Choose Us Modal Translations
+    'edit_features'              => 'Edit Features',
+    'section_main_title'         => 'Main Section Title',
+    'choose_title_placeholder'   => 'Title for "Why Choose Us"',
+    'section_description_optional'=> 'Section Description (Optional)',
+    'choose_desc_placeholder'    => 'Add a description here or leave it blank to hide',
+    'feature_title_placeholder'  => 'Feature Title',
+    'feature_desc_placeholder'   => 'Feature Description',
+    'icon_or_image'              => 'Icon / Image',
+    'delete_feature'             => 'Delete Feature',
+    'add_new_feature'            => 'Add New Feature',
+
 ];

@@ -79,4 +79,17 @@ return [
     'image_icon'              => 'الصورة / الأيقونة',
     'delete_service'          => 'حذف الخدمة',
     'add_new_service'         => 'إضافة خدمة جديدة',
+    
+        // ترجمات مودل المميزات (Choose Us / Features Modal)
+    'edit_features'              => 'تعديل المميزات',
+    'section_main_title'         => 'عنوان القسم الرئيسي',
+    'choose_title_placeholder'   => 'عنوان قسم لماذا تختارنا',
+    'section_description_optional'=> 'وصف القسم (اختياري)',
+    'choose_desc_placeholder'    => 'أضف وصفاً هنا أو اتركه فارغاً للإخفاء',
+    'feature_title_placeholder'  => 'عنوان الميزة',
+    'feature_desc_placeholder'   => 'وصف الميزة',
+    'icon_or_image'              => 'الأيقونة / الصورة',
+    'delete_feature'             => 'حذف الميزة',
+    'add_new_feature'            => 'إضافة ميزة جديدة',
+
 ];

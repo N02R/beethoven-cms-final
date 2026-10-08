@@ -710,19 +710,25 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     // 1. تحديد لغة الجلسة الحالية بدقة
                     $langKey = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
 
-                    // 2. جلب البيانات وقراءتها مع دعم متعدد اللغات بدون تحويل قسري للعربية
+                    // 2. جلب البيانات وقراءتها مع دعم متعدد اللغات
                     $rawChoose = $currentSettings['choose_items'] ?? ($data['choose_items'] ?? get_setting('choose_items', '{}'));
                     $chooseParsed = is_string($rawChoose) ? (json_decode($rawChoose, true) ?? []) : (is_array($rawChoose) ? $rawChoose : []);
                     
-                    // استخراج كائن اللغة الحالية فقط
-                    $langData = $chooseParsed[$langKey] ?? [];
+                    // 3. استخراج كائن اللغة الحالية بدون فقدان للبيانات
+                    $langData = $chooseParsed[$langKey] ?? $chooseParsed['ar'] ?? [];
                     
-                    // 3. استخراج العنوان والوصف للغة الحالية
+                    // استخراج العنوان والوصف
                     $currentTitle = $langData['title'] ?? $langData['choose_title'] ?? $langData['section_title'] ?? '';
                     $currentDesc  = $langData['desc']  ?? $langData['choose_section_desc'] ?? $langData['section_subtitle'] ?? '';
                     
                     // 4. استخراج عناصر القائمة (items) للغة الحالية
-                    $chooseItemsList = $langData['items'] ?? (is_array($langData) && !isset($langData['title']) ? $langData : []);
+                    if (isset($langData['items']) && is_array($langData['items'])) {
+                        $chooseItemsList = $langData['items'];
+                    } elseif (is_array($langData) && !isset($langData['title'])) {
+                        $chooseItemsList = $langData;
+                    } else {
+                        $chooseItemsList = [];
+                    }
                     ?>
 
                     <!-- الجزء الأول: عنوان ووصف القسم الرئيسي -->
@@ -1252,33 +1258,44 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-  function addChooseRow() {
+/**
+ * دالة إضافة عنصر/ميزة جديدة في المودل
+ */
+function addChooseRow() {
     const container = document.getElementById('chooseRowsContainer');
     if (!container) return;
 
-    // استخدام أسلوب التوقيت لضمان Index فريد وعدم تكرار المفاتيح
-    const index = Date.now();
+    // الحصول على عدد العناصر الحالية لترتيب الـ index
+    const index = container.querySelectorAll('.choose-row-item').length;
+
+    // استخراج الترجمات مباشرة من PHP إلى السكربت
+    const langTitleLabel = "<?php echo $lang['title'] ?? 'العنوان'; ?>";
+    const langDescLabel  = "<?php echo $lang['description'] ?? 'الوصف'; ?>";
+    const langIconLabel  = "<?php echo $lang['icon_or_image'] ?? 'الأيقونة / الصورة'; ?>";
+    const langTitlePlace = "<?php echo $lang['feature_title_placeholder'] ?? 'عنوان الميزة'; ?>";
+    const langDescPlace  = "<?php echo $lang['feature_desc_placeholder'] ?? 'وصف الميزة'; ?>";
+    const langDeleteText = "<?php echo $lang['delete_feature'] ?? 'حذف الميزة'; ?>";
 
     const rowHTML = `
-        <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_${index}">
+        <div class="p-3 shadow-sm choose-row-item mb-3" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_${index}">
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control choose-title" name="choose[${index}][title]" value="" placeholder="عنوان الميزة" required>
+                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel}</label>
+                    <input type="text" class="form-control choose-title" name="choose[${index}][title]" value="" placeholder="${langTitlePlace}" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control choose-desc" name="choose[${index}][desc]" value="" placeholder="وصف الميزة">
+                    <label class="small fw-bold mb-1 text-secondary">${langDescLabel}</label>
+                    <input type="text" class="form-control choose-desc" name="choose[${index}][desc]" value="" placeholder="${langDescPlace}">
                 </div>
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
                     </div>
                     <input type="hidden" class="choose-old-img" name="choose[${index}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_${index}')" title="حذف الميزة">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1289,17 +1306,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     container.insertAdjacentHTML('beforeend', rowHTML);
 }
 
-function removeRow(rowId) {
-    const row = document.getElementById(rowId);
-    if (row) {
-        row.remove();
-    }
-}
-
-function removeRow(rowId) {
-    const row = document.getElementById(rowId);
-    if (row) {
-        row.remove();
+/**
+ * دالة حذف الصف الشاملة (تستقبل إما ID أو العنصر نفسه)
+ */
+function removeRow(target) {
+    if (typeof target === 'string') {
+        const el = document.getElementById(target);
+        if (el) el.remove();
+    } else if (target && target.nodeType) {
+        const row = target.closest('.choose-row-item, .social-row-item, .menu-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
+        if (row) row.remove();
     }
 }
 

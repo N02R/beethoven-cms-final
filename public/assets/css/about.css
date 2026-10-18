@@ -1,0 +1,329 @@
+/* about style start */
+.about {
+  overflow: hidden;
+  direction: rtl;
+}
+
+
+.about .about-par {
+  font-weight: 500;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.8;
+  color: rgba(79, 79, 79, 1);
+}
+
+.about .card {
+  background: transparent;
+  border: none;
+}
+
+.about .card .title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.about .card .icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #F0F7FD;
+  border: 2px solid var(--main-color);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.about .card .icon-wrap img {
+  width: 20px;
+  height: auto;
+}
+
+.about .card .title span {
+  font-weight: 700;
+  font-size: clamp(16px, 1.2vw, 20px);
+  color: rgba(53, 53, 53, 1);
+}
+
+.about .card .card-text {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(110, 110, 110, 1);
+  margin-top: 8px;
+}
+
+.about .btn-about {
+  width: fit-content;
+  min-width: 200px;
+  padding: 12px 30px;
+  background: var(--main-color);
+  color: rgba(248, 248, 248, 1);
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.about .btn-about:hover {
+  background: var(--hoverDark-color);
+  transform: translateY(-3px);
+}
+
+/* Image Stack Logic */
+.image-stack {
+  position: relative;
+  padding-bottom: 60px;
+}
+
+.main-img {
+  width: 85%;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.sub-img-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  z-index: 2;
+}
+
+.sub-img {
+  border-radius: 15px;
+  border: 5px solid #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.dots-bg {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: radial-gradient(var(--main-color) 2px, transparent 2px);
+  background-size: 20px 20px;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+/* about style end */
+/* team style start */
+.team {
+  background: #fff;
+}
+
+.team .description {
+  color: rgba(99, 99, 99, 1);
+  margin-bottom: 2rem;
+  font-size: clamp(16px, 1.5vw, 20px);
+}
+
+.swiper-container-wrapper {
+  position: relative;
+  padding: 0 50px;
+}
+
+.team-card {
+  position: relative;
+  height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f8f8;
+  border: 1px solid #E6E6E6;
+  transition: transform 0.3s ease;
+}
+
+.team-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-card .info {
+  width: 100%;
+  height: 88px;
+  background: #F0F7FD;
+  position: absolute;
+  bottom: -100px;
+  left: 0;
+  text-align: center;
+  padding: 15px 10px;
+  transition: bottom 0.4s ease;
+  z-index: 5;
+}
+
+.team-card:hover .info,
+.team-card .info.active {
+  bottom: 0px;
+}
+
+.team-card .info h5 {
+  font-weight: var(--fw-medium);
+  font-size: clamp(16px, 1.2vw, 20px);
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.team-card .info p {
+  font-weight: var(--fw-medium);
+  font-size: 12px;
+  line-height: 16px;
+  color: #66AEEE;
+  margin: 0;
+}
+
+/* السويبر والأسهم */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #000 !important;
+  background: #fff;
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 14px !important;
+}
+
+/* team style end */
+/* count style start */
+section.count {
+  background: #66AEEE;
+  padding: 60px 0;
+  direction: rtl;
+}
+
+.count-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px 0;
+}
+
+section.count .count-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #F0F7FD;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+section.count .count-img img {
+  width: 32px;
+  height: auto;
+}
+
+.count-info {
+  display: flex;
+  flex-direction: column;
+}
+
+section.count span {
+  font-weight: var(--fw-bold);
+  font-size: clamp(24px, 2.5vw, 30px);
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+section.count p {
+  font-weight: var(--fw-medium);
+  font-size: 14px;
+  color: #FFFFFF;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.count [class^="col-"]:not(:first-child) {
+  position: relative;
+}
+
+.count [class^="col-"]:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* count sstyle end */
+/* === Partners Section Styles === */
+.partenar {
+  direction: rtl;
+  background: #fff;
+  padding: 60px 0;
+}
+
+.partenar .sec-title {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: var(--fw-bold);
+  color: #353535;
+  margin-bottom: 40px;
+}
+
+/* حاوية الصورة (الكرت) */
+.partner-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 140px;
+  padding: 20px;
+  background: #fff;
+  transition: all 0.4s ease-in-out;
+}
+
+/* تنسيق الصورة مع الشفافية */
+.partner-item img {
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+
+  /* الشفافية التي أحببتها */
+  opacity: 0.9;
+  /* تحويل الصورة لرمادي خفيف لزيادة التناسق (اختياري) */
+
+
+  transition: all 0.4s ease-in-out;
+}
+
+/* تأثير التحويم (Hover) */
+.partner-item:hover {
+  transform: translateY(-5px);
+}
+
+.partner-item:hover img {
+  /* عودة الصورة لحالتها الأصلية عند مرور الماوس */
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.08);
+  /* تكبير بسيط جداً للصورة */
+}
+
+/* ضبط التجاوب */
+@media (max-width: 767px) {
+  .partner-item {
+    height: 100px;
+    padding: 10px;
+  }
+
+  /* في الموبايل يفضل بقاء الشفافية أعلى قليلاً لتكون واضحة */
+  .partner-item img {
+    opacity: 0.8;
+    filter: grayscale(0%);
+  }
+}

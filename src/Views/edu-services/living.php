@@ -1,0 +1,127 @@
+  <!-- Breadcrumb start-->
+  <?php
+      // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
+      $from = $_GET['from'] ?? 'education';
+      
+      if ($from === 'job') {
+          $parent_url = ($path_prefix ?? '') . 'job';
+          $parent_name = 'التدريب المهني';
+      } else {
+          $parent_url = ($path_prefix ?? '') . 'education';
+          $parent_name = 'التعليم العالي';
+      }
+  ?>
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($living_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($living_data['page_breadcrumb'] ?? 'تكلفة المعيشة في ألمانيا'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- Breadcrumb end-->
+
+
+  <!-- custom-services start -->
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <div class="custom-container">
+      <div class="living-hero custom-hero" 
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($living_data['hero_img'] ?? null, 'assets/img/education/servicesimg8.png')); ?>'); background-position: <?php echo htmlspecialchars($living_data['hero_position'] ?? 'center center'); ?>;">
+      </div>
+    </div>
+  </section>
+  <!-- custom-services end -->
+
+  <!-- custom-services-info start -->
+  <section class="custom-services-info py-5">
+    <div class="custom-container">
+      
+      <!-- القسم الرئيسي (العنوان والوصف) -->
+      <div class="head-info pb-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+        <h2 class="main-text"><?php echo htmlspecialchars($living_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($living_data['main_desc'] ?? '')); ?></p>
+      </div>
+
+      <!-- 1. نصائح لتقليل النفقات -->
+      <div class="advice-check py-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingTipsModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل نصائح تقليل النفقات">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <?php 
+          $tips_sec = $living_data['tips_section'] ?? [];
+          $tips_title = $tips_sec['title'] ?? 'نصائح لتقليل النفقات';
+          $tips_items = $tips_sec['items'] ?? [];
+        ?>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($tips_title); ?></h5>
+        <div class="row">
+          <?php if (!empty($tips_items)): ?>
+            <?php foreach ($tips_items as $tip): ?>
+              <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                <p class="mb-0">✅ <?php echo htmlspecialchars($tip); ?></p>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <!-- 2. ملاحظات هامة -->
+      <div class="advice-stars my-5 py-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#livingNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <?php 
+          $notes_sec = $living_data['notes_section'] ?? [];
+          $notes_title = $notes_sec['title'] ?? 'ملاحظات هامة !!';
+          $notes_items = $notes_sec['items'] ?? [];
+        ?>
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($notes_title); ?></h5>
+        <ul class="star-list list-unstyled p-0">
+          <?php if (!empty($notes_items)): ?>
+            <?php foreach ($notes_items as $note): ?>
+              <li class="d-flex align-items-start mb-3">
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp')); ?>" alt="نجمة" class="ms-2 mt-1" width="25"/>
+                <p class="mb-0"><?php echo htmlspecialchars($note); ?></p>
+              </li>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+  <!-- custom-services-info end -->
+
+  <?php
+    $living_modals_file = __DIR__ . '/includes/admin_living_modals.php';
+    if (!empty($is_admin) && file_exists($living_modals_file)) { 
+        include_once $living_modals_file; 
+    }
+  ?>

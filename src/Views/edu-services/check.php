@@ -1,0 +1,130 @@
+<?php
+/**
+ * صفحة تحقق من شهاداتك التعليمية - Check Certificate Page View
+ */
+?>
+  <!-- Breadcrumb start-->
+  <?php 
+      // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
+      $from = $_GET['from'] ?? 'education';
+      
+      if ($from === 'job') {
+          $parent_url = ($path_prefix ?? '') . 'job';
+          $parent_name = 'التدريب المهني';
+      } else {
+          $parent_url = ($path_prefix ?? '') . 'education';
+          $parent_name = 'التعليم العالي';
+      }
+  ?>
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($check_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($check_data['page_breadcrumb'] ?? 'تحقق من شهاداتك التعليمية'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- Breadcrumb end-->
+
+
+  <!-- custom-services start -->
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <div class="custom-container">
+      <div class="coverLetter-hero custom-hero"
+        style="background-image: url('<?php echo get_image_url($check_data['hero_img'] ?? null, 'assets/img/education/servicesimg13.png'); ?>'); background-position: center -9rem;">
+      </div>
+    </div>
+  </section>
+  <!-- custom-services end -->
+
+  <!-- custom-services-info start -->
+  <section class="custom-services-info py-5">
+    <div class="custom-container">
+      
+      <!-- 1. قسم العنوان الرئيسي والوصف -->
+      <div class="head-info pb-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkMainContentModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($check_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($check_data['main_desc'] ?? '')); ?></p>
+      </div>
+
+      <!-- 2. قسم الملاحظات الهامة (النجوم) -->
+      <div class="advice-stars my-4 pb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الملاحظات الهامة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 note-text"><?php echo htmlspecialchars($check_data['note_title'] ?? 'ملاحظات هامة !!'); ?></h5>
+        <ul class="star-list">
+          <?php foreach (($check_data['notes'] ?? []) as $note): ?>
+            <li class="mb-2">
+              <p>
+                <img src="<?php echo get_image_url('assets/img/education/starList.svg'); ?>" alt="" class="ms-2"/>
+                <?php echo $note; ?>
+              </p>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+
+      <!-- 3. قسم الروابط والتعليمات والنتيجة النهائية -->
+      <div class="links pt-2" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#checkLinksModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل الروابط والفقرات التوضيحية">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <p class="mt-3"><?php echo htmlspecialchars($check_data['links_intro'] ?? ''); ?></p>
+        
+        <?php if (!empty($check_data['anabin_url'])): ?>
+          <a href="<?php echo htmlspecialchars($check_data['anabin_url']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($check_data['anabin_url']); ?></a>
+        <?php endif; ?>
+        
+        <?php if (!empty($check_data['uniassist_url'])): ?>
+          <a href="<?php echo htmlspecialchars($check_data['uniassist_url']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($check_data['uniassist_url']); ?></a>
+        <?php endif; ?>
+
+        <p class="mt-5"><?php echo htmlspecialchars($check_data['uni_contact_intro'] ?? ''); ?></p>
+        
+        <span class="span-list"><?php echo htmlspecialchars($check_data['condition_1'] ?? ''); ?></span>
+        <span class="span-list"><?php echo htmlspecialchars($check_data['condition_2'] ?? ''); ?></span>
+        
+        <!-- طباعة مباشرة لدعم وسوم الـ HTML المخصصة والتلوين بأمان -->
+        <p class="mt-5"><?php echo $check_data['conclusion_text'] ?? ''; ?></p>
+      </div>
+
+    </div>
+  </section>
+  <!-- custom-services-info end -->
+  
+  <?php
+    $check_modals_file = __DIR__ . '/includes/admin_check_modals.php';
+    if (!empty($is_admin) && file_exists($check_modals_file)) { 
+        include_once $check_modals_file; 
+    }
+  ?>

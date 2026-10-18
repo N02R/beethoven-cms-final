@@ -1,0 +1,310 @@
+@media(min-width:992px) {
+  #main-header .nav-link {
+    position: relative;
+  }
+
+  #main-header .nav-link:hover::after,
+  #main-header .nav-link.active::after {
+    width: 70%;
+  }
+}
+
+@media(max-width:991px) {
+  .nav-top {
+    display: none;
+  }
+
+  .nav-start img {
+    max-height: 50px;
+  }
+
+  .offcanvas {
+    width: 280px;
+  }
+
+  .offcanvas-body .nav-link {
+    margin-bottom: 10px;
+    padding: 12px 20px !important;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+}
+
+@media(max-width:768px) {
+  .hero-container {
+    height: 500px;
+  }
+
+  .hero-content p {
+    margin: 0 1rem 20px;
+  }
+
+  .services .card {
+    min-height: 250px;
+  }
+}
+
+@media(max-width:576px) {
+  .choose-card {
+    min-height: auto;
+  }
+}
+
+/* Responsive Consult Banner Form */
+@media (max-width:767px) {
+  .consult-banner-inner {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .consult-banner-text {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .consult-banner-form {
+    min-width: 0;
+    /* إزالة الـ min-width */
+    width: 100%;
+    /* جعل الفورم يملأ عرض الشاشة */
+  }
+}
+
+/* Responsive Consult Banner Form for Mobile & Tablet */
+@media (max-width:768px) {
+  .consult-banner-inner {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .consult-banner-text {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .consult-banner-form {
+    min-width: 0;
+    /* إزالة الحد الأدنى */
+    width: 100%;
+    /* يملأ عرض الحاوية */
+  }
+}
+
+/* Consult Banner Responsive Cleanup */
+@media (max-width:992px) {
+  .consult-banner-inner {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .consult-banner-text {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .consult-banner-form {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+/* === Responsive Media Queries === */
+
+@media (max-width: 991px) {
+  .image-stack {
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+
+  .about .btn-about {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1600px) {
+
+  /* تعديلات شاشات 24-27 إنش */
+  .about .about-par {
+    max-width: 90%;
+  }
+
+  .main-img {
+    width: 450px;
+  }
+
+  .sub-img-wrapper {
+    width: 320px;
+  }
+
+  .team-card {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .swiper-container-wrapper {
+    padding: 0 10px;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+
+  .team-card {
+    height: 300px;
+  }
+}
+
+@media (min-width: 1600px) {
+  section.count {
+    padding: 80px 0;
+  }
+
+  section.count .count-img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 767px) {
+  .count-card {
+    justify-content: flex-start;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .count [class^="col-"]::before {
+    display: none;
+  }
+}
+
+@media (max-width: 991px) {
+
+  .education .img-hero,
+  .job .img-hero {
+    min-height: 300px;
+    margin-bottom: 20px;
+  }
+
+  .education .education-info,
+  .job .job-info {
+    text-align: center;
+  }
+
+  .education .education-info p,
+  .job .job-info p {
+    text-align: center;
+  }
+}
+
+@media (max-width: 991px) {
+  .study .choose-card {
+    min-height: auto;
+  }
+}
+
+
+/* --- الشاشات الكبيرة جداً (27 بوصة) --- */
+@media (min-width: 1800px) {
+    .map-container {
+        max-width: 1200px;
+    }
+
+    .step-wrapper {
+        width: 220px;
+    }
+
+    .info-content h3 {
+        font-size: 20px;
+    }
+
+    /* .step-1 { right: 3.25%; top: 30%; } */
+}
+
+/* --- الموبايل --- */
+@media (max-width: 991px) {
+    .map-container {
+        /* display: none; */
+    }
+}
+
+/* تحسينات لمتصفحات الموبايل */
+@media (max-width: 768px) {
+  .edu-services {
+    padding: 40px 0;
+  }
+
+  .service-card {
+    height: 220px;
+    /* توحيد الارتفاع في الموبايل */
+  }
+}
+
+/* ميديا كويري خاصة لضبط توزيع الـ 5 أعمدة ليصبح 2 في الشاشات الصغيرة */
+@media (max-width: 992px) and (min-width: 768px) {
+  .edu-services .row-cols-md-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* التابلت والموبايل */
+@media (max-width: 991px) {
+  .program-info {
+    min-height: 400px;
+    padding-bottom: 7rem;
+    /* مساحة أكبر للزر في الشاشات الضيقة */
+  }
+}
+
+@media (max-width: 768px) {
+  .program-info {
+    padding: 2rem 1.5rem 6.5rem 1.5rem;
+  }
+
+  .btn-info-wrapper {
+    width: 90%;
+    /* تكبير الزر قليلاً في الموبايل لسهولة النقر */
+    padding: 0.8rem 1.2rem;
+  }
+
+  .btn-info-wrapper h3 {
+    font-size: 15px;
+  }
+}
+
+/* الشاشات الصغيرة جداً */
+@media (max-width: 400px) {
+  .btn-info-wrapper {
+    width: 95%;
+  }
+}
+@media(max-width:991px) {
+
+    .navbar-brand img {
+        max-height: 50px;
+    }
+
+}
+
+/* === Reviews Responsive === */
+@media (max-width: 576px) {
+  .reviews-bg      { padding-bottom: 50px; }
+  .reviews-carousel-wrapper { margin-top: -40px; }
+  .carousel-item .video-container { border-radius: 16px; }
+}
+
+@media (max-width: 768px) {
+  .reviews-bg      { padding-bottom: 60px; }
+  .reviews-carousel-wrapper { margin-top: -45px; }
+}
+
+@media (min-width: 1600px) {
+  .reviews-bg      { padding-bottom: 100px; }
+  .reviews-carousel-wrapper { margin-top: -75px; }
+}

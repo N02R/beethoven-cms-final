@@ -1,0 +1,285 @@
+/* FONTS */
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicLight.ttf") format("truetype");
+    font-weight: 300;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/Neo Sans Arabic Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicMedium.ttf") format("truetype");
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicBold.ttf") format("truetype");
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicBlack.ttf") format("truetype");
+    font-weight: 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Neo Sans Arabic";
+    src: url("../font/neosansArabic/NeoSansArabicUltra.ttf") format("truetype");
+    font-weight: 900;
+    font-display: swap;
+}
+
+
+/*  VARIABLES */
+:root {
+    --main-color: #66aeee;
+    --hoverDark: #489DE8;
+    --hoverLight: #e3effa;
+    --hoverBlue: #66afee3b;
+    --white: #fff;
+    --black: #000;
+    --dark: #4f4f4f;
+    --bg-main: #dfdfdf25;
+    --bg-secondary: #f1f7fd;
+    --bgDot-color: #F0F7FD;
+    --border: #c5c5c536;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-bold: 700;
+    --main-font: "Neo Sans Arabic"
+}
+
+/* RESET */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* GLOBAL */
+html {
+    scroll-behavior: smooth;
+    background: #fff;
+}
+
+body {
+    font-family: var(--main-font);
+    color: var(--dark);
+    overflow-x: hidden;
+    width: 100%;
+}
+
+
+.custom-container {
+    width: 92%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.sec-title {
+    font-weight: 700;
+    font-size: 32px;
+    color: rgba(0, 0, 0, 1);
+}
+
+/* Styling the Edit Button - European Minimalist Style */
+.edit-pen {
+    /* الشكل والأبعاد */
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    
+    /* الألوان والخلفية - تأثير الزجاج المطفى (Glassmorphism) */
+    background: rgba(255, 255, 255, 0.85);
+    color: #1a1a1a;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    
+    /* التموضع والتنسيق الداخلي */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    
+    /* الظلال - ناعمة وخفيفة جداً */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    
+    /* تأثير Blur خلف المودال/العنصر */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* الترانزيشن للسلاسة الأوروبية */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* حجم وأيقونة القلم */
+.edit-pen i {
+    font-size: 0.95rem;
+    transition: transform 0.3s ease;
+}
+
+/* تأثير التمرير (Hover Effect) */
+.edit-pen:hover {
+    background: #000000; /* التباين الفاخر: يتحول للأسود الداكن */
+    color: #ffffff;
+    border-color: #000000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px); /* رفعة خفيفة وأنيقة */
+}
+
+/* دوران بسيط للقلم عند الـ Hover */
+.edit-pen:hover i {
+    transform: rotate(-10deg) scale(1.05);
+}
+
+/* تأثير الضغط (Active State) */
+.edit-pen:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #212529;
+    color: #ffffff;
+    padding: 15px 20px;
+    z-index: 9999;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
+    direction: rtl;
+    text-align: right;
+}
+
+.cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+    .cookie-content {
+        flex-direction: row;
+    }
+}
+
+.cookie-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #e0e0e0;
+}
+
+.cookie-buttons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.cookie-buttons button {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-accept {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+
+.btn-accept:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-reject {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.btn-reject:hover {
+    background-color: #5c636a;
+}
+
+.privacy-page {
+    background-color: #f8f9fa;
+    min-height: 70vh;
+}
+
+.privacy-content section h4 {
+    border-right: 4px solid #0d6efd;
+    padding-right: 10px;
+}
+
+
+/* =========================================
+   شريط الإعلانات - الحل النهائي المباشر
+   ========================================= */
+.announcement-ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+}
+
+.announcement-ticker-track {
+    display: inline-block;
+    animation-duration: 5s;
+    /* كلما قل الرقم زادت السرعة (جربي 8s أو 10s) */
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+.announcement-ticker-container:hover .announcement-ticker-track {
+  animation-play-state: paused;
+}
+
+/* 
+  1. اللغة العربية (RTL): 
+  نريد النص: يبدأ من اليمين ويتحرك إلى اليسار.
+*/
+[dir="rtl"] .announcement-ticker-track {
+  animation-name: scrollRightToLeft;
+}
+
+@keyframes scrollRightToLeft {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+
+/* 
+  2. اللغات الأجنبية (LTR): 
+  نريد النص: يبدأ من اليسار ويتحرك إلى اليمين.
+*/
+[dir="ltr"] .announcement-ticker-track {
+  animation-name: scrollLeftToRight;
+}
+
+@keyframes scrollLeftToRight {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

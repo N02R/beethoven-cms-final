@@ -1,0 +1,136 @@
+<?php
+/**
+ * صفحة البرامج الدراسية باللغة الإنجليزية - English Programs Page View
+ */
+?>
+   <!-- Breadcrumb start-->
+  <?php 
+      // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
+      $from = $_GET['from'] ?? 'education';
+      
+      if ($from === 'job') {
+          $parent_url = ($path_prefix ?? '') . 'job';
+          $parent_name = 'التدريب المهني';
+      } else {
+          $parent_url = ($path_prefix ?? '') . 'education';
+          $parent_name = 'التعليم العالي';
+      }
+  ?>
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($english_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($english_data['page_breadcrumb'] ?? 'برامج دراسية باللغة الإنجليزية'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- Breadcrumb end-->
+
+
+  <!-- custom-services start -->
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <div class="custom-container">
+      <div class="germanlang-hero custom-hero"
+        style="background-image: url('<?php echo htmlspecialchars(get_image_url($english_data['hero_img'] ?? null, 'assets/img/education/servicesimg5.png')); ?>');">
+      </div>
+    </div>
+  </section>
+  <!-- custom-services end -->
+
+  <!-- custom-services-info start -->
+  <section class="custom-services-info py-5">
+    <div class="custom-container">
+      
+      <!-- 1. العنوان والوصف الرئيسي -->
+      <div class="head-info pb-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars($english_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($english_data['main_desc'] ?? '')); ?></p>
+      </div>
+
+      <!-- 2. من يمكنه الاستفادة والشروط -->
+      <div class="advice-check my-5 pb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishWhoModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل شروط الاستفادة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($english_data['who_title'] ?? 'من يمكنه الاستفادة من هذه البرامج'); ?></h5>
+        <h6 class="mb-3"><?php echo htmlspecialchars($english_data['who_subtitle'] ?? 'كل من يستوفي الشروط التالية:'); ?></h6>
+        <div class="row">
+          <?php foreach (($english_data['who_items'] ?? []) as $index => $item): 
+              $col_class = ($index == 2) ? 'col-lg-4 col-md-4 col-sm-12' : (($index == 3) ? 'col-lg-8 col-md-8 col-sm-12' : 'col-lg-6 col-md-6 col-sm-12');
+          ?>
+            <div class="<?php echo htmlspecialchars($col_class); ?> mb-2">
+              <p>✅️<?php echo htmlspecialchars($item); ?></p>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+
+      <!-- 3. متطلبات اللغة -->
+      <div class="advice-stars pb-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishLangModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل متطلبات اللغة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($english_data['lang_title'] ?? 'متطلبات اللغة بشكل عام'); ?></h5>
+        <ul class="star-list">
+          <div class="row">
+            <?php foreach (($english_data['lang_points'] ?? []) as $point): ?>
+              <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                <li>
+                  <p><img src="<?php echo get_image_url('assets/img/starList.svg.webp'); ?>" alt="نجمة" class="ms-2" width="25"/><?php echo htmlspecialchars($point); ?></p>
+                </li>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </ul>
+      </div>
+      
+      <!-- 4. الملاحظة -->
+      <div class="note mt-5" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#englishNoteModal" style="position: absolute; top: -10px; right: 0; z-index: 10;" title="تعديل الملاحظة">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <p><span style="color: #66aeee;"><?php echo htmlspecialchars($english_data['note_highlight'] ?? 'ملاحظة:'); ?></span> <?php echo htmlspecialchars($english_data['note_text'] ?? ''); ?></p>
+      </div>
+
+    </div>
+  </section>
+  <!-- custom-services-info end -->
+
+  <?php
+    $english_modals_file = __DIR__ . '/includes/admin_english_modals.php';
+    if (!empty($is_admin) && file_exists($english_modals_file)) { 
+        include_once $english_modals_file; 
+    }
+  ?>

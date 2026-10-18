@@ -1,0 +1,144 @@
+
+  <!-- Breadcrumb start-->
+  <?>
+      // تحديد المصدر بناءً على الرابط القادم، مع وضع 'education' كقيمة افتراضية
+      $from = $_GET['from'] ?? 'education';
+      
+      if ($from === 'job') {
+          $parent_url = ($path_prefix ?? '') . 'job';
+          $parent_name = 'التدريب المهني';
+      } else {
+          $parent_url = ($path_prefix ?? '') . 'education';
+          $parent_name = 'التعليم العالي';
+      }
+  ?>
+  <div class="custom-container pt-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل مسار التنقل">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($path_prefix ?? '/'); ?>">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url); ?>"><?php echo htmlspecialchars($parent_name); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($motivation_data['page_breadcrumb_url'] ?? '#'); ?>">
+            <?php echo htmlspecialchars($motivation_data['page_breadcrumb'] ?? 'خطاب الدافع / التحفيز'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+  <!-- Breadcrumb end-->
+
+
+  <!-- custom-services start -->
+  <section class="custom-services py-5" style="position: relative;">
+    <?php if (!empty($is_admin)): ?>
+      <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل صورة الهيرو">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
+    <div class="custom-container">
+      <div class="motivition-hero custom-hero" 
+           style="background-image: url('<?php echo htmlspecialchars(get_image_url($motivation_data['hero_img'] ?? null, 'assets/img/education/servicesimg3.png')); ?>'); background-position: <?php echo htmlspecialchars($motivation_data['hero_position'] ?? 'center center'); ?>;">
+      </div>
+    </div>
+  </section>
+  <!-- custom-services end -->
+
+  <!-- custom-services-info start -->
+  <section class="custom-services-info py-5">
+    <div class="custom-container">
+      
+      <!-- القسم الرئيسي (العنوان والوصف) -->
+      <div class="head-info pb-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل العنوان والوصف الرئيسي">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+        <h2 class="main-text"><?php echo htmlspecialchars($motivation_data['main_title'] ?? ''); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars($motivation_data['main_desc'] ?? '')); ?></p>
+      </div>
+
+      <!-- قسم النصائح -->
+      <div class="advice-check py-4 mb-4" style="position: relative;">
+        <?php if (!empty($is_admin)): ?>
+          <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationAdviceModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="تعديل نصائح كتابة خطاب الدافع">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <?php 
+          $advice_sec = $motivation_data['advice_section'] ?? [];
+          $advice_title = $advice_sec['title'] ?? 'نصائح سريعة لكتابة خطاب الدافع';
+          $advice_items = $advice_sec['items'] ?? [];
+        ?>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars($advice_title); ?></h5>
+        <div class="row gy-3">
+          <?php if (!empty($advice_items)): ?>
+            <?php foreach ($advice_items as $item): ?>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <p class="mb-0">✅ <?php echo htmlspecialchars($item); ?></p>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+      </div>
+
+<!-- قسم ملفات التحميل -->
+<div class="row gy-3" style="position: relative;">
+  <?php if (!empty($is_admin)): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#motivationDownloadModal" style="position: absolute; top: -10px; right: 0; z-index: 10;" title="إدارة ملفات التحميل">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <?php 
+    $downloads = $motivation_data['download_items'] ?? [];
+    if (!empty($downloads)):
+      foreach ($downloads as $dl):
+        $is_pdf = (strtolower($dl['type'] ?? 'pdf') === 'pdf');
+        $icon_img = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+  ?>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <div class="download-card">
+            <div class="download-row">
+              <!-- الأيقونة -->
+              <img src="<?php echo htmlspecialchars(get_image_url($icon_img)); ?>" alt="ملف <?php echo htmlspecialchars($dl['type'] ?? ''); ?>" class="dl-icon" />
+              
+              <!-- العنوان والنص الفرعي -->
+              <div class="dl-info">
+                <div class="dl-title"><?php echo htmlspecialchars($dl['title'] ?? ''); ?></div>
+                <div class="dl-sub"><?php echo htmlspecialchars($dl['sub'] ?? ''); ?></div>
+              </div>
+              
+              <!-- النقاط الفاصلة المرنة -->
+              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">................................................................................................................................................................................................................................</span>
+              
+              <!-- زر التحميل -->
+              <a class="download-link" href="<?php echo htmlspecialchars(($path_prefix ?? '/') . ltrim($dl['file'] ?? '#', '/')); ?>" download>Download</a>
+            </div>
+          </div>
+        </div>
+  <?php 
+      endforeach;
+    endif; 
+  ?>
+</div>
+
+
+    </div>
+  </section>
+  <!-- custom-services-info end -->
+
+  <?php
+    $motivation_modals_file = __DIR__ . '/includes/admin_motivation_modals.php';
+    if (!empty($is_admin) && file_exists($motivation_modals_file)) { 
+        include_once $motivation_modals_file; 
+    }
+  ?>

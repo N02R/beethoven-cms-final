@@ -1,0 +1,326 @@
+@media (max-width: 480px) {
+    .about {
+        padding: 2rem 0 !important;
+        text-align: center; /* توسيط المحتوى للموبايل الصغير */
+    }
+
+    .image-stack {
+        padding-bottom: 30px; /* تقليل البروز السفلي */
+        margin-bottom: 2rem;
+    }
+
+    .main-img {
+        width: 100%; /* الصورة الأساسية تأخذ العرض كامل */
+    }
+
+    .sub-img-wrapper {
+        width: 50%; /* تصغير الصورة المتداخلة */
+        bottom: -15px;
+    }
+
+    .about .card .title {
+        justify-content: center; /* توسيط أيقونات الرؤية والرسالة */
+    }
+
+    .about .btn-about {
+        width: 100%; /* الزر يأخذ عرض الشاشة لسهولة النقر */
+    }
+
+    .swiper-container-wrapper {
+        padding: 0 10px; /* تقليل الحشو الجانبي */
+    }
+
+    .team-card {
+        height: 280px; /* تقليل الطول ليناسب الشاشة */
+    }
+
+    /* جعل المعلومات تظهر تلقائياً في الموبايل لأن الـ Hover غير مدعوم */
+    .team-card .info {
+        bottom: 0px; 
+        height: 75px;
+        background: rgba(240, 247, 253, 0.95); /* شفافية بسيطة */
+    }
+
+    /* إخفاء الأسهم لتوفير مساحة */
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none !important;
+    }
+
+    section.count {
+        padding: 40px 0;
+    }
+
+    .count-card {
+        flex-direction: column; /* أيقونة فوق الرقم لتقليل العرض */
+        text-align: center;
+        gap: 10px;
+    }
+
+    /* إخفاء الخطوط الفاصلة في الموبايل */
+    .count [class^="col-"]:not(:first-child)::before {
+        display: none;
+    }
+
+    .partenar .sec-title {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .partner-item {
+        height: 80px; /* تقليل الارتفاع */
+        padding: 15px;
+    }
+
+    /* تحسين عرض الصور لتكون أوضح */
+    .partner-item img {
+        max-width: 100%;
+        opacity: 1 !important; /* إزالة الشفافية تماماً على الموبايل لسهولة الرؤية */
+    }
+}
+
+@media (max-width: 768px) {
+    .about .about-par {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .about .card {
+        margin-bottom: 1.5rem;
+    }
+
+    /* جعل كروت الرؤية والرسالة تحت بعضها في الموبايل */
+    .about .col-md-6 {
+        width: 100%;
+    }
+
+    .image-stack {
+        display: flex;
+        justify-content: center;
+    }
+
+    .team .team-text {
+        text-align: center;
+    }
+
+    .team-card {
+        height: 300px;
+    }
+
+    /* تكبير حجم الأزرار قليلاً ليسهل الضغط عليها */
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    section.count span {
+        font-size: 26px;
+    }
+    
+    /* إخفاء الخط الفاصل للعنصر الأول والثالث (بداية كل سطر في التابلت) */
+    .count .col-md-6:nth-child(odd)::before {
+        display: none;
+    }
+
+    .partenar .row {
+        --bs-gutter-y: 3rem; /* زيادة الفجوة الرأسية بين الصفوف */
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .about .row.g-5 {
+        --bs-gutter-x: 2rem; /* تقليل الفجوة الأفقية */
+    }
+
+    .sub-img-wrapper {
+        width: 55%;
+    }
+
+    .swiper-container-wrapper {
+        padding: 0 40px;
+    }
+    
+    .team-card {
+        height: 320px;
+    }
+
+    .count-card {
+        gap: 10px; /* تقليل الفجوة قليلاً ليناسب العرض */
+    }
+    
+    section.count p {
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .about .about-par {
+        font-size: 18px;
+        max-width: 90%
+    }
+
+    .about .card .card-text {
+        font-size: 16px;
+    }
+
+    .main-img {
+        width: 90%; /* تكبير الصورة قليلاً */
+    }
+
+    .dots-bg {
+        width: 160px;
+        height: 160px;
+        top: -30px;
+        left: -30px;
+    }
+
+    /* زيادة عدد الأعمدة لـ 5 أو 6 لتناسب عرض الشاشة */
+    .partenar .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .partner-item {
+        height: 160px; /* تكبير الوعاء الحاضن للشعار */
+    }
+}
+
+@media (min-width: 1920px) {
+    /* 1. زيادة المسافات الداخلية للقسم لإعطاء شعور بالاتساع */
+    .about {
+        padding: 120px 0 !important;
+    }
+
+    /* 2. تكبير العناوين والنصوص لتتناسب مع حجم الشاشة الضخم */
+    .sec-title {
+        font-size: 48px; /* عنوان ضخم وواضح */
+        margin-bottom: 40px !important;
+    }
+
+    .about .about-par {
+        font-size: 22px; /* نص مريح للقراءة عن بُعد */
+        line-height: 2;
+        max-width: 95%;
+        margin-bottom: 50px !important;
+    }
+
+    /* 3. تكبير كروت الرؤية والرسالة */
+    .about .card .icon-wrap {
+        width: 60px;
+        height: 60px;
+    }
+
+    .about .card .icon-wrap img {
+        width: 28px;
+    }
+
+    .about .card .title span {
+        font-size: 26px;
+    }
+
+    .about .card .card-text {
+        font-size: 18px;
+        line-height: 1.8;
+    }
+
+    /* 4. تضخيم الـ Image Stack ليملأ الفراغ البصري */
+    .main-img {
+        width: 90%;
+        border-radius: 25px; /* حواف دائرية أكثر وضوحاً */
+    }
+
+    .sub-img-wrapper {
+        width: 55%;
+        bottom: -20px;
+        left: -40px; /* دفع الصورة للخارج قليلاً لزيادة العمق */
+    }
+
+    .sub-img {
+        border-radius: 25px;
+        border-width: 8px; /* إطار أسمك للصورة الصغيرة */
+    }
+
+    .dots-bg {
+        width: 200px;
+        height: 200px;
+        top: -40px;
+        left: -40px;
+        background-size: 25px 25px; /* تكبير النقاط */
+    }
+
+    /* 5. تكبير زر "قراءة المزيد" */
+    .about .btn-about {
+        min-width: 250px;
+        font-size: 22px;
+        padding: 15px 40px;
+        border-radius: 15px;
+    }
+    .team {
+        padding: 100px 0 !important;
+    }
+
+    .team-card {
+        height: 400px; /* كروت أطول وأكثر فخامة */
+        border-radius: 20px;
+    }
+
+    .team-card .info {
+        height: 100px;
+        padding: 20px;
+    }
+
+    .team-card .info h5 {
+        font-size: 24px;
+    }
+
+    .team-card .info p {
+        font-size: 16px;
+    }
+
+    /* الأسهم في الشاشات الكبيرة تكون أوضح وأبعد عن الكروت */
+    .swiper-button-next { right: -60px !important; }
+    .swiper-button-prev { left: -60px !important; }
+    section.count {
+        padding: 100px 0;
+    }
+
+    .count-card {
+        gap: 25px;
+    }
+
+    section.count .count-img {
+        width: 90px;
+        height: 90px;
+    }
+
+    section.count .count-img img {
+        width: 45px;
+    }
+
+    section.count span {
+        font-size: 45px; /* أرقام ضخمة وواضحة */
+    }
+
+    section.count p {
+        font-size: 20px;
+    }
+
+    .count [class^="col-"]:not(:first-child)::before {
+        height: 80px; /* تطويل الخط الفاصل */
+    }
+
+    .partenar {
+        padding: 100px 0;
+    }
+
+    .partenar .sec-title {
+        font-size: 40px;
+        margin-bottom: 60px;
+    }
+
+    .partner-item img {
+        transform: scale(1.1); /* تكبير الشعارات قليلاً لتتناسب مع دقة الشاشة */
+    }
+}

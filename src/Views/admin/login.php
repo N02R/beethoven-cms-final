@@ -110,13 +110,13 @@ if (!defined('ALLOWED_ACCESS')) {
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
         
         <div class="mb-3">
-            <label class="form-label small fw-bold">اسم المستخدم</label>
-            <input type="text" class="form-control" name="username" required autocomplete="username">
+            <label class="form-label small fw-bold">اسم المستخدم أو البريد الإلكتروني</label>
+            <input type="text" class="form-control" name="username" required autocomplete="username" placeholder="admin@beethoven-services.de">
         </div>
 
         <div class="mb-3">
             <label class="form-label small fw-bold">كلمة المرور</label>
-            <input type="password" class="form-control" name="password" required autocomplete="current-password">
+            <input type="password" class="form-control" name="password" required autocomplete="current-password" placeholder="••••••••••••">
         </div>
 
         <div class="mb-4 captcha-box">

@@ -21,7 +21,7 @@ class AuthController {
         }
 
         // إذا كان المشرف مسجلاً دخوله مسبقاً، يتم توجيهه للوحة التحكم مباشرة
-        if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin')) {
+        if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin' || $_SESSION['role'] === 'editor')) {
             header("Location: index.php?url=admin/dashboard");
             exit;
         }
@@ -96,25 +96,26 @@ class AuthController {
             exit;
         }
 
-        // 3. تنقية واستلام بيانات المدخلات
-        $email = trim($_POST['username'] ?? ''); 
+        // 3. تنقية واستلام بيانات المدخلات (تدعم البريد الإلكتروني أو اسم المستخدم)
+        $login_input = trim($_POST['username'] ?? ''); 
         $password = trim($_POST['password'] ?? '');
 
-        if (empty($email) || empty($password)) {
+        if (empty($login_input) || empty($password)) {
             $_SESSION['login_error'] = 'يرجى تعبئة كافة الحقول المطلوبة';
             header("Location: index.php?url=admin/login");
             exit;
         }
 
-        // 4. التحقق عبر كلاس قاعدة البيانات المعتمد للنظام (App\Config\Database)
+        // 4. التحقق عبر قاعدة البيانات
         $admin_logged_in = false;
         $admin_data = [];
 
         try {
             $pdo = Database::getConnection();
             
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email AND is_active = 1 LIMIT 1");
-            $stmt->execute(['email' => $email]);
+            // استعلام مرن يبحث بالـ email أو username
+            $stmt = $pdo->prepare("SELECT * FROM admins WHERE (email = :input OR username = :input) AND is_active = 1 LIMIT 1");
+            $stmt->execute(['input' => $login_input]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($admin && password_verify($password, $admin['password_hash'])) {
@@ -125,13 +126,13 @@ class AuthController {
                     'id'   => $admin['id']
                 ];
 
+                // تحديث وقت آخر دخول وتصفير محاولات الفشل
                 $update_stmt = $pdo->prepare("UPDATE admins SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = :id");
                 $update_stmt->execute(['id' => $admin['id']]);
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());
         }
-
 
         // 5. حفظ الجلسة والتوجيه للوحة التحكم عند نجاح المصادقة
         if ($admin_logged_in) {
@@ -140,7 +141,7 @@ class AuthController {
             $_SESSION['admin_name']   = $admin_data['name'];
             $_SESSION['admin_id']     = $admin_data['id'];
 
-            // تجديد معرف الجلسة لمنع هجمات تثبيت الجلسة
+            // تجديد معرف الجلسة لمنع هجمات تثبيت الجلسة (Session Fixation)
             session_regenerate_id(true);
 
             // تنظيف بيانات الجلسة المؤقتة
@@ -150,7 +151,7 @@ class AuthController {
             exit;
         }
 
-        $_SESSION['login_error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+        $_SESSION['login_error'] = 'بيانات تسجيل الدخول غير صحيحة أو الحساب غير معتمد';
         header("Location: index.php?url=admin/login");
         exit;
     }

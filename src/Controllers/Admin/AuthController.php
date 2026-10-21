@@ -64,7 +64,9 @@ class AuthController
                 session_regenerate_id(true);
 
                 $_SESSION['is_logged_in'] = true;
-                $_SESSION['admin_id']     = $admin['id'];$_SESSION['admin_name']   = $admin['name'] ?? 'Admin';$_SESSION['admin_email']  = $admin['email'];$_SESSION['role']         = 'admin';
+                $_SESSION['admin_id']     =$admin['id'];
+                $_SESSION['admin_name']   =$admin['name'] ?? 'Admin';
+                $_SESSION['admin_email']  =$admin['email'];
 
                 echo json_encode([
                     'success' => true, 

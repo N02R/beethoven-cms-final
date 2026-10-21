@@ -74,7 +74,7 @@ header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:;");
 
-// 5. تسحين وتسجيل Autoloader الموحد للنظام
+// 5. تسجيل Autoloader الموحد للنظام
 spl_autoload_register(function (string $class) {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
@@ -135,9 +135,9 @@ use App\Controllers\Admin\UploadController;
 use App\Controllers\Admin\AuthController;
 use App\Controllers\Admin\AnnouncementController;
 
+// 7. إنشاء كائن الراوتر وتسجيل المسارات أولاً
 $router = new Router();
 
-// المسارات
 $router->add('GET', '', [HomeController::class, 'index']);                 
 $router->add('GET', 'home', [HomeController::class, 'index']);               
 $router->add('GET', 'about', [AboutController::class, 'index']);             
@@ -189,32 +189,45 @@ $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
 $router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 'save']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
 
-// معالجة الـ URI واللغات
-if (isset($_GET['url'])) {
-    $uri = '/' . trim($_GET['url'], '/');
-} else {
-    $uri = $_SERVER['REQUEST_URI'] ?? '';
-    if (false !== $pos = strpos($uri, '?')) {
-        $uri = substr($uri, 0, $pos);
+// 8. معالجة الـ URI واللغات وتوجيه الطلب النهائي بأمان
+try {
+    if (isset($_GET['url'])) {
+        $uri = '/' . trim($_GET['url'], '/');
+    } else {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        if (false !== $pos = strpos($uri, '?')) {
+            $uri = substr($uri, 0, $pos);
+        }
+        $uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
+        
+        $scriptName = dirname($_SERVER['SCRIPT_NAME']);
+        if ($scriptName !== '/' && strpos($uri, $scriptName) === 0) {
+            $uri = substr($uri, strlen($scriptName));
+        }
     }
-    $uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
+
+    $uriSegments = explode('/', trim($uri, '/'));
+    $currentLang = 'de';
+
+    if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], true)) {
+        $currentLang = $uriSegments[0];
+        array_shift($uriSegments); 
+        $uri = '/' . implode('/', $uriSegments);
+    }
+
+    $_SESSION['site_lang'] = $currentLang;
+
+    $method = $_SERVER['REQUEST_METHOD'];
     
-    $scriptName = dirname($_SERVER['SCRIPT_NAME']);
-    if ($scriptName !== '/' && strpos($uri, $scriptName) === 0) {
-        $uri = substr($uri, strlen($scriptName));
+    // التشغيل الآمن والنهائي للراوتر بعد اكتمال جميع المسارات
+    $router->dispatch($uri, $method);
+
+} catch (\Throwable $e) {
+    error_log("Router Dispatch Error: " . $e->getMessage());
+    http_response_code(500);
+    if ($appEnv !== 'production') {
+        echo "خطأ في معالجة المسار: " . htmlspecialchars($e->getMessage());
+    } else {
+        echo "عذراً، حدث خطأ في النظام.";
     }
 }
-
-$uriSegments = explode('/', trim($uri, '/'));
-$currentLang = 'de';
-
-if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], true)) {
-    $currentLang = $uriSegments[0];
-    array_shift($uriSegments); 
-    $uri = '/' . implode('/', $uriSegments);
-}
-
-$_SESSION['site_lang'] = $currentLang;
-
-$method = $_SERVER['REQUEST_METHOD'];
-$router->dispatch($uri, $method);

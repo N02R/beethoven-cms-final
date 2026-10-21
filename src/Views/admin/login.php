@@ -1,8 +1,10 @@
 <?php
-if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
+declare(strict_types=1);
+
+/**
+ * Beethoven CMS - Admin Login View (Production-Ready)
+ * متوافقة تماماً مع جدول قاعدة البيانات (email) ونظام الـ AJAX والـ CSRF
+ */
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -81,53 +83,82 @@ if (!defined('ALLOWED_ACCESS')) {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
         }
-
-        .captcha-box {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            color: #475569;
-        }
     </style>
 </head>
 <body>
 
 <div class="login-card-wrapper">
     <!-- زر العودة للموقع -->
-    <a href="index.php?url=home" class="back-home-btn">
+    <a href="/home" class="back-home-btn">
         <i class="fa-solid fa-arrow-right"></i> العودة للموقع الرئيسي
     </a>
 
     <h3 class="fw-bold mb-1">تسجيل دخول المشرف</h3>
     <p class="text-muted mb-4">أهلاً بك مجدداً، يرجى إدخال بياناتك للمتابعة</p>
 
-    <?php if (!empty($data['error_msg'])): ?>
-        <div class="alert alert-danger p-2 small text-center mb-3"><?php echo htmlspecialchars($data['error_msg'], ENT_QUOTES, 'UTF-8'); ?></div>
-    <?php endif; ?>
+    <!-- مكان عرض رسائل الخطأ أو النجاح الديناميكية -->
+    <div id="login-alert" class="alert d-none text-center small mb-3"></div>
 
-    <form action="index.php?url=admin/login/process" method="POST">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+    <form id="loginForm">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(\App\Core\Security::generateCsrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
         
         <div class="mb-3">
-            <label class="form-label small fw-bold">اسم المستخدم</label>
-            <input type="text" class="form-control" name="username" required autocomplete="username">
+            <label class="form-label small fw-bold">البريد الإلكتروني (Email)</label>
+            <input type="email" class="form-control" name="email" value="admin@beethoven.de" required autocomplete="email" placeholder="admin@beethoven.de">
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label small fw-bold">كلمة المرور</label>
-            <input type="password" class="form-control" name="password" required autocomplete="current-password">
+            <input type="password" class="form-control" name="password" required autocomplete="current-password" placeholder="••••••••">
         </div>
 
-        <div class="mb-4 captcha-box">
-            <i class="fa-solid fa-shield-halved text-primary me-1"></i>
-            كم الناتج: <strong><?php echo $data['captcha_num1']; ?> + <?php echo $data['captcha_num2']; ?></strong>؟
-            <input type="number" class="form-control mt-2" name="captcha_answer" required placeholder="أدخل الناتج الرقمي">
-        </div>
-
-        <button type="submit" class="btn btn-primary-custom w-100">دخول اللوحة</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary-custom w-100">دخول اللوحة</button>
     </form>
 </div>
+
+<!-- سكريبت الـ AJAX للتعامل السلس مع تسجيل الدخول بدون إعادة تحميل الصفحة -->
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('login-alert');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> جاري التحقق...';
+    alertBox.classList.add('d-none');
+
+    const formData = new FormData(this);
+
+    try {
+        const response = await fetch('/admin/login/process', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        alertBox.classList.remove('d-none');
+        if (result.success) {
+            alertBox.className = 'alert alert-success p-2 small text-center mb-3';
+            alertBox.innerHTML = result.message;
+            setTimeout(() => {
+                window.location.href = '/admin/dashboard';
+            }, 1000);
+        } else {
+            alertBox.className = 'alert alert-danger p-2 small text-center mb-3';
+            alertBox.innerHTML = result.message;
+            btn.disabled = false;
+            btn.innerHTML = 'دخول اللوحة';
+        }
+    } catch (error) {
+        alertBox.classList.remove('d-none');
+        alertBox.className = 'alert alert-danger p-2 small text-center mb-3';
+        alertBox.innerHTML = 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.';
+        btn.disabled = false;
+        btn.innerHTML = 'دخول اللوحة';
+    }
+});
+</script>
 
 </body>
 </html>

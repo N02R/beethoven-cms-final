@@ -22,7 +22,7 @@ class AuthController {
 
         // إذا كان المشرف مسجلاً دخوله مسبقاً، يتم توجيهه للوحة التحكم مباشرة
         if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin')) {
-            header("Location: index.php?url=admin/dashboard");
+            header("Location: /admin/dashboard");
             exit;
         }
 
@@ -73,7 +73,7 @@ class AuthController {
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: index.php?url=admin/login");
+            header("Location: /admin/login");
             exit;
         }
 
@@ -81,7 +81,7 @@ class AuthController {
         $token = $_POST['csrf_token'] ?? '';
         if (empty($token) || !hash_equals($_SESSION['login_csrf'] ?? '', $token)) {
             $_SESSION['login_error'] = 'رمز الحماية غير صالح (CSRF Invalid)';
-            header("Location: index.php?url=admin/login");
+            header("Location: /admin/login");
             exit;
         }
 
@@ -92,46 +92,43 @@ class AuthController {
             $_SESSION['captcha_num1'] = rand(1, 9);
             $_SESSION['captcha_num2'] = rand(1, 9);
             $_SESSION['captcha_result'] = $_SESSION['captcha_num1'] + $_SESSION['captcha_num2'];
-            header("Location: index.php?url=admin/login");
+            header("Location: /admin/login");
             exit;
         }
 
-        // 3. تنقية واستلام بيانات المدخلات
-        $email = trim($_POST['username'] ?? ''); 
+        // 3. تنقية واستلام بيانات المدخلات (الاعتماد على البريد الإلكتروني email)
+        $email = trim($_POST['email'] ?? ''); 
         $password = trim($_POST['password'] ?? '');
 
         if (empty($email) || empty($password)) {
             $_SESSION['login_error'] = 'يرجى تعبئة كافة الحقول المطلوبة';
-            header("Location: index.php?url=admin/login");
+            header("Location: /admin/login");
             exit;
         }
 
-        // 4. التحقق عبر كلاس قاعدة البيانات المعتمد للنظام (App\Config\Database)
+        // 4. التحقق عبر كلاس قاعدة البيانات وتطابق الأعمدة الفعلية (email و password)
         $admin_logged_in = false;
         $admin_data = [];
 
         try {
             $pdo = Database::getConnection();
             
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email AND is_active = 1 LIMIT 1");
+            // مطابقة الأعمدة الحقيقية في جدول admins لديك (email, password, name, role)
+            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email LIMIT 1");
             $stmt->execute(['email' => $email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($admin && password_verify($password, $admin['password_hash'])) {
+            if ($admin && password_verify($password, $admin['password'])) {
                 $admin_logged_in = true;
                 $admin_data = [
                     'role' => $admin['role'] ?? 'admin',
-                    'name' => $admin['full_name'] ?? 'المشرف',
+                    'name' => $admin['name'] ?? 'المشرف',
                     'id'   => $admin['id']
                 ];
-
-                $update_stmt = $pdo->prepare("UPDATE admins SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = :id");
-                $update_stmt->execute(['id' => $admin['id']]);
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());
         }
-
 
         // 5. حفظ الجلسة والتوجيه للوحة التحكم عند نجاح المصادقة
         if ($admin_logged_in) {
@@ -146,12 +143,12 @@ class AuthController {
             // تنظيف بيانات الجلسة المؤقتة
             unset($_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result'], $_SESSION['login_csrf']);
 
-            header("Location: index.php?url=admin/dashboard");
+            header("Location: /admin/dashboard");
             exit;
         }
 
         $_SESSION['login_error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-        header("Location: index.php?url=admin/login");
+        header("Location: /admin/login");
         exit;
     }
 
@@ -173,7 +170,7 @@ class AuthController {
         }
         session_destroy();
 
-        header("Location: index.php?url=admin/login&message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+        header("Location: /admin/login?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
         exit;
     }
 }

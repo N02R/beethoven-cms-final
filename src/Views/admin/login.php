@@ -8,13 +8,12 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل دخول المشرف - Beethoven CMS</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>تسجيل الدخول - لوحة التحكم</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            background-color: #f1f5f9;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
@@ -24,42 +23,40 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
         }
         .login-card {
             width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            max-width: 420px;
+            background: #ffffff;
+            border-radius: 16px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
         }
         .login-card h3 {
             font-weight: 700;
             color: #0f172a;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
         .form-control {
-            border-radius: 12px;
-            height: 48px;
+            border-radius: 10px;
+            height: 46px;
             border: 1px solid #cbd5e1;
-            padding: 0 16px;
+            padding: 0 14px;
         }
         .form-control:focus {
             border-color: #2563eb;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         .btn-login {
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            background: #2563eb;
             color: white;
             border: none;
-            border-radius: 12px;
-            height: 48px;
+            border-radius: 10px;
+            height: 46px;
             font-weight: 600;
             width: 100%;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .btn-login:hover {
-            background: linear-gradient(135deg, #1d4ed8, #2563eb);
-            transform: translateY(-1px);
+            background: #1d4ed8;
         }
     </style>
 </head>
@@ -67,9 +64,9 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
 
 <div class="login-card">
     <div class="text-center mb-4">
-        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
-        <h3 class="mt-2">وضع التعديل المباشر</h3>
-        <p class="text-muted small">قم بتسجيل الدخول لتفعيل أزرار التعديل في الموقع</p>
+        <i class="bi bi-lock-fill text-primary" style="font-size: 2.5rem;"></i>
+        <h3 class="mt-2">تسجيل الدخول</h3>
+        <p class="text-muted small">أدخل بيانات المشرف للوصول إلى لوحة التحكم</p>
     </div>
 
     <div id="loginAlert" class="alert d-none text-center small rounded-3"></div>
@@ -87,12 +84,8 @@ $csrf_token = \App\Core\Security::generateCsrfToken();
             <input type="password" class="form-control" name="password" required placeholder="••••••••" value="Admin123!">
         </div>
 
-        <button type="submit" class="btn btn-login" id="submitBtn">تفعيل وضع التعديل</button>
+        <button type="submit" class="btn btn-login" id="submitBtn">تسجيل الدخول</button>
     </form>
-    
-    <div class="text-center mt-3">
-        <a href="/home" class="text-decoration-none small text-muted">العودة إلى الموقع الرئيسية بدون تسجيل</a>
-    </div>
 </div>
 
 <script>
@@ -102,7 +95,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     const submitBtn = document.getElementById('submitBtn');
     
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري التحقق وتفعيل الوضع...';
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري التحقق...';
 
     const formData = new FormData(this);
 
@@ -118,14 +111,14 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
             alertBox.classList.add('alert-success');
             alertBox.textContent = data.message;
             setTimeout(() => {
-                // الانتقال المباشر لصفحة الرئيسية مع تفعيل أزرار القلم والتعديل الفوري
-                window.location.href = '/home';
-            }, 1000);
+                // التحويل إلى لوحة التحكم بعد نجاح الدخول
+                window.location.href = '/admin/dashboard';
+            }, 800);
         } else {
             alertBox.classList.add('alert-danger');
             alertBox.textContent = data.message;
             submitBtn.disabled = false;
-            submitBtn.textContent = 'تفعيل وضع التعديل';
+            submitBtn.textContent = 'تسجيل الدخول';
         }
     })
     .catch(err => {
@@ -134,7 +127,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         alertBox.classList.add('alert-danger');
         alertBox.textContent = 'حدث خطأ في الاتصال بالخادم.';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'تفعيل وضع التعديل';
+        submitBtn.textContent = 'تسجيل الدخول';
     });
 });
 </script>

@@ -8,11 +8,12 @@ use PDO;
 
 class SiteModel {
     /**
-     * جلب جميع الإعدادات من قاعدة البيانات
+     * جلب جميع الإعدادات العامة والهيدر والفوتر من الجدول الجديد global_settings
      */
     public static function getSettings(): array {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+        // تم تحديث اسم الجدول من site_settings إلى global_settings
+        $stmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings");
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $settings = [];
@@ -102,13 +103,14 @@ class SiteModel {
     }
 
     /**
-     * تحديث أو حفظ إعدادات الموقع بنظام المفتاح والقيمة
+     * تحديث أو حفظ إعدادات الموقع بنظام المفتاح والقيمة في الجدول الجديد global_settings
      */
     public static function updateSettings(array $data): bool {
         $pdo = Database::getConnection();
         
+        // تم تحديث اسم الجدول إلى global_settings
         $stmt = $pdo->prepare("
-            INSERT INTO site_settings (setting_key, setting_value) 
+            INSERT INTO global_settings (setting_key, setting_value) 
             VALUES (:k, :v) 
             ON DUPLICATE KEY UPDATE setting_value = :v_update
         ");

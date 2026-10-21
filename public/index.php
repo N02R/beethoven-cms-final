@@ -4,7 +4,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 
-
 /**
  * Beethoven CMS - Entry Point (public/index.php)
  * النسخة الإنتاجية الآمنة المتوافقة مع معايير الجودة والأمان الألمانية ومعالجة ملف البيئة .env
@@ -15,16 +14,14 @@ $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        // تخطي التعليقات التي تبدأ بعلامة #
         if (str_starts_with(trim($line), '#')) {
             continue;
         }
 
-        // تقسيم السطر إلى مفتاح وقيمة بناءً على علامة التساوي =
         $parts = explode('=', $line, 2);
         if (count($parts) === 2) {
             $name = trim($parts[0]);
-            $value = trim($parts[1], "\"' \t\n\r\0\x0B"); // تنظيف القيم من علامات التنصيص والفراغات
+            $value = trim($parts[1], "\"' \t\n\r\0\x0B");
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
@@ -37,34 +34,31 @@ if (file_exists($envFile)) {
 $appEnv = $_ENV['APP_ENV'] ?? 'local'; 
 
 if ($appEnv === 'production') {
-    // إيقاف إظهار الأخطاء للمستخدم نهائياً في السيرفر الحقيقي (حماية من تسريب البيانات)
     error_reporting(0);
     ini_set('display_errors', '0');
     ini_set('display_startup_errors', '0');
     ini_set('log_errors', '1');
 } else {
-    // تفعيل عرض الأخطاء فقط أثناء التطوير المحلي
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
 }
 
-// 3. تطبيق معايير الأمان الصارمة للجلسات (Secure Session Cookie Setup & DSGVO Compliance)
+// 3. تطبيق معايير الأمان الصارمة للجلسات وبدء الجلسة مركزياً
 if (session_status() === PHP_SESSION_NONE) {
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
     
     session_set_cookie_params([
-        'lifetime' => 0,                    // تنتهي الجلسة بإغلاق المتصفح
+        'lifetime' => 0,
         'path'     => '/',
         'domain'   => '',                   
-        'secure'   => $isSecure,            // تفعيل HTTPS إلزامي عند توفره
-        'httponly' => true,                 // منع الوصول عبر جافاسكريبت (حماية XSS)
-        'samesite' => 'Strict'              // حماية صارمة جداً ضد هجمات CSRF
+        'secure'   => $isSecure,
+        'httponly' => true,
+        'samesite' => 'Strict'
     ]);
 
     session_start();
 
-    // حماية من تثبيت الجلسة (Session Fixation): تجديد ID الجلسة دورياً كل 30 دقيقة
     if (!isset($_SESSION['CREATED'])) {
         $_SESSION['CREATED'] = time();
     } else if (time() - $_SESSION['CREATED'] > 1800) {
@@ -73,22 +67,20 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 }
 
-// 4. تفعيل رؤوس الأمان الشاملة (Security Headers) لحماية المتصفح
+// 4. تفعيل رؤوس الأمان الشاملة (Security Headers)
 header("X-Frame-Options: SAMEORIGIN");
 header("X-Content-Type-Options: nosniff");
 header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:;");
 
-// 5. تحسين وتسجيل Autoloader الموحد للنظام
+// 5. تسحين وتسجيل Autoloader الموحد للنظام
 spl_autoload_register(function (string $class) {
     $prefix = 'App\\';
     $baseDir = __DIR__ . '/../src/';
 
     if (strncmp($prefix, $class, strlen($prefix)) === 0) {
         $relativeClass = substr($class, strlen($prefix));
-        
-        // مسار موحد ونظيف لجميع كلاسات المشروع دون ازدواجية
         $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
 
         if (file_exists($file)) {
@@ -137,7 +129,6 @@ use App\Controllers\Guide\GuideBlog3Controller;
 use App\Controllers\MediaController;
 use App\Controllers\LegalController;
 use App\Controllers\ConsultationController;
-// متحكمات لوحة التحكم والأدمن
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\SettingsController;
 use App\Controllers\Admin\UploadController;
@@ -146,9 +137,7 @@ use App\Controllers\Admin\AnnouncementController;
 
 $router = new Router();
 
-// ==========================================
-// أوبشن 1: مسارات الواجهة الأمامية والخدمات العامة
-// ==========================================
+// المسارات
 $router->add('GET', '', [HomeController::class, 'index']);                 
 $router->add('GET', 'home', [HomeController::class, 'index']);               
 $router->add('GET', 'about', [AboutController::class, 'index']);             
@@ -178,23 +167,18 @@ $router->add('GET', 'edu-services/medical-traning', [JobAgreementsController::cl
 $router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);
 
-// مسار استقبال طلبات الاستشارة (متاح للجميع POST)
 $router->add('POST', 'send-consult', [ConsultationController::class, 'store']);
 
-// مسارات الأدلة والمقالات
 $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);
 
-// مسارات الصفحات القانونية وتغيير اللغة
 $router->add('GET', 'impressum', [LegalController::class, 'impressum']);
 $router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
 $router->add('GET', 'switch-lang', [HomeController::class, 'switchLang']);
 $router->add('GET', 'media/view', [MediaController::class, 'serve']);
 
-// ==========================================
-// أوبشن 2: مسارات لوحة التحكم والإدارة (Admin Routes)
-// ==========================================
+// مسارات الإدارة
 $router->add('GET', 'admin/login', [AuthController::class, 'login']);
 $router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
 $router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
@@ -205,9 +189,7 @@ $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
 $router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 'save']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
 
-// ==========================================
-// 7. معالجة الـ URI واللغات بذكاء هندسي
-// ==========================================
+// معالجة الـ URI واللغات
 if (isset($_GET['url'])) {
     $uri = '/' . trim($_GET['url'], '/');
 } else {
@@ -223,9 +205,8 @@ if (isset($_GET['url'])) {
     }
 }
 
-// استخراج بادئة اللغة إن وجدت (de, en, ar)
 $uriSegments = explode('/', trim($uri, '/'));
-$currentLang = 'de'; // الافتراضي للشركة الألمانية
+$currentLang = 'de';
 
 if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], true)) {
     $currentLang = $uriSegments[0];
@@ -233,7 +214,6 @@ if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], tru
     $uri = '/' . implode('/', $uriSegments);
 }
 
-// حفظ اللغة في الجلسة للاستخدام العام
 $_SESSION['site_lang'] = $currentLang;
 
 $method = $_SERVER['REQUEST_METHOD'];

@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Home View (Inline Editing Enabled)
- * النسخة المحدثة بالكامل مع شريط الأدوات العلوي وتفعيل التعديل المباشر للمدير.
+ * النسخة المحدثة والنظيفة مع الاعتماد المركزي على جلسة المدير القادمة من الهيدر.
  */
 
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// التحقق المباشر من جلسة المدير لتفعيل وضع التعديل تلقائياً دون الحاجة لصفحة لوحة تحكم تقليدية
-$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+// ملاحظة: تم الاعتماد على التحقق المركزي من صلاحيات المشرف القادم من الهيدر ($is_admin)
 
 // دالة مساعدة داخلية موحدة لاستخراج بيانات القسم متعدد اللغات بسلامة تامة وحصانة ضد الـ null (DRY Principle)
 $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
@@ -46,13 +45,11 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 };
 ?>
 
-<!-- شريط الأدوات العلوي الخاص بالمدير (يظهر تلقائياً فور تسجيل الدخول لتفعيل وضع التعديل المباشر) -->
-
 <!-- بداية قسم الهيرو -->
 <!-- hero start -->
 <section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position: relative;">
-  <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الهيرو">
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -85,8 +82,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- services start -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الخدمات">
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -142,8 +139,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- choose start -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل المميزات">
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="تعديل المميزات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -200,8 +197,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
-    <?php if ($is_admin): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+    <?php if (!empty($is_admin) && $is_admin === true): ?>
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -264,8 +261,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- ===== GUIDE HOME SECTION START ===== -->
 <section class="guide py-2 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="تعديل الدليل الشامل">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -348,8 +345,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- FAQ section start -->
 <section class="popular py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
   <div class="container-fluid custom-container">
@@ -401,7 +398,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- FAQ section end -->
 
 <!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
-<?php if ($is_admin): ?>
+<?php if (!empty($is_admin) && $is_admin === true): ?>
     <?php 
     $modals_file = __DIR__ . '/admin/admin_home_modals.php';
     if (file_exists($modals_file)) {

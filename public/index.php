@@ -174,6 +174,9 @@ $router->add('GET', 'edu-services/medical-traning', [JobAgreementsController::cl
 $router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
 $router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);
 
+// مسار استقبال طلبات الاستشارة (متاح للجميع POST)
+$router->add('POST', 'send-consult', [ConsultationController::class, 'store']);
+
 // مسارات الأدلة والمقالات
 $router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
 $router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
@@ -197,7 +200,7 @@ $router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
 $router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
 $router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 'save']);
 $router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
-$router->add('POST', 'send-consult', [ConsultationController::class, 'store']);
+
 // ==========================================
 // 7. معالجة الـ URI واللغات بذكاء هندسي
 // ==========================================

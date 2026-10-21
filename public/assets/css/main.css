@@ -97,63 +97,63 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - تصميم واضح، بارز، وعالي التباين
+   أقلام التعديل - تصميم واضح، بارز، وغير مؤثر على التخطيط
    ========================================== */
 
+/* الحفاظ على التخطيط الأصلي للعنصر دون تكدس */
 .editable-wrapper {
     position: relative !important;
-    display: inline-block !important; /* لضمان الالتصاق الصحيح بالعنصر */
 }
 
+/* زر قلم التعديل الرئيسي */
 .editable-wrapper .edit-pen {
-    /* الشكل والأبعاد الواضحة */
-    width: 42px !important;
-    height: 42px !important;
+    /* الشكل والأبعاد الواضحة والمريحة */
+    width: 38px !important;
+    height: 38px !important;
     border-radius: 50% !important;
     
-    /* التموضع لضمان ظهوره تماماً خارج/على الزاوية دون اختفاء */
+    /* التموضع المطلق فوق زاوية العنصر تماماً */
     position: absolute !important;
-    top: -16px !important;
-    right: -16px !important;
-    z-index: 9999 !important; /* أعلى زاب índices في الصفحة لضمان عدم اختفائه تحت أي عنصر */
+    top: -12px !important;
+    right: -12px !important;
+    z-index: 9999 !important;
     
-    /* ألوان واضحة جداً وقوية (خلفية صفراء ذهبية داكنة مع أيقونة سوداء سميكة) */
+    /* ألوان واضحة جداً (خلفية صفراء ذهبية ساطعة مع أيقونة سوداء بارزة) */
     background: #ffc107 !important;
     color: #000000 !important;
-    border: 3px solid #ffffff !important; /* إطار أبيض عريض ليعزل القلم عن خلفية الموقع */
+    border: 2px solid #ffffff !important; /* إطار أبيض يفصل القلم عن التصميم الخلفي */
     
-    /* التنسيق الداخلي */
-    display: flex !important;
+    /* التنسيق الداخلي للأيقونة */
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     
-    /* ظل قوي وبارز لكي "يطفو" فوق العناصر بنقاء */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+    /* ظل قوي وبارز */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
     
-    /* الترانزيشن */
+    /* السلاسة الحركية */
     transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
-/* حجم وأيقونة القلم واضحة وكبيرة */
+/* حجم وأيقونة القلم */
 .editable-wrapper .edit-pen i {
-    font-size: 1.1rem !important;
-    font-weight: bold !important;
+    font-size: 1rem !important;
 }
 
-/* تأثير التمرير (Hover) ليكون بارزاً أكثر */
+/* تأثير التمرير (Hover) */
 .editable-wrapper .edit-pen:hover {
-    background: #000000 !important; /* يتحول لأسود داكن عند الوقوف عليه */
-    color: #ffc107 !important; /* والأيقونة تصبح صفراء */
+    background: #000000 !important; /* يتحول للأسود الفاخر عند المرور */
+    color: #ffc107 !important;     /* تصبح الأيقونة صفراء */
     border-color: #ffc107 !important;
-    transform: scale(1.2) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+    transform: scale(1.15) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* دعم الاتجاه المعاكس للغة العربية RTL */
+/* دعم الاتجاه المعاكس للغة العربية RTL ليتوضع القلم في اليسار بشكل مريح */
 [dir="rtl"] .editable-wrapper .edit-pen {
     right: auto !important;
-    left: -16px !important;
+    left: -12px !important;
 }
 
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */

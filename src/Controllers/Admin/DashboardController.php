@@ -28,7 +28,7 @@ class DashboardController {
         }
 
         // ==========================================
-        // 🌟 التحديث الأساسي: جلب لغة الجلسة وتحميل ملف الترجمة للمودلات
+        // 🌟 جلب لغة الجلسة وتحميل ملف الترجمة للمودلات
         // ==========================================
         $current_lang = $_SESSION['site_lang'] ?? 'de';
         $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
@@ -41,15 +41,15 @@ class DashboardController {
         }
         // ==========================================
 
-        // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel الأصلي
+        // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel
         $dashboardModel = new DashboardModel();
         $config_data = $dashboardModel->getDashboardData();
 
-        // 4. جلب كافة إعدادات ومحتويات الموقع من قاعدة البيانات (لتغذية الـ Modals والتعديل المباشر)
+        // 4. جلب كافة إعدادات ومحتويات الموقع من الجدول الموحد global_settings
         $rawSettings = [];
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+            $stmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings");
             $rawSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
         } catch (\Throwable $e) {
             error_log("Failed to fetch site settings in DashboardController: " . $e->getMessage());
@@ -68,7 +68,6 @@ class DashboardController {
 
         // 5. مصفوفة البيانات الشاملة ($data) التي تغذي لوحة التحكم والـ Modals
         $data = [
-            // إحصائيات اللوحة وجداول الطلبات
             'current_logo'           => $current_logo,
             'ad_status'              => $ad_status,
             'ad_type'                => $ad_type,
@@ -77,19 +76,16 @@ class DashboardController {
             'consult_count'          => $consult_count,
             'role_badge_text'        => $role_badge_text,
 
-            // الإعدادات العامة الأساسية
             'site_title'             => $rawSettings['site_title'] ?? 'Beethoven CMS',
             'site_email'             => $rawSettings['site_email'] ?? '',
             'site_logo'              => $current_logo,
             'site_logo_path'         => $rawSettings['site_logo_path'] ?? '',
 
-            // الروابط والقوائم والأقسام مفكوكة بصيغة JSON للـ Modals
             'social_links'           => json_decode($rawSettings['social_links'] ?? '[]', true),
             'menu_links'             => $menu_links,
             'languages'              => json_decode($rawSettings['languages'] ?? '[]', true),
             'announcement'           => json_decode($rawSettings['announcement'] ?? '{}', true),
 
-            // الفوتر، الهيرو، والخدمات
             'consult_title'          => $rawSettings['consult_title'] ?? '',
             'consult_desc'           => $rawSettings['consult_desc'] ?? '',
             'footer_desc'            => $rawSettings['footer_desc'] ?? '',
@@ -98,12 +94,10 @@ class DashboardController {
             'services_section_desc'  => $rawSettings['services_section_desc'] ?? '',
             'services'               => json_decode($rawSettings['services'] ?? '[]', true),
 
-            // فريق العمل والأقسام الأخرى
             'team_title'             => $rawSettings['team_title'] ?? 'فريق العمل',
             'team_desc'              => $rawSettings['team_desc'] ?? '',
             'team_members'           => json_decode($rawSettings['team_items'] ?? '[]', true),
 
-            // مرجع خام إن دعت الحاجة
             'raw_settings'           => $rawSettings
         ];
 

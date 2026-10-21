@@ -106,19 +106,22 @@ class AuthController {
             exit;
         }
 
-        // 4. التحقق عبر جدول users في قاعدة البيانات
+        // 4. التحقق عبر جدول users في قاعدة البيانات (مع تصحيح معاملات الـ PDO)
         $admin_logged_in = false;
         $admin_data = [];
 
         try {
             $pdo = Database::getConnection();
             
-            // استعلام يبحث بالـ email أو username في جدول users
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE (email = :input OR username = :input) LIMIT 1");
-            $stmt->execute(['input' => $login_input]);
+            // استخدام معامليْن مستقلين (:input1 و :input2) لمنع خطأ Invalid parameter number
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :input1 OR username = :input2 LIMIT 1");
+            $stmt->execute([
+                'input1' => $login_input,
+                'input2' => $login_input
+            ]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // التحقق من صحة كلمة المرور المقارنة مع حقل password في جدول users
+            // التحقق من صحة كلمة المرور
             if ($user && password_verify($password, $user['password'])) {
                 $admin_logged_in = true;
                 $admin_data = [

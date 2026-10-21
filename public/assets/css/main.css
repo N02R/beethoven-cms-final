@@ -96,29 +96,43 @@ body {
     color: rgba(0, 0, 0, 1);
 }
 
-/* Styling the Edit Button - European Minimalist Style */
-.edit-pen {
+/* ==========================================
+   أقلام التعديل - النمط الأوروبي الفاخر (Minimalist Glassmorphism)
+   ========================================== */
+
+/* حاوية العناصر القابلة للتعديل */
+.editable-wrapper {
+    position: relative !important;
+}
+
+/* زر قلم التعديل الرئيسي */
+.editable-wrapper .edit-pen {
     /* الشكل والأبعاد */
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
+    
+    /* التموضع والتثبيت في الزاوية العلوية اليمنى/اليسرى */
+    position: absolute !important;
+    top: -12px !important;
+    right: -12px !important;
+    z-index: 1050 !important;
     
     /* الألوان والخلفية - تأثير الزجاج المطفى (Glassmorphism) */
     background: rgba(255, 255, 255, 0.85);
     color: #1a1a1a;
     border: 1px solid rgba(0, 0, 0, 0.08);
     
-    /* التموضع والتنسيق الداخلي */
+    /* التنسيق الداخلي */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     cursor: pointer;
     
-    /* الظلال - ناعمة وخفيفة جداً */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    /* الظلال الناعمة */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
     
-    /* تأثير Blur خلف المودال/العنصر */
+    /* تأثير Blur خلف العنصر */
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     
@@ -127,31 +141,37 @@ body {
 }
 
 /* حجم وأيقونة القلم */
-.edit-pen i {
-    font-size: 0.95rem;
+.editable-wrapper .edit-pen i {
+    font-size: 0.9rem;
     transition: transform 0.3s ease;
 }
 
 /* تأثير التمرير (Hover Effect) */
-.edit-pen:hover {
-    background: #000000; /* التباين الفاخر: يتحول للأسود الداكن */
+.editable-wrapper .edit-pen:hover {
+    background: #000000;
+    /* تباين فاخر: أسود داكن */
     color: #ffffff;
     border-color: #000000;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px); /* رفعة خفيفة وأنيقة */
+    transform: translateY(-2px) scale(1.05);
 }
 
 /* دوران بسيط للقلم عند الـ Hover */
-.edit-pen:hover i {
+.editable-wrapper .edit-pen:hover i {
     transform: rotate(-10deg) scale(1.05);
 }
 
 /* تأثير الضغط (Active State) */
-.edit-pen:active {
+.editable-wrapper .edit-pen:active {
     transform: translateY(0) scale(0.96);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* دعم الاتجاه المعاكس للغة العربية RTL ليتوضع القلم بالزاوية اليسرى المريحة بصرياً إن لزم */
+[dir="rtl"] .editable-wrapper .edit-pen {
+    right: auto !important;
+    left: -12px !important;
+}
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */
 .cookie-banner {
     position: fixed;

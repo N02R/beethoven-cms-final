@@ -8,7 +8,7 @@ if (!defined('ALLOWED_ACCESS')) {
 if (!function_exists('get_image_url')) {
     function get_image_url(?string $path): string {
         if (empty($path)) {
-            return 'assets/img/logo.png';
+            return '/assets/img/logo.png';
         }
         return (strpos($path, 'http') === 0) ? $path : '/' . ltrim($path, '/');
     }
@@ -61,7 +61,7 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
             width: 100%;
             height: 100%;
             min-height: 600px;
-            background-image: url('assets/img/dashboard.jpeg');
+            background-image: url('/assets/img/dashboard.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -248,7 +248,7 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
               <div class="dashboard-card-box">
                 
                 <!-- الشعار -->
-                <a href="index.php?url=home" class="brand-logo">
+                <a href="/home" class="brand-logo">
                     <?php if (!empty($site_logo)): ?>
                         <img src="<?php echo htmlspecialchars(get_image_url($site_logo), ENT_QUOTES, 'UTF-8'); ?>" alt="شعار الموقع" class="brand-logo-img">
                     <?php else: ?>
@@ -267,22 +267,22 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
 
                 <!-- الأزرار -->
                 <div class="d-flex flex-column mb-4">
-                    <!-- استعراض الموقع -->
-                    <a href="index.php?url=home" class="custom-card-btn primary">
+                    <!-- استعراض الموقع وتفعيل التعديل المباشر -->
+                    <a href="/home" class="custom-card-btn primary">
                         <div class="btn-content">
                             <div class="btn-icon">
                                 <i class="fa-solid fa-eye"></i>
                             </div>
                             <div class="btn-text">
                                 <h5>استعراض الموقع</h5>
-                                <p>الانتقال للموقع الرئيسي وتصفح الخدمات</p>
+                                <p>الانتقال للموقع الرئيسي وتفعيل أقلام التعديل المباشر</p>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-left"></i>
                     </a>
 
                     <!-- تسجيل الخروج -->
-                    <a href="index.php?url=admin/logout" class="custom-card-btn" style="border-color: #fee2e2;">
+                    <a href="/admin/logout" class="custom-card-btn" style="border-color: #fee2e2;">
                         <div class="btn-content">
                             <div class="btn-icon" style="color: #dc2626; background: #fee2e2;">
                                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -302,7 +302,7 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
                         <h6>حالة النظام</h6>
                         <span><i class="fa-solid fa-circle-check text-success ms-1"></i> بيتهوفن CMS - نشط</span>
                         <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                            <i class="fa-regular fa-clock"></i> متصل بحساب: <?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@beethoven-services.de', ENT_QUOTES, 'UTF-8'); ?>
+                            <i class="fa-regular fa-clock"></i> متصل بصلاحية: <?php echo htmlspecialchars($_SESSION['role'] ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
                     <div class="info-item text-start border-start border-2 ps-4">

@@ -23,7 +23,7 @@ class DashboardController {
         $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
 
         if (!$is_admin) {
-            header("Location: index.php?url=admin/login&error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
+            header("Location: /admin/login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
             exit();
         }
 
@@ -42,8 +42,7 @@ class DashboardController {
         // ==========================================
 
         // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel الأصلي
-        $dashboardModel = new DashboardModel();
-        $config_data = $dashboardModel->getDashboardData();
+        $config_data = DashboardModel::getDashboardData();
 
         // 4. جلب كافة إعدادات ومحتويات الموقع من قاعدة البيانات (لتغذية الـ Modals والتعديل المباشر)
         $rawSettings = [];
@@ -57,7 +56,7 @@ class DashboardController {
 
         // تجهيز متغيرات اللوحة الإحصائية
         $consult_emails = $config_data['consult_emails'] ?? [];
-        $consult_count  = count($consult_emails);
+        $consult_count  = $config_data['consult_count'] ?? count($consult_emails);
         $menu_links     = json_decode($rawSettings['menu_links'] ?? '[]', true);
         $menu_count     = count($menu_links) > 0 ? count($menu_links) : 6;
         $current_logo   = $rawSettings['site_logo'] ?? $config_data['current_logo'] ?? 'assets/img/logo.png';
@@ -138,7 +137,7 @@ class DashboardController {
 
         session_destroy();
 
-        header("Location: index.php?url=admin/login&message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+        header("Location: /admin/login?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
         exit();
     }
 }

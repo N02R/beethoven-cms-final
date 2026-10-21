@@ -106,29 +106,26 @@ class AuthController {
             exit;
         }
 
-        // 4. التحقق عبر قاعدة البيانات
+        // 4. التحقق عبر جدول users في قاعدة البيانات
         $admin_logged_in = false;
         $admin_data = [];
 
         try {
             $pdo = Database::getConnection();
             
-            // استعلام مرن يبحث بالـ email أو username
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE (email = :input OR username = :input) AND is_active = 1 LIMIT 1");
+            // استعلام يبحث بالـ email أو username في جدول users
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE (email = :input OR username = :input) LIMIT 1");
             $stmt->execute(['input' => $login_input]);
-            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($admin && password_verify($password, $admin['password_hash'])) {
+            // التحقق من صحة كلمة المرور المقارنة مع حقل password في جدول users
+            if ($user && password_verify($password, $user['password'])) {
                 $admin_logged_in = true;
                 $admin_data = [
-                    'role' => $admin['role'] ?? 'admin',
-                    'name' => $admin['full_name'] ?? 'المشرف',
-                    'id'   => $admin['id']
+                    'role' => $user['role'] ?? 'admin',
+                    'name' => $user['username'] ?? 'المشرف',
+                    'id'   => $user['id']
                 ];
-
-                // تحديث وقت آخر دخول وتصفير محاولات الفشل
-                $update_stmt = $pdo->prepare("UPDATE admins SET last_login_at = NOW(), failed_login_attempts = 0 WHERE id = :id");
-                $update_stmt->execute(['id' => $admin['id']]);
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());

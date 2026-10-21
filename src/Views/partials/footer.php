@@ -207,10 +207,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('email', emailInput.value);
             formData.append('privacy_consent', 'on');
 
-            fetch('<?php echo htmlspecialchars($path_prefix . 'send_consult.php', ENT_QUOTES, 'UTF-8'); ?>', {
-                method: 'POST',
-                body: formData
-            })
+            fetch('/<?php echo $current_lang_code; ?>/send-consult', {
+    method: 'POST',
+    body: formData
+})
+
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.h>
+    RewriteEngine On
+
+    # منع تصفح المجلدات تماماً لأسباب أمنية
+    Options -Indexes
+
+    # حماية ملف البيئة .env من أي محاولة قراءة أو وصول عبر الويب
+    <Files .env>
+        Order allow,deny
+        Deny from all
+    </Files>
+
+    # توجيه جميع الطلبات التي لا توجه إلى مجلد public مباشرة إلى نقطة البداية index.php
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
+</IfModule>

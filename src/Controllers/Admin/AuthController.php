@@ -11,8 +11,12 @@ class AuthController
 {
     public function login(): void
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         if (isset($_SESSION['is_logged_in']) &&$_SESSION['is_logged_in'] === true) {
-            header("Location: /admin/dashboard");
+            header("Location: index.php?url=admin/dashboard");
             exit;
         }
 
@@ -23,6 +27,10 @@ class AuthController
 
     public function authenticate(): void
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         header('Content-Type: application/json; charset=utf-8');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -41,7 +49,7 @@ class AuthController
             exit;
         }
 
-        if (empty($email) || empty($password)) {
+        if (empty($email) \vert{}\vert{} empty($password)) {
             echo json_encode(['success' => false, 'message' => 'يرجى إدخال البريد الإلكتروني وكلمة المرور.']);
             exit;
         }
@@ -56,9 +64,7 @@ class AuthController
                 session_regenerate_id(true);
 
                 $_SESSION['is_logged_in'] = true;
-                $_SESSION['admin_id'] =$admin['id'];
-                $_SESSION['admin_name'] =$admin['name'];
-                $_SESSION['admin_email'] =$admin['email'];
+                $_SESSION['admin_id']     = $admin['id'];$_SESSION['admin_name']   = $admin['name'] ?? 'Admin';$_SESSION['admin_email']  = $admin['email'];$_SESSION['role']         = 'admin';
 
                 echo json_encode([
                     'success' => true, 
@@ -96,7 +102,7 @@ class AuthController
         }
         session_destroy();
 
-        header("Location: /home");
+        header("Location: index.php?url=home");
         exit;
     }
 }

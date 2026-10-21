@@ -10,12 +10,10 @@ use PDO;
 class DashboardController {
     
     public function index(): void {
-        // 1. السماح بالوصول وتفعيل الحماية المركزية
         if (!defined('ALLOWED_ACCESS')) {
             define('ALLOWED_ACCESS', true);
         }
 
-        // 2. بدء الجلسة والتحقق من الصلاحيات (تم التحديث ليتوافق تماماً مع جلسة تسجيل الدخول)
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -27,9 +25,6 @@ class DashboardController {
             exit();
         }
 
-        // ==========================================
-        // 🌟 جلب لغة الجلسة وتحميل ملف الترجمة للمودلات
-        // ==========================================
         $current_lang = $_SESSION['site_lang'] ?? 'de';
         $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
         if (!file_exists($lang_file)) {
@@ -39,13 +34,10 @@ class DashboardController {
         if (!is_array($lang)) {
             $lang = [];
         }
-        // ==========================================
 
-        // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel
         $dashboardModel = new DashboardModel();
         $config_data = $dashboardModel->getDashboardData();
 
-        // 4. جلب كافة إعدادات ومحتويات الموقع من الجدول الموحد global_settings
         $rawSettings = [];
         try {
             $pdo = Database::getConnection();
@@ -55,7 +47,6 @@ class DashboardController {
             error_log("Failed to fetch site settings in DashboardController: " . $e->getMessage());
         }
 
-        // تجهيز متغيرات اللوحة الإحصائية
         $consult_emails = $config_data['consult_emails'] ?? [];
         $consult_count  = count($consult_emails);
         $menu_links     = json_decode($rawSettings['menu_links'] ?? '[]', true);
@@ -66,7 +57,6 @@ class DashboardController {
 
         $role_badge_text = 'مسؤول النظام (Admin)';
 
-        // 5. مصفوفة البيانات الشاملة ($data) التي تغذي لوحة التحكم والـ Modals
         $data = [
             'current_logo'           => $current_logo,
             'ad_status'              => $ad_status,
@@ -101,7 +91,6 @@ class DashboardController {
             'raw_settings'           => $rawSettings
         ];
 
-        // 6. استدعاء ملف الـ View الخاص باللوحة الاحترافية
         $root_path = realpath(__DIR__ . '/../../../');
         $view_file = $root_path . '/src/Views/admin/dashboard.php';
         
@@ -112,9 +101,6 @@ class DashboardController {
         }
     }
 
-    /**
-     * تسجيل الخروج الآمن وتدمير الجلسة والكوكيز
-     */
     public function logout(): void {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

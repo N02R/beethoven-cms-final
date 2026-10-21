@@ -1,136 +1,133 @@
 <?php
-declare(strict_types=1);
-$current_lang = $current_lang ?? 'ar';
-$csrf_token = \App\Core\Security::generateCsrfToken();
+if (!defined('ALLOWED_ACCESS')) {
+    header("HTTP/1.1 403 Forbidden");
+    exit('Access Denied');
+}
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $current_lang; ?>" dir="<?php echo ($current_lang === 'ar') ? 'rtl' : 'ltr'; ?>">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - لوحة التحكم</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>تسجيل دخول المشرفين - Beethoven City Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            background-color: #f1f5f9;
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
             margin: 0;
+            padding: 20px;
         }
-        .login-card {
+
+        .login-card-wrapper {
             width: 100%;
-            max-width: 420px;
-            background: #ffffff;
-            border-radius: 16px;
+            max-width: 480px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
             padding: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+            position: relative;
         }
-        .login-card h3 {
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-        .form-control {
-            border-radius: 10px;
-            height: 46px;
-            border: 1px solid #cbd5e1;
-            padding: 0 14px;
-        }
-        .form-control:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .btn-login {
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            height: 46px;
+
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
             font-weight: 600;
-            width: 100%;
-            transition: 0.2s;
+            margin-bottom: 25px;
+            transition: color 0.2s ease;
         }
-        .btn-login:hover {
-            background: #1d4ed8;
+
+        .back-home-btn:hover {
+            color: #2563eb;
+        }
+
+        .form-control {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border: none;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .captcha-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #475569;
         }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <div class="text-center mb-4">
-        <i class="bi bi-lock-fill text-primary" style="font-size: 2.5rem;"></i>
-        <h3 class="mt-2">تسجيل الدخول</h3>
-        <p class="text-muted small">أدخل بيانات المشرف للوصول إلى لوحة التحكم</p>
-    </div>
+<div class="login-card-wrapper">
+    <!-- زر العودة للموقع -->
+    <a href="index.php?url=home" class="back-home-btn">
+        <i class="fa-solid fa-arrow-right"></i> العودة للموقع الرئيسي
+    </a>
 
-    <div id="loginAlert" class="alert d-none text-center small rounded-3"></div>
+    <h3 class="fw-bold mb-1">تسجيل دخول المشرف</h3>
+    <p class="text-muted mb-4">أهلاً بك مجدداً، يرجى إدخال بياناتك للمتابعة</p>
 
-    <form id="loginForm">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php if (!empty($data['error_msg'])): ?>
+        <div class="alert alert-danger p-2 small text-center mb-3"><?php echo htmlspecialchars($data['error_msg'], ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
+
+    <form action="index.php?url=admin/login/process" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
         
-        <div class="mb-3 text-start" dir="ltr">
-            <label class="form-label small fw-bold text-secondary">البريد الإلكتروني</label>
-            <input type="email" class="form-control" name="email" required placeholder="admin@beethoven.de" value="admin@beethoven.de">
+        <div class="mb-3">
+            <label class="form-label small fw-bold">اسم المستخدم</label>
+            <input type="text" class="form-control" name="username" required autocomplete="username">
         </div>
 
-        <div class="mb-4 text-start" dir="ltr">
-            <label class="form-label small fw-bold text-secondary">كلمة المرور</label>
-            <input type="password" class="form-control" name="password" required placeholder="••••••••" value="Admin123!">
+        <div class="mb-3">
+            <label class="form-label small fw-bold">كلمة المرور</label>
+            <input type="password" class="form-control" name="password" required autocomplete="current-password">
         </div>
 
-        <button type="submit" class="btn btn-login" id="submitBtn">تسجيل الدخول</button>
+        <div class="mb-4 captcha-box">
+            <i class="fa-solid fa-shield-halved text-primary me-1"></i>
+            كم الناتج: <strong><?php echo $data['captcha_num1']; ?> + <?php echo $data['captcha_num2']; ?></strong>؟
+            <input type="number" class="form-control mt-2" name="captcha_answer" required placeholder="أدخل الناتج الرقمي">
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100">دخول اللوحة</button>
     </form>
 </div>
-
-<script>
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const alertBox = document.getElementById('loginAlert');
-    const submitBtn = document.getElementById('submitBtn');
-    
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> جاري التحقق...';
-
-    const formData = new FormData(this);
-
-    fetch('/admin/login/process', {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => {
-        alertBox.classList.remove('d-none', 'alert-success', 'alert-danger');
-        if (data.success) {
-            alertBox.classList.add('alert-success');
-            alertBox.textContent = data.message;
-            setTimeout(() => {
-                // التحويل إلى لوحة التحكم بعد نجاح الدخول
-                window.location.href = '/admin/dashboard';
-            }, 800);
-        } else {
-            alertBox.classList.add('alert-danger');
-            alertBox.textContent = data.message;
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'تسجيل الدخول';
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alertBox.classList.remove('d-none');
-        alertBox.classList.add('alert-danger');
-        alertBox.textContent = 'حدث خطأ في الاتصال بالخادم.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'تسجيل الدخول';
-    });
-});
-</script>
 
 </body>
 </html>

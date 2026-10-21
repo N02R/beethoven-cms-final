@@ -10,10 +10,11 @@ $current_lang = $current_lang ?? get_current_lang();
 $current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 $is_admin = $is_admin ?? false;
 
-// دالة مساعدة داخلية موحدة لاستخراج بيانات القسم متعدد اللغات بسلامة تامة (DRY Principle)
+// دالة مساعدة داخلية موحدة لاستخراج بيانات القسم متعدد اللغات بسلامة تامة وحصانة ضد الـ null (DRY Principle)
 $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     global $current_lang;
     $raw = get_setting($settingKey, $default);
+    
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
         $data = is_array($decoded) ? $decoded : $default;
@@ -21,8 +22,26 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         $data = is_array($raw) ? $raw : $default;
     }
 
-    // إرجاع بيانات اللغة الحالية أو بدائل آمنة
-    return $data[$current_lang] ?? ($data['de'] ?? ($data['ar'] ?? ($data['en'] ?? $data)));
+    // التأكد من أن $data مصفوفة وليست null لتجنب تحذيرات PHP الحديثة
+    if (!is_array($data)) {
+        return $default;
+    }
+
+    $langKey = $current_lang ?? 'de';
+    if (isset($data[$langKey]) && is_array($data[$langKey])) {
+        return $data[$langKey];
+    }
+    if (isset($data['de']) && is_array($data['de'])) {
+        return $data['de'];
+    }
+    if (isset($data['ar']) && is_array($data['ar'])) {
+        return $data['ar'];
+    }
+    if (isset($data['en']) && is_array($data['en'])) {
+        return $data['en'];
+    }
+
+    return $data;
 };
 ?>
 

@@ -9,7 +9,7 @@ declare(strict_types=1);
 // 1. تحديد اللغة والاتجاه الحاليين من النظام
 $current_lang = get_current_lang();
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
-$current_lang_code =$current_lang;
+$current_lang_code = $current_lang;
 
 // 2. تنظيف المسار الحالي من أي بادئة لغة سابقة لمنع تكرارها (مثل /en/de/home)
 $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
@@ -17,24 +17,26 @@ $path_segments = explode('/', trim($request_path, '/'));
 if (!empty($path_segments[0]) && in_array($path_segments[0], ['ar', 'en', 'de'], true)) {
     array_shift($path_segments);
 }
-$clean_uri = '/' . implode('/', $path_segments);$clean_uri = ($clean_uri === '/') ? '' :$clean_uri;
+$clean_uri = '/' . implode('/', $path_segments);
+$clean_uri = ($clean_uri === '/') ? '' : $clean_uri;
 
-// 3. التحقق الآمن من صلاحيات المشرف
-$is_admin = isset($_SESSION['is_logged_in']) &&$_SESSION['is_logged_in'] === true 
+// 3. التحقق الآمن والصارم لصلاحيات المشرف وفق معايير الجودة والأمان
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true 
             && isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'super_admin'], true);
 
 // 4. جلب ومعالجة اللوجو متعدد اللغات من قاعدة البيانات بسلامة تامة
-$site_logo_raw = get_setting('site_logo_path', 'assets/img/logo.png');$site_logo_path = 'assets/img/logo.png';
+$site_logo_raw = get_setting('site_logo_path', 'assets/img/logo.png');
+$site_logo_path = 'assets/img/logo.png';
 
 if (is_string($site_logo_raw)) {
     $trimmed_logo = trim($site_logo_raw);
     if (str_starts_with($trimmed_logo, '{')) {
         $logo_array = json_decode($trimmed_logo, true);
         if (is_array($logo_array)) {
-            $site_logo_path =$logo_array[$current_lang] ?? ($logo_array['de'] ?? ($logo_array['ar'] ?? ($logo_array['en'] ?? 'assets/img/logo.png')));
+            $site_logo_path = $logo_array[$current_lang] ?? ($logo_array['de'] ?? ($logo_array['ar'] ?? ($logo_array['en'] ?? 'assets/img/logo.png')));
         }
     } else {
-        $site_logo_path =$site_logo_raw;
+        $site_logo_path = $site_logo_raw;
     }
 }
 
@@ -43,7 +45,7 @@ $languages_raw = get_setting('languages', []);
 if (is_string($languages_raw)) {
     $languages_raw = json_decode($languages_raw, true);
 }
-$available_languages = is_array($languages_raw) ?$languages_raw : [
+$available_languages = is_array($languages_raw) ? $languages_raw : [
     ['code' => 'de', 'name' => 'Deutsch', 'active' => true],
     ['code' => 'en', 'name' => 'English', 'active' => true],
     ['code' => 'ar', 'name' => 'العربية', 'active' => true]
@@ -51,9 +53,9 @@ $available_languages = is_array($languages_raw) ?$languages_raw : [
 $active_languages = array_filter($available_languages, fn($lang) => ($lang['active'] ?? true) === true);
 
 $current_lang_name = 'Deutsch';
-foreach ($active_languages as$lang) {
-    if ($lang['code'] ===$current_lang) {
-        $current_lang_name =$lang['name'];
+foreach ($active_languages as $lang) {
+    if ($lang['code'] === $current_lang) {
+        $current_lang_name = $lang['name'];
         break;
     }
 }
@@ -63,33 +65,37 @@ $menu_links = get_setting('menu_links', []);
 if (is_string($menu_links)) {
     $menu_links = json_decode($menu_links, true);
 }
-$menu_links = array_values(is_array($menu_links) ?$menu_links : []);
+$menu_links = array_values(is_array($menu_links) ? $menu_links : []);
 
 $social_links = get_setting('social_links', []);
 if (is_string($social_links)) {
     $social_links = json_decode($social_links, true);
 }
-$social_links = is_array($social_links) ?$social_links : [];
+$social_links = is_array($social_links) ? $social_links : [];
 
 // 7. استخراج وتأمين بيانات الإعلان (Announcement - نص أو صورة خاصة باللغة)
 $rawAnnouncement = get_setting('announcement', []);
-if (is_string($rawAnnouncement)) {$allAds = json_decode($rawAnnouncement, true);$allAds = is_array($allAds) ?$allAds : [];
+if (is_string($rawAnnouncement)) {
+    $allAds = json_decode($rawAnnouncement, true);
+    $allAds = is_array($allAds) ? $allAds : [];
 } else {
-    $allAds = is_array($rawAnnouncement) ?$rawAnnouncement : [];
+    $allAds = is_array($rawAnnouncement) ? $rawAnnouncement : [];
 }
 
-$ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? ($allAds['de'] ?? (is_array($rawAnnouncement) ?$rawAnnouncement : [])));
+$ad = $allAds[$current_lang] ?? ($allAds['ar'] ?? ($allAds['de'] ?? (is_array($rawAnnouncement) ? $rawAnnouncement : [])));
 
 $hasText = !empty($ad['announcement_text']);
-$hasImage = !empty($ad['image_path']) && $ad['image_path'] !== 'assets/img/default-ad.png';$status = $ad['status'] ?? 'Draft';$current_time = date('Y-m-d\TH:i');
+$hasImage = !empty($ad['image_path']) && $ad['image_path'] !== 'assets/img/default-ad.png';
+$status = $ad['status'] ?? 'Draft';
+$current_time = date('Y-m-d\TH:i');
 
 $is_in_time = true;
-if (!empty($ad['start_date']) &&$current_time < $ad['start_date']) {$is_in_time = false; }
-if (!empty($ad['end_date']) &&$current_time > $ad['end_date']) {$is_in_time = false; }
+if (!empty($ad['start_date']) && $current_time < $ad['start_date']) { $is_in_time = false; }
+if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_in_time = false; }
 
-$is_visible = (($status === 'Published' || $status === 'active' ||$hasText || $hasImage) &&$is_in_time);
+$is_visible = (($status === 'Published' || $status === 'active' || $hasText || $hasImage) && $is_in_time);
 
-// دالة مساعدة لتقليص التكرار (DRY Principle) لاستخراج عنوان القائمة
+// دالة مساعدة لتقليص التكرار لاستخراج عنوان القائمة
 $getMenuTitle = function(array $link) use ($current_lang): string {
     if (isset($link[$current_lang]['title']) && is_string($link[$current_lang]['title'])) {
         return $link[$current_lang]['title'];
@@ -123,20 +129,66 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
   <link rel="stylesheet" href="/assets/css/header.css">
 
   <style>
-    .editable-wrapper { position: relative; }
-    .edit-pen {
-        position: absolute; top: -8px; right: -8px; z-index: 1050;
-        background-color: #ffc107; color: #000; border: none; border-radius: 50%;
-        width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s ease;
+    /* ==========================================
+       أقلام التعديل - النمط الأوروبي الفاخر (Minimalist Glassmorphism)
+       ========================================== */
+    .editable-wrapper {
+        position: relative !important;
     }
-    .edit-pen:hover { transform: scale(1.15); background-color: #e0a800; }
+
+    .editable-wrapper .edit-pen {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        position: absolute !important;
+        top: -12px !important;
+        right: -12px !important;
+        z-index: 1050 !important;
+        background: rgba(255, 255, 255, 0.85);
+        color: #1a1a1a;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .editable-wrapper .edit-pen i {
+        font-size: 0.9rem;
+        transition: transform 0.3s ease;
+    }
+
+    .editable-wrapper .edit-pen:hover {
+        background: #000000;
+        color: #ffffff;
+        border-color: #000000;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px) scale(1.05);
+    }
+
+    .editable-wrapper .edit-pen:hover i {
+        transform: rotate(-10deg) scale(1.05);
+    }
+
+    .editable-wrapper .edit-pen:active {
+        transform: translateY(0) scale(0.96);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    [dir="rtl"] .editable-wrapper .edit-pen {
+        right: auto !important;
+        left: -12px !important;
+    }
   </style>
 
   <!-- ملفات الـ CSS الخاصة بالصفحات الفردية -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {
-      foreach ($page_css as$css_file) {
+      foreach ($page_css as $css_file) {
           echo '<link rel="stylesheet" href="/' . htmlspecialchars(ltrim($css_file, '/'), ENT_QUOTES, 'UTF-8') . '?v=' . time() . '">' . PHP_EOL;
       }
   }
@@ -163,9 +215,9 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
           </a>
         </div>
 
-        <!-- منطقة الإعلان العلوي (يدعم النص أو الصورة الخاصة باللغة) -->
+        <!-- منطقة الإعلان العلوي -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
-          <?php if ($is_visible ||$is_admin): ?>
+          <?php if ($is_visible || $is_admin): ?>
             <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
               <?php if ($is_admin): ?>
                   <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
@@ -205,7 +257,7 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
           <?php endif; ?>
 
           <div class="social-icons d-flex gap-3">
-            <?php foreach ($social_links as$s): ?>
+            <?php foreach ($social_links as $s): ?>
                 <a href="<?php echo htmlspecialchars($s['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
                   <img src="<?php echo htmlspecialchars(get_image_url($s['img'] ?? null), ENT_QUOTES, 'UTF-8'); ?>" width="28" alt="social">
                 </a>
@@ -235,10 +287,12 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
           <?php endif; ?>
 
           <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link):$link_url = ltrim($link['url'] ?? '', '/');$link_title = $getMenuTitle($link);
+            <?php foreach ($menu_links as $link): 
+                $link_url = ltrim($link['url'] ?? '', '/');
+                $link_title = $getMenuTitle($link);
             ?>
                 <li class="nav-item">
-                  <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' .$link_url, ENT_QUOTES, 'UTF-8'); ?>">
+                  <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' . $link_url, ENT_QUOTES, 'UTF-8'); ?>">
                     <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
                   </a>
                 </li>
@@ -246,7 +300,7 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
           </ul>
         </div>
 
-        <!-- Controls & Languages Switcher (Dynamic from DB) -->
+        <!-- Controls & Languages Switcher -->
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
           
@@ -265,11 +319,11 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
 
               <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
               <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach ($active_languages as$lang): 
-                      $code =$lang['code'] ?? 'de';
-                      $name =$lang['name'] ?? 'Deutsch';
+                  <?php foreach ($active_languages as $lang): 
+                      $code = $lang['code'] ?? 'de';
+                      $name = $lang['name'] ?? 'Deutsch';
                   ?>
-                      <li><a class="dropdown-item" href="/<?php echo htmlspecialchars($code .$clean_uri, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                      <li><a class="dropdown-item" href="/<?php echo htmlspecialchars($code . $clean_uri, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
                   <?php endforeach; ?>
               </ul>
           </div>
@@ -287,10 +341,12 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
       </div>
       <div class="offcanvas-body">
         <ul class="navbar-nav">
-            <?php foreach ($menu_links as $link):$link_url = ltrim($link['url'] ?? '', '/');$link_title = $getMenuTitle($link);
+            <?php foreach ($menu_links as $link): 
+                $link_url = ltrim($link['url'] ?? '', '/');
+                $link_title = $getMenuTitle($link);
             ?>
                 <li class="nav-item">
-                  <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' .$link_url, ENT_QUOTES, 'UTF-8'); ?>">
+                  <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' . $link_url, ENT_QUOTES, 'UTF-8'); ?>">
                     <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
                   </a>
                 </li>

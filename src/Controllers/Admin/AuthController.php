@@ -26,7 +26,7 @@ class AuthController
         require_once __DIR__ . '/../../Views/admin/login.php';
     }
 
-    // 2. معالجة بيانات الدخول (الـ Login Process)
+    // 2. معالجة بيانات الدخول (الـ Login Process) وفق معايير الأمان والجودة
     public function authenticate(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -67,11 +67,12 @@ class AuthController
             if ($admin && password_verify($password,$admin['password'])) {
                 session_regenerate_id(true);
 
-                // تعبئة جلسة الأدمن بنجاح
+                // تعبئة جلسة الأدمن بنجاح مع تخزين الصلاحية الأمنية (Role)
                 $_SESSION['is_logged_in'] = true;
                 $_SESSION['admin_id']     =$admin['id'];
                 $_SESSION['admin_name']   =$admin['name'] ?? 'Admin';
                 $_SESSION['admin_email']  =$admin['email'];
+                $_SESSION['role']         =$admin['role'] ?? 'admin'; // تخزين الصلاحية بأمان
 
                 echo json_encode([
                     'success' => true, 

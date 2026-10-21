@@ -11,7 +11,7 @@ $current_lang = get_current_lang();
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 $current_lang_code = $current_lang;
 
-// 2. تنظيف المسار الحالي من أي بادئة لغة سابقة لمنع تكرارها (مثل /en/de/home)
+// 2. تنظيف المسار الحالي من أي بادئة لغة سابقة لمنع تكرارها
 $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 $path_segments = explode('/', trim($request_path, '/'));
 if (!empty($path_segments[0]) && in_array($path_segments[0], ['ar', 'en', 'de'], true)) {
@@ -24,7 +24,7 @@ $clean_uri = ($clean_uri === '/') ? '' : $clean_uri;
 $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true 
             && isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'super_admin'], true);
 
-// 4. جلب ومعالجة اللوجو متعدد اللغات من قاعدة البيانات بسلامة تامة
+// 4. جلب ومعالجة اللوجو متعدد اللغات من قاعدة البيانات
 $site_logo_raw = get_setting('site_logo_path', 'assets/img/logo.png');
 $site_logo_path = 'assets/img/logo.png';
 
@@ -40,7 +40,7 @@ if (is_string($site_logo_raw)) {
     }
 }
 
-// 5. جلب اللغات المفعلة من قاعدة البيانات للتحكم الكامل للمدير
+// 5. جلب اللغات المفعلة من قاعدة البيانات
 $languages_raw = get_setting('languages', []);
 if (is_string($languages_raw)) {
     $languages_raw = json_decode($languages_raw, true);
@@ -73,7 +73,7 @@ if (is_string($social_links)) {
 }
 $social_links = is_array($social_links) ? $social_links : [];
 
-// 7. استخراج وتأمين بيانات الإعلان (Announcement - نص أو صورة خاصة باللغة)
+// 7. استخراج وتأمين بيانات الإعلان (Announcement)
 $rawAnnouncement = get_setting('announcement', []);
 if (is_string($rawAnnouncement)) {
     $allAds = json_decode($rawAnnouncement, true);
@@ -95,7 +95,7 @@ if (!empty($ad['end_date']) && $current_time > $ad['end_date']) { $is_in_time = 
 
 $is_visible = (($status === 'Published' || $status === 'active' || $hasText || $hasImage) && $is_in_time);
 
-// دالة مساعدة لتقليص التكرار لاستخراج عنوان القائمة
+// دالة مساعدة لاستخراج عنوان القائمة
 $getMenuTitle = function(array $link) use ($current_lang): string {
     if (isset($link[$current_lang]['title']) && is_string($link[$current_lang]['title'])) {
         return $link[$current_lang]['title'];
@@ -146,22 +146,24 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
         <!-- اللوجو الرئيسي المتعدد اللغات -->
-        <div class="editable-wrapper">
-          <?php if ($is_admin): ?>
-              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
-                  <i class="bi bi-pencil-fill"></i>
-              </button>
-          <?php endif; ?>
+        <div class="navbar-brand-wrapper">
+          <div class="editable-wrapper d-inline-block">
+            <?php if ($is_admin): ?>
+                <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="تعديل الشعار">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+            <?php endif; ?>
 
-          <a class="navbar-brand m-0" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>">
-            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path, '/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" width="178" height="72" loading="lazy" alt="Logo">
-          </a>
+            <a class="navbar-brand m-0" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>">
+              <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path, '/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" width="178" height="72" loading="lazy" alt="Logo">
+            </a>
+          </div>
         </div>
 
         <!-- منطقة الإعلان العلوي -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
           <?php if ($is_visible || $is_admin): ?>
-            <div class="editable-wrapper" style="max-width: 500px; width: 100%;">
+            <div class="editable-wrapper d-block w-100" style="max-width: 500px;">
               <?php if ($is_admin): ?>
                   <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="تعديل الإعلان">
                       <i class="bi bi-pencil-fill"></i>
@@ -192,19 +194,21 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
         </div>
 
         <!-- السوشيال ميديا -->
-        <div class="editable-wrapper d-none d-lg-flex">
-          <?php if ($is_admin): ?>
-              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
-                  <i class="bi bi-pencil-fill"></i>
-              </button>
-          <?php endif; ?>
+        <div class="d-none d-lg-flex align-items-center">
+          <div class="editable-wrapper d-inline-block">
+            <?php if ($is_admin): ?>
+                <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="تعديل منصات التواصل">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+            <?php endif; ?>
 
-          <div class="social-icons d-flex gap-3">
-            <?php foreach ($social_links as $s): ?>
-                <a href="<?php echo htmlspecialchars($s['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
-                  <img src="<?php echo htmlspecialchars(get_image_url($s['img'] ?? null), ENT_QUOTES, 'UTF-8'); ?>" width="28" alt="social">
-                </a>
-            <?php endforeach; ?>
+            <div class="social-icons d-flex gap-3">
+              <?php foreach ($social_links as $s): ?>
+                  <a href="<?php echo htmlspecialchars($s['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
+                    <img src="<?php echo htmlspecialchars(get_image_url($s['img'] ?? null), ENT_QUOTES, 'UTF-8'); ?>" width="28" alt="social">
+                  </a>
+              <?php endforeach; ?>
+            </div>
           </div>
         </div>
       </div>
@@ -222,53 +226,57 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
         </div>
 
         <!-- Desktop Menu -->
-        <div class="collapse navbar-collapse editable-wrapper">
-          <?php if ($is_admin): ?>
-              <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
-                  <i class="bi bi-pencil-fill"></i>
-              </button>
-          <?php endif; ?>
+        <div class="collapse navbar-collapse">
+          <div class="editable-wrapper d-inline-block w-100">
+            <?php if ($is_admin): ?>
+                <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="تعديل القائمة">
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+            <?php endif; ?>
 
-          <ul class="navbar-nav gap-3">
-            <?php foreach ($menu_links as $link): 
-                $link_url = ltrim($link['url'] ?? '', '/');
-                $link_title = $getMenuTitle($link);
-            ?>
-                <li class="nav-item">
-                  <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' . $link_url, ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
-                  </a>
-                </li>
-            <?php endforeach; ?>
-          </ul>
+            <ul class="navbar-nav gap-3">
+              <?php foreach ($menu_links as $link): 
+                  $link_url = ltrim($link['url'] ?? '', '/');
+                  $link_title = $getMenuTitle($link);
+              ?>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<?php echo htmlspecialchars($current_lang_code . '/' . $link_url, ENT_QUOTES, 'UTF-8'); ?>">
+                      <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
+                    </a>
+                  </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
         </div>
 
         <!-- Controls & Languages Switcher -->
         <div class="d-flex align-items-center gap-3">
           <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"><span class="navbar-toggler-icon"></span></button>
           
-          <div class="dropdown editable-wrapper">
-              <?php if ($is_admin): ?>
-                  <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
-                      <i class="bi bi-pencil-fill"></i>
-                  </button>
-              <?php endif; ?>
-              
-              <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="20">
-                  <span><?php echo htmlspecialchars($current_lang_name, ENT_QUOTES, 'UTF-8'); ?></span>
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="15">
-              </button>
+          <div class="dropdown">
+            <div class="editable-wrapper d-inline-block">
+                <?php if ($is_admin): ?>
+                    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="تعديل اللغات">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                <?php endif; ?>
+                
+                <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="20">
+                    <span><?php echo htmlspecialchars($current_lang_name, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="15">
+                </button>
 
-              <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
-              <ul class="dropdown-menu dropdown-menu-end">
-                  <?php foreach ($active_languages as $lang): 
-                      $code = $lang['code'] ?? 'de';
-                      $name = $lang['name'] ?? 'Deutsch';
-                  ?>
-                      <li><a class="dropdown-item" href="/<?php echo htmlspecialchars($code . $clean_uri, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
-                  <?php endforeach; ?>
-              </ul>
+                <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <?php foreach ($active_languages as $lang): 
+                        $code = $lang['code'] ?? 'de';
+                        $name = $lang['name'] ?? 'Deutsch';
+                    ?>
+                        <li><a class="dropdown-item" href="/<?php echo htmlspecialchars($code . $clean_uri, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
           </div>
         </div>
       </div>

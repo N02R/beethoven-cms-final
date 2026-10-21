@@ -15,12 +15,12 @@ class DashboardController {
             define('ALLOWED_ACCESS', true);
         }
 
-        // 2. بدء الجلسة والتحقق من الصلاحيات
+        // 2. بدء الجلسة والتحقق من الصلاحيات (تم التحديث ليتوافق تماماً مع جلسة تسجيل الدخول)
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
+        $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 
         if (!$is_admin) {
             header("Location: index.php?url=admin/login&error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
@@ -64,7 +64,7 @@ class DashboardController {
         $ad_status      = $rawSettings['ad_status'] ?? $config_data['ad_status'] ?? 'Draft';
         $ad_type        = $rawSettings['ad_type'] ?? $config_data['ad_type'] ?? 'text';
 
-        $role_badge_text = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') ? 'مشرف عام (Super Admin)' : 'مسؤول النظام (Admin)';
+        $role_badge_text = 'مسؤول النظام (Admin)';
 
         // 5. مصفوفة البيانات الشاملة ($data) التي تغذي لوحة التحكم والـ Modals
         $data = [

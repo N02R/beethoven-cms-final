@@ -2,13 +2,15 @@
 declare(strict_types=1);
 
 /**
- * Beethoven CMS - Home View (Production-Ready & Secure)
- * تم الحفاظ على التصميم بالكامل مع إعادة هندسة المنطق، منع التكرار، وتأمين البيانات.
+ * Beethoven CMS - Home View (Inline Editing Enabled)
+ * النسخة المحدثة بالكامل مع شريط الأدوات العلوي وتفعيل التعديل المباشر للمدير.
  */
 
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
-$is_admin = $is_admin ?? false;
+
+// التحقق المباشر من جلسة المدير لتفعيل وضع التعديل تلقائياً دون الحاجة لصفحة لوحة تحكم تقليدية
+$is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 
 // دالة مساعدة داخلية موحدة لاستخراج بيانات القسم متعدد اللغات بسلامة تامة وحصانة ضد الـ null (DRY Principle)
 $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
@@ -22,7 +24,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         $data = is_array($raw) ? $raw : $default;
     }
 
-    // التأكد من أن $data مصفوفة وليست null لتجنب تحذيرات PHP الحديثة
     if (!is_array($data)) {
         return $default;
     }
@@ -45,15 +46,24 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 };
 ?>
 
+<!-- شريط الأدوات العلوي الخاص بالمدير (يظهر تلقائياً فور تسجيل الدخول لتفعيل وضع التعديل المباشر) -->
+<?php if ($is_admin): ?>
+    <div class="admin-top-bar bg-dark text-white py-2 px-4 d-flex justify-content-between align-items-center shadow-sm" style="position: sticky; top: 0; z-index: 1050;">
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-success">وضع التعديل المباشر مفعل 🟢</span>
+            <span class="small">مرحباً، <strong><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?></strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/admin/logout" class="btn btn-sm btn-danger">تسجيل الخروج</a>
+        </div>
+    </div>
+<?php endif; ?>
+
 <!-- بداية قسم الهيرو -->
-<?php
-  $hero_exists = isset($data['hero']);
-  echo "<!-- هل بيانات الهيرو موجودة؟ " . ($hero_exists ? 'نعم' : 'لا') . " -->";
-?>
 <!-- hero start -->
 <section class="hero py-5 editable-wrapper" aria-label="قسم البداية" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="تعديل الهيرو">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الهيرو">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -62,7 +72,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <?php
     $hero = $getLocalizedData('hero', []);
     
-    // استخراج محتوى الهيرو بطريقة نظيفة ومؤمنة
     $hero_title  = $hero['title'] ?? ($hero['hero_title'] ?? 'عنوان افتراضي');
     $hero_desc   = $hero['desc'] ?? ($hero['hero_desc'] ?? 'وصف افتراضي للقسم');
     $hero_btn    = $hero['btn_text'] ?? 'اضغط هنا';
@@ -87,8 +96,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- services start -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الخدمات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -144,8 +153,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- choose start -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل المميزات">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل المميزات">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -202,8 +211,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
-    <?php if (!empty($is_admin)): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات" style="position: absolute; top: 10px; right: 20px; z-index: 10;">
+    <?php if ($is_admin): ?>
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -266,8 +275,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- ===== GUIDE HOME SECTION START ===== -->
 <section class="guide py-2 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
@@ -298,7 +307,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
               <div class="row g-4">
                 <?php foreach ($slide_items as $item): 
-                  // جلب محتوى المقال حسب اللغة مع بدائل
                   $item_data  = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
                   $item_title = $item_data['title'] ?? ($item['title'] ?? '');
                   $item_desc  = $item_data['desc'] ?? ($item['desc'] ?? '');
@@ -351,8 +359,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
 <!-- FAQ section start -->
 <section class="popular py-5 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
+  <?php if ($is_admin): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
   <div class="container-fluid custom-container">
@@ -402,3 +410,13 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   </div>
 </section>
 <!-- FAQ section end -->
+
+<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
+<?php if ($is_admin): ?>
+    <?php 
+    $modals_file = __DIR__ . '/admin/admin_home_modals.php';
+    if (file_exists($modals_file)) {
+        include_once $modals_file;
+    }
+    ?>
+<?php endif; ?>

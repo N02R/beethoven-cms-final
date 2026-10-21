@@ -47,17 +47,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 ?>
 
 <!-- شريط الأدوات العلوي الخاص بالمدير (يظهر تلقائياً فور تسجيل الدخول لتفعيل وضع التعديل المباشر) -->
-<?php if ($is_admin): ?>
-    <div class="admin-top-bar bg-dark text-white py-2 px-4 d-flex justify-content-between align-items-center shadow-sm" style="position: sticky; top: 0; z-index: 1050;">
-        <div class="d-flex align-items-center gap-3">
-            <span class="badge bg-success">وضع التعديل المباشر مفعل 🟢</span>
-            <span class="small">مرحباً، <strong><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'المشرف', ENT_QUOTES, 'UTF-8'); ?></strong></span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="/admin/logout" class="btn btn-sm btn-danger">تسجيل الخروج</a>
-        </div>
-    </div>
-<?php endif; ?>
 
 <!-- بداية قسم الهيرو -->
 <!-- hero start -->

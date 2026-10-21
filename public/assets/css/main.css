@@ -97,65 +97,54 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - تصميم واضح، بارز، وغير مؤثر على التخطيط
+   أقلام التعديل - الحل الجذري والنظيف (Minimalist Glassmorphism)
    ========================================== */
 
-/* الحفاظ على التخطيط الأصلي للعنصر دون تكدس */
 .editable-wrapper {
     position: relative !important;
 }
 
-/* زر قلم التعديل الرئيسي */
 .editable-wrapper .edit-pen {
-    /* الشكل والأبعاد الواضحة والمريحة */
-    width: 38px !important;
-    height: 38px !important;
+    width: 36px !important;
+    height: 36px !important;
     border-radius: 50% !important;
     
-    /* التموضع المطلق فوق زاوية العنصر تماماً */
+    /* تموضع مطلق متزن لا يتجاوز طبقات الهيدر */
     position: absolute !important;
-    top: -12px !important;
-    right: -12px !important;
-    z-index: 9999 !important;
+    top: -10px !important;
+    right: -10px !important;
+    z-index: 1020 !important;
+    /* أقل من الـ z-index الخاص بالهيدر الثابت ليبقى تحته عند التمرير */
     
-    /* ألوان واضحة جداً (خلفية صفراء ذهبية ساطعة مع أيقونة سوداء بارزة) */
+    /* الألوان والتصميم الأنيق */
     background: #ffc107 !important;
     color: #000000 !important;
-    border: 2px solid #ffffff !important; /* إطار أبيض يفصل القلم عن التصميم الخلفي */
+    border: 2px solid #ffffff !important;
     
-    /* التنسيق الداخلي للأيقونة */
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     
-    /* ظل قوي وبارز */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-    
-    /* السلاسة الحركية */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
     transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
-/* حجم وأيقونة القلم */
 .editable-wrapper .edit-pen i {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
 }
 
-/* تأثير التمرير (Hover) */
 .editable-wrapper .edit-pen:hover {
-    background: #000000 !important; /* يتحول للأسود الفاخر عند المرور */
-    color: #ffc107 !important;     /* تصبح الأيقونة صفراء */
+    background: #000000 !important;
+    color: #ffc107 !important;
     border-color: #ffc107 !important;
     transform: scale(1.15) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* دعم الاتجاه المعاكس للغة العربية RTL ليتوضع القلم في اليسار بشكل مريح */
 [dir="rtl"] .editable-wrapper .edit-pen {
     right: auto !important;
-    left: -12px !important;
+    left: -10px !important;
 }
-
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */
 .cookie-banner {
     position: fixed;

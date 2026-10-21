@@ -97,81 +97,65 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - النمط الأوروبي الفاخر (Minimalist Glassmorphism)
+   أقلام التعديل - تصميم واضح، بارز، وعالي التباين
    ========================================== */
 
-/* حاوية العناصر القابلة للتعديل */
 .editable-wrapper {
     position: relative !important;
+    display: inline-block !important; /* لضمان الالتصاق الصحيح بالعنصر */
 }
 
-/* زر قلم التعديل الرئيسي */
 .editable-wrapper .edit-pen {
-    /* الشكل والأبعاد */
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+    /* الشكل والأبعاد الواضحة */
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
     
-    /* التموضع والتثبيت في الزاوية العلوية اليمنى/اليسرى */
+    /* التموضع لضمان ظهوره تماماً خارج/على الزاوية دون اختفاء */
     position: absolute !important;
-    top: -12px !important;
-    right: -12px !important;
-    z-index: 1050 !important;
+    top: -16px !important;
+    right: -16px !important;
+    z-index: 9999 !important; /* أعلى زاب índices في الصفحة لضمان عدم اختفائه تحت أي عنصر */
     
-    /* الألوان والخلفية - تأثير الزجاج المطفى (Glassmorphism) */
-    background: rgba(255, 255, 255, 0.85);
-    color: #1a1a1a;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    /* ألوان واضحة جداً وقوية (خلفية صفراء ذهبية داكنة مع أيقونة سوداء سميكة) */
+    background: #ffc107 !important;
+    color: #000000 !important;
+    border: 3px solid #ffffff !important; /* إطار أبيض عريض ليعزل القلم عن خلفية الموقع */
     
     /* التنسيق الداخلي */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
     
-    /* الظلال الناعمة */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    /* ظل قوي وبارز لكي "يطفو" فوق العناصر بنقاء */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
     
-    /* تأثير Blur خلف العنصر */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    
-    /* الترانزيشن للسلاسة الأوروبية */
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    /* الترانزيشن */
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
-/* حجم وأيقونة القلم */
+/* حجم وأيقونة القلم واضحة وكبيرة */
 .editable-wrapper .edit-pen i {
-    font-size: 0.9rem;
-    transition: transform 0.3s ease;
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
 }
 
-/* تأثير التمرير (Hover Effect) */
+/* تأثير التمرير (Hover) ليكون بارزاً أكثر */
 .editable-wrapper .edit-pen:hover {
-    background: #000000;
-    /* تباين فاخر: أسود داكن */
-    color: #ffffff;
-    border-color: #000000;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px) scale(1.05);
+    background: #000000 !important; /* يتحول لأسود داكن عند الوقوف عليه */
+    color: #ffc107 !important; /* والأيقونة تصبح صفراء */
+    border-color: #ffc107 !important;
+    transform: scale(1.2) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* دوران بسيط للقلم عند الـ Hover */
-.editable-wrapper .edit-pen:hover i {
-    transform: rotate(-10deg) scale(1.05);
-}
-
-/* تأثير الضغط (Active State) */
-.editable-wrapper .edit-pen:active {
-    transform: translateY(0) scale(0.96);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* دعم الاتجاه المعاكس للغة العربية RTL ليتوضع القلم بالزاوية اليسرى المريحة بصرياً إن لزم */
+/* دعم الاتجاه المعاكس للغة العربية RTL */
 [dir="rtl"] .editable-wrapper .edit-pen {
     right: auto !important;
-    left: -12px !important;
+    left: -16px !important;
 }
+
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */
 .cookie-banner {
     position: fixed;

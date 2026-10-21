@@ -128,63 +128,6 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/header.css">
 
-  <style>
-    /* ==========================================
-       أقلام التعديل - النمط الأوروبي الفاخر (Minimalist Glassmorphism)
-       ========================================== */
-    .editable-wrapper {
-        position: relative !important;
-    }
-
-    .editable-wrapper .edit-pen {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        position: absolute !important;
-        top: -12px !important;
-        right: -12px !important;
-        z-index: 1050 !important;
-        background: rgba(255, 255, 255, 0.85);
-        color: #1a1a1a;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .editable-wrapper .edit-pen i {
-        font-size: 0.9rem;
-        transition: transform 0.3s ease;
-    }
-
-    .editable-wrapper .edit-pen:hover {
-        background: #000000;
-        color: #ffffff;
-        border-color: #000000;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        transform: translateY(-2px) scale(1.05);
-    }
-
-    .editable-wrapper .edit-pen:hover i {
-        transform: rotate(-10deg) scale(1.05);
-    }
-
-    .editable-wrapper .edit-pen:active {
-        transform: translateY(0) scale(0.96);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    [dir="rtl"] .editable-wrapper .edit-pen {
-        right: auto !important;
-        left: -12px !important;
-    }
-  </style>
-
   <!-- ملفات الـ CSS الخاصة بالصفحات الفردية -->
   <?php 
   if (isset($page_css) && is_array($page_css)) {

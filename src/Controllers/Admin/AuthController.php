@@ -9,14 +9,16 @@ use PDO;
 
 class AuthController
 {
+    // 1. عرض صفحة تسجيل الدخول
     public function login(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
+        // إذا كان مسجلاً مسبقاً، حوله للوحة التحكم فوراً
         if (isset($_SESSION['is_logged_in']) &&$_SESSION['is_logged_in'] === true) {
-            header("Location: /home");
+            header("Location: /admin/dashboard");
             exit;
         }
 
@@ -24,6 +26,7 @@ class AuthController
         require_once __DIR__ . '/../../Views/admin/login.php';
     }
 
+    // 2. معالجة بيانات الدخول (الـ Login Process)
     public function authenticate(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -42,9 +45,15 @@ class AuthController
         $password =$_POST['password'] ?? '';
         $token =$_POST['csrf_token'] ?? '';
 
+        // التحقق الأمني من الـ CSRF
         if (!Security::verifyCsrfToken($token)) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'انتهت صلاحية الجلسة، يرجى إعادة المحاولة.']);
+            echo json_encode(['success' => false, 'message' => 'انتهت صلاحية الجلسة، يرجى إعادة تحديث الصفحة.']);
+            exit;
+        }
+
+        if (empty($email) || empty($password)) {
+            echo json_encode(['success' => false, 'message' => 'يرجى إدخال البريد الإلكتروني وكلمة المرور.']);
             exit;
         }
 
@@ -54,16 +63,19 @@ class AuthController
             $stmt->execute([$email]);
             $admin =$stmt->fetch(PDO::FETCH_ASSOC);
 
+            // التحقق من كلمة المرور المشفرة
             if ($admin && password_verify($password,$admin['password'])) {
                 session_regenerate_id(true);
 
+                // تعبئة جلسة الأدمن بنجاح
                 $_SESSION['is_logged_in'] = true;
                 $_SESSION['admin_id']     =$admin['id'];
                 $_SESSION['admin_name']   =$admin['name'] ?? 'Admin';
+                $_SESSION['admin_email']  =$admin['email'];
 
                 echo json_encode([
                     'success' => true, 
-                    'message' => 'تم تفعيل وضع التعديل بنجاح!'
+                    'message' => 'تم تسجيل الدخول بنجاح! جاري تحويلك لوحة التحكم...'
                 ]);
             } else {
                 echo json_encode([
@@ -72,11 +84,16 @@ class AuthController
                 ]);
             }
         } catch (\Throwable $e) {
-            echo json_encode(['success' => false, 'message' => 'حدث خطأ في النظام.']);
+            error_log("Login Error: " . $e->getMessage());
+            echo json_encode([
+                'success' => false, 
+                'message' => 'حدث خطأ في قاعدة البيانات، يرجى التحقق لاحقاً.'
+            ]);
         }
         exit;
     }
 
+    // 3. تسجيل الخروج
     public function logout(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -85,7 +102,7 @@ class AuthController
         $_SESSION = [];
         session_destroy();
 
-        header("Location: /home");
+        header("Location: /admin/login");
         exit;
     }
 }

@@ -208,10 +208,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('privacy_consent', 'on');
 
             // إرسال الطلب إلى مسار الـ Controller عبر الراوتر المركزي
-            fetch('/<?php echo $current_lang_code; ?>/send-consult', {
-                method: 'POST',
-                body: formData
-            })
+            fetch('/consult_process.php', {
+    method: 'POST',
+    body: formData
+})
+
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

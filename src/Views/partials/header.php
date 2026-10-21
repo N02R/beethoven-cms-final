@@ -141,6 +141,11 @@ $getMenuTitle = function(array $link) use ($current_lang): string {
 <body>
 
 <header>
+    <div style="background: red; color: white; text-align: center; padding: 5px; z-index: 99999; position: relative;">
+    Debug Admin Status: <?php echo ($is_admin) ? 'TRUE (Logged In)' : 'FALSE (Not Logged In)'; ?> | Session Status: <?php echo session_status(); ?>
+}
+</div>
+
     <!-- NavTop -->
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">

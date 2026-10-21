@@ -14,7 +14,7 @@ if (!function_exists('get_setting')) {
             
             // 1. محاولة البحث عن المفتاح مضافاً إليه اللغة (مثلاً: site_title_ar)
             $langKey = $key . '_' . $currentLang;
-            $stmt = $db->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
+            $stmt = $db->prepare("SELECT setting_value FROM global_settings WHERE setting_key = ? LIMIT 1");
             $stmt->execute([$langKey]);
             $result = $stmt->fetch();
 
@@ -49,8 +49,9 @@ if (!function_exists('get_setting')) {
             
             return $value;
 
-        } catch (\Exception $e) {
-            // في حال حدوث أي خطأ في قاعدة البيانات
+        } catch (\Throwable $e) {
+            // تسجيل الخطأ سرياً في سجلات السيرفر وعدم إيقاف النظام بشكل مفاجئ
+            error_log("Get Setting Error: " . $e->getMessage());
         }
         
         return $default;

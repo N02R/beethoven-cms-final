@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace App\Core;
 
 use ReflectionMethod;
+use Throwable;
 
 class Router {
     private array $routes = [];
     
-    // قائمة اللغات المدعومة حالياً ومستقبلاً (قابلة للتوسعة بسهولة)
+    // قائمة اللغات المدعومة حالياً ومستقبلاً
     private array $supportedLangs = ['de', 'en', 'ar'];
 
     public function add(string $method, string $path, array $controllerAction): void {
@@ -44,7 +45,7 @@ class Router {
         }
 
         // ==========================================
-        // 🔍 دعم المسارات الديناميكية (الروابط الفرعية مثل الحزم والخدمات)
+        // 🔍 دعم المسارات الديناميكية (الروابط الفرعية)
         // ==========================================
         foreach ($this->routes[$method] ?? [] as $routePath => [$controllerClass, $action]) {
             $pattern = preg_replace('/\{([a-zA-Z0-9_-]+)\}/', '([a-zA-Z0-9_-]+)', $routePath);
@@ -62,27 +63,31 @@ class Router {
     }
 
     private function executeController(string $controllerClass, string $action, string $lang, array $params): void {
-        if (class_exists($controllerClass)) {
-            $controller = new $controllerClass();
-            if (method_exists($controller, $action)) {
-                $reflection = new ReflectionMethod($controller, $action);
-                $paramCount = $reflection->getNumberOfParameters();
+        try {
+            if (class_exists($controllerClass)) {
+                $controller = new $controllerClass();
+                if (method_exists($controller, $action)) {
+                    $reflection = new ReflectionMethod($controller, $action);
+                    $paramCount = $reflection->getNumberOfParameters();
 
-                if ($paramCount > 0) {
-                    $callParams = array_merge([$lang], $params);
-                    $callParams = array_slice($callParams, 0, $paramCount);
-                    call_user_func_array([$controller, $action], $callParams);
+                    if ($paramCount > 0) {
+                        $callParams = array_merge([$lang], $params);
+                        $callParams = array_slice($callParams, 0, $paramCount);
+                        call_user_func_array([$controller, $action], $callParams);
+                    } else {
+                        $controller->$action();
+                    }
+                    return;
                 } else {
-                    $controller->$action();
+                    throw new \Exception("Method {$action} not found in controller {$controllerClass}");
                 }
-                return;
             } else {
-                echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الدالة (Method) <code>{$action}</code> غير موجودة داخل الكلاس <code>{$controllerClass}</code></div>";
-                exit;
+                throw new \Exception("Controller class {$controllerClass} not found");
             }
-        } else {
-            echo "<div style='color:red; padding:20px; font-weight:bold;'>خطأ: الكلاس (Controller) <code>{$controllerClass}</code> غير موجود أو مساره خاطئ!</div>";
-            exit;
+        } catch (Throwable $e) {
+            // تسجيل الخطأ سرياً في سجلات السيرفر ومنع إظهاره للمستخدم (حماية أمنية)
+            error_log("Router Execution Error: " . $e->getMessage());
+            $this->sendError(500, "Internal Server Error");
         }
     }
 
@@ -92,6 +97,7 @@ class Router {
         if (file_exists($errorPage)) {
             require_once $errorPage;
         } else {
+            // رسالة افتراضية آمنة دون كشف مسارات السيرفر
             echo "<h1>{$code} - {$message}</h1>";
         }
         exit;

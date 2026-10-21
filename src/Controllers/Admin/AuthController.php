@@ -49,7 +49,7 @@ class AuthController
             exit;
         }
 
-        if (empty($email) \vert{}\vert{} empty($password)) {
+        if (empty($email) || empty($password)) {
             echo json_encode(['success' => false, 'message' => 'يرجى إدخال البريد الإلكتروني وكلمة المرور.']);
             exit;
         }

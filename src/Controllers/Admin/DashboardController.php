@@ -21,7 +21,7 @@ class DashboardController {
         $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
 
         if (!$is_admin) {
-            header("Location: index.php?url=admin/login&error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
+            header("Location: /admin/login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
             exit();
         }
 
@@ -118,7 +118,7 @@ class DashboardController {
 
         session_destroy();
 
-        header("Location: index.php?url=admin/login&message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+        header("Location: /home");
         exit();
     }
 }

@@ -1,3 +1,31 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Beethoven CMS - Home View (Production-Ready & Secure)
+ * تم الحفاظ على التصميم بالكامل مع إعادة هندسة المنطق، منع التكرار، وتأمين البيانات.
+ */
+
+$current_lang = $current_lang ?? get_current_lang();
+$current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
+$is_admin = $is_admin ?? false;
+
+// دالة مساعدة داخلية موحدة لاستخراج بيانات القسم متعدد اللغات بسلامة تامة (DRY Principle)
+$getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
+    global $current_lang;
+    $raw = get_setting($settingKey, $default);
+    if (is_string($raw)) {
+        $decoded = json_decode($raw, true);
+        $data = is_array($decoded) ? $decoded : $default;
+    } else {
+        $data = is_array($raw) ? $raw : $default;
+    }
+
+    // إرجاع بيانات اللغة الحالية أو بدائل آمنة
+    return $data[$current_lang] ?? ($data['de'] ?? ($data['ar'] ?? ($data['en'] ?? $data)));
+};
+?>
+
 <!-- بداية قسم الهيرو -->
 <?php
   $hero_exists = isset($data['hero']);
@@ -13,73 +41,24 @@
 
   <div class="custom-container">
     <?php
-    $hero_raw = get_setting('hero', []);
+    $hero = $getLocalizedData('hero', []);
     
-    // فك الـ JSON بطريقة آمنة
-    if (is_string($hero_raw)) {
-        $hero = json_decode($hero_raw, true) ?? [];
-    } else {
-        $hero = is_array($hero_raw) ? $hero_raw : [];
-    }
+    // استخراج محتوى الهيرو بطريقة نظيفة ومؤمنة
+    $hero_title  = $hero['title'] ?? ($hero['hero_title'] ?? 'عنوان افتراضي');
+    $hero_desc   = $hero['desc'] ?? ($hero['hero_desc'] ?? 'وصف افتراضي للقسم');
+    $hero_btn    = $hero['btn_text'] ?? 'اضغط هنا';
+    $hero_url    = $hero['btn_url'] ?? '#';
+    $bg_img_path = $hero['img'] ?? null;
     
-    // استخراج المحتوى بطريقة ذكية تدعم متعدد اللغات والبيانات القديمة
-    $hero_title = '';
-    $hero_desc  = '';
-    $hero_btn   = '';
-    $hero_url   = '#';
-    $bg_img_path = null;
-
-    // 1. التحقق إذا كانت البيانات مخزنة بالهيكلة الجديدة للغات (ar, en, de)
-    if (isset($hero[$current_lang]) && is_array($hero[$current_lang])) {
-        $curr_data  = $hero[$current_lang];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
-        $bg_img_path = $curr_data['img'] ?? null;
-    } 
-    // 2. بدائل احتياطية في حال لم تتوفر اللغة الحالية (تجربة الألمانية ثم العربية)
-    elseif (isset($hero['de']) && is_array($hero['de'])) {
-        $curr_data  = $hero['de'];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
-        $bg_img_path = $curr_data['img'] ?? null;
-    } 
-    elseif (isset($hero['ar']) && is_array($hero['ar'])) {
-        $curr_data  = $hero['ar'];
-        $hero_title = $curr_data['title'] ?? '';
-        $hero_desc  = $curr_data['desc'] ?? '';
-        $hero_btn   = $curr_data['btn_text'] ?? '';
-        $hero_url   = $curr_data['btn_url'] ?? '#';
-        $bg_img_path = $curr_data['img'] ?? null;
-    }
-
-    // 3. إذا كانت البيانات مخزنة بالشكل القديم المسطح (مباشرة بدون مفاتيح لغات)
-    if (empty($hero_title) && isset($hero['title'])) {
-        $hero_title = $hero['title'];
-        $hero_desc  = $hero['desc'] ?? '';
-        $hero_btn   = $hero['btn_text'] ?? '';
-        $hero_url   = $hero['btn_url'] ?? '#';
-        $bg_img_path = $hero['img'] ?? null;
-    }
-
-    // القيم الافتراضية النهائية في حال كانت القاعدة فارغة تماماً
-    $hero_title = !empty($hero_title) ? $hero_title : 'عنوان افتراضي';
-    $hero_desc  = !empty($hero_desc) ? $hero_desc : 'وصف افتراضي للقسم';
-    $hero_btn   = !empty($hero_btn) ? $hero_btn : 'اضغط هنا';
-    
-    // جلب رابط الصورة النهائي
-    $hero_bg = get_image_url($bg_img_path ?? $hero['img'] ?? null, '/assets/img/home/home1.png');
+    $hero_bg = get_image_url($bg_img_path, '/assets/img/home/home1.png');
     ?>
     
-    <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg); ?>') center/cover no-repeat;">
+    <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>') center/cover no-repeat;">
       <div class="hero-content">
-        <h1><?php echo htmlspecialchars($hero_title); ?></h1>
-        <p><?php echo htmlspecialchars($hero_desc); ?></p>
-        <a href="<?php echo htmlspecialchars($hero_url); ?>" class="btn btn-lg hero-btn">
-          <?php echo htmlspecialchars($hero_btn); ?>
+        <h1><?php echo htmlspecialchars($hero_title, ENT_QUOTES, 'UTF-8'); ?></h1>
+        <p><?php echo htmlspecialchars($hero_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+        <a href="<?php echo htmlspecialchars($hero_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-lg hero-btn">
+          <?php echo htmlspecialchars($hero_btn, ENT_QUOTES, 'UTF-8'); ?>
         </a>
       </div>
     </div>
@@ -97,27 +76,11 @@
 
   <div class="custom-container">
     <?php
-    // 1. جلب البيانات من قاعدة البيانات وفك الـ JSON بأسلوب آمن
-    $services_raw = get_setting('services', []);
-    $services_all = is_string($services_raw) ? (json_decode($services_raw, true) ?? []) : (is_array($services_raw) ? $services_raw : []);
+    $s_data = $getLocalizedData('services', []);
     
-    // 2. استخراج بيانات اللغة الحالية مع بدائل احتياطية (ar ثم de)
-    $s_data = $services_all[$current_lang] ?? ($services_all['ar'] ?? ($services_all['de'] ?? $services_all));
-    
-    // 3. قراءة العنوان والعنوان الفرعي مع دعم المسميات المختلفة
     $sec_title = $s_data['section_title'] ?? ($s_data['title'] ?? 'خدماتنا المميزة');
     $sec_desc  = $s_data['section_subtitle'] ?? ($s_data['desc'] ?? '');
     $services  = $s_data['items'] ?? [];
-
-    // بديل أخير لكروت الخدمات إذا كانت فارغة في اللغة الحالية
-    if (empty($services)) {
-        foreach (['ar', 'de', 'en'] as $fallback_lang) {
-            if (!empty($services_all[$fallback_lang]['items'])) {
-                $services = $services_all[$fallback_lang]['items'];
-                break;
-            }
-        }
-    }
     ?>
 
     <h2 class="mb-3 sec-title">
@@ -131,9 +94,8 @@
     <?php endif; ?>
 
     <div class="row g-4">
-      <?php if (!empty($services)): ?>
+      <?php if (!empty($services) && is_array($services)): ?>
         <?php foreach ($services as $service): 
-          // تحديد صورة خلفية الكرت
           $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
           $service_title = $service['title'] ?? 'عنوان الخدمة';
           $service_url   = $service['url'] ?? '#';
@@ -145,7 +107,7 @@
                   <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
                   <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
                        alt="Arrow" 
-                       style="<?php echo (isset($current_dir) && $current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                       style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                 </div>
               </div>
             </a>
@@ -171,26 +133,14 @@
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // 1. القراءة إما من البيانات المجهزة من HomeModel أو قراءة مفتاح choose_items مباشرة
     $choose_section = $data['choose_section'] ?? [];
-    
-    // Fallback في حال لم يمرر الكنترولر الموديل المحدث
     if (empty($choose_section)) {
-        $choose_raw  = get_setting('choose_items', '{}');
-        $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
-        $lang_key    = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
-        
-        // استخراج كائن اللغة الحالية مع Fallback للعربية
-        $current_choose = $choose_data[$lang_key] ?? $choose_data['ar'] ?? $choose_data['de'] ?? [];
-        
-        $choose_title = $current_choose['title'] ?? $current_choose['choose_title'] ?? '';
-        $choose_desc  = $current_choose['desc']  ?? $current_choose['choose_section_desc'] ?? '';
-        $choose_items = $current_choose['items'] ?? (is_array($current_choose) && !isset($current_choose['title']) ? $current_choose : []);
-    } else {
-        $choose_title = $choose_section['title'] ?? '';
-        $choose_desc  = $choose_section['desc']  ?? '';
-        $choose_items = $choose_section['items'] ?? [];
+        $choose_section = $getLocalizedData('choose_items', []);
     }
+    
+    $choose_title = $choose_section['title'] ?? ($choose_section['choose_title'] ?? '');
+    $choose_desc  = $choose_section['desc'] ?? ($choose_section['choose_section_desc'] ?? '');
+    $choose_items = $choose_section['items'] ?? (is_array($choose_section) && !isset($choose_section['title']) ? $choose_section : []);
     ?>
 
     <?php if (!empty($choose_title)): ?>
@@ -208,7 +158,7 @@
         <?php 
         foreach ($choose_items as $item): 
           $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
-          $item_img   = function_exists('get_image_url') ? get_image_url($raw_img) : $raw_img;
+          $item_img   = get_image_url($raw_img);
           $item_title = $item['title'] ?? '';
           $item_desc  = $item['desc'] ?? '';
           $item_url   = $item['url'] ?? '#';
@@ -242,38 +192,33 @@
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            // معالجة عنوان قسم التقييمات متعدد اللغات
-            $reviews_title_raw = get_setting('reviews_title', 'شاهد ماذا يقول عملاؤنا عنا');
-            if (is_string($reviews_title_raw) && str_starts_with(trim($reviews_title_raw), '{')) {
-                $reviews_title_arr = json_decode($reviews_title_raw, true) ?? [];
-                $reviews_title = $reviews_title_arr[$current_lang] ?? $reviews_title_arr['de'] ?? $reviews_title_arr['ar'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
-            } else {
-                $reviews_title = $reviews_title_raw;
+            $reviews_title = $getLocalizedData('reviews_title', 'شاهد ماذا يقول عملاؤنا عنا');
+            if (is_array($reviews_title)) {
+                $reviews_title = $reviews_title['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
             }
             ?>
             <h2 class="py-5 text-center sec-title">
-                <?php echo htmlspecialchars($reviews_title); ?>
+                <?php echo htmlspecialchars((string)$reviews_title, ENT_QUOTES, 'UTF-8'); ?>
             </h2>
         </div>
     </div>
 
     <div class="custom-container">
         <div class="reviews-carousel-wrapper">
-            <!-- تحديد اتجاه الكاروسيل ديناميكياً بناءً على لغة النظام -->
-            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <div class="carousel-inner">
                     <?php 
                     $reviews_items_raw = get_setting('reviews_items', []);
-                    $reviews_items = is_string($reviews_items_raw) ? (json_decode($reviews_items_raw, true) ?? []) : $reviews_items_raw;
+                    $reviews_items = is_string($reviews_items_raw) ? (json_decode($reviews_items_raw, true) ?? []) : (is_array($reviews_items_raw) ? $reviews_items_raw : []);
 
-                    if (!empty($reviews_items)): 
+                    if (!empty($reviews_items) && is_array($reviews_items)): 
                         foreach ($reviews_items as $index => $item): 
                     ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? ''); ?>" allowfullscreen title="Review Video"></iframe>
+                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen title="Review Video"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -284,7 +229,7 @@
                 </div>
 
                 <div class="dots mt-4">
-                    <?php if (!empty($reviews_items)): ?>
+                    <?php if (!empty($reviews_items) && is_array($reviews_items)): ?>
                         <?php foreach ($reviews_items as $index => $item): ?>
                             <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
                                   data-bs-target="#carousel-reviews" 
@@ -310,71 +255,52 @@
 
   <div class="custom-container">
     <?php 
-        // جلب العنوان والوصف باللغة الحالية مباشرة (الأولوية للغة الحالية ثم العربية)
-        $guide_title_raw = get_setting('guide_title', 'دليل بيتهوفن الشامل');
-        if (is_string($guide_title_raw) && str_starts_with(trim($guide_title_raw), '{')) {
-            $gt_arr = json_decode($guide_title_raw, true) ?? [];
-            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['ar'] ?? 'دليل بيتهوفن الشامل';
-        } else {
-            $guide_title = $guide_title_raw;
-        }
+        $guide_title    = $getLocalizedData('guide_title', 'دليل بيتهوفن الشامل');
+        $guide_desc     = $getLocalizedData('guide_desc', '');
+        $read_more_text = $getLocalizedData('read_more_btn', 'قراءة المزيد');
 
-        $guide_desc_raw = get_setting('guide_desc', '');
-        if (is_string($guide_desc_raw) && str_starts_with(trim($guide_desc_raw), '{')) {
-            $gd_arr = json_decode($guide_desc_raw, true) ?? [];
-            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['ar'] ?? '';
-        } else {
-            $guide_desc = $guide_desc_raw;
-        }
-
-        // معالجة نص زر "قراءة المزيد"
-        $rm_raw = get_setting('read_more_btn', 'قراءة المزيد');
-        if (is_string($rm_raw) && str_starts_with(trim($rm_raw), '{')) {
-            $rm_arr = json_decode($rm_raw, true) ?? [];
-            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
-        } else {
-            $read_more_text = $rm_raw;
-        }
+        if (is_array($guide_title)) $guide_title = $guide_title['title'] ?? 'دليل بيتهوفن الشامل';
+        if (is_array($guide_desc)) $guide_desc = $guide_desc['desc'] ?? '';
+        if (is_array($read_more_text)) $read_more_text = $read_more_text['title'] ?? 'قراءة المزيد';
 
         $guide_items_raw = get_setting('guide_items', []);
-        $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : $guide_items_raw;
+        $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : (is_array($guide_items_raw) ? $guide_items_raw : []);
     ?>
-    <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars($guide_title); ?></h2>
+    <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php if (!empty($guide_desc)): ?>
-        <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc)); ?></p>
+        <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
     <?php endif; ?>
 
-    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo $current_dir; ?>">
+    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
       <div class="carousel-inner">
-        <?php if (!empty($guide_items)): ?>
-          <?php 
-            $chunks = array_chunk($guide_items, 3);
-          ?>
+        <?php if (!empty($guide_items) && is_array($guide_items)): ?>
+          <?php $chunks = array_chunk($guide_items, 3); ?>
           <?php foreach ($chunks as $index => $slide_items): ?>
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
               <div class="row g-4">
                 <?php foreach ($slide_items as $item): 
-                  // استخراج عنوان ووصف المقال حسب اللغة الحالية مع البديل العربي
-                  $item_title = $item[$current_lang]['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
-                  $item_desc  = $item[$current_lang]['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+                  // جلب محتوى المقال حسب اللغة مع بدائل
+                  $item_data  = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
+                  $item_title = $item_data['title'] ?? ($item['title'] ?? '');
+                  $item_desc  = $item_data['desc'] ?? ($item['desc'] ?? '');
                   
-                  $item_img = get_image_url($item['img'] ?? null);
-                  $raw_url = $item['url'] ?? '#';
-                  $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
+                  $item_img  = get_image_url($item['img'] ?? null);
+                  $raw_url   = $item['url'] ?? '#';
+                  $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
                 ?>
                   <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card h-100 border-0 shadow-sm">
                       <?php if (!empty($item_img)): ?>
                         <div class="card-img-wrapper">
-                          <img src="<?php echo htmlspecialchars($item_img); ?>" alt="<?php echo htmlspecialchars($item_title); ?>" class="img-fluid guide-img">
+                          <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
                         </div>
                       <?php endif; ?>
                       <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title); ?></h5>
-                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc); ?></p>
-                        <a href="<?php echo htmlspecialchars($final_url); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
-                          <?php echo htmlspecialchars($read_more_text); ?>
-                          <img src="<?php echo get_image_url('assets/img/ArrowLeft.svg.webp'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                        <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                        <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
+                          <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
+                          <img src="<?php echo htmlspecialchars(get_image_url('assets/img/ArrowLeft.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                         </a>
                       </div>
                     </div>
@@ -412,32 +338,12 @@
 
   <div class="container-fluid custom-container">
     <?php 
-        // 1. معالجة عنوان الأسئلة الشائعة بطريقة آمنة
-        $faq_title_raw = get_setting('faq_title', 'الأسئلة الشائعة');
-        $faq_title = 'الأسئلة الشائعة';
-        if (is_string($faq_title_raw) && str_starts_with(trim($faq_title_raw), '{')) {
-            $ft_arr = json_decode($faq_title_raw, true);
-            if (is_array($ft_arr)) {
-                $faq_title = $ft_arr[$current_lang] ?? $ft_arr['ar'] ?? $ft_arr['de'] ?? 'الأسئلة الشائعة';
-            }
-        } elseif (!empty($faq_title_raw)) {
-            $faq_title = $faq_title_raw;
-        }
+        $faq_title = $getLocalizedData('faq_title', 'الأسئلة الشائعة');
+        if (is_array($faq_title)) $faq_title = $faq_title['title'] ?? 'الأسئلة الشائعة';
 
-        // 2. معالجة عناصر الأسئلة بطريقة آمنة تمنع الاختفاء
         $faq_items_raw = get_setting('faq_items', []);
-        $faq_items = [];
-        
-        if (is_string($faq_items_raw)) {
-            $decoded = json_decode($faq_items_raw, true);
-            if (is_array($decoded)) {
-                $faq_items = $decoded;
-            }
-        } elseif (is_array($faq_items_raw)) {
-            $faq_items = $faq_items_raw;
-        }
+        $faq_items = is_string($faq_items_raw) ? (json_decode($faq_items_raw, true) ?? []) : (is_array($faq_items_raw) ? $faq_items_raw : []);
 
-        // في حال لم تكن هناك بيانات مخزنة، نعرض أسئلة افتراضية لكي لا يظهر القسم فارغاً
         if (empty($faq_items)) {
             $faq_items = [
                 [
@@ -449,36 +355,27 @@
         }
     ?>
 
-    <h2 class="sec-title mb-5"><?php echo htmlspecialchars($faq_title); ?></h2>
+    <h2 class="sec-title mb-5"><?php echo htmlspecialchars((string)$faq_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     
     <div class="accordion mb-5" id="accordionExample">
       <?php foreach ($faq_items as $index => $item): 
-            // استخراج السؤال والجواب بناءً على اللغة الحالية مع بدائل آمنة
             $faq_question = '';
             $faq_answer = '';
 
             if (is_array($item)) {
-                if (isset($item[$current_lang])) {
-                    $faq_question = $item[$current_lang]['question'] ?? '';
-                    $faq_answer   = $item[$current_lang]['answer'] ?? '';
-                } elseif (isset($item['ar'])) {
-                    $faq_question = $item['ar']['question'] ?? '';
-                    $faq_answer   = $item['ar']['answer'] ?? '';
-                } else {
-                    // للتوافق مع الشكل القديم إن وجد
-                    $faq_question = $item['question'] ?? '';
-                    $faq_answer   = $item['answer'] ?? '';
-                }
+                $q_data = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
+                $faq_question = $q_data['question'] ?? ($item['question'] ?? '');
+                $faq_answer   = $q_data['answer'] ?? ($item['answer'] ?? '');
             }
       ?>
         <div class="accordion-item">
           <h2 class="accordion-header" id="heading<?php echo $index; ?>">
             <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
-              <?php echo htmlspecialchars($faq_question); ?>
+              <?php echo htmlspecialchars($faq_question, ENT_QUOTES, 'UTF-8'); ?>
             </button>
           </h2>
           <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-            <div class="accordion-body"><?php echo htmlspecialchars($faq_answer); ?></div>
+            <div class="accordion-body"><?php echo htmlspecialchars($faq_answer, ENT_QUOTES, 'UTF-8'); ?></div>
           </div>
         </div>
       <?php endforeach; ?>

@@ -19,7 +19,7 @@ class HeaderSettingsService
 
     public function handleAction(string $action, PDO $pdo, array $currentSettings): bool
     {
-        if (!in_array($action, ['update_logo', 'update_social', 'update_menu'], true)) {
+        if (!in_array($action, ['update_logo', 'update_social', 'update_menu', 'update_languages'], true)) {
             return false;
         }
 
@@ -48,7 +48,7 @@ class HeaderSettingsService
                     $this->deleteOldImageFile($logos[$targetLang]);
                 }
 
-                // رفع الشعار الجديد وتوليد مساره (تم تصحيحها لاستخدام $this->imageUploader)
+                // رفع الشعار الجديد وتوليد مساره
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['logo_img']['tmp_name']);
                 $logoPath = 'assets/uploads/' . $filename;
                 
@@ -64,7 +64,7 @@ class HeaderSettingsService
         }
 
         // 2. تحديث منصات التواصل الاجتماعي (يدعم تعدد اللغات)
-                elseif ($action === 'update_social') {
+        elseif ($action === 'update_social') {
             $incomingSocial = $_POST['social'] ?? [];
             $socialItems = [];
 
@@ -140,6 +140,31 @@ class HeaderSettingsService
 
             $jsonVal = json_encode(array_values($formattedMenu), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'menu_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+        }
+
+        // 4. تحديث إدارة اللغات المتاحة في النظام (Languages Settings)
+        elseif ($action === 'update_languages') {
+            $incomingLang = $_POST['lang'] ?? [];
+            $langItems = [];
+
+            foreach ($incomingLang as $item) {
+                if (!is_array($item)) continue;
+                $codeVal   = trim($item['code'] ?? '');
+                $nameVal   = trim($item['name'] ?? '');
+                $activeVal = isset($item['active']) && (string)$item['active'] === '1';
+
+                // تخطي المدخلات الفارغة التي لا تحتوي على رمز أو اسم
+                if ($codeVal === '' || $nameVal === '') continue;
+
+                $langItems[] = [
+                    'code'   => strtolower($codeVal),
+                    'name'   => $nameVal,
+                    'active' => $activeVal
+                ];
+            }
+
+            $jsonVal = json_encode(array_values($langItems), JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'languages', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;

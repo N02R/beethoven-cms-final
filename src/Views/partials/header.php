@@ -10,6 +10,8 @@ declare(strict_types=1);
 $current_lang = get_current_lang();
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 $current_lang_code = $current_lang;
+$modal_dir = $current_dir;
+$modal_align = ($current_dir === 'rtl') ? 'text-end' : 'text-start';
 
 // 2. تنظيف المسار الحالي من أي بادئة لغة سابقة لمنع تكرارها
 $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';

@@ -481,16 +481,26 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         $languagesData = is_array($data['languages'] ?? null) ? $data['languages'] : [];
                         if (!empty($languagesData)): 
                             foreach ($languagesData as $index => $langItem): 
+                                $code_val   = $langItem['code'] ?? '';
+                                $name_val   = $langItem['name'] ?? '';
+                                $active_val = isset($langItem['active']) ? (bool)$langItem['active'] : true;
                         ?>
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
-                                        <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم اللغة">
+                                        <div class="col-md-4">
+                                            <label class="small fw-bold mb-1 text-secondary">رمز اللغة (Code)</label>
+                                            <input type="text" class="form-control lang-code" name="lang[<?php echo $index; ?>][code]" value="<?php echo htmlspecialchars(safe_admin_string($code_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: fr">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                            <input type="text" class="form-control lang-url" name="lang[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($langItem['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                                            <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($name_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: Français">
+                                        </div>
+                                        <div class="col-md-2 text-center pt-3">
+                                            <label class="small fw-bold mb-1 text-secondary d-block">الحالة</label>
+                                            <input type="hidden" name="lang[<?php echo $index; ?>][active]" value="0">
+                                            <div class="form-check form-switch d-inline-block">
+                                                <input class="form-check-input lang-active" type="checkbox" name="lang[<?php echo $index; ?>][active]" value="1" <?php echo $active_val ? 'checked' : ''; ?>>
+                                            </div>
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
                                             <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
@@ -1445,13 +1455,20 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
-                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="اسم اللغة">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">رمز اللغة (Code)</label>
+                    <input type="text" class="form-control lang-code" name="lang[${count}][code]" placeholder="مثال: fr">
                 </div>
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control lang-url" name="lang[${count}][url]" placeholder="الرابط">
+                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="مثال: Français">
+                </div>
+                <div class="col-md-2 text-center pt-3">
+                    <label class="small fw-bold mb-1 text-secondary d-block">الحالة</label>
+                    <input type="hidden" name="lang[${count}][active]" value="0">
+                    <div class="form-check form-switch d-inline-block">
+                        <input class="form-check-input lang-active" type="checkbox" name="lang[${count}][active]" value="1" checked>
+                    </div>
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف اللغة"><i class="bi bi-trash"></i></button>
@@ -1553,7 +1570,20 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     }
                 });
 
-                // 5. إرسال النموذج عبر AJAX
+                // 5. إعادة ترقيم اللغات (Languages)
+                form.querySelectorAll('.lang-row-item').forEach((row, index) => {
+                    const codeInput = row.querySelector('.lang-code');
+                    const nameInput = row.querySelector('.lang-name');
+                    const activeInput = row.querySelector('.lang-active');
+                    const hiddenActive = row.querySelector('input[type="hidden"][name*="[active]"]');
+
+                    if (codeInput) codeInput.name = `lang[${index}][code]`;
+                    if (nameInput) nameInput.name = `lang[${index}][name]`;
+                    if (activeInput) activeInput.name = `lang[${index}][active]`;
+                    if (hiddenActive && hiddenActive !== activeInput) hiddenActive.name = `lang[${index}][active]`;
+                });
+
+                // 6. إرسال النموذج عبر AJAX
                 const formId = this.getAttribute('id');
                 const submitBtn = (formId ? document.querySelector(`button[form="${formId}"]`) : null) || this.querySelector('button[type="submit"]');
                 let originalText = '';

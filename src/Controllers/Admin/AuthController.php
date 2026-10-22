@@ -113,10 +113,11 @@ class AuthController {
             error_log("Auth Error: " . $e->getMessage());
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['success' => false, 'message' => 'حدث خطأ في النظام، يرجى المحاولة لاحقاً']);
+                // عرض الخطأ التقني الحقيقي مؤقتاً للاكتشاف
+                echo json_encode(['success' => false, 'message' => 'خطأ تقني: ' . $e->getMessage()]);
                 exit;
             }
-            $_SESSION['login_error'] = 'حدث خطأ في النظام، يرجى المحاولة لاحقاً';
+            $_SESSION['login_error'] = 'خطأ تقني: ' . $e->getMessage();
             header("Location: /admin/login");
             exit;
         }

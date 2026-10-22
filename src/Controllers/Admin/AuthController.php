@@ -52,7 +52,7 @@ class AuthController {
     }
 
     /**
-     * معالجة نموذج تسجيل الدخول (Form Submission)
+     * معالجة نموذج تسجيل الدخول (Form Submission عبر AJAX أو Form العادي)
      */
     public function authenticate(): void {
         $this->ensureSession();
@@ -62,36 +62,38 @@ class AuthController {
             exit;
         }
 
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest' 
+                  || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+
         // 1. التحقق من CSRF Token
         $token = $_POST['csrf_token'] ?? '';
         if (empty($token) || !hash_equals($_SESSION['login_csrf'] ?? '', $token)) {
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'message' => 'رمز الحماية غير صالح (CSRF Invalid)']);
+                exit;
+            }
             $_SESSION['login_error'] = 'رمز الحماية غير صالح (CSRF Invalid)';
             header("Location: /admin/login");
             exit;
         }
 
-        // 2. التحقق من الكابتشا
-        $captcha_answer = isset($_POST['captcha_answer']) ? (int)$_POST['captcha_answer'] : null;
-        if ($captcha_answer !== ($_SESSION['captcha_result'] ?? null)) {
-            $_SESSION['login_error'] = 'إجابة التحقق الأمني (الكابتشا) غير صحيحة';
-            $_SESSION['captcha_num1'] = rand(1, 9);
-            $_SESSION['captcha_num2'] = rand(1, 9);
-            $_SESSION['captcha_result'] = $_SESSION['captcha_num1'] + $_SESSION['captcha_num2'];
-            header("Location: /admin/login");
-            exit;
-        }
-
-        // 3. تنقية المدخلات
+        // 2. تنقية المدخلات
         $email = trim($_POST['email'] ?? ''); 
         $password = trim($_POST['password'] ?? '');
 
         if (empty($email) || empty($password) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'message' => 'يرجى إدخال بريد إلكتروني وكلمة مرور صحيحة']);
+                exit;
+            }
             $_SESSION['login_error'] = 'يرجى إدخال بريد إلكتروني وكلمة مرور صحيحة';
             header("Location: /admin/login");
             exit;
         }
 
-        // 4. التحقق عبر قاعدة البيانات
+        // 3. التحقق عبر قاعدة البيانات
         $adminData = null;
 
         try {
@@ -109,25 +111,39 @@ class AuthController {
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());
-            $_SESSION['login_error'] = 'حدث خطأ في النظام، يجى المحاولة لاحقاً';
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'message' => 'حدث خطأ في النظام، يرجى المحاولة لاحقاً']);
+                exit;
+            }
+            $_SESSION['login_error'] = 'حدث خطأ في النظام، يرجى المحاولة لاحقاً';
             header("Location: /admin/login");
             exit;
         }
 
-        // 5. حفظ الجلسة والتوجيه عند النجاح
+        // 4. حفظ الجلسة والاستجابة عند النجاح
         if ($adminData !== null) {
             $_SESSION['is_logged_in'] = true;
             $_SESSION['role']         = $adminData['role'];
             $_SESSION['admin_name']   = $adminData['name'];
             $_SESSION['admin_id']     = $adminData['id'];
 
-            // تجديد معرف الجلسة لمنع هجمات تثبيت الجلسة
             session_regenerate_id(true);
+            unset($_SESSION['login_csrf'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2']);
 
-            // تنظيف بيانات الجلسة المؤقتة
-            unset($_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result'], $_SESSION['login_csrf']);
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => true, 'message' => 'تم تسجيل الدخول بنجاح، جاري تحويلك للوحة التحكم...']);
+                exit;
+            }
 
             header("Location: /admin/dashboard");
+            exit;
+        }
+
+        if ($isAjax) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'message' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة']);
             exit;
         }
 

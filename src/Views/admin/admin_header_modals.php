@@ -1226,6 +1226,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const container = document.getElementById('socialRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.social-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
         const langPlatformName = "<?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?>";
         const langPlatformUrl  = "<?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?>";
@@ -1241,17 +1242,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">${langPlatformName}</label>
-                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${langNamePlace}">
+                    <input type="text" class="form-control social-name" name="social[${currentLang}][items][${count}][name]" placeholder="${langNamePlace}">
                 </div>
                 <div class="col-md-8">
                     <label class="small fw-bold mb-1 text-secondary">${langPlatformUrl}</label>
-                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${langUrlPlace}">
+                    <input type="url" class="form-control social-url" name="social[${currentLang}][items][${count}][url]" placeholder="${langUrlPlace}">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">${langIconImage}</label>
                     <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
                 </div>
-                <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
+                <input type="hidden" class="social-old-img" name="social[${currentLang}][items][${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>

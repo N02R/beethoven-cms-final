@@ -63,23 +63,55 @@ class HeaderSettingsService
             }
         }
 
-        // 2. تحديث منصات التواصل الاجتماعي
+        // 2. تحديث منصات التواصل الاجتماعي (يدعم تعدد اللغات)
         elseif ($action === 'update_social') {
-            $socialData = $_POST['social'] ?? [];
-            foreach ($socialData as $index => $item) {
-                $fileToCheck = $_FILES['social_img_' . $index] ?? ($_FILES['social'][$index]['img'] ?? null);
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
+            $targetLang = $_POST['social_lang'] ?? ($current_lang ?? 'ar');
+
+            $rawSocialSetting = $currentSettings['social_links'] ?? '';
+            $allSocial = json_decode($rawSocialSetting, true);
+            if (!is_array($allSocial)) {
+                $allSocial = [];
+                if (!empty($rawSocialSetting)) {
+                    $legacyData = json_decode($rawSocialSetting, true);
+                    if (is_array($legacyData)) {
+                        $allSocial['ar'] = $legacyData; // Fallback للبيانات القديمة
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $socialData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $socialData[$index]['img'] = $item['old_img'] ?? '';
                 }
-                unset($socialData[$index]['old_img']);
             }
-            $jsonVal = json_encode(array_values($socialData), JSON_UNESCAPED_UNICODE);
+
+            // استقبال البيانات المرسلة وتجاوز هيكل الـ items واللغة
+            $incomingSocial = $_POST['social'] ?? [];
+            $langInput = $incomingSocial[$targetLang] ?? $incomingSocial;
+            $items = $langInput['items'] ?? (is_array($langInput) && isset($langInput[0]) ? $langInput : []);
+
+            $socialItems = [];
+            foreach ($items as $index => $item) {
+                $nameVal = trim($item['name'] ?? '');
+                if ($nameVal === '') continue; // تخطي العناصر الفارغة
+
+                // فحص الملف المرفوع للصورة/الأيقونة
+                $fileToCheck = $_FILES['social_img_' . $index] ?? ($_FILES['social'][$targetLang]['items'][$index]['img'] ?? null);
+                
+                $oldImg = $item['old_img'] ?? '';
+                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                    if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                        $this->deleteOldImageFile($rootPath, $oldImg);
+                    }
+                    $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                    $imgVal = 'assets/uploads/' . $filename;
+                } else {
+                    $imgVal = $oldImg;
+                }
+
+                $socialItems[] = [
+                    'name' => $nameVal,
+                    'url'  => $item['url'] ?? '#',
+                    'img'  => $imgVal
+                ];
+            }
+
+            $allSocial[$targetLang] = $socialItems;
+            $jsonVal = json_encode($allSocial, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'social_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

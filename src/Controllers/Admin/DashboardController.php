@@ -29,11 +29,11 @@ class DashboardController {
         // 1. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel
         $configData = DashboardModel::getDashboardData();
 
-        // 2. جلب كافة إعدادات ومحتويات الموقع من قاعدة البيانات
+        // 2. جلب كافة إعدادات ومحتويات الموقع من جدول global_settings الحقيقي في قاعدة البيانات
         $rawSettings = [];
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->query("SELECT setting_key, setting_value FROM settings");
+            $stmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings");
             $rawSettings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
         } catch (\Throwable $e) {
             error_log("Failed to fetch site settings in DashboardController: " . $e->getMessage());
@@ -85,7 +85,12 @@ class DashboardController {
             'raw_settings'           => $rawSettings
         ];
 
-        // 5. استدعاء ملف الـ View الخاص باللوحة الاحترافية
+        // 5. تعريف الثابت الأمني لتجاوز حماية العرض بشكل آمن
+        if (!defined('ALLOWED_ACCESS')) {
+            define('ALLOWED_ACCESS', true);
+        }
+
+        // 6. استدعاء ملف الـ View الخاص باللوحة الاحترافية
         $viewFile = __DIR__ . '/../../Views/admin/dashboard.php';
         
         if (file_exists($viewFile)) {

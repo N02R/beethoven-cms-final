@@ -164,7 +164,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-share-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?>
+                    <?php echo $lang['manage_social_platforms'] ?? 'إدارة منصات التواصل'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -172,24 +172,36 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="socialLinksForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <!-- تمرير كود اللغة الحالية ديناميكياً للسيرفر -->
+                    <input type="hidden" name="social_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        $socialLinksData = is_array($data['social_links'] ?? null) ? $data['social_links'] : [];
+                        // جلب البيانات مع دعم التخزين المتعدد اللغات أو الـ Fallback
+                        $rawSocial = $currentSettings['social_links'] ?? ($data['social_links'] ?? '');
+                        $decodedSocial = is_string($rawSocial) ? json_decode($rawSocial, true) : (is_array($rawSocial) ? $rawSocial : []);
+                        
+                        $socialLinksData = [];
+                        if (is_array($decodedSocial)) {
+                            // إذا كانت البيانات مخزنة لكل لغة على حدة
+                            $socialLinksData = $decodedSocial[$current_lang] ?? ($decodedSocial['ar'] ?? (isset($decodedSocial[0]) ? $decodedSocial : []));
+                        }
+                        if (!is_array($socialLinksData)) $socialLinksData = [];
+
                         foreach ($socialLinksData as $index => $link): 
                         ?>
                         <div class="p-3 shadow-sm social-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
-                                <div class="col-md-4">
-                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?></label>
+                                <div class="col-md-4 <?php echo $modal_align; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?></label>
                                     <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['name_placeholder'] ?? 'الاسم'; ?>">
                                 </div>
-                                <div class="col-md-8">
-                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?></label>
+                                <div class="col-md-8 <?php echo $modal_align; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?></label>
                                     <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo $lang['url_placeholder'] ?? 'الرابط'; ?>">
                                 </div>
-                                <div class="col-md-11">
-                                    <label class="small fw-bold mb-1 text-secondary <?php echo $modal_align; ?>"><?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?></label>
+                                <div class="col-md-11 <?php echo $modal_align; ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?></label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -201,7 +213,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 </div>
                                 <input type="hidden" class="social-old-img" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('row_<?php echo $index; ?>')" title="<?php echo $lang['delete_platform'] ?? 'حذف المنصة'; ?>"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="<?php echo $lang['delete_platform'] ?? 'حذف المنصة'; ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1207,33 +1219,41 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     }
 
     /* ==========================================================================
-       دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders)
+       دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders) مع دعم اللغات
        ========================================================================== */
 
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.social-row-item').length;
+
+        const langPlatformName = "<?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?>";
+        const langPlatformUrl  = "<?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?>";
+        const langIconImage    = "<?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?>";
+        const langNamePlace    = "<?php echo $lang['name_placeholder'] ?? 'الاسم'; ?>";
+        const langUrlPlace     = "<?php echo $lang['url_placeholder'] ?? 'الرابط'; ?>";
+        const langDeleteText   = "<?php echo $lang['delete_platform'] ?? 'حذف المنصة'; ?>";
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 social-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
-                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="الاسم">
+                    <label class="small fw-bold mb-1 text-secondary">${langPlatformName}</label>
+                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${langNamePlace}">
                 </div>
                 <div class="col-md-8">
-                    <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
-                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="الرابط">
+                    <label class="small fw-bold mb-1 text-secondary">${langPlatformUrl}</label>
+                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${langUrlPlace}">
                 </div>
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${langIconImage}</label>
                     <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
                 </div>
                 <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1510,16 +1530,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social)
+                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social) مع دعم مفتاح اللغة
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.social-name');
                     const urlInput = row.querySelector('.social-url');
                     const fileInput = row.querySelector('.social-file');
                     const oldImgInput = row.querySelector('.social-old-img');
-                    if (nameInput) nameInput.name = `social[${index}][name]`;
-                    if (urlInput) urlInput.name = `social[${index}][url]`;
+                    if (nameInput) nameInput.name = `social[${currentLang}][items][${index}][name]`;
+                    if (urlInput) urlInput.name = `social[${currentLang}][items][${index}][url]`;
                     if (fileInput) fileInput.name = `social_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
+                    if (oldImgInput) oldImgInput.name = `social[${currentLang}][items][${index}][old_img]`;
                 });
 
                 // 4. إعادة ترقيم القائمة (Menu)

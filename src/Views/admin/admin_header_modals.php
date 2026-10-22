@@ -280,7 +280,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-megaphone-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo $lang['announcement_settings'] ?? 'إعدادات لوحة الإعلانات'; ?>
+                    <?php echo $lang['announcement_settings'] ?? 'إعدادات لوحة الإعلانات'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -291,7 +291,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="announcement_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                        $currentAd = is_array($data['announcement'] ?? null) ? ($data['announcement'][$current_lang] ?? ($data['announcement'] ?? [])) : [];
+                        // جلب إعلان اللغة الحالية بذكاء
+                        $rawAdSetting = $currentSettings['announcement'] ?? ($data['announcement'] ?? '');
+                        $decodedAds = is_string($rawAdSetting) ? json_decode($rawAdSetting, true) : (is_array($rawAdSetting) ? $rawAdSetting : []);
+                        
+                        $currentAd = [];
+                        if (is_array($decodedAds)) {
+                            // إذا كانت البيانات مخزنة بصيغة متعددة اللغات
+                            $currentAd = $decodedAds[$current_lang] ?? ($decodedAds['ar'] ?? (isset($decodedAds['status']) ? $decodedAds : []));
+                        }
                     ?>
                     <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
@@ -302,7 +310,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                         <div class="row g-3">
                             <div class="col-md-4 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1"><?php echo $lang['display_status'] ?? 'حالة العرض'; ?></label>
+                                <label class="small fw-bold mb-1"><?php echo $lang['display_status'] ?? 'حالة العرضة'; ?></label>
                                 <select class="form-select" name="status">
                                     <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>><?php echo $lang['status_draft'] ?? 'مخفي (مسودة)'; ?></option>
                                     <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>><?php echo $lang['status_published'] ?? 'نشط (يظهر للزوار)'; ?></option>
@@ -322,16 +330,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;">
                             <i class="bi bi-pencil-square text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> 
-                            <?php echo $lang['announcement_content'] ?? 'محتوى الإعلان'; ?>
+                            <?php echo $lang['announcement_content'] ?? 'محتوى الإعلان'; ?> (<?php echo strtoupper($current_lang); ?>)
                         </div>
                         <label class="small fw-bold mb-1"><?php echo $lang['ad_type'] ?? 'نوع الإعلان:'; ?></label>
-                        <select class="form-select mb-3" name="type" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo $lang['ad_type_text'] ?? 'نص متحرك (اختر هذا لنص سريع)'; ?></option>
-                            <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo $lang['ad_type_image'] ?? 'صورة (بانر دعائي كامل)'; ?></option>
+                        <select class="form-select mb-3" name="type" id="adTypeSelect" onchange="toggleAdContent(this.value)">
+                            <option value="text" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo $lang['ad_type_text'] ?? 'نص متحرك'; ?></option>
+                            <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo $lang['ad_type_image'] ?? 'صورة (بانر دعائي)'; ?></option>
                         </select>
 
-                        <div id="textEditor" class="<?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1"><?php echo $lang['announcement_text_label'] ?? 'نص الإعلان (الرسالة التي ستظهر للزوار):'; ?></label>
+                        <!-- محرر النص -->
+                        <?php $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang); ?>
+                        <div id="textEditor" class="<?php echo ($adTypeVal === 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
+                            <label class="small fw-bold mb-1"><?php echo $lang['announcement_text_label'] ?? 'نص الإعلان:'; ?></label>
                             <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars(safe_admin_string($currentAd['announcement_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             <div class="row g-2">
                                 <div class="col-4">
@@ -349,11 +359,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             </div>
                         </div>
 
-                        <div id="imageEditor" class="<?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1"><?php echo $lang['upload_ad_image'] ?? 'ارفع صورة الإعلان (يُفضل صيغة WebP أو PNG):'; ?></label>
-                            <?php if (!empty($currentAd['image_path'])): ?>
+                        <!-- محرر الصورة -->
+                        <div id="imageEditor" class="<?php echo ($adTypeVal === 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
+                            <label class="small fw-bold mb-1"><?php echo $lang['upload_ad_image'] ?? 'ارفع صورة الإعلان:'; ?></label>
+                            <?php if (!empty($currentAd['image_path']) && $currentAd['image_path'] !== 'assets/img/default-ad.png'): ?>
                                 <div class="mb-2 p-2 bg-light rounded border d-inline-block">
-                                    <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($currentAd['image_path']) : $currentAd['image_path'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="معاينة الإعلان" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
+                                    <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($currentAd['image_path']) : $currentAd['image_path'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Ad Preview" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
                             <input type="file" class="form-control" name="ad_image" style="height: auto; padding: 10px 16px;" accept="image/png, image/jpeg, image/webp">
@@ -1181,7 +1192,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     }
 
     /**
-     * التبديل بين المحتوى النصي والصورة في الإعلانات
+     * التبديل الديناميكي الفوري بين محرر النص ومحرر الصورة في مودل الإعلانات
      */
     function toggleAdContent(val) {
         const textEditor = document.getElementById('textEditor');
@@ -1197,7 +1208,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     /* ==========================================================================
        دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders)
-       تستخدم removeRow(this) لتجنب أخطاء تكرار الـ ID عند الحذف والتحسين
        ========================================================================== */
 
     function addSocialRow() {
@@ -1258,58 +1268,45 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-function addChooseRow() {
-    const container = document.getElementById('chooseRowsContainer');
-    if (!container) return;
+    function addChooseRow() {
+        const container = document.getElementById('chooseRowsContainer');
+        if (!container) return;
 
-    const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-    const index = container.querySelectorAll('.choose-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        const index = container.querySelectorAll('.choose-row-item').length;
 
-    const langTitleLabel = "<?php echo $lang['title'] ?? 'العنوان'; ?>";
-    const langDescLabel  = "<?php echo $lang['description'] ?? 'الوصف'; ?>";
-    const langIconLabel  = "<?php echo $lang['icon_or_image'] ?? 'الأيقونة / الصورة'; ?>";
-    const langTitlePlace = "<?php echo $lang['feature_title_placeholder'] ?? 'عنوان الميزة'; ?>";
-    const langDescPlace  = "<?php echo $lang['feature_desc_placeholder'] ?? 'وصف الميزة'; ?>";
-    const langDeleteText = "<?php echo $lang['delete_feature'] ?? 'حذف الميزة'; ?>";
+        const langTitleLabel = "<?php echo $lang['title'] ?? 'العنوان'; ?>";
+        const langDescLabel  = "<?php echo $lang['description'] ?? 'الوصف'; ?>";
+        const langIconLabel  = "<?php echo $lang['icon_or_image'] ?? 'الأيقونة / الصورة'; ?>";
+        const langTitlePlace = "<?php echo $lang['feature_title_placeholder'] ?? 'عنوان الميزة'; ?>";
+        const langDescPlace  = "<?php echo $lang['feature_desc_placeholder'] ?? 'وصف الميزة'; ?>";
+        const langDeleteText = "<?php echo $lang['delete_feature'] ?? 'حذف الميزة'; ?>";
 
-    const div = document.createElement('div');
-    div.className = 'p-3 shadow-sm mb-3 choose-row-item';
-    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-    div.innerHTML = `
-        <div class="row g-3 align-items-center">
-            <div class="col-md-6">
-                <label class="small fw-bold mb-1 text-secondary">${langTitleLabel}</label>
-                <input type="text" class="form-control choose-title" name="choose[${currentLang}][items][${index}][title]" placeholder="${langTitlePlace}">
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 choose-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel}</label>
+                    <input type="text" class="form-control choose-title" name="choose[${currentLang}][items][${index}][title]" placeholder="${langTitlePlace}">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langDescLabel}</label>
+                    <input type="text" class="form-control choose-desc" name="choose[${currentLang}][items][${index}][desc]" placeholder="${langDescPlace}">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
+                    <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
+                </div>
+                <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="small fw-bold mb-1 text-secondary">${langDescLabel}</label>
-                <input type="text" class="form-control choose-desc" name="choose[${currentLang}][items][${index}][desc]" placeholder="${langDescPlace}">
-            </div>
-            <div class="col-md-11">
-                <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
-                <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
-            </div>
-            <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
-            <div class="col-md-1 text-center pt-3">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
-            </div>
-        </div>
-    `;
-    container.appendChild(div);
-}
-
-/**
- * دالة حذف الصف الشاملة (تستقبل إما ID أو العنصر نفسه)
- */
-function removeRow(target) {
-    if (typeof target === 'string') {
-        const el = document.getElementById(target);
-        if (el) el.remove();
-    } else if (target && target.nodeType) {
-        const row = target.closest('.choose-row-item, .social-row-item, .menu-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
-        if (row) row.remove();
+        `;
+        container.appendChild(div);
     }
-}
 
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
@@ -1477,93 +1474,8 @@ function removeRow(target) {
         container.appendChild(div);
     }
 
-    function addTeamRow() {
-        const container = document.getElementById('teamRowsContainer');
-        if (!container) return;
-        const teamCount = container.querySelectorAll('.team-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 team-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
-                    <input type="text" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
-                    <input type="text" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold small text-secondary">صورة العضو</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف العضو"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addCountRow() {
-        const container = document.getElementById('countsRowsContainer');
-        if (!container) return;
-        const countsCount = container.querySelectorAll('.count-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 count-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
-                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف العداد"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    function addPartnerRow() {
-        const container = document.getElementById('partnersRowsContainer');
-        if (!container) return;
-        const partnerCount = container.querySelectorAll('.partner-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 partner-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-2 align-items-end">
-                <div class="col-md-11">
-                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الشريك"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
     /* ==========================================================================
-       معالج النماذج الموحد مع إعادة الترقيم الشامل والإرسال عبر AJAX
+       معالج النماذج الموحد وإرسال البيانات عبر AJAX مع الترقيم الآمن
        ========================================================================== */
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1571,8 +1483,9 @@ function removeRow(target) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // 1. إعادة ترقيم صفوف الخدمات (Services) مع مفتاح اللغة والحاوية items
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+                // 1. إعادة ترقيم صفوف الخدمات (Services)
                 form.querySelectorAll('.service-row-item').forEach((row, index) => {
                     const title = row.querySelector('.service-title');
                     const url = row.querySelector('.service-url');
@@ -1584,39 +1497,20 @@ function removeRow(target) {
                     if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 2. إعادة ترقيم صفوف الفريق (Team)
-                form.querySelectorAll('.team-row-item').forEach((row, index) => {
-                    const nameInput = row.querySelector('.team-name');
-                    const roleInput = row.querySelector('.team-role');
-                    const fileInput = row.querySelector('.team-file');
-                    const oldImgInput = row.querySelector('.team-old-img');
-                    if (nameInput) nameInput.name = `team[${index}][name]`;
-                    if (roleInput) roleInput.name = `team[${index}][role]`;
-                    if (fileInput) fileInput.name = `team_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
+                // 2. إعادة ترقيم المميزات (Choose)
+                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.choose-title');
+                    const descInput = row.querySelector('.choose-desc');
+                    const fileInput = row.querySelector('.choose-file');
+                    const oldImgInput = row.querySelector('.choose-old-img');
+                    
+                    if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
+                    if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
+                    if (fileInput) fileInput.name = `choose_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 3. إعادة ترقيم صفوف الإحصائيات (Counts)
-                form.querySelectorAll('.count-row-item').forEach((row, index) => {
-                    const numInput = row.querySelector('.count-number');
-                    const titleInput = row.querySelector('.count-title');
-                    const fileInput = row.querySelector('.count-file');
-                    const oldImgInput = row.querySelector('.count-old-img');
-                    if (numInput) numInput.name = `counts[${index}][number]`;
-                    if (titleInput) titleInput.name = `counts[${index}][title]`;
-                    if (fileInput) fileInput.name = `count_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
-                });
-
-                // 4. إعادة ترقيم صفوف الشركاء (Partners)
-                form.querySelectorAll('.partner-row-item').forEach((row, index) => {
-                    const fileInput = row.querySelector('.partner-file');
-                    const oldImgInput = row.querySelector('.partner-old-img');
-                    if (fileInput) fileInput.name = `partner_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `partners[${index}][old_img]`;
-                });
-
-                // 5. إعادة ترقيم وسائل التواصل الاجتماعية (Social)
+                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social)
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.social-name');
                     const urlInput = row.querySelector('.social-url');
@@ -1628,7 +1522,7 @@ function removeRow(target) {
                     if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
                 });
 
-                // 6. إعادة ترقيم القائمة (Menu)
+                // 4. إعادة ترقيم القائمة (Menu)
                 form.querySelectorAll('.menu-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.menu-title');
                     const urlInput = row.querySelector('.menu-url');
@@ -1641,68 +1535,7 @@ function removeRow(target) {
                     }
                 });
 
-// 7. إعادة ترقيم المميزات (Choose) مع مفتاح اللغة والحاوية items (مثل الخدمات)
-const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-form.querySelectorAll('.choose-row-item').forEach((row, index) => {
-    const titleInput  = row.querySelector('.choose-title');
-    const descInput   = row.querySelector('.choose-desc');
-    const fileInput   = row.querySelector('.choose-file');
-    const oldImgInput  = row.querySelector('.choose-old-img');
-    
-    if (titleInput)  titleInput.name  = `choose[${currentLang}][items][${index}][title]`;
-    if (descInput)   descInput.name   = `choose[${currentLang}][items][${index}][desc]`;
-    if (fileInput)   fileInput.name   = `choose_img_${index}`;
-    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
-});
-
-                form.querySelectorAll('.review-row-item').forEach((row, index) => {
-                    const urlInput = row.querySelector('.review-url');
-                    if (urlInput) urlInput.name = `reviews[${index}][url]`;
-                });
-
-                // 9. إعادة ترقيم الأدلة/المقالات (Guide)
-                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.guide-title');
-                    const urlInput = row.querySelector('.guide-url');
-                    const descInput = row.querySelector('.guide-desc');
-                    const fileInput = row.querySelector('.guide-file');
-                    const oldImgInput = row.querySelector('.guide-old-img');
-                    if (titleInput) titleInput.name = `guide[${index}][title]`;
-                    if (urlInput) urlInput.name = `guide[${index}][url]`;
-                    if (descInput) descInput.name = `guide[${index}][desc]`;
-                    if (fileInput) fileInput.name = `guide_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `guide[${index}][old_img]`;
-                });
-
-                // 10. إعادة ترقيم الأسئلة الشائعة (FAQ)
-                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
-                    const qInput = row.querySelector('.faq-question');
-                    const aInput = row.querySelector('.faq-answer');
-                    if (qInput) qInput.name = `faq[${index}][question]`;
-                    if (aInput) aInput.name = `faq[${index}][answer]`;
-                });
-
-                // 11. إعادة ترقيم حقول الفوتر (Col3)
-                form.querySelectorAll('.footer-col3-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.footer-col3-title-input');
-                    const urlInput = row.querySelector('.footer-col3-url-input');
-                    const fileInput = row.querySelector('.footer-col3-file');
-                    const oldImgInput = row.querySelector('.footer-col3-old-img');
-                    if (titleInput) titleInput.name = `col3[${index}][title]`;
-                    if (urlInput) urlInput.name = `col3[${index}][url]`;
-                    if (fileInput) fileInput.name = `col3_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `col3[${index}][old_img]`;
-                });
-
-                // 12. إعادة ترقيم اللغات (Lang)
-                form.querySelectorAll('.lang-row-item').forEach((row, index) => {
-                    const nameInput = row.querySelector('.lang-name');
-                    const urlInput = row.querySelector('.lang-url');
-                    if (nameInput) nameInput.name = `lang[${index}][name]`;
-                    if (urlInput) urlInput.name = `lang[${index}][url]`;
-                });
-
-                // البحث الآمن عن زر الحفظ المرتبط بالنموذج
+                // 5. إرسال النموذج عبر AJAX
                 const formId = this.getAttribute('id');
                 const submitBtn = (formId ? document.querySelector(`button[form="${formId}"]`) : null) || this.querySelector('button[type="submit"]');
                 let originalText = '';
@@ -1714,7 +1547,6 @@ form.querySelectorAll('.choose-row-item').forEach((row, index) => {
 
                 const formData = new FormData(this);
                 
-                // جلب CSRF Token بطريقة مضمونة
                 let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 if (!csrfToken) {
                     csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';

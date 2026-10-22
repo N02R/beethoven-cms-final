@@ -100,8 +100,7 @@ declare(strict_types=1);
     <div id="login-alert" class="alert d-none text-center small mb-3"></div>
 
     <form id="loginForm">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(\App\Core\Security::generateCsrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
-        
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['login_csrf'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
         <div class="mb-3">
             <label class="form-label small fw-bold">البريد الإلكتروني (Email)</label>
             <input type="email" class="form-control" name="email" value="admin@beethoven.de" required autocomplete="email" placeholder="admin@beethoven.de">

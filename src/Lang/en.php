@@ -1,6 +1,8 @@
 <?php
 return [
     'manage_site_logo' => 'Change Site Logo',
+'choose_file' => 'Choose File',
+'no_file_chosen' => 'No file chosen',
 
     // General Translations
     'home'                    => 'Home',

@@ -1,6 +1,8 @@
 <?php
 return [
     'manage_site_logo' => 'Website-Logo ändern',
+'choose_file' => 'Datei auswählen',
+'no_file_chosen' => 'Keine Datei ausgewählt',
 
     // Allgemeine Übersetzungen
     'home'                    => 'Startseite',

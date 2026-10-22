@@ -236,17 +236,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="logoEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
-                    <!-- تمرير كود اللغة الحالية ديناميكياً (ar, de, en) لكي تعتمدها خدمة الـ Backend -->
                     <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <?php 
-                            // 1. جلب قيمة الشعار المخزنة (سواء كانت نصاً قديماً أو مصفوفة JSON)
                             $rawLogoSetting = $currentSettings['site_logo_path'] ?? ($data['site_logo_path'] ?? ($currentSettings['site_logo'] ?? ''));
                             $logosDecoded = json_decode($rawLogoSetting, true);
-                            
-                            // 2. استخراج الشعار الخاص باللغة الحالية فقط مع Fallback ذكي
                             $activeLogo = '';
                             if (is_array($logosDecoded)) {
                                 $activeLogo = $logosDecoded[$current_lang] ?? $logosDecoded['ar'] ?? $logosDecoded['de'] ?? reset($logosDecoded) ?? '';
@@ -258,7 +254,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
                     
-                    <div class="mb-3">
+                    <!-- حقل رفع احترافي يتأقلم مع لغة الصفحة -->
+                    <div class="mb-3 text-start" dir="<?php echo $modal_dir; ?>">
+                        <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>">
+                            <?php echo $lang['upload_ad_image'] ?? 'اختر صورة الشعار:'; ?>
+                        </label>
                         <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
                     </div>
 

@@ -48,7 +48,7 @@ class HeaderSettingsService
                     $this->deleteOldImageFile($logos[$targetLang]);
                 }
 
-                // رفع الشعار الجديد وتوليد مساره
+                // رفع الشعار الجديد وتوليد مساره (تم تصحيحها لاستخدام $this->imageUploader)
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['logo_img']['tmp_name']);
                 $logoPath = 'assets/uploads/' . $filename;
                 
@@ -65,7 +65,7 @@ class HeaderSettingsService
 
         // 2. تحديث منصات التواصل الاجتماعي (يدعم تعدد اللغات)
         elseif ($action === 'update_social') {
-            $targetLang = $_POST['social_lang'] ?? ($current_lang ?? 'ar');
+            $targetLang = $_POST['social_lang'] ?? 'ar';
 
             $rawSocialSetting = $currentSettings['social_links'] ?? '';
             $allSocial = json_decode($rawSocialSetting, true);
@@ -90,14 +90,15 @@ class HeaderSettingsService
                 if ($nameVal === '') continue; // تخطي العناصر الفارغة
 
                 // فحص الملف المرفوع للصورة/الأيقونة
-                $fileToCheck = $_FILES['social_img_' . $index] ?? ($_FILES['social'][$targetLang]['items'][$index]['img'] ?? null);
+                $fileToCheck = $_FILES['social_img_' . $index] ?? null;
                 
                 $oldImg = $item['old_img'] ?? '';
                 if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
-                        $this->deleteOldImageFile($rootPath, $oldImg);
+                        $this->deleteOldImageFile($oldImg);
                     }
-                    $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                    // تم تصحيحها هنا لاستخدام $this->imageUploader بدلاً من المتغير الخاطئ
+                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                     $imgVal = 'assets/uploads/' . $filename;
                 } else {
                     $imgVal = $oldImg;

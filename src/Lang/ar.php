@@ -95,5 +95,12 @@ return [
     'icon_or_image'              => 'الأيقونة / الصورة',
     'delete_feature'             => 'حذف الميزة',
     'add_new_feature'            => 'إضافة ميزة جديدة',
+    'manage_languages' => 'إدارة اللغات',
+'lang_code'        => 'رمز اللغة (Code)',
+'lang_name'        => 'اسم اللغة',
+'status'           => 'الحالة',
+'delete_lang'      => 'حذف اللغة',
+'add_new_language' => 'إضافة لغة جديدة',
+
 
 ];

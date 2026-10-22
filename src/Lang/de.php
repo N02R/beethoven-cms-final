@@ -3,6 +3,12 @@ return [
     'manage_site_logo' => 'Website-Logo ändern',
 'choose_file' => 'Datei auswählen',
 'no_file_chosen' => 'Keine Datei ausgewählt',
+'manage_languages' => 'Sprachen verwalten',
+'lang_code'        => 'Sprachcode',
+'lang_name'        => 'Sprachname',
+'status'           => 'Status',
+'delete_lang'      => 'Sprache löschen',
+'add_new_language' => 'Neue Sprache hinzufügen',
 
     // Allgemeine Übersetzungen
     'home'                    => 'Startseite',

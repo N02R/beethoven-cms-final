@@ -466,7 +466,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-translate text-primary"></i> إدارة اللغات
+                    <i class="bi bi-translate text-primary"></i> 
+                    <?php echo htmlspecialchars($lang['manage_languages'] ?? ($current_lang === 'ar' ? 'إدارة اللغات' : ($current_lang === 'de' ? 'Sprachen verwalten' : 'Manage Languages')), ENT_QUOTES, 'UTF-8'); ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -485,6 +486,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         }
                         $languagesData = is_array($languagesRawData) ? $languagesRawData : [];
 
+                        // نصوص مترجمة ديناميكياً حسب اللغة الحالية
+                        $t_code   = $lang['lang_code'] ?? ($current_lang === 'ar' ? 'رمز اللغة (Code)' : ($current_lang === 'de' ? 'Sprachcode' : 'Language Code'));
+                        $t_name   = $lang['lang_name'] ?? ($current_lang === 'ar' ? 'اسم اللغة' : ($current_lang === 'de' ? 'Sprachname' : 'Language Name'));
+                        $t_status = $lang['status'] ?? ($current_lang === 'ar' ? 'الحالة' : ($current_lang === 'de' ? 'Status' : 'Status'));
+                        $t_delete = $lang['delete_lang'] ?? ($current_lang === 'ar' ? 'حذف اللغة' : ($current_lang === 'de' ? 'Sprache löschen' : 'Delete Language'));
+
                         if (!empty($languagesData)): 
                             foreach ($languagesData as $index => $langItem): 
                                 $code_val   = $langItem['code'] ?? '';
@@ -494,22 +501,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-4">
-                                            <label class="small fw-bold mb-1 text-secondary">رمز اللغة (Code)</label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($t_code, ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control lang-code" name="lang[<?php echo $index; ?>][code]" value="<?php echo htmlspecialchars(safe_admin_string($code_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: fr">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($t_name, ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($name_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: Français">
                                         </div>
                                         <div class="col-md-2 text-center pt-3">
-                                            <label class="small fw-bold mb-1 text-secondary d-block">الحالة</label>
+                                            <label class="small fw-bold mb-1 text-secondary d-block"><?php echo htmlspecialchars($t_status, ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="hidden" name="lang[<?php echo $index; ?>][active]" value="0">
                                             <div class="form-check form-switch d-inline-block">
                                                 <input class="form-check-input lang-active" type="checkbox" name="lang[<?php echo $index; ?>][active]" value="1" <?php echo $active_val ? 'checked' : ''; ?>>
                                             </div>
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($t_delete, ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -518,15 +525,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         ?>
                     </div>
 
+                    <?php 
+                    $t_add_btn = $lang['add_new_language'] ?? ($current_lang === 'ar' ? 'إضافة لغة جديدة' : ($current_lang === 'de' ? 'Neue Sprache hinzufügen' : 'Add New Language'));
+                    ?>
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة لغة جديدة
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($t_add_btn, ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="langEditForm" class="btn-premium"><?php echo $lang['save_changes'] ?? 'حفظ التغييرات'; ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo $lang['cancel'] ?? 'إلغاء'; ?></button>
+                <button type="submit" form="langEditForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? ($current_lang === 'ar' ? 'حفظ التغييرات' : ($current_lang === 'de' ? 'Änderungen speichern' : 'Save Changes')), ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? ($current_lang === 'ar' ? 'إلغاء' : ($current_lang === 'de' ? 'Abbrechen' : 'Cancel')), ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1456,28 +1466,36 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const container = document.getElementById('langRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.lang-row-item').length;
+        
+        // جلب النصوص حسب لغة الصفحة من PHP
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        const tCode = currentLang === 'ar' ? 'رمز اللغة (Code)' : (currentLang === 'de' ? 'Sprachcode' : 'Language Code');
+        const tName = currentLang === 'ar' ? 'اسم اللغة' : (currentLang === 'de' ? 'Sprachname' : 'Language Name');
+        const tStatus = currentLang === 'ar' ? 'الحالة' : (currentLang === 'de' ? 'Status' : 'Status');
+        const tDelete = currentLang === 'ar' ? 'حذف اللغة' : (currentLang === 'de' ? 'Sprache löschen' : 'Delete Language');
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 lang-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">رمز اللغة (Code)</label>
+                    <label class="small fw-bold mb-1 text-secondary">${tCode}</label>
                     <input type="text" class="form-control lang-code" name="lang[${count}][code]" placeholder="مثال: fr">
                 </div>
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${tName}</label>
                     <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="مثال: Français">
                 </div>
                 <div class="col-md-2 text-center pt-3">
-                    <label class="small fw-bold mb-1 text-secondary d-block">الحالة</label>
+                    <label class="small fw-bold mb-1 text-secondary d-block">${tStatus}</label>
                     <input type="hidden" name="lang[${count}][active]" value="0">
                     <div class="form-check form-switch d-inline-block">
                         <input class="form-check-input lang-active" type="checkbox" name="lang[${count}][active]" value="1" checked>
                     </div>
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف اللغة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${tDelete}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;

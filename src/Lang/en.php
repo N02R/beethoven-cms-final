@@ -95,5 +95,11 @@ return [
     'icon_or_image'              => 'Icon / Image',
     'delete_feature'             => 'Delete Feature',
     'add_new_feature'            => 'Add New Feature',
+'manage_languages' => 'Manage Languages',
+'lang_code'        => 'Language Code',
+'lang_name'        => 'Language Name',
+'status'           => 'Status',
+'delete_lang'      => 'Delete Language',
+'add_new_language' => 'Add New Language',
 
 ];

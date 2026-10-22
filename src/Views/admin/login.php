@@ -115,7 +115,6 @@ declare(strict_types=1);
     </form>
 </div>
 
-<!-- سكريبت الـ AJAX التجريبي لكشف الرد الخام من السيرفر -->
 <script>
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -131,26 +130,28 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     try {
         const response = await fetch('/admin/login/process', {
             method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            body: formData
         });
 
-        // جلب الرد كنص خام لنرى ما يرسله السيرفر بالضبط
-        const rawText = await response.text();
-        
-        alertBox.classList.remove('d-none');
-        alertBox.className = 'alert alert-warning p-2 small text-center mb-3';
-        alertBox.innerHTML = '<strong>الرد الخام من السيرفر:</strong><br><pre style="text-align:left; direction:ltr; max-height:150px; overflow:auto; background:#fff; padding:5px; border-radius:5px;">' + rawText + '</pre>';
-        
-        btn.disabled = false;
-        btn.innerHTML = 'دخول اللوحة';
+        const result = await response.json();
 
+        alertBox.classList.remove('d-none');
+        if (result.success) {
+            alertBox.className = 'alert alert-success p-2 small text-center mb-3';
+            alertBox.innerHTML = result.message;
+            setTimeout(() => {
+                window.location.href = '/admin/dashboard';
+            }, 1000);
+        } else {
+            alertBox.className = 'alert alert-danger p-2 small text-center mb-3';
+            alertBox.innerHTML = result.message;
+            btn.disabled = false;
+            btn.innerHTML = 'دخول اللوحة';
+        }
     } catch (error) {
         alertBox.classList.remove('d-none');
         alertBox.className = 'alert alert-danger p-2 small text-center mb-3';
-        alertBox.innerHTML = 'خطأ في الاتصال أو الجافاسكريبت: ' + error.message;
+        alertBox.innerHTML = 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.';
         btn.disabled = false;
         btn.innerHTML = 'دخول اللوحة';
     }

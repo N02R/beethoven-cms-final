@@ -9,7 +9,7 @@ use Throwable;
 class Router {
     private array $routes = [];
     
-    // قائمة اللغات المدعومة حالياً ومستقبلاً
+    // قائمة اللغات المدعومة
     private array $supportedLangs = ['de', 'en', 'ar'];
 
     public function add(string $method, string $path, array $controllerAction): void {
@@ -23,17 +23,17 @@ class Router {
 
         $segments = explode('/', $uri);
         
-        // 1. تحديد اللغة من الجلسة كخيار افتراضي أولي
+        // 1. تحديد اللغة الافتراضية
         $lang = $_SESSION['site_lang'] ?? 'de';
         
-        // 2. التحقق من وجود لغة في بداية المسار وتحديثها ديناميكياً
+        // 2. معالجة اللغة مركزياً هنا فقط (منع التكرار مع index.php)
         if (!empty($segments[0]) && in_array($segments[0], $this->supportedLangs, true)) {
             $lang = array_shift($segments);
             $_SESSION['site_lang'] = $lang;
-            $uri = implode('/', $segments);
         }
 
-        $uri = trim($uri, '/');
+        // إعادة تجميع الـ URI بعد إزالة بادئة اللغة (إن وجدت)
+        $uri = trim(implode('/', $segments), '/');
 
         // ==========================================
         // 🔍 مطابقة المسارات الثابتة أولاً
@@ -85,7 +85,6 @@ class Router {
                 throw new \Exception("Controller class {$controllerClass} not found");
             }
         } catch (Throwable $e) {
-            // تسجيل الخطأ سرياً في سجلات السيرفر ومنع إظهاره للمستخدم (حماية أمنية)
             error_log("Router Execution Error: " . $e->getMessage());
             $this->sendError(500, "Internal Server Error");
         }
@@ -97,7 +96,6 @@ class Router {
         if (file_exists($errorPage)) {
             require_once $errorPage;
         } else {
-            // رسالة افتراضية آمنة دون كشف مسارات السيرفر
             echo "<h1>{$code} - {$message}</h1>";
         }
         exit;

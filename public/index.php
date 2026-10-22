@@ -6,10 +6,10 @@ ini_set('display_startup_errors', '1');
 
 /**
  * Beethoven CMS - Entry Point (public/index.php)
- * النسخة الإنتاجية الآمنة المتوافقة مع معايير الجودة والأمان الألمانية ومعالجة ملف البيئة .env
+ * النسخة المُهندسة والمُحسنة: كود نظيف، بدون تضخم في الاستيرادات، ومعايير أمان عالية.
  */
 
-// 1. دالة قراءة ملف البيئة .env وتحميله إلى مصفوفة $_ENV بسلامة تامة
+// 1. قراءة ملف البيئة .env وتحميله إلى مصفوفة $_ENV
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -30,7 +30,7 @@ if (file_exists($envFile)) {
     }
 }
 
-// 2. تحديد بيئة العمل بناءً على ما تم قراءته من ملف .env
+// 2. تحديد بيئة العمل
 $appEnv = $_ENV['APP_ENV'] ?? 'local'; 
 
 if ($appEnv === 'production') {
@@ -44,7 +44,7 @@ if ($appEnv === 'production') {
     ini_set('display_startup_errors', '1');
 }
 
-// 3. تطبيق معايير الأمان الصارمة للجلسات وبدء الجلسة مركزياً
+// 3. تطبيق معايير الأمان الصارمة للجلسات
 if (session_status() === PHP_SESSION_NONE) {
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
     
@@ -67,12 +67,12 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 }
 
-// 4. تفعيل رؤوس الأمان الشاملة (Security Headers)
+// 4. تفعيل رؤوس الأمان (تم إزالة unsafe-eval لرفع مستوى الحماية)
 header("X-Frame-Options: SAMEORIGIN");
 header("X-Content-Type-Options: nosniff");
 header("X-XSS-Protection: 1; mode=block");
 header("Referrer-Policy: strict-origin-when-cross-origin");
-header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline' 'unsafe-eval'; img-src 'self' data:;");
+header("Content-Security-Policy: default-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline'; img-src 'self' data:;");
 
 // 5. تسجيل Autoloader الموحد للنظام
 spl_autoload_register(function (string $class) {
@@ -95,99 +95,59 @@ require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;
 
-// استدعاء المتحكمات (Controllers)
-use App\Controllers\HomeController;
-use App\Controllers\ServiceController;
-use App\Controllers\AboutController;
-use App\Controllers\EducationController;
-use App\Controllers\JobController;
-use App\Controllers\GuideController;
-use App\Controllers\ContactController;
-use App\Controllers\Services\ArrivalController;
-use App\Controllers\Services\BachelorPackageController;
-use App\Controllers\Services\CheckController;
-use App\Controllers\Services\CoursesController;
-use App\Controllers\Services\CoverLetterController;
-use App\Controllers\Services\CvController;
-use App\Controllers\Services\EnglishLangController;
-use App\Controllers\Services\FinancialController;
-use App\Controllers\Services\FoundationController;
-use App\Controllers\Services\GeneralVisaController;
-use App\Controllers\Services\GermanLangController;
-use App\Controllers\Services\OffersController;
-use App\Controllers\Services\LivingCostController;
-use App\Controllers\Services\MotivationController;
-use App\Controllers\Services\ServiceCostController;
-use App\Controllers\Services\MedicalPackageController;
-use App\Controllers\Services\MedicalSpecialtiesController;
-use App\Controllers\Services\AusbildungPackageController;
-use App\Controllers\Services\HealthController;
-use App\Controllers\Services\JobAgreementsController;
-use App\Controllers\Guide\GuideBlog1Controller;
-use App\Controllers\Guide\GuideBlog2Controller;
-use App\Controllers\Guide\GuideBlog3Controller;
-use App\Controllers\MediaController;
-use App\Controllers\LegalController;
-use App\Controllers\ConsultationController;
-use App\Controllers\Admin\DashboardController;
-use App\Controllers\Admin\SettingsController;
-use App\Controllers\Admin\UploadController;
-use App\Controllers\Admin\AuthController;
-use App\Controllers\Admin\AnnouncementController;
-
-// 7. إنشاء كائن الراوتر وتسجيل المسارات أولاً
+// 7. إنشاء كائن الراوتر وتسجيل المسارات باستخدام FQCN (بدون الحاجة لعشرات سطور الـ use)
 $router = new Router();
 
-$router->add('GET', '', [HomeController::class, 'index']);                 
-$router->add('GET', 'home', [HomeController::class, 'index']);               
-$router->add('GET', 'about', [AboutController::class, 'index']);             
-$router->add('GET', 'education', [EducationController::class, 'index']);     
-$router->add('GET', 'job', [JobController::class, 'index']);                 
-$router->add('GET', 'guide', [GuideController::class, 'index']);             
-$router->add('GET', 'contact', [ContactController::class, 'index']);         
-$router->add('GET', 'edu-services/arrival', [ArrivalController::class, 'index']); 
-$router->add('GET', 'services/german-language-courses', [ServiceController::class, 'germanCourses']);
-$router->add('GET', 'edu-services/bachelor-package', [BachelorPackageController::class, 'index']);
-$router->add('GET', 'edu-services/check', [CheckController::class, 'index']);
-$router->add('GET', 'edu-services/courses', [CoursesController::class, 'index']);
-$router->add('GET', 'edu-services/coverletter', [CoverLetterController::class, 'index']);
-$router->add('GET', 'edu-services/cv', [CvController::class, 'index']);
-$router->add('GET', 'edu-services/englishlang', [EnglishLangController::class, 'index']);
-$router->add('GET', 'edu-services/financial', [FinancialController::class, 'index']);
-$router->add('GET', 'edu-services/foundation', [FoundationController::class, 'index']);
-$router->add('GET', 'edu-services/general', [GeneralVisaController::class, 'index']);
-$router->add('GET', 'edu-services/germanlang', [GermanLangController::class, 'index']);
-$router->add('GET', 'edu-services/health', [HealthController::class, 'index']);
-$router->add('GET', 'edu-services/living', [LivingCostController::class, 'index']);
-$router->add('GET', 'edu-services/motivitionletter', [MotivationController::class, 'index']);
-$router->add('GET', 'edu-services/pakeges', [OffersController::class, 'index']);
-$router->add('GET', 'edu-services/services-cost', [ServiceCostController::class, 'index']);
-$router->add('GET', 'edu-services/medical-pakeges', [MedicalPackageController::class, 'index']);
-$router->add('GET', 'edu-services/medical-traning', [JobAgreementsController::class, 'index']);
-$router->add('GET', 'edu-services/medical', [MedicalSpecialtiesController::class, 'index']);
-$router->add('GET', 'edu-services/vocational', [AusbildungPackageController::class, 'index']);
+$router->add('GET', '', [\App\Controllers\HomeController::class, 'index']);                 
+$router->add('GET', 'home', [\App\Controllers\HomeController::class, 'index']);               
+$router->add('GET', 'about', [\App\Controllers\AboutController::class, 'index']);             
+$router->add('GET', 'education', [\App\Controllers\EducationController::class, 'index']);     
+$router->add('GET', 'job', [\App\Controllers\JobController::class, 'index']);                 
+$router->add('GET', 'guide', [\App\Controllers\GuideController::class, 'index']);             
+$router->add('GET', 'contact', [\App\Controllers\ContactController::class, 'index']);         
+$router->add('GET', 'edu-services/arrival', [\App\Controllers\Services\ArrivalController::class, 'index']); 
+$router->add('GET', 'services/german-language-courses', [\App\Controllers\ServiceController::class, 'germanCourses']);
+$router->add('GET', 'edu-services/bachelor-package', [\App\Controllers\Services\BachelorPackageController::class, 'index']);
+$router->add('GET', 'edu-services/check', [\App\Controllers\Services\CheckController::class, 'index']);
+$router->add('GET', 'edu-services/courses', [\App\Controllers\Services\CoursesController::class, 'index']);
+$router->add('GET', 'edu-services/coverletter', [\App\Controllers\Services\CoverLetterController::class, 'index']);
+$router->add('GET', 'edu-services/cv', [\App\Controllers\Services\CvController::class, 'index']);
+$router->add('GET', 'edu-services/englishlang', [\App\Controllers\Services\EnglishLangController::class, 'index']);
+$router->add('GET', 'edu-services/financial', [\App\Controllers\Services\FinancialController::class, 'index']);
+$router->add('GET', 'edu-services/foundation', [\App\Controllers\Services\FoundationController::class, 'index']);
+$router->add('GET', 'edu-services/general', [\App\Controllers\Services\GeneralVisaController::class, 'index']);
+$router->add('GET', 'edu-services/germanlang', [\App\Controllers\Services\GermanLangController::class, 'index']);
+$router->add('GET', 'edu-services/health', [\App\Controllers\Services\HealthController::class, 'index']);
+$router->add('GET', 'edu-services/living', [\App\Controllers\Services\LivingCostController::class, 'index']);
+$router->add('GET', 'edu-services/motivitionletter', [\App\Controllers\Services\MotivationController::class, 'index']);
+$router->add('GET', 'edu-services/pakeges', [\App\Controllers\Services\OffersController::class, 'index']);
+$router->add('GET', 'edu-services/services-cost', [\App\Controllers\Services\ServiceCostController::class, 'index']);
+$router->add('GET', 'edu-services/medical-pakeges', [\App\Controllers\Services\MedicalPackageController::class, 'index']);
+$router->add('GET', 'edu-services/medical-traning', [\App\Controllers\Services\JobAgreementsController::class, 'index']);
+$router->add('GET', 'edu-services/medical', [\App\Controllers\Services\MedicalSpecialtiesController::class, 'index']);
+$router->add('GET', 'edu-services/vocational', [\App\Controllers\Services\AusbildungPackageController::class, 'index']);
 
-$router->add('POST', 'send-consult', [ConsultationController::class, 'store']);
+$router->add('POST', 'send-consult', [\App\Controllers\ConsultationController::class, 'store']);
 
-$router->add('GET', 'guide/guide-blog1', [GuideBlog1Controller::class, 'index']);
-$router->add('GET', 'guide/guide-blog2', [GuideBlog2Controller::class, 'index']);
-$router->add('GET', 'guide/guide-blog3', [GuideBlog3Controller::class, 'index']);
+$router->add('GET', 'guide/guide-blog1', [\App\Controllers\Guide\GuideBlog1Controller::class, 'index']);
+$router->add('GET', 'guide/guide-blog2', [\App\Controllers\Guide\GuideBlog2Controller::class, 'index']);
+$router->add('GET', 'guide/guide-blog3', [\App\Controllers\Guide\GuideBlog3Controller::class, 'index']);
 
-$router->add('GET', 'impressum', [LegalController::class, 'impressum']);
-$router->add('GET', 'datenschutz', [LegalController::class, 'datenschutz']);
-$router->add('GET', 'switch-lang', [HomeController::class, 'switchLang']);
-$router->add('GET', 'media/view', [MediaController::class, 'serve']);
+$router->add('GET', 'impressum', [\App\Controllers\LegalController::class, 'impressum']);
+$router->add('GET', 'datenschutz', [\App\Controllers\LegalController::class, 'datenschutz']);
+$router->add('GET', 'switch-lang', [\App\Controllers\HomeController::class, 'switchLang']);
+$router->add('GET', 'media/view', [\App\Controllers\MediaController::class, 'serve']);
 
 // مسارات الإدارة
-$router->add('GET', 'admin/login', [AuthController::class, 'login']);
-$router->add('POST', 'admin/login/process', [AuthController::class, 'authenticate']);
-$router->add('GET', 'admin/dashboard', [DashboardController::class, 'index']);
-$router->add('POST', 'admin/upload', [UploadController::class, 'upload']);
-$router->add('GET', 'admin/logout', [DashboardController::class, 'logout']);
-$router->add('GET', 'admin/verify-2fa', [AuthController::class, 'show2fa']);
-$router->add('POST', 'admin/verify-2fa', [AuthController::class, 'verify2fa']);
-$router->add('POST', 'admin/announcement/save', [AnnouncementController::class, 'save']);
-$router->add('POST', 'admin/settings/save', [SettingsController::class, 'save']);
+$router->add('GET', 'admin/login', [\App\Controllers\Admin\AuthController::class, 'login']);
+$router->add('POST', 'admin/login/process', [\App\Controllers\Admin\AuthController::class, 'authenticate']);
+$router->add('GET', 'admin/dashboard', [\App\Controllers\Admin\DashboardController::class, 'index']);
+$router->add('POST', 'admin/upload', [\App\Controllers\Admin\UploadController::class, 'upload']);
+$router->add('GET', 'admin/logout', [\App\Controllers\Admin\DashboardController::class, 'logout']);
+$router->add('GET', 'admin/verify-2fa', [\App\Controllers\Admin\AuthController::class, 'show2fa']);
+$router->add('POST', 'admin/verify-2fa', [\App\Controllers\Admin\AuthController::class, 'verify2fa']);
+$router->add('POST', 'admin/announcement/save', [\App\Controllers\Admin\AnnouncementController::class, 'save']);
+$router->add('POST', 'admin/settings/save', [\App\Controllers\Admin\SettingsController::class, 'save']);
 
 // 8. معالجة الـ URI واللغات وتوجيه الطلب النهائي بأمان
 try {
@@ -219,7 +179,7 @@ try {
 
     $method = $_SERVER['REQUEST_METHOD'];
     
-    // التشغيل الآمن والنهائي للراوتر بعد اكتمال جميع المسارات
+    // التشغيل الآمن والنهائي للراوتر
     $router->dispatch($uri, $method);
 
 } catch (\Throwable $e) {

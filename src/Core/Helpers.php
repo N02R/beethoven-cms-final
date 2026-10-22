@@ -3,16 +3,32 @@ declare(strict_types=1);
 
 use App\Config\Database;
 
+if (!function_exists('get_current_lang')) {
+    /**
+     * جلب اللغة الحالية للنظام مباشرة من الجلسة (الاعتماد على المعالجة المركزية للراوتر)
+     */
+    function get_current_lang(): string {
+        return $_SESSION['site_lang'] ?? 'de';
+    }
+}
+
 if (!function_exists('get_setting')) {
     /**
-     * جلب قيمة إعداد معين مع دعم تلقائي للغات (de, en, ar) والـ JSON متعدد اللغات
+     * جلب قيمة إعداد معين مع دعم التخزين المؤقت (Request-Level Caching) لمنع تكرار استعلامات قاعدة البيانات
      */
     function get_setting(string $key, mixed $default = ''): mixed {
+        static $settingsCache = [];
+        $currentLang = get_current_lang();
+        $cacheKey = $key . '_' . $currentLang;
+
+        if (array_key_exists($cacheKey, $settingsCache)) {
+            return $settingsCache[$cacheKey];
+        }
+
         try {
             $db = Database::getConnection();
-            $currentLang = get_current_lang(); // جلب اللغة الحالية (de, en, ar)
             
-            // 1. محاولة البحث عن المفتاح مضافاً إليه اللغة (مثلاً: site_title_ar)
+            // 1. محاولة البحث عن المفتاح مضافاً إليه اللغة
             $langKey = $key . '_' . $currentLang;
             $stmt = $db->prepare("SELECT setting_value FROM global_settings WHERE setting_key = ? LIMIT 1");
             $stmt->execute([$langKey]);
@@ -20,51 +36,42 @@ if (!function_exists('get_setting')) {
 
             $value = null;
 
-            // 2. إذا وجدنا قيمة خاصة باللغة، نرجعها
             if ($result && isset($result['setting_value']) && $result['setting_value'] !== '') {
                 $value = $result['setting_value'];
             } else {
-                // 3. إن لم يوجد، نحاول جلب المفتاح الأساسي الافتراضي
+                // 2. جلب المفتاح الأساسي الافتراضي
                 $stmt->execute([$key]);
                 $result = $stmt->fetch();
                 
                 if ($result && isset($result['setting_value'])) {
                     $value = $result['setting_value'];
                 } else {
-                    return $default;
+                    return $settingsCache[$cacheKey] = $default;
                 }
             }
             
-            // محاولة فك الـ JSON
+            // فك الـ JSON إن وجد
             $decoded = json_decode($value, true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                // إذا كان الـ JSON يحتوي على مفاتيح للغات (ar, en, de)، نقوم باختيار اللغة الحالية تلقائياً
                 if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
-                    // إرجاع بيانات اللغة الحالية، وإذا لم تكن موجودة نرجع العربية كاحتياطي، وإذا لم تتوفر نرجع الـ decoded كاملاً
-                    return $decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded);
+                    return $settingsCache[$cacheKey] = ($decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded));
                 }
-                
-                return $decoded;
+                return $settingsCache[$cacheKey] = $decoded;
             }
             
-            return $value;
+            return $settingsCache[$cacheKey] = $value;
 
         } catch (\Throwable $e) {
-            // تسجيل الخطأ سرياً في سجلات السيرفر وعدم إيقاف النظام بشكل مفاجئ
             error_log("Get Setting Error: " . $e->getMessage());
         }
         
-        return $default;
+        return $settingsCache[$cacheKey] = $default;
     }
 }
 
 if (!function_exists('get_image_url')) {
     /**
-     * تحويل أي مسار صورة مخزن في قاعدة البيانات إلى رابط يعمل بشكل صحيح من مجلد uploads أو المجلدات الثابتة.
-     *
-     * @param string|null $path المسار المخزن في قاعدة البيانات
-     * @param string $default الصورة الافتراضية في حال عدم وجود الصورة
-     * @return string
+     * تحويل مسار الصورة مع تطبيق التخزين المؤقت (Static Caching) لمنع تكرار فحص القرص الصلب (Disk I/O)
      */
     function get_image_url(?string $path, string $default = '/assets/img/placeholder.png'): string
     {
@@ -72,44 +79,24 @@ if (!function_exists('get_image_url')) {
             return $default;
         }
 
-        // 1. استخراج اسم الملف فقط لو كان المسار يحتوي على مجلدات فرعية
-        $filename = basename($path);
+        static $imageCache = [];
+        if (isset($imageCache[$path])) {
+            return $imageCache[$path];
+        }
 
-        // 2. المسار الفيزيائي الصحيح للملف على السيرفر (داخل public/assets/uploads)
+        $filename = basename($path);
         $uploadFilePath = __DIR__ . '/../../public/assets/uploads/' . $filename;
 
-        // 3. التحقق من وجود الملف داخل مجلد assets/uploads
         if (file_exists($uploadFilePath)) {
-            return '/assets/uploads/' . $filename;
+            return $imageCache[$path] = '/assets/uploads/' . $filename;
         }
 
-        // 4. إذا كان المسار القديم يشير إلى assets/img وموجود فعلياً على السيرفر
         $staticFilePath = __DIR__ . '/../../public/' . ltrim($path, '/');
         if (file_exists($staticFilePath)) {
-            return '/' . ltrim($path, '/');
+            return $imageCache[$path] = '/' . ltrim($path, '/');
         }
 
-        // 5. في حال عدم العثور على الملف نهائياً، إرجاع الصورة الافتراضية
-        return $default;
-    }
-}
-
-if (!function_exists('get_current_lang')) {
-    /**
-     * جلب اللغة الحالية للنظام بناءً على الرابط أو الجلسة
-     */
-    function get_current_lang(): string {
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
-        $segments = explode('/', trim(parse_url($uri, PHP_URL_PATH) ?? '', '/'));
-        
-        // التحقق إذا كان الجزء الأول من الرابط يمثل لغة معتمدة
-        foreach ($segments as $segment) {
-            if (in_array($segment, ['ar', 'en', 'de'], true)) {
-                return $segment;
-            }
-        }
-        
-        return $_SESSION['site_lang'] ?? 'de';
+        return $imageCache[$path] = $default;
     }
 }
 
@@ -121,7 +108,6 @@ if (!function_exists('__')) {
         static $langData = [];
         $currentLang = get_current_lang();
 
-        // تحميل ملف اللغة مرة واحدة فقط لكل طلب (Performance Optimization)
         if (!isset($langData[$currentLang])) {
             $langFile = __DIR__ . '/../Lang/' . $currentLang . '.php';
             if (file_exists($langFile)) {
@@ -131,7 +117,6 @@ if (!function_exists('__')) {
             }
         }
 
-        // إرجاع الترجمة إن وجدت، أو النص الافتراضي أو المفتاح نفسه
         return $langData[$currentLang][$key] ?? ($default !== '' ? $default : $key);
     }
 }

@@ -10,6 +10,12 @@ use RuntimeException;
 class Database {
     private static ?PDO $instance = null;
 
+    /**
+     * منع إنشاء كنسخة جديدة (Singleton Pattern)
+     */
+    private function __construct() {}
+    private function __clone() {}
+
     public static function getConnection(): PDO {
         if (self::$instance === null) {
             // جلب البيانات حصرياً من متغيرات البيئة دون أي قيم افتراضية محلية
@@ -34,10 +40,9 @@ class Database {
             try {
                 self::$instance = new PDO($dsn, $user, $pass, $options);
             } catch (PDOException $e) {
-                // تسجيل الخطأ سرياً وعدم إظهار تفاصيل الاتصال للمستخدم
+                // تسجيل الخطأ سرياً في السيرفر ورمي استثناء ليتم التعامل معه مركزياً
                 error_log("Database Connection Error: " . $e->getMessage());
-                http_response_code(500);
-                exit("A system error occurred. Please try again later.");
+                throw new RuntimeException("A database connection error occurred.");
             }
         }
 

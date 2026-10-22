@@ -1256,24 +1256,30 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const container = document.getElementById('menuRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.menu-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>'.toUpperCase();
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        const currentLangUpper = currentLang.toUpperCase();
         const alignClass = '<?php echo htmlspecialchars($modal_align ?? "text-start", ENT_QUOTES, "UTF-8"); ?>';
+        
+        const langTitleLabel = "<?php echo $lang['title'] ?? 'عنوان الرابط'; ?>";
+        const langUrlLabel   = "<?php echo $lang['url'] ?? 'الرابط (URL)'; ?>";
+        const langDeleteText = "<?php echo $lang['delete'] ?? 'حذف'; ?>";
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 menu-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${alignClass}">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط (${currentLang})</label>
+                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel} (${currentLangUpper})</label>
                     <input type="text" class="form-control menu-title" name="menu[${count}][title]" placeholder="العنوان">
                 </div>
                 <div class="col-md-5 ${alignClass}">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                    <label class="small fw-bold mb-1 text-secondary">${langUrlLabel}</label>
                     <input type="text" class="form-control menu-url" name="menu[${count}][url]" placeholder="url">
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <input type="hidden" class="menu-order" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;

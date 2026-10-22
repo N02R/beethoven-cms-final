@@ -8,25 +8,24 @@ use PDO;
 
 class AuthController {
 
+    private function ensureSession(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
     /**
      * عرض صفحة تسجيل الدخول
      */
     public function login(): void {
-        if (!defined('ALLOWED_ACCESS')) {
-            define('ALLOWED_ACCESS', true);
-        }
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->ensureSession();
 
         // إذا كان المشرف مسجلاً دخوله مسبقاً، يتم توجيهه للوحة التحكم مباشرة
-        if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin')) {
+        if (!empty($_SESSION['is_logged_in']) && in_array($_SESSION['role'] ?? '', ['admin', 'super_admin'], true)) {
             header("Location: /admin/dashboard");
             exit;
         }
 
-        // استلام رسالة الخطأ من الجلسة (إن وجدت) ثم حذفها
         $error_msg = $_SESSION['login_error'] ?? '';
         unset($_SESSION['login_error']);
 
@@ -42,20 +41,12 @@ class AuthController {
             $_SESSION['captcha_result'] = $_SESSION['captcha_num1'] + $_SESSION['captcha_num2'];
         }
 
-        $data = [
-            'error_msg'    => $error_msg,
-            'csrf_token'   => $_SESSION['login_csrf'],
-            'captcha_num1' => $_SESSION['captcha_num1'],
-            'captcha_num2' => $_SESSION['captcha_num2'],
-        ];
-
-        // استدعاء ملف الـ View الخاص بتسجيل الدخول
-        $root_path = realpath(__DIR__ . '/../../../');
-        $view_file = $root_path . '/src/Views/admin/login.php';
-
-        if (file_exists($view_file)) {
-            require_once $view_file;
+        // تحميل ملف الـ View عبر دالة مساعدة أو مسار نظيف
+        $viewFile = __DIR__ . '/../../Views/admin/login.php';
+        if (file_exists($viewFile)) {
+            require_once $viewFile;
         } else {
+            http_response_code(404);
             echo "Login View file not found.";
         }
     }
@@ -64,13 +55,7 @@ class AuthController {
      * معالجة نموذج تسجيل الدخول (Form Submission)
      */
     public function authenticate(): void {
-        if (!defined('ALLOWED_ACCESS')) {
-            define('ALLOWED_ACCESS', true);
-        }
-
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->ensureSession();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: /admin/login");
@@ -96,31 +81,27 @@ class AuthController {
             exit;
         }
 
-        // 3. تنقية واستلام بيانات المدخلات (الاعتماد على البريد الإلكتروني email)
+        // 3. تنقية المدخلات
         $email = trim($_POST['email'] ?? ''); 
         $password = trim($_POST['password'] ?? '');
 
-        if (empty($email) || empty($password)) {
-            $_SESSION['login_error'] = 'يرجى تعبئة كافة الحقول المطلوبة';
+        if (empty($email) || empty($password) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['login_error'] = 'يرجى إدخال بريد إلكتروني وكلمة مرور صحيحة';
             header("Location: /admin/login");
             exit;
         }
 
-        // 4. التحقق عبر كلاس قاعدة البيانات وتطابق الأعمدة الفعلية (email و password)
-        $admin_logged_in = false;
-        $admin_data = [];
+        // 4. التحقق عبر قاعدة البيانات
+        $adminData = null;
 
         try {
             $pdo = Database::getConnection();
-            
-            // مطابقة الأعمدة الحقيقية في جدول admins لديك (email, password, name, role)
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email LIMIT 1");
+            $stmt = $pdo->prepare("SELECT id, name, email, password, role FROM admins WHERE email = :email LIMIT 1");
             $stmt->execute(['email' => $email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($admin && password_verify($password, $admin['password'])) {
-                $admin_logged_in = true;
-                $admin_data = [
+                $adminData = [
                     'role' => $admin['role'] ?? 'admin',
                     'name' => $admin['name'] ?? 'المشرف',
                     'id'   => $admin['id']
@@ -128,14 +109,17 @@ class AuthController {
             }
         } catch (\Throwable $e) {
             error_log("Auth Error: " . $e->getMessage());
+            $_SESSION['login_error'] = 'حدث خطأ في النظام، يجى المحاولة لاحقاً';
+            header("Location: /admin/login");
+            exit;
         }
 
-        // 5. حفظ الجلسة والتوجيه للوحة التحكم عند نجاح المصادقة
-        if ($admin_logged_in) {
+        // 5. حفظ الجلسة والتوجيه عند النجاح
+        if ($adminData !== null) {
             $_SESSION['is_logged_in'] = true;
-            $_SESSION['role']         = $admin_data['role'];
-            $_SESSION['admin_name']   = $admin_data['name'];
-            $_SESSION['admin_id']     = $admin_data['id'];
+            $_SESSION['role']         = $adminData['role'];
+            $_SESSION['admin_name']   = $adminData['name'];
+            $_SESSION['admin_id']     = $adminData['id'];
 
             // تجديد معرف الجلسة لمنع هجمات تثبيت الجلسة
             session_regenerate_id(true);
@@ -156,9 +140,7 @@ class AuthController {
      * تسجيل الخروج
      */
     public function logout(): void {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->ensureSession();
 
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {

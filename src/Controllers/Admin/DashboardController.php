@@ -8,43 +8,28 @@ use App\Config\Database;
 use PDO;
 
 class DashboardController {
-    
-    public function index(): void {
-        // 1. السماح بالوصول وتفعيل الحماية المركزية
-        if (!defined('ALLOWED_ACCESS')) {
-            define('ALLOWED_ACCESS', true);
-        }
 
-        // 2. بدء الجلسة والتحقق من الصلاحيات
+    private function ensureSessionAndAuth(): void {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        $is_admin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'super_admin');
+        $isAdmin = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true && 
+                   isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'super_admin'], true);
 
-        if (!$is_admin) {
+        if (!$isAdmin) {
             header("Location: /admin/login?error=" . urlencode('يرجى تسجيل الدخول للوصول إلى لوحة التحكم.'));
             exit();
         }
+    }
+    
+    public function index(): void {
+        $this->ensureSessionAndAuth();
 
-        // ==========================================
-        // 🌟 التحديث الأساسي: جلب لغة الجلسة وتحميل ملف الترجمة للمودلات
-        // ==========================================
-        $current_lang = $_SESSION['site_lang'] ?? 'de';
-        $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
-        if (!file_exists($lang_file)) {
-            $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
-        }
-        $lang = file_exists($lang_file) ? require $lang_file : [];
-        if (!is_array($lang)) {
-            $lang = [];
-        }
-        // ==========================================
+        // 1. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel
+        $configData = DashboardModel::getDashboardData();
 
-        // 3. جلب الإحصائيات وطلبات الاستشارة عبر الـ DashboardModel الأصلي
-        $config_data = DashboardModel::getDashboardData();
-
-        // 4. جلب كافة إعدادات ومحتويات الموقع من قاعدة البيانات (لتغذية الـ Modals والتعديل المباشر)
+        // 2. جلب كافة إعدادات ومحتويات الموقع من قاعدة البيانات
         $rawSettings = [];
         try {
             $pdo = Database::getConnection();
@@ -54,41 +39,37 @@ class DashboardController {
             error_log("Failed to fetch site settings in DashboardController: " . $e->getMessage());
         }
 
-        // تجهيز متغيرات اللوحة الإحصائية
-        $consult_emails = $config_data['consult_emails'] ?? [];
-        $consult_count  = $config_data['consult_count'] ?? count($consult_emails);
-        $menu_links     = json_decode($rawSettings['menu_links'] ?? '[]', true);
-        $menu_count     = count($menu_links) > 0 ? count($menu_links) : 6;
-        $current_logo   = $rawSettings['site_logo'] ?? $config_data['current_logo'] ?? 'assets/img/logo.png';
-        $ad_status      = $rawSettings['ad_status'] ?? $config_data['ad_status'] ?? 'Draft';
-        $ad_type        = $rawSettings['ad_type'] ?? $config_data['ad_type'] ?? 'text';
+        // 3. تجهيز متغيرات اللوحة الإحصائية
+        $consultEmails = $configData['consult_emails'] ?? [];
+        $consultCount  = $configData['consult_count'] ?? count($consultEmails);
+        $menuLinks     = json_decode($rawSettings['menu_links'] ?? '[]', true);
+        $menuCount     = count($menuLinks) > 0 ? count($menuLinks) : 6;
+        $currentLogo   = $rawSettings['site_logo'] ?? $configData['current_logo'] ?? 'assets/img/logo.png';
+        $adStatus      = $rawSettings['ad_status'] ?? $configData['ad_status'] ?? 'Draft';
+        $adType        = $rawSettings['ad_type'] ?? $configData['ad_type'] ?? 'text';
 
-        $role_badge_text = (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') ? 'مشرف عام (Super Admin)' : 'مسؤول النظام (Admin)';
+        $roleBadgeText = (($_SESSION['role'] ?? '') === 'super_admin') ? 'مشرف عام (Super Admin)' : 'مسؤول النظام (Admin)';
 
-        // 5. مصفوفة البيانات الشاملة ($data) التي تغذي لوحة التحكم والـ Modals
+        // 4. مصفوفة البيانات الشاملة ($data) التي تغذي لوحة التحكم والـ Modals
         $data = [
-            // إحصائيات اللوحة وجداول الطلبات
-            'current_logo'           => $current_logo,
-            'ad_status'              => $ad_status,
-            'ad_type'                => $ad_type,
-            'menu_count'             => $menu_count,
-            'consult_emails'         => $consult_emails,
-            'consult_count'          => $consult_count,
-            'role_badge_text'        => $role_badge_text,
+            'current_logo'           => $currentLogo,
+            'ad_status'              => $adStatus,
+            'ad_type'                => $adType,
+            'menu_count'             => $menuCount,
+            'consult_emails'         => $consultEmails,
+            'consult_count'          => $consultCount,
+            'role_badge_text'        => $roleBadgeText,
 
-            // الإعدادات العامة الأساسية
             'site_title'             => $rawSettings['site_title'] ?? 'Beethoven CMS',
             'site_email'             => $rawSettings['site_email'] ?? '',
-            'site_logo'              => $current_logo,
+            'site_logo'              => $currentLogo,
             'site_logo_path'         => $rawSettings['site_logo_path'] ?? '',
 
-            // الروابط والقوائم والأقسام مفكوكة بصيغة JSON للـ Modals
             'social_links'           => json_decode($rawSettings['social_links'] ?? '[]', true),
-            'menu_links'             => $menu_links,
+            'menu_links'             => $menuLinks,
             'languages'              => json_decode($rawSettings['languages'] ?? '[]', true),
             'announcement'           => json_decode($rawSettings['announcement'] ?? '{}', true),
 
-            // الفوتر، الهيرو، والخدمات
             'consult_title'          => $rawSettings['consult_title'] ?? '',
             'consult_desc'           => $rawSettings['consult_desc'] ?? '',
             'footer_desc'            => $rawSettings['footer_desc'] ?? '',
@@ -97,22 +78,20 @@ class DashboardController {
             'services_section_desc'  => $rawSettings['services_section_desc'] ?? '',
             'services'               => json_decode($rawSettings['services'] ?? '[]', true),
 
-            // فريق العمل والأقسام الأخرى
             'team_title'             => $rawSettings['team_title'] ?? 'فريق العمل',
             'team_desc'              => $rawSettings['team_desc'] ?? '',
             'team_members'           => json_decode($rawSettings['team_items'] ?? '[]', true),
 
-            // مرجع خام إن دعت الحاجة
             'raw_settings'           => $rawSettings
         ];
 
-        // 6. استدعاء ملف الـ View الخاص باللوحة الاحترافية
-        $root_path = realpath(__DIR__ . '/../../../');
-        $view_file = $root_path . '/src/Views/admin/dashboard.php';
+        // 5. استدعاء ملف الـ View الخاص باللوحة الاحترافية
+        $viewFile = __DIR__ . '/../../Views/admin/dashboard.php';
         
-        if (file_exists($view_file)) {
-            require_once $view_file;
+        if (file_exists($viewFile)) {
+            require_once $viewFile;
         } else {
+            http_response_code(404);
             echo "Dashboard View file not found.";
         }
     }

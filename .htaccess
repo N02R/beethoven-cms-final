@@ -4,13 +4,20 @@
     # منع تصفح المجلدات تماماً لأسباب أمنية
     Options -Indexes
 
-    # حماية ملف البيئة .env من أي محاولة قراءة أو وصول عبر الويب
+    # حماية ملف البيئة .env (متوافق مع أباتشي 2.2 و 2.4 الحديث)
     <Files .env>
-        Order allow,deny
-        Deny from all
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
     </Files>
 
-    # توجيه جميع الطلبات التي لا توجه إلى مجلد public مباشرة إلى نقطة البداية index.php
+    # استثناء مجلد public والملفات أو المجلدات الحقيقية الموجودة فعلياً على السيرفر من إعادة التوجيه
     RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>

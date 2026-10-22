@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
+use App\Config\Database;
 use App\Core\Security;
 use App\Services\ImageUploader;
 use App\Services\Settings\AboutSettingsService;
@@ -40,16 +41,15 @@ class SettingsController
         }
 
         try {
-            $pdo = \App\Config\Database::getConnection();
-        } catch (\Exception $e) {
+            $pdo = Database::getConnection();
+        } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database connection failed.']);
             exit;
         }
 
-        $root_path = realpath(__DIR__ . '/../../../');
-        $uploadDir = $root_path . '/public/assets/uploads/';
-        
+        $rootPath = realpath(__DIR__ . '/../../../');
+        $uploadDir = $rootPath . '/public/assets/uploads/';
         $imageUploader = new ImageUploader($uploadDir);
 
         try {
@@ -61,78 +61,38 @@ class SettingsController
             $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
             $currentSettings = $currentSettingsStmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 
-            // 1. فحص هيدر الموقع
-            $headerService = new HeaderSettingsService($root_path, $imageUploader);
-            if ($headerService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات الهيدر وتحديث الصور بنجاح.']);
-                exit;
+            // 1. خريطة الخدمات (Service Registry) لتنظيم وتفويض المهام بمرونة ونظافة
+            $services = [
+                new HeaderSettingsService($rootPath, $imageUploader),
+                new PageContentSettingsService($rootPath, $imageUploader),
+                new AboutSettingsService($rootPath, $imageUploader),
+                new EduSettingsService($rootPath, $imageUploader),
+                new JobSettingsService($rootPath, $imageUploader),
+                new ContactSettingsService($rootPath, $imageUploader),
+                new GuideBlog1SettingsService($rootPath, $imageUploader),
+                new HomeSettingsService($rootPath, $imageUploader),
+            ];
+
+            $handled = false;
+            foreach ($services as $service) {
+                if ($service->handleAction($action, $pdo, $currentSettings)) {
+                    $handled = true;
+                    break;
+                }
             }
 
-            // 2. فحص الصفحات الفردية
-            $pageService = new PageContentSettingsService($root_path, $imageUploader);
-            if ($pageService->handleAction($action, $pdo, $currentSettings)) {
+            if ($handled) {
                 $pdo->commit();
                 echo json_encode(['success' => true, 'message' => 'تم حفظ التغييرات وتحديث الصور بنجاح.']);
                 exit;
             }
 
-            // 3. فحص قسم من نحن (About & Team)
-            $aboutService = new AboutSettingsService($root_path, $imageUploader);
-            if ($aboutService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات قسم من نحن وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 4. فحص أقسام التعليم العالي (Edu)
-            $eduService = new EduSettingsService($root_path, $imageUploader);
-            if ($eduService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات أقسام التعليم العالي وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 5. فحص أقسام فرص العمل والتوظيف (Job)
-            $jobService = new JobSettingsService($root_path, $imageUploader);
-            if ($jobService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات أقسام فرص العمل وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 6. فحص أقسام تواصل معنا (Contact)
-            $contactService = new ContactSettingsService($root_path, $imageUploader);
-            if ($contactService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات تواصل معنا وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 7. فحص أقسام مقال الدليل الأول (GuideBlog1)
-            $guideBlog1Service = new GuideBlog1SettingsService($root_path, $imageUploader);
-            if ($guideBlog1Service->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات مقال الدليل وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 8. فحص أقسام الصفحة الرئيسية (Home: Hero, Services, FAQ, Reviews, Choose, Guide)
-            $homeService = new HomeSettingsService($root_path, $imageUploader);
-            if ($homeService->handleAction($action, $pdo, $currentSettings)) {
-                $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ إعدادات الصفحة الرئيسية وتحديث الصور بنجاح.']);
-                exit;
-            }
-
-            // 9. تحديث اللغات العامة
+            // 2. معالجة الإجراءات الخاصة المتبقية مباشرة داخل المتحكم
             if ($action === 'update_languages') {
                 $langData = $_POST['lang'] ?? [];
                 $jsonVal = json_encode(array_values($langData), JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'languages', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 10. تحديث الإعلان (Announcement) مع دعم اللغات المتعددة
             elseif ($action === 'update_announcement') {
                 $targetLang = $_POST['announcement_lang'] ?? 'ar';
 
@@ -152,7 +112,7 @@ class SettingsController
                 
                 if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
                     if (!empty($announcements[$targetLang]['image_path'])) {
-                        $this->deleteOldImageFile($root_path, $announcements[$targetLang]['image_path']);
+                        $this->deleteOldImageFile($rootPath, $announcements[$targetLang]['image_path']);
                     }
 
                     $filename = $imageUploader->processAndUploadFile($_FILES['ad_image']['tmp_name']);
@@ -175,12 +135,9 @@ class SettingsController
                 ];
 
                 $announcements[$targetLang] = $adData;
-
                 $jsonVal = json_encode($announcements, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             }
-
-            // 11. تحديث الفوتر العام وروابط العمود الثالث
             elseif ($action === 'update_footer') {
                 $consultTitle = $_POST['consult_title'] ?? '';
                 $consultDesc  = $_POST['consult_desc'] ?? '';
@@ -199,7 +156,7 @@ class SettingsController
                     $fileToCheck = $_FILES['col3_img_' . $index] ?? ($_FILES['col3'][$index]['img'] ?? null);
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($item['old_img'])) {
-                            $this->deleteOldImageFile($root_path, $item['old_img']);
+                            $this->deleteOldImageFile($rootPath, $item['old_img']);
                         }
                         $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
@@ -212,7 +169,6 @@ class SettingsController
                 $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
             }
             else {
-                // منع النجاح الوهمي في حال لم يتطابق أي إجراء
                 $pdo->rollBack();
                 http_response_code(400);
                 echo json_encode([
@@ -231,7 +187,7 @@ class SettingsController
             exit;
 
         } catch (Exception $e) {
-            if (isset($pdo) && $pdo->inTransaction()) {
+            if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
             error_log("Settings Save Error: " . $e->getMessage());

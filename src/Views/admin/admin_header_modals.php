@@ -228,7 +228,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-image text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo $lang['manage_site_logo'] ?? 'تغيير شعار الموقع'; ?>
+                    <?php echo $lang['manage_site_logo'] ?? 'تغيير شعار الموقع'; ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -236,18 +236,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="logoEditForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
+                    <!-- تمرير اللغة الحالية تلقائياً دون الحاجة لقائمة اختيار -->
+                    <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-3 text-start">
-                        <label class="form-label fw-bold small text-secondary">
-                            <?php echo $lang['logo_language'] ?? 'لغة الشعار (اللغة المستهدفة)'; ?>
-                        </label>
-                        <select class="form-select" name="logo_lang">
-                            <option value="ar" <?php echo ($current_lang === 'ar') ? 'selected' : ''; ?>>العربية (Arabic)</option>
-                            <option value="en" <?php echo ($current_lang === 'en') ? 'selected' : ''; ?>>الإنجليزية (English)</option>
-                            <option value="de" <?php echo ($current_lang === 'de') ? 'selected' : ''; ?>>الألمانية (German)</option>
-                        </select>
-                    </div>
-
                     <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($site_logo_path ?? '') : ($site_logo_path ?? ''), $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Site Logo" style="max-height: 90px; object-fit: contain;">

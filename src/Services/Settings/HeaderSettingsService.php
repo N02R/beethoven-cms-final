@@ -23,7 +23,8 @@ class HeaderSettingsService
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        // استخدام جدول global_settings الحقيقي في قاعدة البيانات
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // 1. تحديث الشعار مع دعم اللغات المتعددة (ar, en, de) بصيغة JSON
         if ($action === 'update_logo') {

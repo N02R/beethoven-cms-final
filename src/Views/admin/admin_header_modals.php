@@ -478,7 +478,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div id="langRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        $languagesData = is_array($data['languages'] ?? null) ? $data['languages'] : [];
+                        // جلب اللغات بطريقة موحدة وآمنة تضمن قراءتها من قاعدة البيانات مباشرة لو لم تكن متوفرة في $data
+                        $languagesRawData = $data['languages'] ?? (function_exists('get_setting') ? get_setting('languages', []) : []);
+                        if (is_string($languagesRawData)) {
+                            $languagesRawData = json_decode($languagesRawData, true);
+                        }
+                        $languagesData = is_array($languagesRawData) ? $languagesRawData : [];
+
                         if (!empty($languagesData)): 
                             foreach ($languagesData as $index => $langItem): 
                                 $code_val   = $langItem['code'] ?? '';

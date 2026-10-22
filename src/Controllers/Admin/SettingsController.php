@@ -56,9 +56,12 @@ class SettingsController
             $action = $_POST['action'] ?? '';
 
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+            
+            // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+            $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-            $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+            // تم تصحيح اسم الجدول هنا أيضا لجلب الإعدادات من global_settings
+            $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings");
             $currentSettings = $currentSettingsStmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 
             // 1. خريطة الخدمات (Service Registry) لتنظيم وتفويض المهام بمرونة ونظافة

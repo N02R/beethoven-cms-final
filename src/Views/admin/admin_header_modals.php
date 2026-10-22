@@ -172,20 +172,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <form id="socialLinksForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_social">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
-                    <!-- تمرير كود اللغة الحالية ديناميكياً للسيرفر -->
-                    <input type="hidden" name="social_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        // جلب البيانات مع دعم التخزين المتعدد اللغات أو الـ Fallback
+                        // جلب القائمة العامة والمباشرة من قاعدة البيانات
                         $rawSocial = $currentSettings['social_links'] ?? ($data['social_links'] ?? '');
-                        $decodedSocial = is_string($rawSocial) ? json_decode($rawSocial, true) : (is_array($rawSocial) ? $rawSocial : []);
-                        
-                        $socialLinksData = [];
-                        if (is_array($decodedSocial)) {
-                            // إذا كانت البيانات مخزنة لكل لغة على حدة
-                            $socialLinksData = $decodedSocial[$current_lang] ?? ($decodedSocial['ar'] ?? (isset($decodedSocial[0]) ? $decodedSocial : []));
-                        }
+                        $socialLinksData = is_string($rawSocial) ? json_decode($rawSocial, true) : (is_array($rawSocial) ? $rawSocial : []);
                         if (!is_array($socialLinksData)) $socialLinksData = [];
 
                         foreach ($socialLinksData as $index => $link): 
@@ -1226,7 +1218,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const container = document.getElementById('socialRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.social-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
         const langPlatformName = "<?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?>";
         const langPlatformUrl  = "<?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?>";
@@ -1242,17 +1233,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <label class="small fw-bold mb-1 text-secondary">${langPlatformName}</label>
-                    <input type="text" class="form-control social-name" name="social[${currentLang}][items][${count}][name]" placeholder="${langNamePlace}">
+                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${langNamePlace}">
                 </div>
                 <div class="col-md-8">
                     <label class="small fw-bold mb-1 text-secondary">${langPlatformUrl}</label>
-                    <input type="url" class="form-control social-url" name="social[${currentLang}][items][${count}][url]" placeholder="${langUrlPlace}">
+                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${langUrlPlace}">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">${langIconImage}</label>
                     <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
                 </div>
-                <input type="hidden" class="social-old-img" name="social[${currentLang}][items][${count}][old_img]" value="">
+                <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>
@@ -1531,16 +1522,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social) مع دعم مفتاح اللغة
+                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social) كقائمة عامة موحدة
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.social-name');
                     const urlInput = row.querySelector('.social-url');
                     const fileInput = row.querySelector('.social-file');
                     const oldImgInput = row.querySelector('.social-old-img');
-                    if (nameInput) nameInput.name = `social[${currentLang}][items][${index}][name]`;
-                    if (urlInput) urlInput.name = `social[${currentLang}][items][${index}][url]`;
+                    if (nameInput) nameInput.name = `social[${index}][name]`;
+                    if (urlInput) urlInput.name = `social[${index}][url]`;
                     if (fileInput) fileInput.name = `social_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `social[${currentLang}][items][${index}][old_img]`;
+                    if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
                 });
 
                 // 4. إعادة ترقيم القائمة (Menu)

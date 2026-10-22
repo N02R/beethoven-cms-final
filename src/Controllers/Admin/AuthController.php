@@ -65,15 +65,20 @@ class AuthController {
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest' 
                   || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
 
-        // 1. التحقق من CSRF Token
+        // 1. التحقق من CSRF Token (نسخة الفحص التشخيصي)
         $token = $_POST['csrf_token'] ?? '';
-        if (empty($token) || !hash_equals($_SESSION['login_csrf'] ?? '', $token)) {
+        $sessionToken = $_SESSION['login_csrf'] ?? '';
+
+        if (empty($token) || !hash_equals($sessionToken, $token)) {
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['success' => false, 'message' => 'رمز الحماية غير صالح (CSRF Invalid)']);
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'CSRF Mismatch -> Sent: ' . $token . ' | Session: ' . $sessionToken
+                ]);
                 exit;
             }
-            $_SESSION['login_error'] = 'رمز الحماية غير صالح (CSRF Invalid)';
+            $_SESSION['login_error'] = 'CSRF Mismatch -> Sent: ' . $token . ' | Session: ' . $sessionToken;
             header("Location: /admin/login");
             exit;
         }
@@ -113,7 +118,6 @@ class AuthController {
             error_log("Auth Error: " . $e->getMessage());
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
-                // عرض الخطأ التقني الحقيقي مؤقتاً للاكتشاف
                 echo json_encode(['success' => false, 'message' => 'خطأ تقني: ' . $e->getMessage()]);
                 exit;
             }

@@ -4,16 +4,6 @@ if (!defined('ALLOWED_ACCESS')) {
     exit('Access Denied');
 }
 
-// دالة مساعدة سريعة لضمان عدم حدوث خطأ عند عدم تعريف get_image_url
-if (!function_exists('get_image_url')) {
-    function get_image_url(?string $path): string {
-        if (empty($path)) {
-            return '/assets/img/logo.png';
-        }
-        return (strpos($path, 'http') === 0) ? $path : '/' . ltrim($path, '/');
-    }
-}
-
 $site_logo = $data['site_logo'] ?? $data['current_logo'] ?? 'assets/img/logo.png';
 $admin_name = $_SESSION['admin_name'] ?? 'المشرف';
 $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';

@@ -71,12 +71,17 @@ if (!function_exists('get_setting')) {
 
 if (!function_exists('get_image_url')) {
     /**
-     * تحويل مسار الصورة مع تطبيق التخزين المؤقت (Static Caching) لمنع تكرار فحص القرص الصلب (Disk I/O)
+     * تحويل مسار الصورة مع تطبيق التخزين المؤقت (Static Caching) وفحص القرص الصلب أو الروابط الخارجية
      */
-    function get_image_url(?string $path, string $default = '/assets/img/placeholder.png'): string
+    function get_image_url(?string $path, string $default = '/assets/img/logo.png'): string
     {
         if (empty($path)) {
             return $default;
+        }
+
+        // دعم الروابط الخارجية مباشرة دون فحص محلي
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
         }
 
         static $imageCache = [];

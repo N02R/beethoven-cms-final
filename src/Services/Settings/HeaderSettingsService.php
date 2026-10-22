@@ -64,40 +64,22 @@ class HeaderSettingsService
         }
 
         // 2. تحديث منصات التواصل الاجتماعي (يدعم تعدد اللغات)
-        elseif ($action === 'update_social') {
-            $targetLang = $_POST['social_lang'] ?? 'ar';
-
-            $rawSocialSetting = $currentSettings['social_links'] ?? '';
-            $allSocial = json_decode($rawSocialSetting, true);
-            if (!is_array($allSocial)) {
-                $allSocial = [];
-                if (!empty($rawSocialSetting)) {
-                    $legacyData = json_decode($rawSocialSetting, true);
-                    if (is_array($legacyData)) {
-                        $allSocial['ar'] = $legacyData; // Fallback للبيانات القديمة
-                    }
-                }
-            }
-
-            // استقبال البيانات المرسلة وتجاوز هيكل الـ items واللغة
+                elseif ($action === 'update_social') {
             $incomingSocial = $_POST['social'] ?? [];
-            $langInput = $incomingSocial[$targetLang] ?? $incomingSocial;
-            $items = $langInput['items'] ?? (is_array($langInput) && isset($langInput[0]) ? $langInput : []);
-
             $socialItems = [];
-            foreach ($items as $index => $item) {
-                $nameVal = trim($item['name'] ?? '');
-                if ($nameVal === '') continue; // تخطي العناصر الفارغة
 
-                // فحص الملف المرفوع للصورة/الأيقونة
+            foreach ($incomingSocial as $index => $item) {
+                if (!is_array($item)) continue;
+                $nameVal = trim($item['name'] ?? '');
+                if ($nameVal === '') continue;
+
                 $fileToCheck = $_FILES['social_img_' . $index] ?? null;
-                
                 $oldImg = $item['old_img'] ?? '';
+
                 if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                     if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                         $this->deleteOldImageFile($oldImg);
                     }
-                    // تم تصحيحها هنا لاستخدام $this->imageUploader بدلاً من المتغير الخاطئ
                     $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                     $imgVal = 'assets/uploads/' . $filename;
                 } else {
@@ -111,8 +93,7 @@ class HeaderSettingsService
                 ];
             }
 
-            $allSocial[$targetLang] = $socialItems;
-            $jsonVal = json_encode($allSocial, JSON_UNESCAPED_UNICODE);
+            $jsonVal = json_encode(array_values($socialItems), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'social_links', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

@@ -1,5 +1,7 @@
 <?php
 return [
+    'manage_site_logo' => 'Website-Logo ändern',
+
     // Allgemeine Übersetzungen
     'home'                    => 'Startseite',
     'about'                   => 'Über uns',

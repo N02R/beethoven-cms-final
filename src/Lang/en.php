@@ -1,5 +1,7 @@
 <?php
 return [
+    'manage_site_logo' => 'Change Site Logo',
+
     // General Translations
     'home'                    => 'Home',
     'about'                   => 'About Us',

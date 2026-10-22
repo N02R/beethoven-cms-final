@@ -31,7 +31,8 @@ class AboutSettingsService
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // 1. تحديث قسم من نحن الرئيسي (About Section)
         if ($action === 'update_about_section') {
@@ -152,7 +153,7 @@ class AboutSettingsService
                     if (!empty($item['old_img'])) {
                         $this->deleteOldImageFile($item['old_img']);
                     }
-                    $filename = $imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                     $teamData[$index]['img'] = 'assets/uploads/' . $filename;
                 } else {
                     $teamData[$index]['img'] = $item['old_img'] ?? '';

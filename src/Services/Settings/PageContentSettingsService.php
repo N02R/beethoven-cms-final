@@ -25,7 +25,9 @@ class PageContentSettingsService
         }
 
         $pageData = json_decode($currentSettings[$dbKey] ?? '', true) ?: [];
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        
+        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // معالجة خاصة لصفحة السيرة الذاتية (CV Page)
         if ($dbKey === 'cv_page') {

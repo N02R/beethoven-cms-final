@@ -29,7 +29,8 @@ class ContactSettingsService
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // 1. تحديث صورة الهيرو لصفحة تواصل معنا (Contact Hero)
         if ($action === 'update_contact_hero') {
@@ -40,7 +41,7 @@ class ContactSettingsService
                 if (!empty($oldHeroImg)) {
                     $this->deleteOldImageFile($oldHeroImg);
                 }
-                $filename = $imageUploader->processAndUploadFile($_FILES['contact_hero_img']['tmp_name']);
+                $filename = $this->imageUploader->processAndUploadFile($_FILES['contact_hero_img']['tmp_name']);
                 $heroImg = 'assets/uploads/' . $filename;
             }
 

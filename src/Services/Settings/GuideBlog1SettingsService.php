@@ -37,7 +37,8 @@ class GuideBlog1SettingsService
             $guideData = [];
         }
 
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:key, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:key, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // --- معالجة إكشنات المقال الأول (Blog 1) ---
         if ($isBlog1) {
@@ -198,7 +199,7 @@ class GuideBlog1SettingsService
                 $guideData['main_title'] = $_POST['main_title'] ?? '';
                 $guideData['main_desc'] = $_POST['main_desc'] ?? '';
             }
-            elseif ($action === 'update_guide_blog3_notes') { // قابلة للتعديل حسب محتوى المقال الثالث
+            elseif ($action === 'update_guide_blog3_notes') {
                 $guideData['notes_title'] = $_POST['notes_title'] ?? '';
                 $notesInput = $_POST['notes'] ?? [];
                 $guideData['notes_items'] = array_values($notesInput);

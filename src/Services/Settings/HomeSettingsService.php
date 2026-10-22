@@ -32,7 +32,8 @@ class HomeSettingsService
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
+        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         // 1. تحديث قسم الهيرو (Hero)
         if ($action === 'update_hero') {
@@ -276,12 +277,10 @@ class HomeSettingsService
                 $chooseAllLangs = ['ar' => $oldData];
             }
 
-            // جلب البيانات القديمة للغة المستهدفة لحمايتها في حال إرسال قيمة فارغة
             $oldLangData = $chooseAllLangs[$targetLang] ?? [];
             $oldTitle = $oldLangData['title'] ?? $oldLangData['choose_title'] ?? '';
             $oldDesc  = $oldLangData['desc']  ?? $oldLangData['choose_section_desc'] ?? '';
 
-            // 1. استخراج العنوان الجديد مع الوقاية من القيم الفارغة
             $inputTitle = $_POST['choose_title'][$targetLang] 
                        ?? ($_POST['choose_title'] 
                        ?? ($_POST['choose'][$targetLang]['title'] 
@@ -295,7 +294,6 @@ class HomeSettingsService
                          ? trim((string)$inputTitle) 
                          : $oldTitle;
 
-            // 2. استخراج الوصف الجديد مع الوقاية من القيم الفارغة
             $inputDesc  = $_POST['choose_desc'][$targetLang] 
                        ?? ($_POST['choose_desc'] 
                        ?? ($_POST['choose'][$targetLang]['desc'] 
@@ -309,7 +307,6 @@ class HomeSettingsService
                          ? trim((string)$inputDesc) 
                          : $oldDesc;
 
-            // 3. معالجة عناصر المميزات (items)
             $rawItems = $_POST['choose'][$targetLang]['items'] 
                      ?? ($_POST['choose']['items'] 
                      ?? ($_POST['choose'] ?? []));
@@ -358,7 +355,6 @@ class HomeSettingsService
                 ];
             }
 
-            // 4. دمج البيانات والحفظ النهائي
             $chooseAllLangs[$targetLang] = [
                 'title'               => $chooseTitle,
                 'desc'                => $chooseDesc,

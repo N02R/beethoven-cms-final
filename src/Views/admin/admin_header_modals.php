@@ -175,7 +175,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div id="socialRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        // جلب القائمة العامة والمباشرة من قاعدة البيانات
                         $rawSocial = $currentSettings['social_links'] ?? ($data['social_links'] ?? '');
                         $socialLinksData = is_string($rawSocial) ? json_decode($rawSocial, true) : (is_array($rawSocial) ? $rawSocial : []);
                         if (!is_array($socialLinksData)) $socialLinksData = [];
@@ -258,7 +257,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
                     
-                    <!-- حقل رفع احترافي يتأقلم مع لغة الصفحة -->
                     <div class="mb-3 text-start" dir="<?php echo $modal_dir; ?>">
                         <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>">
                             <?php echo $lang['upload_ad_image'] ?? 'اختر صورة الشعار:'; ?>
@@ -295,13 +293,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="announcement_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                        // جلب إعلان اللغة الحالية بذكاء
                         $rawAdSetting = $currentSettings['announcement'] ?? ($data['announcement'] ?? '');
                         $decodedAds = is_string($rawAdSetting) ? json_decode($rawAdSetting, true) : (is_array($rawAdSetting) ? $rawAdSetting : []);
                         
                         $currentAd = [];
                         if (is_array($decodedAds)) {
-                            // إذا كانت البيانات مخزنة بصيغة متعددة اللغات
                             $currentAd = $decodedAds[$current_lang] ?? ($decodedAds['ar'] ?? (isset($decodedAds['status']) ? $decodedAds : []));
                         }
                     ?>
@@ -342,7 +338,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo $lang['ad_type_image'] ?? 'صورة (بانر دعائي)'; ?></option>
                         </select>
 
-                        <!-- محرر النص -->
                         <?php $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang); ?>
                         <div id="textEditor" class="<?php echo ($adTypeVal === 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1"><?php echo $lang['announcement_text_label'] ?? 'نص الإعلان:'; ?></label>
@@ -363,7 +358,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             </div>
                         </div>
 
-                        <!-- محرر الصورة -->
                         <div id="imageEditor" class="<?php echo ($adTypeVal === 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1"><?php echo $lang['upload_ad_image'] ?? 'ارفع صورة الإعلان:'; ?></label>
                             <?php if (!empty($currentAd['image_path']) && $currentAd['image_path'] !== 'assets/img/default-ad.png'): ?>
@@ -414,7 +408,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <?php 
                         $menuLinksData = is_array($menu_links ?? null) ? $menu_links : [];
                         foreach ($menuLinksData as $index => $link): 
-                            // جلب عنوان الرابط للغة الحالية
                             $title_val = '';
                             if (isset($link[$current_lang]['title'])) {
                                 $title_val = $link[$current_lang]['title'];
@@ -479,14 +472,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div id="langRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
-                        // جلب اللغات بطريقة موحدة وآمنة تضمن قراءتها من قاعدة البيانات مباشرة لو لم تكن متوفرة في $data
                         $languagesRawData = $data['languages'] ?? (function_exists('get_setting') ? get_setting('languages', []) : []);
                         if (is_string($languagesRawData)) {
                             $languagesRawData = json_decode($languagesRawData, true);
                         }
                         $languagesData = is_array($languagesRawData) ? $languagesRawData : [];
 
-                        // نصوص مترجمة ديناميكياً حسب اللغة الحالية
                         $t_code   = $lang['lang_code'] ?? ($current_lang === 'ar' ? 'رمز اللغة (Code)' : ($current_lang === 'de' ? 'Sprachcode' : 'Language Code'));
                         $t_name   = $lang['lang_name'] ?? ($current_lang === 'ar' ? 'اسم اللغة' : ($current_lang === 'de' ? 'Sprachname' : 'Language Name'));
                         $t_status = $lang['status'] ?? ($current_lang === 'ar' ? 'الحالة' : ($current_lang === 'de' ? 'Status' : 'Status'));
@@ -577,7 +568,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $current_img_val = $h['img'] ?? ($hero_all['img'] ?? 'assets/img/hero-bg.jpg');
                     ?>
                     
-                    <!-- حقل مخفي مخصص يحمل مسار الصورة القديمة للسيرفر -->
                     <input type="hidden" name="old_hero_img" value="<?php echo htmlspecialchars($current_img_val, ENT_QUOTES, 'UTF-8'); ?>">
 
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
@@ -639,16 +629,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- Services Edit Modal -->
+<!-- 7. Services Edit Modal -->
 <div class="modal fade custom-modal" id="servicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-    <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-    <?php echo htmlspecialchars($lang['edit_services_section'] ?? ($current_lang === 'ar' ? 'تعديل قسم الخدمات' : ($current_lang === 'de' ? 'Dienste-Schnittstelle bearbeiten' : 'Edit Services Section')), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
-</h5>
-
+                    <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['edit_services_section'] ?? ($current_lang === 'ar' ? 'تعديل قسم الخدمات' : ($current_lang === 'de' ? 'Dienste-Schnittstelle bearbeiten' : 'Edit Services Section')), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -669,7 +658,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="services_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- بيانات عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
@@ -684,7 +672,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
-                    <!-- قائمة الخدمات المضافة -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo $lang['added_services'] ?? 'الخدمات المضافة'; ?></h6>
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($service_items as $index => $item): ?>
@@ -720,7 +707,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- زر إضافة خدمة جديدة -->
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
                         <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo $lang['add_new_service'] ?? 'إضافة خدمة جديدة'; ?>
                     </button>
@@ -734,7 +720,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal -->
+<!-- 8. Choose Edit Modal (محدث بالمعيار المركزي الموحد تماماً مثل الخدمات) -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -746,56 +732,54 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب وفك بيانات قسم المميزات بنفس معيار قسم الخدمات تماماً
+                $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
+                $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
+                
+                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : [];
+                
+                $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
+                $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
+                $choose_itemsList    = $c['items'] ?? ($choose_all['items'] ?? (is_array($c) && isset($c[0]) ? $c : []));
+                if (!is_array($choose_itemsList)) $choose_itemsList = [];
+                ?>
+
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
                     <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <?php 
-                    $langKey = $current_lang ?? $_SESSION['site_lang'] ?? 'ar';
-
-                    $rawChoose = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
-                    $chooseParsed = is_string($rawChoose) ? (json_decode($rawChoose, true) ?? []) : (is_array($rawChoose) ? $rawChoose : []);
-                    
-                    $langData = isset($chooseParsed[$langKey]) && is_array($chooseParsed[$langKey]) ? $chooseParsed[$langKey] : ($chooseParsed['ar'] ?? []);
-                    
-                    $currentTitle = $langData['section_title'] ?? ($langData['title'] ?? '');
-                    $currentDesc  = $langData['section_subtitle'] ?? ($langData['desc'] ?? '');
-                    
-                    $chooseItemsList = $langData['items'] ?? [];
-                    if (!is_array($chooseItemsList)) $chooseItemsList = [];
-                    ?>
-
                     <!-- الجزء الأول: عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align ?? ''; ?>">
                             <label class="small fw-bold mb-1 text-secondary">
-                                <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($langKey); ?>)
+                                <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                             </label>
-                            <input type="text" class="form-control" name="choose[<?php echo $langKey; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم">
+                            <input type="text" class="form-control" name="choose[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($choose_sec_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم">
                         </div>
                         <div class="<?php echo $modal_align ?? ''; ?>">
                             <label class="small fw-bold mb-1 text-secondary">
                                 <?php echo htmlspecialchars($lang['section_description_optional'] ?? 'وصف القسم (اختياري)', ENT_QUOTES, 'UTF-8'); ?>
                             </label>
-                            <textarea class="form-control" name="choose[<?php echo $langKey; ?>][section_subtitle]" rows="2" placeholder="وصف القسم" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $langKey), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="choose[<?php echo $current_lang; ?>][section_subtitle]" rows="2" placeholder="وصف القسم" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($choose_sec_subtitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <!-- الجزء الثاني: كروت وعناصر المميزات المضافة -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($chooseItemsList as $index => $item): ?>
+                        <?php foreach ($choose_itemsList as $index => $item): ?>
                             <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
+                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
+                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
                                     <div class="col-md-11 <?php echo $modal_align ?? ''; ?>">
@@ -805,14 +789,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <?php if (!empty($item['img'])): ?>
                                                 <?php $imgUrl = function_exists('get_image_url') ? get_image_url($item['img']) : $item['img']; ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(safe_admin_string($imgUrl, $langKey), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars(safe_admin_string($imgUrl, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Choose Item Icon" 
                                                          class="rounded-2" 
                                                          style="width: 38px; height: 38px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <input type="hidden" class="choose-old-img" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? $item['old_img'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? $item['old_img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف">
@@ -1152,11 +1136,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
-    /**
-     * دالة حذف الصفوف العامة المحدثة
-     * تعتمد على العنصر المحذوف مباشرة وتمنع مشكلة التضارب في ID الصفوف
-     * @param {HTMLElement|string} target
-     */
     function removeRow(target) {
         if (typeof target === 'string') {
             const el = document.getElementById(target);
@@ -1167,9 +1146,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }
     }
 
-    /**
-     * دالة عرض التنبيهات الاحترافية
-     */
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -1214,9 +1190,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }, 4000);
     }
 
-    /**
-     * التبديل الديناميكي الفوري بين محرر النص ومحرر الصورة في مودل الإعلانات
-     */
     function toggleAdContent(val) {
         const textEditor = document.getElementById('textEditor');
         const imageEditor = document.getElementById('imageEditor');
@@ -1228,10 +1201,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             if (imageEditor) imageEditor.classList.add('d-none');
         }
     }
-
-    /* ==========================================================================
-       دوال إضافة الصفوف الديناميكية (Dynamic Rows Builders) مع دعم اللغات
-       ========================================================================== */
 
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
@@ -1312,7 +1281,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const index = container.querySelectorAll('.choose-row-item').length;
 
-        // جلب النصوص المترجمة ديناميكياً حسب لغة النظام
         const langTitleLabel = "<?php echo $lang['title'] ?? 'العنوان'; ?>";
         const langDescLabel  = "<?php echo $lang['description'] ?? 'الوصف'; ?>";
         const langIconLabel  = "<?php echo $lang['icon_or_image'] ?? 'الأيقونة / الصورة'; ?>";
@@ -1461,7 +1429,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         if (!container) return;
         const count = container.querySelectorAll('.lang-row-item').length;
         
-        // جلب النصوص حسب لغة الصفحة من PHP
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const tCode = currentLang === 'ar' ? 'رمز اللغة (Code)' : (currentLang === 'de' ? 'Sprachcode' : 'Language Code');
         const tName = currentLang === 'ar' ? 'اسم اللغة' : (currentLang === 'de' ? 'Sprachname' : 'Language Name');
@@ -1502,7 +1469,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const index = container.querySelectorAll('.service-row-item').length;
 
-        // جلب النصوص المترجمة ديناميكياً حسب اللغة الحالية
         const tTitle  = "<?php echo $lang['service_title'] ?? 'عنوان الخدمة'; ?>";
         const tUrl    = "<?php echo $lang['service_url'] ?? 'رابط الخدمة'; ?>";
         const tImage  = "<?php echo $lang['image_or_icon'] ?? 'الصورة / الأيقونة'; ?>";
@@ -1534,10 +1500,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    /* ==========================================================================
-       معالج النماذج الموحد وإرسال البيانات عبر AJAX مع الترقيم الآمن
-       ========================================================================== */
-
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -1545,7 +1507,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-                // 1. إعادة ترقيم صفوف الخدمات (Services)
                 form.querySelectorAll('.service-row-item').forEach((row, index) => {
                     const title = row.querySelector('.service-title');
                     const url = row.querySelector('.service-url');
@@ -1557,7 +1518,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 2. إعادة ترقيم المميزات (Choose)
                 form.querySelectorAll('.choose-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.choose-title');
                     const descInput = row.querySelector('.choose-desc');
@@ -1570,7 +1530,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 3. إعادة ترقيم وسائل التواصل الاجتماعية (Social) كقائمة عامة موحدة
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.social-name');
                     const urlInput = row.querySelector('.social-url');
@@ -1582,7 +1541,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
                 });
 
-                // 4. إعادة ترقيم القائمة (Menu)
                 form.querySelectorAll('.menu-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.menu-title');
                     const urlInput = row.querySelector('.menu-url');
@@ -1595,7 +1553,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     }
                 });
 
-                // 5. إعادة ترقيم اللغات (Languages)
                 form.querySelectorAll('.lang-row-item').forEach((row, index) => {
                     const codeInput = row.querySelector('.lang-code');
                     const nameInput = row.querySelector('.lang-name');
@@ -1608,7 +1565,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (hiddenActive && hiddenActive !== activeInput) hiddenActive.name = `lang[${index}][active]`;
                 });
 
-                // 6. إرسال النموذج عبر AJAX
                 const formId = this.getAttribute('id');
                 const submitBtn = (formId ? document.querySelector(`button[form="${formId}"]`) : null) || this.querySelector('button[type="submit"]');
                 let originalText = '';
@@ -1655,7 +1611,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         showNotification('خطأ في إستجابة الخادم: ' + text, 'danger');
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalText;
+                            submitBtn.innerHTML = originalTime;
                         }
                     }
                 })

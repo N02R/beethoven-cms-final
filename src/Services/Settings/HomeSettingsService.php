@@ -262,29 +262,27 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث المميزات (Choose Us)
+        // 5. تحديث المميزات (Choose Us) - محدث بالمعيار الآمن والموحد تماماً مثل الخدمات
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $rawChooseSetting = $currentSettings['choose'] ?? '';
+            $rawChooseSetting = $currentSettings['choose'] ?? (function_exists('get_setting') ? get_setting('choose', '') : '');
             $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
             if (!is_array($chooseAllLangs)) {
                 $chooseAllLangs = [];
             }
 
-            $oldLangData = $chooseAllLangs[$targetLang] ?? [];
-            $oldTitle = $oldLangData['section_title'] ?? ($oldLangData['title'] ?? '');
-            $oldDesc  = $oldLangData['section_subtitle'] ?? ($oldLangData['desc'] ?? '');
+            $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
 
-            $inputTitle = $_POST['choose'][$targetLang]['section_title'] ?? ($_POST['choose'][$targetLang]['title'] ?? $oldTitle);
-            $inputDesc  = $_POST['choose'][$targetLang]['section_subtitle'] ?? ($_POST['choose'][$targetLang]['desc'] ?? $oldDesc);
+            $inputTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? ($_POST['choose_section_title'] ?? ''));
+            $inputDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? ($_POST['choose_section_subtitle'] ?? ''));
 
-            $rawItems = $_POST['choose'][$targetLang]['items'] ?? [];
+            $rawItems = $postedChoose['items'] ?? $_POST['choose_items'] ?? [];
             if (!is_array($rawItems)) {
                 $rawItems = [];
             }
 
-            $existingLangData = $oldLangData['items'] ?? [];
+            $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
             $processedItems = [];
 
             foreach ($rawItems as $index => $item) {
@@ -301,6 +299,9 @@ class HomeSettingsService
                 if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                     $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
                     $fileErr = $_FILES['choose_img_' . $index]['error'];
+                } elseif (isset($_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['choose']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    $fileErr = $_FILES['choose']['error'][$targetLang]['items'][$index]['img'];
                 }
 
                 if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {

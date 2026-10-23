@@ -1,10 +1,6 @@
 <?php
 return [
-    'manage_site_logo' => 'Change Site Logo',
-'choose_file' => 'Choose File',
-'no_file_chosen' => 'No file chosen',
-
-    // General Translations
+    // General Translations & Common Buttons
     'home'                    => 'Home',
     'about'                   => 'About Us',
     'services'                => 'Services',
@@ -15,7 +11,19 @@ return [
     'login'                   => 'Login',
     'read_more'               => 'Read More',
     'send'                    => 'Send',
-    
+    'save_changes'            => 'Save Changes',
+    'cancel'                  => 'Cancel',
+    'title'                   => 'Title',
+    'description'             => 'Description',
+    'url'                     => 'URL',
+    'status'                  => 'Status',
+    'choose_file'             => 'Choose File',
+    'no_file_chosen'          => 'No file chosen',
+    'current_image'           => 'Current Image:',
+
+    // Site Logo Management
+    'manage_site_logo'        => 'Change Site Logo',
+
     // Social Platforms Modal
     'manage_social_platforms' => 'Manage Social Platforms',
     'platform_name'           => 'Platform Name',
@@ -25,8 +33,6 @@ return [
     'platform_icon_image'     => 'Platform Icon / Image',
     'delete_platform'         => 'Delete Platform',
     'add_new_platform'        => 'Add New Platform',
-    'save_changes'            => 'Save Changes',
-    'cancel'                  => 'Cancel',
     
     // Announcement Settings Modal
     'announcement_settings'   => 'Announcement Bar Settings',
@@ -57,11 +63,12 @@ return [
     
     // Manage Languages Modal
     'manage_languages'        => 'Manage Languages',
+    'lang_code'               => 'Language Code',
     'language_name'           => 'Language Name',
     'language_name_placeholder'=> 'Language Name',
     'language_url'            => 'URL',
     'language_url_placeholder'=> 'URL',
-    'delete_language'         => 'Delete Language',
+    'delete_lang'             => 'Delete Language',
     'add_new_language'        => 'Add New Language',
     
     // Hero Section Modal
@@ -71,16 +78,18 @@ return [
     'hero_btn_text'           => 'Button Text',
     'hero_btn_url'            => 'Button URL',
     'hero_bg_image'           => 'Background Image',
-    'current_image'           => 'Current Image:',
 
     // Services Modal
     'edit_services'           => 'Edit Services',
+    'edit_services_section'   => 'Edit Services Section',
     'services_section_title'  => 'Main Section Title',
     'services_section_desc'   => 'Section Description (Optional)',
     'services_desc_placeholder'=> 'Add a description here or leave it blank to hide',
-    'title'                   => 'Title',
-    'url'                     => 'URL',
+    'added_services'          => 'Added Services',
+    'service_title'           => 'Service Title',
+    'service_url'             => 'Service URL',
     'image_icon'              => 'Image / Icon',
+    'image_or_icon'           => 'Image / Icon',
     'delete_service'          => 'Delete Service',
     'add_new_service'         => 'Add New Service',
     
@@ -95,17 +104,4 @@ return [
     'icon_or_image'              => 'Icon / Image',
     'delete_feature'             => 'Delete Feature',
     'add_new_feature'            => 'Add New Feature',
-'manage_languages' => 'Manage Languages',
-'lang_code'        => 'Language Code',
-'lang_name'        => 'Language Name',
-'status'           => 'Status',
-'delete_lang'      => 'Delete Language',
-'add_new_language' => 'Add New Language',
-'added_services'   => 'Added Services',
-'service_title'    => 'Service Title',
-'service_url'      => 'Service URL',
-'image_or_icon'    => 'Image / Icon',
-'delete_service'   => 'Delete Service',
-'edit_services_section' => 'Edit Services Section',
-
 ];

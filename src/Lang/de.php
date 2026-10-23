@@ -1,16 +1,6 @@
 <?php
 return [
-    'manage_site_logo' => 'Website-Logo ändern',
-'choose_file' => 'Datei auswählen',
-'no_file_chosen' => 'Keine Datei ausgewählt',
-'manage_languages' => 'Sprachen verwalten',
-'lang_code'        => 'Sprachcode',
-'lang_name'        => 'Sprachname',
-'status'           => 'Status',
-'delete_lang'      => 'Sprache löschen',
-'add_new_language' => 'Neue Sprache hinzufügen',
-
-    // Allgemeine Übersetzungen
+    // Allgemeine Übersetzungen & Buttons
     'home'                    => 'Startseite',
     'about'                   => 'Über uns',
     'services'                => 'Dienstleistungen',
@@ -21,7 +11,19 @@ return [
     'login'                   => 'Anmelden',
     'read_more'               => 'Mehr lesen',
     'send'                    => 'Absenden',
-    
+    'save_changes'            => 'Änderungen speichern',
+    'cancel'                  => 'Abbrechen',
+    'title'                   => 'Titel',
+    'description'             => 'Beschreibung',
+    'url'                     => 'URL',
+    'status'                  => 'Status',
+    'choose_file'             => 'Datei auswählen',
+    'no_file_chosen'          => 'Keine Datei ausgewählt',
+    'current_image'           => 'Aktuelles Bild:',
+
+    // Logo-Verwaltung
+    'manage_site_logo'        => 'Website-Logo ändern',
+
     // Social-Media-Plattformen Modal
     'manage_social_platforms' => 'Social-Media-Plattformen verwalten',
     'platform_name'           => 'Plattformname',
@@ -31,8 +33,6 @@ return [
     'platform_icon_image'     => 'Plattform-Symbol / Bild',
     'delete_platform'         => 'Plattform löschen',
     'add_new_platform'        => 'Neue Plattform hinzufügen',
-    'save_changes'            => 'Änderungen speichern',
-    'cancel'                  => 'Abbrechen',
     
     // Ankündigungseinstellungen Modal
     'announcement_settings'   => 'Ankündigungseinstellungen',
@@ -63,11 +63,12 @@ return [
     
     // Sprachen verwalten Modal
     'manage_languages'        => 'Sprachen verwalten',
+    'lang_code'               => 'Sprachcode',
     'language_name'           => 'Sprachname',
     'language_name_placeholder'=> 'Sprachname',
     'language_url'            => 'URL',
     'language_url_placeholder'=> 'URL',
-    'delete_language'         => 'Sprache löschen',
+    'delete_lang'             => 'Sprache löschen',
     'add_new_language'        => 'Neue Sprache hinzufügen',
     
     // Hero-Sektion Modal
@@ -77,20 +78,22 @@ return [
     'hero_btn_text'           => 'Schaltflächentext',
     'hero_btn_url'            => 'Schaltflächen-URL',
     'hero_bg_image'           => 'Hintergrundbild',
-    'current_image'           => 'Aktuelles Bild:',
 
     // Services Modal
     'edit_services'           => 'Dienstleistungen bearbeiten',
+    'edit_services_section'   => 'Dienste-Schnittstelle bearbeiten',
     'services_section_title'  => 'Hauptabschnittstitel',
     'services_section_desc'   => 'Abschnittsbeschreibung (Optional)',
     'services_desc_placeholder'=> 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer, um sie auszublenden',
-    'title'                   => 'Titel',
-    'url'                     => 'URL',
+    'added_services'          => 'Hinzugefügte Dienste',
+    'service_title'           => 'Diensttitel',
+    'service_url'             => 'Dienst-URL',
     'image_icon'              => 'Bild / Symbol',
+    'image_or_icon'           => 'Bild / Symbol',
     'delete_service'          => 'Dienstleistung löschen',
     'add_new_service'         => 'Neue Dienstleistung hinzufügen',
     
-        // Features / Choose Us Modal Übersetzungen
+    // Features / Choose Us Modal Übersetzungen
     'edit_features'              => 'Merkmale bearbeiten',
     'section_main_title'         => 'Hauptabschnittstitel',
     'choose_title_placeholder'   => 'Titel für "Warum uns wählen"',
@@ -101,11 +104,4 @@ return [
     'icon_or_image'              => 'Symbol / Bild',
     'delete_feature'             => 'Merkmal löschen',
     'add_new_feature'            => 'Neues Merkmal hinzufügen',
-'added_services'   => 'Hinzugefügte Dienste',
-'service_title'    => 'Diensttitel',
-'service_url'      => 'Dienst-URL',
-'image_or_icon'    => 'Bild / Symbol',
-'delete_service'   => 'Dienst löschen',
-'edit_services_section' => 'Dienste-Schnittstelle bearbeiten',
-
 ];

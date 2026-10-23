@@ -1,10 +1,6 @@
 <?php
 return [
-    'manage_site_logo' => 'تغيير شعار الموقع',
-'choose_file' => 'اختر ملف',
-'no_file_chosen' => 'لم يتم اختيار ملف',
-
-    // الترجمات العامة للموقع
+    // الترجمات العامة والأزرار
     'home'                    => 'الرئيسية',
     'about'                   => 'من نحن',
     'services'                => 'الخدمات',
@@ -15,6 +11,18 @@ return [
     'login'                   => 'تسجيل الدخول',
     'read_more'               => 'اقرأ المزيد',
     'send'                    => 'إرسال',
+    'save_changes'            => 'حفظ التغييرات',
+    'cancel'                  => 'إلغاء',
+    'title'                   => 'العنوان',
+    'description'             => 'الوصف',
+    'url'                     => 'الرابط',
+    'status'                  => 'الحالة',
+    'choose_file'             => 'اختر ملف',
+    'no_file_chosen'          => 'لم يتم اختيار ملف',
+    'current_image'           => 'الصورة الحالية:',
+
+    // ترجمات إدارة الشعار والملفات
+    'manage_site_logo'        => 'تغيير شعار الموقع',
 
     // ترجمات مودل منصات التواصل
     'manage_social_platforms' => 'إدارة منصات التواصل',
@@ -25,8 +33,6 @@ return [
     'platform_icon_image'     => 'أيقونة / صورة المنصة',
     'delete_platform'         => 'حذف المنصة',
     'add_new_platform'        => 'إضافة منصة جديدة',
-    'save_changes'            => 'حفظ التغييرات',
-    'cancel'                  => 'إلغاء',
     
     // ترجمات إعدادات الإعلانات
     'announcement_settings'   => 'إعدادات لوحة الإعلانات',
@@ -57,11 +63,12 @@ return [
 
     // ترجمات مودل إدارة اللغات
     'manage_languages'        => 'إدارة اللغات',
+    'lang_code'               => 'رمز اللغة (Code)',
     'language_name'           => 'اسم اللغة',
     'language_name_placeholder'=> 'اسم اللغة',
     'language_url'            => 'الرابط',
     'language_url_placeholder'=> 'الرابط',
-    'delete_language'         => 'حذف اللغة',
+    'delete_lang'             => 'حذف اللغة',
     'add_new_language'        => 'إضافة لغة جديدة',
 
     // ترجمات مودل قسم البداية (Hero)
@@ -71,20 +78,22 @@ return [
     'hero_btn_text'           => 'نص الزر',
     'hero_btn_url'            => 'رابط الزر',
     'hero_bg_image'           => 'صورة الخلفية',
-    'current_image'           => 'الصورة الحالية:',
 
     // ترجمات مودل الخدمات (Services Modal)
     'edit_services'           => 'تعديل الخدمات',
+    'edit_services_section'   => 'تعديل قسم الخدمات',
     'services_section_title'  => 'عنوان القسم الرئيسي',
     'services_section_desc'   => 'وصف القسم (اختياري)',
     'services_desc_placeholder'=> 'أضف وصفاً هنا أو اتركه فارغاً للإخفاء',
-    'title'                   => 'العنوان',
-    'url'                     => 'الرابط',
+    'added_services'          => 'الخدمات المضافة',
+    'service_title'           => 'عنوان الخدمة',
+    'service_url'             => 'رابط الخدمة',
     'image_icon'              => 'الصورة / الأيقونة',
+    'image_or_icon'           => 'الصورة / الأيقونة',
     'delete_service'          => 'حذف الخدمة',
     'add_new_service'         => 'إضافة خدمة جديدة',
     
-        // ترجمات مودل المميزات (Choose Us / Features Modal)
+    // ترجمات مودل المميزات (Choose Us / Features Modal)
     'edit_features'              => 'تعديل المميزات',
     'section_main_title'         => 'عنوان القسم الرئيسي',
     'choose_title_placeholder'   => 'عنوان قسم لماذا تختارنا',
@@ -95,18 +104,4 @@ return [
     'icon_or_image'              => 'الأيقونة / الصورة',
     'delete_feature'             => 'حذف الميزة',
     'add_new_feature'            => 'إضافة ميزة جديدة',
-    'manage_languages' => 'إدارة اللغات',
-'lang_code'        => 'رمز اللغة (Code)',
-'lang_name'        => 'اسم اللغة',
-'status'           => 'الحالة',
-'delete_lang'      => 'حذف اللغة',
-'add_new_language' => 'إضافة لغة جديدة',
-'added_services'   => 'الخدمات المضافة',
-'service_title'    => 'عنوان الخدمة',
-'service_url'      => 'رابط الخدمة',
-'image_or_icon'    => 'الصورة / الأيقونة',
-'delete_service'   => 'حذف الخدمة',
-'edit_services_section' => 'تعديل قسم الخدمات',
-
-
 ];

@@ -46,12 +46,12 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم المميزات (Why Choose Us)
-        $choose_raw = $getLangData('choose_items', []);
+        // 3. قسم المميزات (Why Choose Us) - الاعتماد حصرياً على المفتاح الموحد 'choose'
+        $choose_raw = $getLangData('choose', []);
         $choose_data = [
-            'title' => $choose_raw['title'] ?? ($choose_raw['choose_title'] ?? ''),
-            'desc'  => $choose_raw['desc'] ?? ($choose_raw['choose_section_desc'] ?? ''),
-            'items' => $choose_raw['items'] ?? (is_array($choose_raw) && !isset($choose_raw['title']) ? $choose_raw : [])
+            'title' => $choose_raw['section_title'] ?? ($choose_raw['title'] ?? ($choose_raw['choose_title'] ?? '')),
+            'desc'  => $choose_raw['section_subtitle'] ?? ($choose_raw['desc'] ?? ($choose_raw['choose_section_desc'] ?? '')),
+            'items' => $choose_raw['items'] ?? (is_array($choose_raw) && !isset($choose_raw['title']) && !isset($choose_raw['section_title']) ? $choose_raw : [])
         ];
 
         // 4. قسم الآراء والتقييمات (Reviews)

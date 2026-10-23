@@ -741,7 +741,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-star text-primary <?php echo !empty($is_rtl) ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['edit_features'] ?? ($current_lang === 'ar' ? 'تعديل المميزات' : ($current_lang === 'de' ? 'Funktionen bearbeiten' : 'Edit Features')), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                    <?php echo htmlspecialchars($lang['edit_features'] ?? 'تعديل المميزات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -758,12 +758,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $rawChoose = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
                     $chooseParsed = is_string($rawChoose) ? (json_decode($rawChoose, true) ?? []) : (is_array($rawChoose) ? $rawChoose : []);
                     
-                    $langData = isset($chooseParsed[$langKey]) && is_array($chooseParsed[$langKey]) ? $chooseParsed[$langKey] : [];
+                    $langData = isset($chooseParsed[$langKey]) && is_array($chooseParsed[$langKey]) ? $chooseParsed[$langKey] : ($chooseParsed['ar'] ?? []);
                     
-                    $currentTitle = $langData['section_title'] ?? $langData['title'] ?? $langData['choose_title'] ?? '';
-                    $currentDesc  = $langData['section_subtitle'] ?? $langData['desc'] ?? $langData['choose_section_desc'] ?? '';
+                    $currentTitle = $langData['section_title'] ?? ($langData['title'] ?? '');
+                    $currentDesc  = $langData['section_subtitle'] ?? ($langData['desc'] ?? '');
                     
-                    $chooseItemsList = $langData['items'] ?? (is_array($langData) && !isset($langData['title']) ? $langData : []);
+                    $chooseItemsList = $langData['items'] ?? [];
                     if (!is_array($chooseItemsList)) $chooseItemsList = [];
                     ?>
 
@@ -773,13 +773,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <label class="small fw-bold mb-1 text-secondary">
                                 <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($langKey); ?>)
                             </label>
-                            <input type="text" class="form-control" name="choose[<?php echo $langKey; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['choose_title_placeholder'] ?? 'عنوان قسم لماذا تختارنا', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="choose[<?php echo $langKey; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($currentTitle, $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم">
                         </div>
                         <div class="<?php echo $modal_align ?? ''; ?>">
                             <label class="small fw-bold mb-1 text-secondary">
                                 <?php echo htmlspecialchars($lang['section_description_optional'] ?? 'وصف القسم (اختياري)', ENT_QUOTES, 'UTF-8'); ?>
                             </label>
-                            <textarea class="form-control" name="choose[<?php echo $langKey; ?>][section_subtitle]" rows="2" placeholder="<?php echo htmlspecialchars($lang['choose_desc_placeholder'] ?? 'أضف وصفاً هنا أو اتركه فارغاً للإخفاء', ENT_QUOTES, 'UTF-8'); ?>" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $langKey), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <textarea class="form-control" name="choose[<?php echo $langKey; ?>][section_subtitle]" rows="2" placeholder="وصف القسم" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($currentDesc, $langKey), ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
@@ -791,11 +791,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['feature_title_placeholder'] ?? 'عنوان الميزة', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['feature_desc_placeholder'] ?? 'وصف الميزة', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
                                     <div class="col-md-11 <?php echo $modal_align ?? ''; ?>">
@@ -815,7 +815,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         <input type="hidden" class="choose-old-img" name="choose[<?php echo $langKey; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? $item['old_img'] ?? '', $langKey), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_feature'] ?? 'حذف الميزة', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>

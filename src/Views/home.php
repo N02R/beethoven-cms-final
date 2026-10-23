@@ -147,26 +147,20 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // جلب بيانات قسم المميزات بطريقة موحدة وآمنة للملفات والدوال المتاحة
-    $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? []);
+    $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
     if (is_string($choose_raw)) {
         $choose_all = json_decode($choose_raw, true) ?? [];
     } else {
         $choose_all = is_array($choose_raw) ? $choose_raw : [];
     }
 
-    // استخراج بيانات اللغة الحالية
     $choose_section = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) 
                       ? $choose_all[$current_lang] 
-                      : ($choose_all['ar'] ?? ($choose_all['de'] ?? (function_exists('get_setting') ? get_setting('choose', []) : [])));
+                      : ($choose_all['ar'] ?? []);
     
-    if (is_string($choose_section)) {
-        $choose_section = json_decode($choose_section, true) ?? [];
-    }
-
-    $choose_title = $choose_section['title'] ?? ($choose_section['section_title'] ?? '');
-    $choose_desc  = $choose_section['desc'] ?? ($choose_section['section_subtitle'] ?? '');
-    $choose_items = $choose_section['items'] ?? (is_array($choose_section) && !isset($choose_section['title']) ? $choose_section : []);
+    $choose_title = $choose_section['section_title'] ?? ($choose_section['title'] ?? '');
+    $choose_desc  = $choose_section['section_subtitle'] ?? ($choose_section['desc'] ?? '');
+    $choose_items = $choose_section['items'] ?? [];
     if (!is_array($choose_items)) {
         $choose_items = [];
     }
@@ -185,15 +179,16 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <?php if (!empty($choose_items)): ?>
       <div class="row g-3">
         <?php 
-        foreach ($choose_items as $item): 
+        foreach ($choose_items as $index => $item): 
           $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
           $item_img   = get_image_url($raw_img);
           $item_title = $item['title'] ?? '';
           $item_desc  = $item['desc'] ?? '';
           $item_url   = $item['url'] ?? '#';
+          $is_active  = ($index === 1) ? 'active' : ''; // البطاقة الثانية افتراضياً active بناءً على تصميمك
         ?>
           <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-            <div class="card choose-card">
+            <div class="card choose-card <?php echo $is_active; ?>">
               <div class="card-body">
                 <a href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
                   <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">

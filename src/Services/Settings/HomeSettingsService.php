@@ -266,52 +266,20 @@ class HomeSettingsService
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // تم تصحيح المفتاح ليكون 'choose' حصرياً لتطابق المودل والواجهة
             $rawChooseSetting = $currentSettings['choose'] ?? '';
             $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
             if (!is_array($chooseAllLangs)) {
                 $chooseAllLangs = [];
             }
 
-            if (isset($chooseAllLangs['title']) && !isset($chooseAllLangs['ar'])) {
-                $oldData = $chooseAllLangs;
-                $chooseAllLangs = ['ar' => $oldData];
-            }
-
             $oldLangData = $chooseAllLangs[$targetLang] ?? [];
             $oldTitle = $oldLangData['section_title'] ?? ($oldLangData['title'] ?? '');
             $oldDesc  = $oldLangData['section_subtitle'] ?? ($oldLangData['desc'] ?? '');
 
-            // استقبال العنوان مع دعم الحقول المرسلة من المودل (section_title و title)
-            $inputTitle = $_POST['choose'][$targetLang]['section_title'] 
-                       ?? ($_POST['choose'][$targetLang]['title'] 
-                       ?? ($_POST['choose_title'][$targetLang] ?? ($_POST['choose_title'] ?? null)));
+            $inputTitle = $_POST['choose'][$targetLang]['section_title'] ?? ($_POST['choose'][$targetLang]['title'] ?? $oldTitle);
+            $inputDesc  = $_POST['choose'][$targetLang]['section_subtitle'] ?? ($_POST['choose'][$targetLang]['desc'] ?? $oldDesc);
 
-            if (is_array($inputTitle)) {
-                $inputTitle = $inputTitle[$targetLang] ?? reset($inputTitle);
-            }
-
-            $chooseTitle = (!is_null($inputTitle) && trim((string)$inputTitle) !== '') 
-                         ? trim((string)$inputTitle) 
-                         : $oldTitle;
-
-            // استقبال الوصف مع دعم الحقول المرسلة من المودل (section_subtitle و desc)
-            $inputDesc  = $_POST['choose'][$targetLang]['section_subtitle'] 
-                       ?? ($_POST['choose'][$targetLang]['desc'] 
-                       ?? ($_POST['choose_desc'][$targetLang] ?? ($_POST['choose_desc'] ?? null)));
-
-            if (is_array($inputDesc)) {
-                $inputDesc = $inputDesc[$targetLang] ?? reset($inputDesc);
-            }
-
-            $chooseDesc  = (!is_null($inputDesc) && trim((string)$inputDesc) !== '') 
-                         ? trim((string)$inputDesc) 
-                         : $oldDesc;
-
-            $rawItems = $_POST['choose'][$targetLang]['items'] 
-                     ?? ($_POST['choose']['items'] 
-                     ?? ($_POST['choose'] ?? []));
-
+            $rawItems = $_POST['choose'][$targetLang]['items'] ?? [];
             if (!is_array($rawItems)) {
                 $rawItems = [];
             }
@@ -333,12 +301,6 @@ class HomeSettingsService
                 if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                     $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
                     $fileErr = $_FILES['choose_img_' . $index]['error'];
-                } elseif (isset($_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['choose']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
-                    $fileTmp = $_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img'];
-                    $fileErr = $_FILES['choose']['error'][$targetLang]['items'][$index]['img'];
-                } elseif (isset($_FILES['choose']['tmp_name'][$index]['img']) && $_FILES['choose']['error'][$index]['img'] === UPLOAD_ERR_OK) {
-                    $fileTmp = $_FILES['choose']['tmp_name'][$index]['img'];
-                    $fileErr = $_FILES['choose']['error'][$index]['img'];
                 }
 
                 if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
@@ -352,21 +314,20 @@ class HomeSettingsService
                 $processedItems[] = [
                     'title' => $item['title'] ?? '',
                     'desc'  => $item['desc'] ?? '',
-                    'img'   => $finalImg
+                    'img'   => $finalImg,
+                    'url'   => $item['url'] ?? '#'
                 ];
             }
 
-            // حفظ البيانات بالهيكل الموحد
             $chooseAllLangs[$targetLang] = [
-                'section_title'    => $chooseTitle,
-                'section_subtitle' => $chooseDesc,
-                'title'            => $chooseTitle,
-                'desc'             => $chooseDesc,
+                'section_title'    => $inputTitle,
+                'section_subtitle' => $inputDesc,
+                'title'            => $inputTitle,
+                'desc'             => $inputDesc,
                 'items'            => $processedItems
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
-            // تم تصحيح المفتاح في قاعدة البيانات ليكون 'choose'
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

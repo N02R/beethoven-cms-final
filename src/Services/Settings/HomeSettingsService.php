@@ -262,93 +262,73 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث المميزات (Choose Us) - الأيقونة عامة وثابتة في الجذر، والنصوص مستقلة لكل لغة
+        // 5. تحديث المميزات (Choose Us) - محدث بالمعيار الآمن والموحد تماماً مثل الخدمات
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawChooseSetting = $currentSettings['choose'] ?? (function_exists('get_setting') ? get_setting('choose', '') : '');
-            $chooseData = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
-            if (!is_array($chooseData)) {
-                $chooseData = [];
+            $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
+            if (!is_array($chooseAllLangs)) {
+                $chooseAllLangs = [];
             }
 
-            // 1. تحديث عناوين القسم للغة الحالية
             $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
+
             $inputTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? ($_POST['choose_section_title'] ?? ''));
             $inputDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? ($_POST['choose_section_subtitle'] ?? ''));
 
-            $chooseData[$targetLang] = [
-                'section_title'    => $inputTitle,
-                'section_subtitle' => $inputDesc
-            ];
-
-            // 2. معالجة عناصر المميزات (items) بحيث الأيقونة والروابط في الجذر، ونصوص كل لغة تحت مفتاحها
             $rawItems = $postedChoose['items'] ?? $_POST['choose_items'] ?? [];
-            if (is_array($rawItems) && !empty($rawItems)) {
-                $existingItems = $chooseData['items'] ?? [];
-                $newItems = [];
-
-                foreach ($rawItems as $index => $item) {
-                    if (!is_numeric($index) || !is_array($item)) {
-                        continue;
-                    }
-
-                    // الحفاظ على الأيقونة المشتركة القديمة أو رفع صورة جديدة
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                    $finalImg = $oldImg;
-
-                    $fileTmp = null;
-                    $fileErr = UPLOAD_ERR_NO_FILE;
-
-                    if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
-                        $fileErr = $_FILES['choose_img_' . $index]['error'];
-                    }
-
-                    if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
-                        $finalImg = 'assets/uploads/' . $filename;
-                    }
-
-                    // جلب بيانات العنصر القديمة للحفاظ على اللغات الأخرى
-                    $itemLangs = $existingItems[$index] ?? [];
-                    
-                    // تحديث النصوص الخاصة باللغة الحالية فقط
-                    $itemLangs[$targetLang] = [
-                        'title' => $item['title'] ?? '',
-                        'desc'  => $item['desc'] ?? ''
-                    ];
-
-                    // تجميع العنصر بالهيكل العام الجديد
-                    $newItem = [
-                        'img' => $finalImg,
-                        'url' => $item['url'] ?? ($itemLangs['url'] ?? '#')
-                    ];
-
-                    // دمج نصوص اللغات (ar, en, de) بسلامة تامة
-                    foreach (['ar', 'en', 'de'] as $l) {
-                        if (isset($itemLangs[$l]) && is_array($itemLangs[$l])) {
-                            $newItem[$l] = $itemLangs[$l];
-                        } else {
-                            $newItem[$l] = ['title' => '', 'desc' => ''];
-                        }
-                    }
-                    
-                    // ضمان تعبئة لغة الهدف الحالية
-                    $newItem[$targetLang] = [
-                        'title' => $item['title'] ?? '',
-                        'desc'  => $item['desc'] ?? ''
-                    ];
-
-                    $newItems[$index] = $newItem;
-                }
-                $chooseData['items'] = array_values($newItems);
+            if (!is_array($rawItems)) {
+                $rawItems = [];
             }
 
-            $jsonVal = json_encode($chooseData, JSON_UNESCAPED_UNICODE);
+            $existingLangData = $chooseAllLangs[$targetLang]['items'] ?? [];
+            $processedItems = [];
+
+            foreach ($rawItems as $index => $item) {
+                if (!is_numeric($index) || !is_array($item)) {
+                    continue;
+                }
+
+                $oldImg = $item['old_img'] ?? ($existingLangData[$index]['img'] ?? '');
+                $finalImg = $oldImg;
+
+                $fileTmp = null;
+                $fileErr = UPLOAD_ERR_NO_FILE;
+
+                if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
+                    $fileErr = $_FILES['choose_img_' . $index]['error'];
+                } elseif (isset($_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['choose']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
+                    $fileTmp = $_FILES['choose']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    $fileErr = $_FILES['choose']['error'][$targetLang]['items'][$index]['img'];
+                }
+
+                if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
+                    if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                        $this->deleteOldImageFile($oldImg);
+                    }
+                    $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                    $finalImg = 'assets/uploads/' . $filename;
+                }
+
+                $processedItems[] = [
+                    'title' => $item['title'] ?? '',
+                    'desc'  => $item['desc'] ?? '',
+                    'img'   => $finalImg,
+                    'url'   => $item['url'] ?? '#'
+                ];
+            }
+
+            $chooseAllLangs[$targetLang] = [
+                'section_title'    => $inputTitle,
+                'section_subtitle' => $inputDesc,
+                'title'            => $inputTitle,
+                'desc'             => $inputDesc,
+                'items'            => $processedItems
+            ];
+
+            $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

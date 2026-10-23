@@ -101,5 +101,10 @@ return [
     'icon_or_image'              => 'Symbol / Bild',
     'delete_feature'             => 'Merkmal löschen',
     'add_new_feature'            => 'Neues Merkmal hinzufügen',
+'added_services'   => 'Hinzugefügte Dienste',
+'service_title'    => 'Diensttitel',
+'service_url'      => 'Dienst-URL',
+'image_or_icon'    => 'Bild / Symbol',
+'delete_service'   => 'Dienst löschen',
 
 ];

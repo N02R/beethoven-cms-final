@@ -101,5 +101,10 @@ return [
 'status'           => 'Status',
 'delete_lang'      => 'Delete Language',
 'add_new_language' => 'Add New Language',
+'added_services'   => 'Added Services',
+'service_title'    => 'Service Title',
+'service_url'      => 'Service URL',
+'image_or_icon'    => 'Image / Icon',
+'delete_service'   => 'Delete Service',
 
 ];

@@ -101,6 +101,11 @@ return [
 'status'           => 'الحالة',
 'delete_lang'      => 'حذف اللغة',
 'add_new_language' => 'إضافة لغة جديدة',
+'added_services'   => 'الخدمات المضافة',
+'service_title'    => 'عنوان الخدمة',
+'service_url'      => 'رابط الخدمة',
+'image_or_icon'    => 'الصورة / الأيقونة',
+'delete_service'   => 'حذف الخدمة',
 
 
 ];

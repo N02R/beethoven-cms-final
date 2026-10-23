@@ -147,12 +147,17 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // استخدام المعيار المركزي الموحد لاستخراج بيانات المميزات حسب اللغة الحالية
-    $choose_section = $getLocalizedData('choose', []);
+    // استخراج بيانات الإعدادات الخاصة بقسم choose
+    $choose_raw = get_setting('choose', '{}');
+    $choose_data = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
     
-    $choose_title = $choose_section['section_title'] ?? ($choose_section['title'] ?? '');
-    $choose_desc  = $choose_section['section_subtitle'] ?? ($choose_section['desc'] ?? '');
-    $choose_items = $choose_section['items'] ?? [];
+    // استخراج عناوين القسم للغة الحالية (مع استخدام العربية كـ Fallback)
+    $lang_section = $choose_data[$current_lang] ?? ($choose_data['ar'] ?? []);
+    $choose_title = $lang_section['section_title'] ?? ($lang_section['title'] ?? '');
+    $choose_desc  = $lang_section['section_subtitle'] ?? ($lang_section['desc'] ?? '');
+    
+    // استخراج العناصر المشتركة (Items)
+    $choose_items = $choose_data['items'] ?? [];
     if (!is_array($choose_items)) {
         $choose_items = [];
     }
@@ -172,11 +177,16 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
       <div class="row g-3">
         <?php 
         foreach ($choose_items as $index => $item): 
+          // الأيقونة مشتركة وثابتة لكل اللغات
           $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
           $item_img   = get_image_url($raw_img);
-          $item_title = $item['title'] ?? '';
-          $item_desc  = $item['desc'] ?? '';
           $item_url   = $item['url'] ?? '#';
+          
+          // استخراج النصوص الخاصة بالميزة حسب اللغة الحالية (مع Fallback للغة العربية)
+          $lang_item  = $item[$current_lang] ?? ($item['ar'] ?? []);
+          $item_title = $lang_item['title'] ?? '';
+          $item_desc  = $lang_item['desc'] ?? '';
+          
           $is_active  = ($index === 1) ? 'active' : ''; 
         ?>
           <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">

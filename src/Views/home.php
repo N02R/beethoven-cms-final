@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Home View (Inline Editing Enabled)
- * النسخة المحدثة والنظيفة مع الاعتماد المركزي على جلسة المدير القادمة من الهيدر.
+ * النسخة المحدثة والنظيفة مع الاعتماد المركزي على جلسة المدير القادمة من الهيدر وتوحيد الأقسام.
  */
 
 $current_lang = $current_lang ?? get_current_lang();
@@ -147,16 +147,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
-    if (is_string($choose_raw)) {
-        $choose_all = json_decode($choose_raw, true) ?? [];
-    } else {
-        $choose_all = is_array($choose_raw) ? $choose_raw : [];
-    }
-
-    $choose_section = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) 
-                      ? $choose_all[$current_lang] 
-                      : ($choose_all['ar'] ?? []);
+    // استخدام المعيار المركزي الموحد لاستخراج بيانات المميزات حسب اللغة الحالية
+    $choose_section = $getLocalizedData('choose', []);
     
     $choose_title = $choose_section['section_title'] ?? ($choose_section['title'] ?? '');
     $choose_desc  = $choose_section['section_subtitle'] ?? ($choose_section['desc'] ?? '');
@@ -185,7 +177,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
           $item_title = $item['title'] ?? '';
           $item_desc  = $item['desc'] ?? '';
           $item_url   = $item['url'] ?? '#';
-          $is_active  = ($index === 1) ? 'active' : ''; // البطاقة الثانية افتراضياً active بناءً على تصميمك
+          $is_active  = ($index === 1) ? 'active' : ''; 
         ?>
           <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="card choose-card <?php echo $is_active; ?>">

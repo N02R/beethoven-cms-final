@@ -645,9 +645,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-                    <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo $lang['edit_services_section'] ?? 'تعديل قسم الخدمات'; ?> (<?php echo strtoupper($current_lang); ?>)
-                </h5>
+    <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+    <?php echo htmlspecialchars($lang['edit_services_section'] ?? ($current_lang === 'ar' ? 'تعديل قسم الخدمات' : ($current_lang === 'de' ? 'Dienste-Schnittstelle bearbeiten' : 'Edit Services Section')), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+</h5>
+
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">

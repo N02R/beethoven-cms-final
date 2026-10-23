@@ -106,5 +106,6 @@ return [
 'service_url'      => 'Service URL',
 'image_or_icon'    => 'Image / Icon',
 'delete_service'   => 'Delete Service',
+'edit_services_section' => 'Edit Services Section',
 
 ];

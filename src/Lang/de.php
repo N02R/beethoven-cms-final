@@ -106,5 +106,6 @@ return [
 'service_url'      => 'Dienst-URL',
 'image_or_icon'    => 'Bild / Symbol',
 'delete_service'   => 'Dienst löschen',
+'edit_services_section' => 'Dienste-Schnittstelle bearbeiten',
 
 ];

@@ -106,6 +106,7 @@ return [
 'service_url'      => 'رابط الخدمة',
 'image_or_icon'    => 'الصورة / الأيقونة',
 'delete_service'   => 'حذف الخدمة',
+'edit_services_section' => 'تعديل قسم الخدمات',
 
 
 ];

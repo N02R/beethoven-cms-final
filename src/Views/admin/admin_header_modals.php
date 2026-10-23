@@ -1,3 +1,6 @@
+<?php
+// /src/Views/admin/admin_header_modals.php
+?>
 <style>
     /* Modal Glassmorphism & Custom Styling */
     .custom-modal .modal-content { 
@@ -717,7 +720,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (محدث ليتعامل مع الأيقونة الثابتة والمشتركة في الجذر items) -->
+<!-- 8. Choose Edit Modal (محدث لقراءة عناصر الـ items من الجذر وعرض نصوص اللغة الحالية بداخلها) -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -730,7 +733,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات قسم choose من الإعدادات
+                // جلب وفك بيانات قسم choose من الإعدادات
                 $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
                 $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
                 
@@ -739,7 +742,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
                 $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
                 
-                // العناصر المشتركة وثابتة الأيقونة من الجذر (items)
+                // عناصر المميزات تُقرأ مباشرة من جذر items العام والثابت
                 $choose_itemsList = $choose_all['items'] ?? [];
                 if (!is_array($choose_itemsList)) $choose_itemsList = [];
                 ?>
@@ -770,7 +773,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // استخراج النصوص للغة الحالية من داخل العنصر
+                            // استخراج نصوص اللغة الحالية من داخل العنصر المشترك
                             $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? []));
                             $itemTitle = $langItemData['title'] ?? '';
                             $itemDesc  = $langItemData['desc'] ?? '';

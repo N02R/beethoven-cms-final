@@ -1507,26 +1507,33 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         if (!container) return;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const index = container.querySelectorAll('.service-row-item').length;
+
+        // جلب النصوص المترجمة ديناميكياً حسب اللغة الحالية
+        const tTitle  = "<?php echo $lang['service_title'] ?? 'عنوان الخدمة'; ?>";
+        const tUrl    = "<?php echo $lang['service_url'] ?? 'رابط الخدمة'; ?>";
+        const tImage  = "<?php echo $lang['image_or_icon'] ?? 'الصورة / الأيقونة'; ?>";
+        const tDelete = "<?php echo $lang['delete_service'] ?? 'حذف الخدمة'; ?>";
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 service-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                    <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="عنوان الخدمة">
+                    <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
+                    <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="${tTitle}">
                 </div>
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="رابط الخدمة">
+                    <label class="small fw-bold mb-1 text-secondary">${tUrl}</label>
+                    <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="${tUrl}">
                 </div>
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${tImage}</label>
                     <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
                 </div>
                 <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${index}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${tDelete}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;

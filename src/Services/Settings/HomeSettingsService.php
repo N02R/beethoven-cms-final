@@ -266,7 +266,8 @@ class HomeSettingsService
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $rawChooseSetting = $currentSettings['choose_items'] ?? '';
+            // تم تصحيح المفتاح ليكون 'choose' حصرياً لتطابق المودل والواجهة
+            $rawChooseSetting = $currentSettings['choose'] ?? '';
             $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
             if (!is_array($chooseAllLangs)) {
                 $chooseAllLangs = [];
@@ -278,13 +279,13 @@ class HomeSettingsService
             }
 
             $oldLangData = $chooseAllLangs[$targetLang] ?? [];
-            $oldTitle = $oldLangData['title'] ?? $oldLangData['choose_title'] ?? '';
-            $oldDesc  = $oldLangData['desc']  ?? $oldLangData['choose_section_desc'] ?? '';
+            $oldTitle = $oldLangData['section_title'] ?? ($oldLangData['title'] ?? '');
+            $oldDesc  = $oldLangData['section_subtitle'] ?? ($oldLangData['desc'] ?? '');
 
-            $inputTitle = $_POST['choose_title'][$targetLang] 
-                       ?? ($_POST['choose_title'] 
+            // استقبال العنوان مع دعم الحقول المرسلة من المودل (section_title و title)
+            $inputTitle = $_POST['choose'][$targetLang]['section_title'] 
                        ?? ($_POST['choose'][$targetLang]['title'] 
-                       ?? ($_POST['choose']['title'] ?? null)));
+                       ?? ($_POST['choose_title'][$targetLang] ?? ($_POST['choose_title'] ?? null)));
 
             if (is_array($inputTitle)) {
                 $inputTitle = $inputTitle[$targetLang] ?? reset($inputTitle);
@@ -294,10 +295,10 @@ class HomeSettingsService
                          ? trim((string)$inputTitle) 
                          : $oldTitle;
 
-            $inputDesc  = $_POST['choose_desc'][$targetLang] 
-                       ?? ($_POST['choose_desc'] 
+            // استقبال الوصف مع دعم الحقول المرسلة من المودل (section_subtitle و desc)
+            $inputDesc  = $_POST['choose'][$targetLang]['section_subtitle'] 
                        ?? ($_POST['choose'][$targetLang]['desc'] 
-                       ?? ($_POST['choose']['desc'] ?? null)));
+                       ?? ($_POST['choose_desc'][$targetLang] ?? ($_POST['choose_desc'] ?? null)));
 
             if (is_array($inputDesc)) {
                 $inputDesc = $inputDesc[$targetLang] ?? reset($inputDesc);
@@ -355,16 +356,18 @@ class HomeSettingsService
                 ];
             }
 
+            // حفظ البيانات بالهيكل الموحد
             $chooseAllLangs[$targetLang] = [
-                'title'               => $chooseTitle,
-                'desc'                => $chooseDesc,
-                'choose_title'        => $chooseTitle,
-                'choose_section_desc' => $chooseDesc,
-                'items'               => $processedItems
+                'section_title'    => $chooseTitle,
+                'section_subtitle' => $chooseDesc,
+                'title'            => $chooseTitle,
+                'desc'             => $chooseDesc,
+                'items'            => $processedItems
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'choose_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            // تم تصحيح المفتاح في قاعدة البيانات ليكون 'choose'
+            $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         // 6. تحديث الدليل الشامل (Guide)

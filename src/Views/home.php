@@ -146,7 +146,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <?php endif; ?>
 
   <div class="container-fluid custom-container choose-container">
-    <?>
+    <?php
     // 1. جلب البيانات مباشرة وبشكل حي من قاعدة البيانات لضمان عدم الاعتماد على مصفوفة قديمة
     $raw_choose_setting = get_setting('choose', '{}');
     $choose_full_data = is_string($raw_choose_setting) ? json_decode($raw_choose_setting, true) : (is_array($raw_choose_setting) ? $raw_choose_setting : []);

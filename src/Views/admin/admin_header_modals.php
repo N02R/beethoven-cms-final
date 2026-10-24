@@ -729,15 +729,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                $choose_raw = $currentSettings['choose'] ?? ($data['choose'] ?? get_setting('choose', '{}'));
+                // جلب البيانات مباشرة وحياً من دالة get_setting مع فك التشفير الفوري لضمان جلب أحدث نسخة
+                $choose_raw = get_setting('choose', '{}');
                 $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
                 
-                // عناوين القسم للغة الحالية
-                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : ($choose_all['ar'] ?? []);
+                // عناوين القسم للغة الحالية مع خيار احتياطي آمن
+                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : ($choose_all['ar'] ?? ($choose_all['de'] ?? []));
                 $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
                 $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
                 
-                // عناصر المميزات تُقرأ مباشرة من جذر items العام
+                // عناصر المميزات تُقرأ مباشرة من جذر items العام وبدون أي تذمر
                 $choose_itemsList = $choose_all['items'] ?? [];
                 if (!is_array($choose_itemsList)) {
                     $choose_itemsList = [];

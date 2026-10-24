@@ -262,7 +262,7 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث المميزات (Choose Us) - المعيار الهجين الآمن والمباشر
+        // 5. تحديث المميزات (Choose Us) - الهيكل الهجين الآمن
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -288,7 +288,6 @@ class HomeSettingsService
                 $rawItems = [];
             }
 
-            // جلب العناصر القديمة الموجودة مسبقاً في الجذر للحفاظ على الصور والبيانات
             $existingItems = $chooseData['items'] ?? [];
             $processedItems = [];
 
@@ -297,7 +296,7 @@ class HomeSettingsService
                     continue;
                 }
 
-                // الحفاظ على الصورة القديمة أو استبدالها برفع صورة جديدة
+                // الحفاظ على الأيقونة المشتركة القديمة أو رفع صورة جديدة
                 $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
                 $finalImg = $oldImg;
 
@@ -317,25 +316,17 @@ class HomeSettingsService
                     $finalImg = 'assets/uploads/' . $filename;
                 }
 
-                // استخراج الترجمات القديمة لهذا العنصر (إن وجدت) لكي لا نضيع لغات أخرى (مثل en أو de)
+                // استخراج الترجمات القديمة لهذا العنصر لضمان عدم ضياع اللغات الأخرى (en, de, ar)
                 $itemLangs = $existingItems[$index] ?? [];
-                
-                // تحديث نصوص اللغة الحالية داخل العنصر
-                $itemLangs[$targetLang] = [
-                    'title' => $item['title'] ?? '',
-                    'desc'  => $item['desc'] ?? ''
-                ];
 
-                // تجهيز الهيكل الموحد للعنصر (الصورة والرابط في الجذر، وباقي اللغات بداخله)
                 $newItem = [
                     'img' => $finalImg,
-                    'url' => $item['url'] ?? ($itemLangs['url'] ?? '#'),
                     'ar'  => $itemLangs['ar'] ?? ['title' => '', 'desc' => ''],
                     'en'  => $itemLangs['en'] ?? ['title' => '', 'desc' => ''],
                     'de'  => $itemLangs['de'] ?? ['title' => '', 'desc' => '']
                 ];
 
-                // تعبئة لغة الهدف بالقيم الجديدة المُرسلة
+                // تحديث نصوص اللغة المستهدفة الحالية بالقيم المرسلة من المدير
                 $newItem[$targetLang] = [
                     'title' => $item['title'] ?? '',
                     'desc'  => $item['desc'] ?? ''
@@ -344,7 +335,6 @@ class HomeSettingsService
                 $processedItems[] = $newItem;
             }
 
-            // وضع العناصر المعالجة في الجذر العام
             $chooseData['items'] = $processedItems;
 
             $jsonVal = json_encode($chooseData, JSON_UNESCAPED_UNICODE);

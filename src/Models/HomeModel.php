@@ -46,18 +46,32 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم المميزات (Why Choose Us) - معالجة خاصة بالهيكل الهجين لضمان جلب العناوين والـ items من الجذر
+        // 3. قسم المميزات (Why Choose Us) - معالجة الهيكل الهجين (أيقونة عامة في الجذر + نصوص مترجمة)
         $choose_raw_setting = $settings['choose'] ?? '{}';
         $choose_decoded = json_decode($choose_raw_setting, true);
         $choose_decoded = is_array($choose_decoded) ? $choose_decoded : [];
         
-        // استخراج العناوين للغة الحالية من الكائن الخاص بها
+        // استخراج العناوين الرئيسية للقسم حسب اللغة الحالية
         $choose_lang_data = $choose_decoded[$lang] ?? ($choose_decoded['ar'] ?? ($choose_decoded['de'] ?? []));
         $choose_title = $choose_lang_data['section_title'] ?? ($choose_lang_data['title'] ?? '');
         $choose_desc  = $choose_lang_data['section_subtitle'] ?? ($choose_lang_data['desc'] ?? '');
         
-        // استخراج العناصر (items) الثابتة والعامة من الجذر مباشرة
-        $choose_items = $choose_decoded['items'] ?? [];
+        // استخراج العناصر (items) من الجذر العام
+        $choose_raw_items = $choose_decoded['items'] ?? [];
+        $choose_items = [];
+
+        if (is_array($choose_raw_items)) {
+            foreach ($choose_raw_items as $item) {
+                // استخراج النصوص للغة الحالية لكل بطاقة مع Fallback آمن
+                $itemLangData = isset($item[$lang]) && is_array($item[$lang]) ? $item[$lang] : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
+                
+                $choose_items[] = [
+                    'img'   => $item['img'] ?? '',
+                    'title' => $itemLangData['title'] ?? '',
+                    'desc'  => $itemLangData['desc'] ?? ''
+                ];
+            }
+        }
 
         $choose_data = [
             'title' => $choose_title,

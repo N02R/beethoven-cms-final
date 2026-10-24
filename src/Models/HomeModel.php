@@ -27,7 +27,6 @@ class HomeModel {
                 return $default;
             }
 
-            // استخراج كائن اللغة الحالية، أو العربية كخيار احتياطي (Fallback)
             if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
                 return $decoded[$lang] ?? ($decoded['ar'] ?? $default);
             }
@@ -46,24 +45,30 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم المميزات (Why Choose Us) - معالجة الهيكل الهجين (أيقونة عامة في الجذر + نصوص مترجمة)
+        // ==========================================
+        // 🌟 3. قسم المميزات (Why Choose Us) - التصحيح الهجين المباشر
+        // ==========================================
         $choose_raw_setting = $settings['choose'] ?? '{}';
         $choose_decoded = json_decode($choose_raw_setting, true);
         $choose_decoded = is_array($choose_decoded) ? $choose_decoded : [];
         
-        // استخراج العناوين الرئيسية للقسم حسب اللغة الحالية
+        // استخراج العناوين الرئيسية للقسم حسب اللغة الحالية من مصفوفة الجذر
         $choose_lang_data = $choose_decoded[$lang] ?? ($choose_decoded['ar'] ?? ($choose_decoded['de'] ?? []));
         $choose_title = $choose_lang_data['section_title'] ?? ($choose_lang_data['title'] ?? '');
         $choose_desc  = $choose_lang_data['section_subtitle'] ?? ($choose_lang_data['desc'] ?? '');
         
-        // استخراج العناصر (items) من الجذر العام
+        // استخراج العناصر (items) مباشرة من الجذر العام للـ JSON
         $choose_raw_items = $choose_decoded['items'] ?? [];
         $choose_items = [];
 
         if (is_array($choose_raw_items)) {
             foreach ($choose_raw_items as $item) {
+                if (!is_array($item)) continue;
+                
                 // استخراج النصوص للغة الحالية لكل بطاقة مع Fallback آمن
-                $itemLangData = isset($item[$lang]) && is_array($item[$lang]) ? $item[$lang] : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
+                $itemLangData = isset($item[$lang]) && is_array($item[$lang]) 
+                              ? $item[$lang] 
+                              : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
                 
                 $choose_items[] = [
                     'img'   => $item['img'] ?? '',
@@ -78,6 +83,7 @@ class HomeModel {
             'desc'  => $choose_desc,
             'items' => $choose_items
         ];
+        // ==========================================
 
         // 4. قسم الآراء والتقييمات (Reviews)
         $reviews_raw = $getLangData('reviews_items', []);

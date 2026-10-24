@@ -716,7 +716,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (مصحح ومحدث لضمان استرجاع البيانات بدقة) -->
+<!-- 8. Choose Edit Modal (مصحح بالكامل للاحتفاظ بالبطاقات والنصوص والصور) -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -729,16 +729,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب البيانات مباشرة وحياً من دالة get_setting مع فك التشفير الفوري لضمان جلب أحدث نسخة
+                // جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
                 $choose_raw = get_setting('choose', '{}');
                 $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
                 
-                // عناوين القسم للغة الحالية مع خيار احتياطي آمن
+                // عناوين القسم للغة الحالية
                 $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : ($choose_all['ar'] ?? ($choose_all['de'] ?? []));
                 $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
                 $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
                 
-                // عناصر المميزات تُقرأ مباشرة من جذر items العام وبدون أي تذمر
+                // عناصر المميزات من الجذر العام
                 $choose_itemsList = $choose_all['items'] ?? [];
                 if (!is_array($choose_itemsList)) {
                     $choose_itemsList = [];
@@ -771,7 +771,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // استخراج نصوص اللغة الحالية بدقة متناهية
+                            // 🌟 هنا السر: استخراج نصوص اللغة الحالية (عربية، ألمانية، إلخ) بدقة لملء الحقول تلقائياً
                             $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) 
                                           ? $item[$current_lang] 
                                           : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
@@ -784,10 +784,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                        <!-- وضع القيمة المحفوظة داخل value لكي يحتفظ بها المودل -->
                                         <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                        <!-- وضع الوصف المحفوظ داخل value لكي يحتفظ به المودل -->
                                         <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itemDesc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
@@ -805,6 +807,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
                                             <?php endif; ?>
                                         </div>
+                                        <!-- الحقل المخفي للاحتفاظ بمسار الصورة القديمة -->
                                         <input type="hidden" class="choose-old-img" name="choose[items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">

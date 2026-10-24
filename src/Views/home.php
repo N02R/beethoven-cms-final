@@ -146,17 +146,20 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <?php endif; ?>
 
   <div class="container-fluid custom-container choose-container">
-    <?php 
-    $choose_raw_setting = get_setting('choose', []);
-    $choose_full_data = is_string($choose_raw_setting) ? json_decode($choose_raw_setting, true) : (is_array($choose_raw_setting) ? $choose_raw_setting : []);
+    <?>
+    // 1. جلب البيانات مباشرة وبشكل حي من قاعدة البيانات لضمان عدم الاعتماد على مصفوفة قديمة
+    $raw_choose_setting = get_setting('choose', '{}');
+    $choose_full_data = is_string($raw_choose_setting) ? json_decode($raw_choose_setting, true) : (is_array($raw_choose_setting) ? $raw_choose_setting : []);
     
+    // 2. استخراج عناوين القسم حسب اللغة الحالية مع خيار احتياطي للعربية
     $lang_choose_data = $choose_full_data[$current_lang] ?? ($choose_full_data['ar'] ?? ($choose_full_data['de'] ?? []));
     $choose_title = $lang_choose_data['section_title'] ?? ($lang_choose_data['title'] ?? ($choose_full_data['section_title'] ?? ''));
     $choose_desc  = $lang_choose_data['section_subtitle'] ?? ($lang_choose_data['desc'] ?? ($choose_full_data['section_subtitle'] ?? ''));
     
-    $choose_items = $choose_full_data['items'] ?? [];
-    if (!is_array($choose_items)) {
-        $choose_items = [];
+    // 3. استخراج العناصر (items) من الجذر العام
+    $choose_itemsList = $choose_full_data['items'] ?? [];
+    if (!is_array($choose_itemsList)) {
+        $choose_itemsList = [];
     }
     ?>
 
@@ -170,27 +173,32 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         </p>
     <?php endif; ?>
 
-    <?php if (!empty($choose_items)): ?>
+    <?php if (!empty($choose_itemsList)): ?>
       <div class="row g-3">
         <?php 
-        foreach ($choose_items as $index => $item): 
+        foreach ($choose_itemsList as $index => $item): 
           $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
           $item_img   = get_image_url($raw_img);
           
-          // Fallback ذكي جداً: إذا كانت اللغة الحالية فارغة، يعرض العربية أو الألمانية لكي لا تختفي البطاقة
-          $lang_item  = isset($item[$current_lang]) && !empty($item[$current_lang]['title']) 
+          // استخراج النصوص للغة الحالية مع Fallback ذكي جداً للغات الأخرى لضمان عدم اختفاء البطاقة
+          $lang_item  = isset($item[$current_lang]) && is_array($item[$current_lang]) && !empty($item[$current_lang]['title']) 
                         ? $item[$current_lang] 
                         : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
                         
           $item_title = $lang_item['title'] ?? '';
           $item_desc  = $lang_item['desc'] ?? '';
           
+          // إذا كان العنوان فارغاً تماماً في كل اللغات، نتخطى عرض البطاقة الفارغة
+          if (empty($item_title)) continue;
+          
           $is_active  = ($index === 1) ? 'active' : ''; 
         ?>
           <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="card choose-card <?php echo $is_active; ?>">
               <div class="card-body">
-                <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">
+                <?php if (!empty($item['img'])): ?>
+                    <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">
+                <?php endif; ?>
                 <h5 class="card-title"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
               </div>

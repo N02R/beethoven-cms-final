@@ -716,7 +716,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (محدث بالبنية الهجينة الصحيحة: الأيقونة في الجذر والنصوص تحت اللغة) -->
+<!-- 8. Choose Edit Modal (مصحح ومحدث لضمان استرجاع البيانات بدقة) -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -733,7 +733,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
                 
                 // عناوين القسم للغة الحالية
-                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : [];
+                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : ($choose_all['ar'] ?? []);
                 $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
                 $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
                 
@@ -770,8 +770,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // استخراج نصوص اللغة الحالية من داخل العنصر المشترك
-                            $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? []));
+                            // استخراج نصوص اللغة الحالية بدقة مع Fallback ذكي جداً
+                            $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) 
+                                          ? $item[$current_lang] 
+                                          : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
+                                          
                             $itemTitle = $langItemData['title'] ?? '';
                             $itemDesc  = $langItemData['desc'] ?? '';
                             
@@ -781,11 +784,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                         <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($itemTitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                         <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($itemDesc, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
@@ -803,7 +806,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <!-- الحقل المخزن للصورة القديمة في الجذر -->
+                                        <!-- تصحيح مسار الحقل المخفي للصورة القديمة ليتطابق مع الـ Service -->
                                         <input type="hidden" class="choose-old-img" name="choose[items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($itemImg, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
@@ -1282,7 +1285,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    function addChooseRow() {
+        function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         if (!container) return;
 
@@ -1313,7 +1316,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
                     <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
                 </div>
-                <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
+                <input type="hidden" class="choose-old-img" name="choose[items][${index}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>

@@ -46,12 +46,23 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم المميزات (Why Choose Us) - الاعتماد حصرياً على المفتاح الموحد 'choose'
-        $choose_raw = $getLangData('choose', []);
+        // 3. قسم المميزات (Why Choose Us) - معالجة خاصة بالهيكل الهجين لضمان جلب العناوين والـ items من الجذر
+        $choose_raw_setting = $settings['choose'] ?? '{}';
+        $choose_decoded = json_decode($choose_raw_setting, true);
+        $choose_decoded = is_array($choose_decoded) ? $choose_decoded : [];
+        
+        // استخراج العناوين للغة الحالية من الكائن الخاص بها
+        $choose_lang_data = $choose_decoded[$lang] ?? ($choose_decoded['ar'] ?? ($choose_decoded['de'] ?? []));
+        $choose_title = $choose_lang_data['section_title'] ?? ($choose_lang_data['title'] ?? '');
+        $choose_desc  = $choose_lang_data['section_subtitle'] ?? ($choose_lang_data['desc'] ?? '');
+        
+        // استخراج العناصر (items) الثابتة والعامة من الجذر مباشرة
+        $choose_items = $choose_decoded['items'] ?? [];
+
         $choose_data = [
-            'title' => $choose_raw['section_title'] ?? ($choose_raw['title'] ?? ($choose_raw['choose_title'] ?? '')),
-            'desc'  => $choose_raw['section_subtitle'] ?? ($choose_raw['desc'] ?? ($choose_raw['choose_section_desc'] ?? '')),
-            'items' => $choose_raw['items'] ?? (is_array($choose_raw) && !isset($choose_raw['title']) && !isset($choose_raw['section_title']) ? $choose_raw : [])
+            'title' => $choose_title,
+            'desc'  => $choose_desc,
+            'items' => $choose_items
         ];
 
         // 4. قسم الآراء والتقييمات (Reviews)

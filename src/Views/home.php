@@ -147,12 +147,16 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="container-fluid custom-container choose-container">
     <?php 
-    // استخدام المعيار المركزي الموحد لاستخراج بيانات المميزات حسب اللغة الحالية
+    // جلب بيانات قسم choose الكاملة مع العناوين للغة الحالية
     $choose_section = $getLocalizedData('choose', []);
     
     $choose_title = $choose_section['section_title'] ?? ($choose_section['title'] ?? '');
     $choose_desc  = $choose_section['section_subtitle'] ?? ($choose_section['desc'] ?? '');
-    $choose_items = $choose_section['items'] ?? [];
+    
+    // جلب مصفوفة العناصر (items) الثابتة من الجذر العام في قاعدة البيانات
+    $choose_raw_setting = get_setting('choose', []);
+    $choose_full_data = is_string($choose_raw_setting) ? json_decode($choose_raw_setting, true) : (is_array($choose_raw_setting) ? $choose_raw_setting : []);
+    $choose_items = $choose_full_data['items'] ?? [];
     if (!is_array($choose_items)) {
         $choose_items = [];
     }
@@ -174,8 +178,12 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         foreach ($choose_items as $index => $item): 
           $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
           $item_img   = get_image_url($raw_img);
-          $item_title = $item['title'] ?? '';
-          $item_desc  = $item['desc'] ?? '';
+          
+          // استخراج نصوص العنوان والوصف للعنصر حسب اللغة الحالية مع نظام الحماية (Fallback)
+          $lang_item  = isset($item[$current_lang]) && is_array($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? []));
+          $item_title = $lang_item['title'] ?? '';
+          $item_desc  = $lang_item['desc'] ?? '';
+          
           $item_url   = $item['url'] ?? '#';
           $is_active  = ($index === 1) ? 'active' : ''; 
         ?>

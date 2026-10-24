@@ -738,10 +738,20 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
                 $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
                 
-                // عناصر المميزات من الجذر العام
-                $choose_itemsList = $choose_all['items'] ?? [];
-                if (!is_array($choose_itemsList)) {
-                    $choose_itemsList = [];
+                // 🌟 حل نهائي وآمن لجلب الitems من أي مكان قد تكون مخزنة فيه
+                $choose_itemsList = [];
+                if (isset($choose_all['items']) && is_array($choose_all['items'])) {
+                    $choose_itemsList = $choose_all['items'];
+                } elseif (isset($c['items']) && is_array($c['items'])) {
+                    $choose_itemsList = $c['items'];
+                } else {
+                    // البحث في باقي اللغات إن لم توجد في الجذر
+                    foreach ($choose_all as $langKey => $langVal) {
+                        if (is_array($langVal) && isset($langVal['items']) && is_array($langVal['items'])) {
+                            $choose_itemsList = $langVal['items'];
+                            break;
+                        }
+                    }
                 }
                 ?>
 

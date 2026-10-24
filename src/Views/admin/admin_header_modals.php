@@ -770,26 +770,24 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // استخراج نصوص اللغة الحالية بدقة مع Fallback ذكي جداً
+                            // استخراج نصوص اللغة الحالية بدقة متناهية
                             $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) 
                                           ? $item[$current_lang] 
                                           : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
                                           
                             $itemTitle = $langItemData['title'] ?? '';
                             $itemDesc  = $langItemData['desc'] ?? '';
-                            
-                            // الأيقونة مخزنة في الجذر العام للعنصر
                             $itemImg   = $item['img'] ?? '';
                         ?>
                             <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($itemTitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
+                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($itemDesc, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
+                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itemDesc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
                                     <div class="col-md-11 <?php echo $modal_align ?? ''; ?>">
@@ -799,15 +797,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <?php if (!empty($itemImg)): ?>
                                                 <?php $imgUrl = function_exists('get_image_url') ? get_image_url($itemImg) : $itemImg; ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(safe_admin_string($imgUrl, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                    <img src="<?php echo htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8'); ?>" 
                                                          alt="Choose Item Icon" 
                                                          class="rounded-2" 
                                                          style="width: 38px; height: 38px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <!-- تصحيح مسار الحقل المخفي للصورة القديمة ليتطابق مع الـ Service -->
-                                        <input type="hidden" class="choose-old-img" name="choose[items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($itemImg, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" class="choose-old-img" name="choose[items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف">

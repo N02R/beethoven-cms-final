@@ -1527,6 +1527,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 });
 
                 // تصحيح إعادة تسمية حقول الـ choose لتتوافق تماماً مع الهيكل الهجين
+                                // تصحيح إعادة تسمية حقول الـ choose لتتطابق تماماً مع البنية الهجينة
                 form.querySelectorAll('.choose-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.choose-title');
                     const descInput = row.querySelector('.choose-desc');
@@ -1536,7 +1537,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
                     if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
                     if (fileInput) fileInput.name = `choose_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `choose[items][${index}][old_img]`;
+                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {

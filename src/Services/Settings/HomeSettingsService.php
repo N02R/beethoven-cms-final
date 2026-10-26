@@ -262,7 +262,7 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث قسم المميزات (Choose Us) مطابق لمعيار الخدمات وتعدد اللغات
+        // 5. تحديث قسم المميزات (Choose Us) مع حماية ضد فقدان البيانات
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -273,58 +273,59 @@ class HomeSettingsService
                 $chooseAllLangs = [];
             }
 
-            // التحويل للهيكل المتعدد لغات إذا كان قديماً
-            if (isset($chooseAllLangs['title']) && !isset($chooseAllLangs['ar'])) {
-                $oldData = $chooseAllLangs;
-                $chooseAllLangs = ['ar' => $oldData];
-            }
+            // الاحتفاظ بالبيانات القديمة للغة الحالية لعدم تصفيرها بالخطأ
+            $currentLangData = $chooseAllLangs[$targetLang] ?? [];
 
-            // جلب البيانات المرسلة للغة المستهدفة
             $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
 
-            $secTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
-            $secDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? '');
+            // العنوان: إن وصل جديد نأخذه، وإلا نحتفظ بالقديم
+            $secTitle = $postedChoose['section_title'] 
+                     ?? ($_POST['choose_section_title'] 
+                     ?? ($currentLangData['section_title'] ?? ($currentLangData['title'] ?? 'ما الذي يميز بيتهوفن سيتي')));
+                     
+            $secDesc  = $postedChoose['section_subtitle'] 
+                     ?? ($_POST['choose_section_subtitle'] 
+                     ?? ($currentLangData['section_subtitle'] ?? ($currentLangData['desc'] ?? '')));
 
-            // استخراج العناصر القديمة لنفس اللغة للاحتفاظ بالصور القديمة عند عدم رفع صورة جديدة
-            $existingItems = $chooseAllLangs[$targetLang]['items'] ?? [];
+            $existingItems = $currentLangData['items'] ?? [];
 
-            // تجهيز بنية اللغة الحالية
-            $chooseAllLangs[$targetLang] = [
-                'section_title'    => $secTitle,
-                'section_subtitle' => $secDesc,
-                'items'            => []
-            ];
+            // تجهيز عناصر القائمة
+            $finalItems = [];
 
-            $items = $postedChoose['items'] ?? [];
-            if (is_array($items)) {
-                foreach ($items as $index => $item) {
+            // إذا تم إرسال items في الـ POST نعالجها
+            if (isset($postedChoose['items']) && is_array($postedChoose['items'])) {
+                foreach ($postedChoose['items'] as $index => $item) {
                     $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
                     $img = $oldImg;
 
-                    $fileTmp = null;
-                    $fileErr = UPLOAD_ERR_NO_FILE;
-
                     if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
-                        $fileErr = $_FILES['choose_img_' . $index]['error'];
-                    }
-
-                    if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['choose_img_' . $index]['tmp_name']);
                         $img = 'assets/uploads/' . $filename;
                     }
 
-                    $chooseAllLangs[$targetLang]['items'][] = [
-                        'title' => $item['title'] ?? '',
-                        'desc'  => $item['desc'] ?? '',
+                    $finalItems[] = [
+                        'title' => trim($item['title'] ?? ''),
+                        'desc'  => trim($item['desc'] ?? ''),
                         'img'   => $img,
                         'url'   => $item['url'] ?? '#'
                     ];
                 }
+            } else {
+                // إذا لم يتم إرسال items مطلقاً في الـ POST (مثل عند تعديل العنوان فقط)، لا نمسح البطاقات القديمة!
+                $finalItems = $existingItems;
             }
+
+            // حفظ المصفوفة المدمجة للغة
+            $chooseAllLangs[$targetLang] = [
+                'section_title'    => $secTitle,
+                'section_subtitle' => $secDesc,
+                'title'            => $secTitle,
+                'desc'             => $secDesc,
+                'items'            => $finalItems
+            ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);

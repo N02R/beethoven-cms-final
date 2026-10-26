@@ -716,7 +716,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (مصحح بالكامل للاحتفاظ بالبطاقات والنصوص والصور) -->
+<!-- 8. Choose Edit Modal (فحص البيانات) -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -728,35 +728,40 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-<?php 
-// جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
-$choose_raw = get_setting('choose', '{}');
-$choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
-
-// 1. استخراج عناوين القسم الخاصة باللغة الحالية
-$c = $choose_all[$current_lang] ?? ($choose_all['ar'] ?? []);
-$choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? '');
-$choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? '');
-
-// 2. 🌟 استخراج الـ items ببحث شامل وآمن في كل الاحتمالات
-$choose_itemsList = [];
-if (isset($choose_all['items']) && is_array($choose_all['items'])) {
-    $choose_itemsList = $choose_all['items'];
-} elseif (isset($c['items']) && is_array($c['items'])) {
-    $choose_itemsList = $c['items'];
-} else {
-    // البحث داخل جميع اللغات المتاحة إن لم تكن في الجذر
-    foreach ($choose_all as $langKey => $langVal) {
-        if (is_array($langVal) && isset($langVal['items']) && is_array($langVal['items'])) {
-            $choose_itemsList = $langVal['items'];
-            break;
-        }
-    }
-}
-if (!is_array($choose_itemsList)) {
-    $choose_itemsList = [];
-}
-?>
+                <?php 
+                // جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
+                $choose_raw = get_setting('choose', '{}');
+                $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
+                
+                // 🔍 طباعة محتوى $choose_all لمعرفة مفاتيح البيانات بالتفصيل
+                echo '<pre style="background: #f8fafc; padding: 15px; border-radius: 8px; direction: ltr; text-align: left;">';
+                print_r($choose_all);
+                echo '</pre>';
+                exit;
+                
+                // عناوين القسم للغة الحالية
+                $c = $choose_all[$current_lang] ?? ($choose_all['ar'] ?? []);
+                $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? '');
+                $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? '');
+                
+                // استخراج الـ items
+                $choose_itemsList = [];
+                if (isset($choose_all['items']) && is_array($choose_all['items'])) {
+                    $choose_itemsList = $choose_all['items'];
+                } elseif (isset($c['items']) && is_array($c['items'])) {
+                    $choose_itemsList = $c['items'];
+                } else {
+                    foreach ($choose_all as $langKey => $langVal) {
+                        if (is_array($langVal) && isset($langVal['items']) && is_array($langVal['items'])) {
+                            $choose_itemsList = $langVal['items'];
+                            break;
+                        }
+                    }
+                }
+                if (!is_array($choose_itemsList)) {
+                    $choose_itemsList = [];
+                }
+                ?>
 
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">
@@ -784,7 +789,6 @@ if (!is_array($choose_itemsList)) {
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // 🌟 استخراج نصوص اللغة الحالية (عربية، ألمانية، إلخ) بدقة لملء الحقول تلقائياً
                             $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) 
                                           ? $item[$current_lang] 
                                           : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
@@ -797,12 +801,10 @@ if (!is_array($choose_itemsList)) {
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                        <!-- وضع القيمة المحفوظة داخل value لكي يحتفظ بها المودل -->
                                         <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                        <!-- وضع الوصف المحفوظ داخل value لكي يحتفظ به المودل -->
                                         <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itemDesc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
                                     </div>
 
@@ -820,7 +822,6 @@ if (!is_array($choose_itemsList)) {
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <!-- الحقل المخفي للاحتفاظ بمسار الصورة القديمة (مرتبط باللغة الحالية لضمان التطابق السليم) -->
                                         <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">

@@ -137,6 +137,69 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 </section>
 <!-- services end -->
 
+<!-- choose start -->
+<section class="choose py-5 editable-wrapper" style="position: relative;">
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="تعديل المميزات">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+  <?php endif; ?>
+
+  <div class="container-fluid custom-container choose-container">
+    <?php
+    // جلب البيانات المهيكلة الخاصة باللغة الحالية مباشرة
+    $c_data  = $getLocalizedData('choose', []);
+    
+    $sec_title = $c_data['section_title'] ?? ($c_data['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
+    $sec_desc  = $c_data['section_subtitle'] ?? ($c_data['desc'] ?? '');
+    $c_items   = $c_data['items'] ?? [];
+    ?>
+
+    <?php if (!empty($sec_title)): ?>
+      <h2 class="mb-3 sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+    <?php endif; ?>
+    
+    <?php if (!empty($sec_desc)): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;">
+            <?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?>
+        </p>
+    <?php endif; ?>
+
+    <div class="row g-3">
+      <?php if (!empty($c_items) && is_array($c_items)): ?>
+        <?php foreach ($c_items as $index => $item): 
+          $item_img   = get_image_url($item['img'] ?? null, 'assets/img/home/Grouphome1.svg');
+          $item_title = $item['title'] ?? '';
+          $item_desc  = $item['desc'] ?? '';
+          $item_url   = $item['url'] ?? '#';
+          
+          if (empty($item_title)) continue;
+          
+          // جعل الكارد الثاني نشطاً كافتراضي أو بحسب الـ index
+          $is_active  = ($index === 1) ? 'active' : ''; 
+        ?>
+          <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card choose-card <?php echo $is_active; ?>">
+              <div class="card-body">
+                <a href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
+                    <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" />
+                </a>
+                <h5 class="card-title"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد مميزات مضافة حالياً.</p>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+</section>
+<!-- choose end -->
+
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
     <?php if (!empty($is_admin) && $is_admin === true): ?>

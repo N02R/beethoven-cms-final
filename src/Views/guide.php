@@ -35,14 +35,14 @@ $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->
-<section class="guide py-5 editable-wrapper" style="position: relative;">
+<section class="guide py-5 mt-4 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="تعديل الدليل الشامل">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
-  <div class="custom-container">
+  <div class="custom-container pt-3">
     <div class="text-center mb-5">
       <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php if (!empty($guide_desc)): ?>

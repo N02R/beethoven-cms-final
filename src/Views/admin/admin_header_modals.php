@@ -728,22 +728,35 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <?php 
-                // جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
-                $choose_raw = get_setting('choose', '{}');
-                $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
+<?php 
+// جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
+$choose_raw = get_setting('choose', '{}');
+$choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
 
-                // 1. استخراج عناوين القسم الخاصة باللغة الحالية
-                $c = $choose_all[$current_lang] ?? ($choose_all['ar'] ?? []);
-                $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? '');
-                $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? '');
+// 1. استخراج عناوين القسم الخاصة باللغة الحالية
+$c = $choose_all[$current_lang] ?? ($choose_all['ar'] ?? []);
+$choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? '');
+$choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? '');
 
-                // 2. 🌟 الحل النهائي لجلب الـ items من الجذر مباشرة حيث يحفظها الباك إند
-                $choose_itemsList = $choose_all['items'] ?? [];
-                if (!is_array($choose_itemsList)) {
-                    $choose_itemsList = [];
-                }
-                ?>
+// 2. 🌟 استخراج الـ items ببحث شامل وآمن في كل الاحتمالات
+$choose_itemsList = [];
+if (isset($choose_all['items']) && is_array($choose_all['items'])) {
+    $choose_itemsList = $choose_all['items'];
+} elseif (isset($c['items']) && is_array($c['items'])) {
+    $choose_itemsList = $c['items'];
+} else {
+    // البحث داخل جميع اللغات المتاحة إن لم تكن في الجذر
+    foreach ($choose_all as $langKey => $langVal) {
+        if (is_array($langVal) && isset($langVal['items']) && is_array($langVal['items'])) {
+            $choose_itemsList = $langVal['items'];
+            break;
+        }
+    }
+}
+if (!is_array($choose_itemsList)) {
+    $choose_itemsList = [];
+}
+?>
 
                 <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_choose">

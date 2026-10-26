@@ -98,6 +98,7 @@ return [
     'section_main_title'         => 'Main Section Title',
     'choose_title_placeholder'   => 'Title for "Why Choose Us"',
     'section_description_optional'=> 'Section Description (Optional)',
+    'added_features' => 'Added Features',
     'choose_desc_placeholder'    => 'Add a description here or leave it blank to hide',
     'feature_title_placeholder'  => 'Feature Title',
     'feature_desc_placeholder'   => 'Feature Description',

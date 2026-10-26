@@ -98,6 +98,7 @@ return [
     'section_main_title'         => 'Hauptabschnittstitel',
     'choose_title_placeholder'   => 'Titel für "Warum uns wählen"',
     'section_description_optional'=> 'Abschnittsbeschreibung (Optional)',
+    'added_features' => 'Hinzugefügte Funktionen',
     'choose_desc_placeholder'    => 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer',
     'feature_title_placeholder'  => 'Merkmalstitel',
     'feature_desc_placeholder'   => 'Merkmalsbeschreibung',

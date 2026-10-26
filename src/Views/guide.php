@@ -1,83 +1,82 @@
 <?php
 /**
  * صفحة الدليل الشامل - Guide Page View
+ * نسخة محسنة ومتوافقة مع المعايير المركزية لتعدد اللغات
  */
+
+$current_lang = $current_lang ?? get_current_lang();
+$current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
+
+// دالة جلب البيانات المركزية إن وجدت أو استخدام الآلية الآمنة
+$getLocData = function(string $key, mixed $default = '') {
+    global $current_lang;
+    $raw = get_setting($key, $default);
+    if (is_string($raw)) {
+        $decoded = json_decode($raw, true);
+        $data = is_array($decoded) ? $decoded : $default;
+    } else {
+        $data = is_array($raw) ? $raw : $default;
+    }
+
+    if (is_array($data)) {
+        return $data[$current_lang] ?? ($data['ar'] ?? ($data['de'] ?? $default));
+    }
+    return $data;
+};
+
+// استخراج النصوص المترجمة
+$guide_title    = is_array($t = get_setting('guide_title', [])) ? ($t[$current_lang] ?? $t['ar'] ?? 'الدليل الشامل') : get_setting('guide_title', 'الدليل الشامل');
+$guide_desc     = is_array($d = get_setting('guide_desc', [])) ? ($d[$current_lang] ?? $d['ar'] ?? '') : get_setting('guide_desc', '');
+$read_more_text = is_array($r = get_setting('read_more_btn', [])) ? ($r[$current_lang] ?? $r['ar'] ?? 'قراءة المزيد') : get_setting('read_more_btn', 'قراءة المزيد');
+
+// تنظيف وتجهيز عناصر المقالات
+$guide_items_raw = get_setting('guide_items', []);
+$guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : (is_array($guide_items_raw) ? $guide_items_raw : []);
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->
 <section class="guide py-5 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin)): ?>
+  <?php if (!empty($is_admin) && $is_admin === true): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الدليل الشامل">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
   <div class="custom-container">
-    <?php 
-        // معالجة عنوان الدليل متعدد اللغات (الأولوية للغة الحالية ثم العربية)
-        $guide_title_raw = get_setting('guide_title', 'الدليل الشامل');
-        if (is_string($guide_title_raw) && str_starts_with(trim($guide_title_raw), '{')) {
-            $gt_arr = json_decode($guide_title_raw, true) ?? [];
-            $guide_title = $gt_arr[$current_lang] ?? $gt_arr['ar'] ?? 'الدليل الشامل';
-        } else {
-            $guide_title = $guide_title_raw;
-        }
-
-        // معالجة وصف الدليل متعدد اللغات
-        $guide_desc_raw = get_setting('guide_desc', '');
-        if (is_string($guide_desc_raw) && str_starts_with(trim($guide_desc_raw), '{')) {
-            $gd_arr = json_decode($guide_desc_raw, true) ?? [];
-            $guide_desc = $gd_arr[$current_lang] ?? $gd_arr['ar'] ?? '';
-        } else {
-            $guide_desc = $guide_desc_raw;
-        }
-
-        // معالجة نص زر "قراءة المزيد"
-        $rm_raw = get_setting('read_more_btn', 'قراءة المزيد');
-        if (is_string($rm_raw) && str_starts_with(trim($rm_raw), '{')) {
-            $rm_arr = json_decode($rm_raw, true) ?? [];
-            $read_more_text = $rm_arr[$current_lang] ?? $rm_arr['ar'] ?? 'قراءة المزيد';
-        } else {
-            $read_more_text = $rm_raw;
-        }
-
-        $guide_items_raw = get_setting('guide_items', []);
-        $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : $guide_items_raw;
-    ?>
-
     <div class="text-center mb-5">
-      <h2 class="sec-title mb-3"><?php echo htmlspecialchars($guide_title); ?></h2>
+      <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php if (!empty($guide_desc)): ?>
         <p class="main-p mx-auto" style="max-width: 700px;">
-          <?php echo nl2br(htmlspecialchars($guide_desc)); ?>
+          <?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?>
         </p>
       <?php endif; ?>
     </div>
 
     <div class="row g-4">
-      <?php if (!empty($guide_items)): ?>
+      <?php if (!empty($guide_items) && is_array($guide_items)): ?>
         <?php foreach ($guide_items as $item): 
-            $item_title = $item[$current_lang]['title'] ?? $item['ar']['title'] ?? ($item['title'] ?? '');
-            $item_desc  = $item[$current_lang]['desc'] ?? $item['ar']['desc'] ?? ($item['desc'] ?? '');
+            $item_data  = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
+            $item_title = $item_data['title'] ?? ($item['title'] ?? '');
+            $item_desc  = $item_data['desc'] ?? ($item['desc'] ?? '');
 
-            $item_img = get_image_url($item['img'] ?? null);
+            $item_img  = get_image_url($item['img'] ?? null);
             $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');
-            $raw_url = $item['url'] ?? '#';
-            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? ($path_prefix ?? '') . ltrim($raw_url, '/') : $raw_url;
+            $raw_url   = $item['url'] ?? '#';
+            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm">
               <?php if (!empty($item_img)): ?>
                 <div class="card-img-wrapper">
-                  <img src="<?php echo htmlspecialchars($item_img); ?>" alt="<?php echo htmlspecialchars($item_title); ?>" class="card-img-top img-fluid">
+                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top img-fluid">
                 </div>
               <?php endif; ?>
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item_title); ?></h5>
-                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc); ?></p>
-                <a href="<?php echo htmlspecialchars($final_url); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
-                  <?php echo htmlspecialchars($read_more_text); ?>
-                  <img src="<?php echo htmlspecialchars($arrow_img); ?>" alt="arrow" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
+                  <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
+                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                 </a>
               </div>
             </div>
@@ -92,3 +91,13 @@
   </div>
 </section>
 <!-- ===== GUIDE PAGE END ===== -->
+
+<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
+<?php if (!empty($is_admin) && $is_admin === true): ?>
+    <?php 
+    $modals_file = __DIR__ . '/admin/admin_home_modals.php';
+    if (file_exists($modals_file)) {
+        include_once $modals_file;
+    }
+    ?>
+<?php endif; ?>

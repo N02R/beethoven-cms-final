@@ -211,7 +211,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            // قراءة العنوان من المتغير الجاهز من HomeModel أو استخراجه بأمان
+            // 1. استخراج العنوان الخاص باللغة الحالية بأمان
             $sec_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
             ?>
             <h2 class="py-5 text-center sec-title">
@@ -226,35 +226,46 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                 
                 <div class="carousel-inner">
                     <?php 
-                    // جلب قائمة الفيديوهات الخاصة باللغة الحالية حصراً
-                    $items_list = $reviews_items ?? ($reviews_section['items'] ?? []);
-                    if (!is_array($items_list)) {
-                        $items_list = [];
+                    // 2. استخراج قائمة الفيديوهات الخاصة باللغة الحالية فقط
+                    $videos_list = $reviews_items ?? ($reviews_section['items'] ?? []);
+
+                    // فحص احتياطي في حال لم يتم تمرير المتغيرات من HomeModel مباشرة
+                    if (empty($videos_list) && function_exists('get_setting')) {
+                        $rawSetting = json_decode((string)get_setting('reviews_items', '{}'), true);
+                        $activeLang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
+                        $videos_list = $rawSetting[$activeLang]['items'] ?? ($rawSetting['ar']['items'] ?? []);
                     }
 
-                    if (!empty($items_list)): 
-                        foreach ($items_list as $index => $item): 
-                            $video_url = $item['url'] ?? '';
-                            if (empty($video_url)) continue;
+                    if (!is_array($videos_list)) {
+                        $videos_list = [];
+                    }
+
+                    // تصفية الفيديوهات للتأكد من وجود روابط صالحة
+                    $valid_videos = array_values(array_filter($videos_list, function($v) {
+                        return !empty($v['url']);
+                    }));
+
+                    if (!empty($valid_videos)): 
+                        foreach ($valid_videos as $index => $item): 
                     ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($video_url, ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen title="Review Video"></iframe>
+                                        <iframe src="<?php echo htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen title="Review Video"></iframe>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p class="text-center py-4 text-muted">
-                            <?php echo htmlspecialchars($lang['no_reviews_available'] ?? 'لا توجد فيديوهات للعرض حالياً.', ENT_QUOTES, 'UTF-8'); ?>
-                        </p>
+                        <div class="text-center py-4 text-muted">
+                            <p><?php echo htmlspecialchars($lang['no_reviews_available'] ?? 'لا توجد فيديوهات للعرض حالياً.', ENT_QUOTES, 'UTF-8'); ?></p>
+                        </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="dots mt-4">
-                    <?php if (!empty($items_list)): ?>
-                        <?php foreach ($items_list as $index => $item): ?>
+                    <?php if (!empty($valid_videos)): ?>
+                        <?php foreach ($valid_videos as $index => $item): ?>
                             <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
                                   data-bs-target="#carousel-reviews" 
                                   data-bs-slide-to="<?php echo $index; ?>">

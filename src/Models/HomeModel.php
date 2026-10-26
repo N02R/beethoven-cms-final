@@ -45,7 +45,15 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم الآراء والتقييمات (Reviews)
+        // 3. قسم المميزات (Choose Us) - متوافق تماماً مع نمط الخدمات وتعدد اللغات
+        $choose_raw = $getLangData('choose', []);
+        $choose_data = [
+            'title' => $choose_raw['title'] ?? ($choose_raw['section_title'] ?? 'ما الذي يميز بيتهوفن سيتي'),
+            'desc'  => $choose_raw['desc'] ?? ($choose_raw['section_subtitle'] ?? ''),
+            'items' => $choose_raw['items'] ?? []
+        ];
+
+        // 4. قسم الآراء والتقييمات (Reviews)
         $reviews_raw = $getLangData('reviews_items', []);
         $reviews_data = [
             'title' => $reviews_raw['title'] ?? ($reviews_raw['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'),
@@ -53,7 +61,7 @@ class HomeModel {
             'items' => $reviews_raw['items'] ?? (is_array($reviews_raw) && !isset($reviews_raw['title']) ? $reviews_raw : [])
         ];
 
-        // 4. قسم الأسئلة الشائعة (FAQ)
+        // 5. قسم الأسئلة الشائعة (FAQ)
         $faq_raw = $getLangData('faq_items', []);
         $faq_data = [
             'title' => $faq_raw['title'] ?? ($faq_raw['faq_title'] ?? 'الأسئلة الشائعة'),
@@ -61,7 +69,7 @@ class HomeModel {
             'items' => $faq_raw['items'] ?? (is_array($faq_raw) && !isset($faq_raw['title']) ? $faq_raw : [])
         ];
 
-        // 5. قسم الدليل الشامل (Guide)
+        // 6. قسم الدليل الشامل (Guide)
         $guide_raw = $getLangData('guide_items', []);
         $guide_data = [
             'title' => $guide_raw['title'] ?? ($guide_raw['guide_title'] ?? ''),
@@ -69,10 +77,14 @@ class HomeModel {
             'items' => $guide_raw['items'] ?? (is_array($guide_raw) && !isset($guide_raw['title']) ? $guide_raw : [])
         ];
 
-        // إرجاع مصفوفة موحدة ومنسقة بدقة للغة الحالية
+        // إرجاع مصفوفة موحدة ومنسقة بدقة للغة الحالية لخدمة العرض والمودل
         return [
             'hero'                  => $hero_raw,
             'services_section'      => $services_data,
+            'choose_section'        => $choose_data,
+            'choose_title'          => $choose_data['title'],
+            'choose_section_desc'   => $choose_data['desc'],
+            'choose_items'          => $choose_data['items'],
             'reviews_section'       => $reviews_data,
             'reviews_title'         => $reviews_data['title'],
             'reviews_items'         => $reviews_data['items'],

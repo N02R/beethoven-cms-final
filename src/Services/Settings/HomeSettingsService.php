@@ -196,7 +196,7 @@ class HomeSettingsService
             $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 4. تحديث التقييمات (Reviews)
+               // 4. تحديث التقييمات (فيديوهات العملاء - Reviews Videos)
         elseif ($action === 'update_reviews') {
             $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -211,51 +211,43 @@ class HomeSettingsService
                 $reviewsAllLangs = ['ar' => $oldData];
             }
 
-            $reviewsTitle = $_POST['reviews_title'][$targetLang] ?? ($_POST['reviews_title'] ?? ($_POST['reviews'][$targetLang]['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
-            $reviewsDesc  = $_POST['reviews_desc'][$targetLang] ?? ($_POST['reviews_desc'] ?? ($_POST['reviews'][$targetLang]['desc'] ?? ''));
+            // الاحتفاظ بالبيانات القديمة للغة الحالية لعدم تصفيرها
+            $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
 
-            $rawItems = $_POST['reviews'][$targetLang]['items'] ?? ($_POST['reviews']['items'] ?? ($_POST['reviews'] ?? ($_POST['reviews_items'] ?? [])));
-            $existingLangItems = $reviewsAllLangs[$targetLang]['items'] ?? [];
-            $processedItems = [];
+            $postedReviews = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
+
+            // قراءة العنوان الجديد أو الاحتفاظ بالقديم
+            $reviewsTitle = $postedReviews['title'] 
+                         ?? ($_POST['reviews_title'] 
+                         ?? ($currentLangData['title'] ?? ($currentLangData['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا')));
+
+            $existingItems = $currentLangData['items'] ?? [];
+            $finalItems = [];
+
+            // معالجة روابط الفيديوهات
+            $rawItems = $postedReviews['items'] ?? ($_POST['reviews_items'] ?? null);
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    if (!is_numeric($index) || !is_array($item)) continue;
-
-                    $oldImg = $item['old_img'] ?? ($existingLangItems[$index]['img'] ?? ($existingLangItems[$index]['avatar'] ?? ''));
-                    $finalImg = $oldImg;
-
-                    $fileTmp = null;
-                    if (isset($_FILES['review_img_' . $index]) && $_FILES['review_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['review_img_' . $index]['tmp_name'];
-                    } elseif (isset($_FILES['reviews']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['reviews']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['reviews']['tmp_name'][$targetLang]['items'][$index]['img'];
+                    if (!is_array($item)) continue;
+                    $videoUrl = trim($item['url'] ?? '');
+                    
+                    // لا نحفظ الصفوف الفارغة من الروابط
+                    if (!empty($videoUrl)) {
+                        $finalItems[] = [
+                            'url' => $videoUrl
+                        ];
                     }
-
-                    if ($fileTmp) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
-                        $finalImg = 'assets/uploads/' . $filename;
-                    }
-
-                    $processedItems[] = [
-                        'name'    => $item['name'] ?? ($item['title'] ?? ''),
-                        'role'    => $item['role'] ?? '',
-                        'comment' => $item['comment'] ?? ($item['desc'] ?? ''),
-                        'rating'  => $item['rating'] ?? '5',
-                        'img'     => $finalImg,
-                        'avatar'  => $finalImg
-                    ];
                 }
+            } else {
+                // في حال تعديل العنوان فقط، نحتفظ بالفيديوهات السابقة
+                $finalItems = $existingItems;
             }
 
             $reviewsAllLangs[$targetLang] = [
                 'title'         => $reviewsTitle,
-                'desc'          => $reviewsDesc,
                 'reviews_title' => $reviewsTitle,
-                'items'         => $processedItems
+                'items'         => $finalItems
             ];
 
             $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);

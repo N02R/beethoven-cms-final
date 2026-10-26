@@ -53,12 +53,11 @@ class HomeModel {
             'items' => $choose_raw['items'] ?? []
         ];
 
-        // 4. قسم الآراء والتقييمات (Reviews Videos)
+        // 4. قسم الآراء والتقييمات (Reviews Videos) - بنية نظيفة وموحدة
         $reviews_raw = $getLangData('reviews_items', []);
         $reviews_data = [
-            'title' => $reviews_raw['title'] ?? ($reviews_raw['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'),
-            'desc'  => $reviews_raw['desc'] ?? '',
-            'items' => $reviews_raw['items'] ?? []
+            'title' => is_string($reviews_raw['title'] ?? null) ? $reviews_raw['title'] : 'شاهد ماذا يقول عملاؤنا عنا',
+            'items' => is_array($reviews_raw['items'] ?? null) ? $reviews_raw['items'] : []
         ];
 
         // 5. قسم الأسئلة الشائعة (FAQ)

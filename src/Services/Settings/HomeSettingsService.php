@@ -196,7 +196,7 @@ class HomeSettingsService
             $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-               // 4. تحديث التقييمات (فيديوهات العملاء - Reviews Videos)
+        // 4. تحديث التقييمات وفيديوهات العملاء (Reviews)
         elseif ($action === 'update_reviews') {
             $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -206,48 +206,35 @@ class HomeSettingsService
                 $reviewsAllLangs = [];
             }
 
-            if (isset($reviewsAllLangs['title']) && !isset($reviewsAllLangs['ar'])) {
-                $oldData = $reviewsAllLangs;
-                $reviewsAllLangs = ['ar' => $oldData];
-            }
-
-            // الاحتفاظ بالبيانات القديمة للغة الحالية لعدم تصفيرها
+            // قراءة بيانات اللغة الحالية لحمايتها من التصفير
             $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
 
+            // استخراج ما تم إرساله من الفورم
             $postedReviews = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
 
-            // قراءة العنوان الجديد أو الاحتفاظ بالقديم
-            $reviewsTitle = $postedReviews['title'] 
-                         ?? ($_POST['reviews_title'] 
-                         ?? ($currentLangData['title'] ?? ($currentLangData['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا')));
+            // قراءة العنوان (نص نقي)
+            $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'))));
 
-            $existingItems = $currentLangData['items'] ?? [];
+            // قراءة الفيديوهات
+            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
             $finalItems = [];
 
-            // معالجة روابط الفيديوهات
-            $rawItems = $postedReviews['items'] ?? ($_POST['reviews_items'] ?? null);
-
-            if (is_array($rawItems)) {
-                foreach ($rawItems as $index => $item) {
+            if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
+                foreach ($postedReviews['items'] as $item) {
                     if (!is_array($item)) continue;
-                    $videoUrl = trim($item['url'] ?? '');
-                    
-                    // لا نحفظ الصفوف الفارغة من الروابط
-                    if (!empty($videoUrl)) {
-                        $finalItems[] = [
-                            'url' => $videoUrl
-                        ];
+                    $url = trim((string)($item['url'] ?? ''));
+                    if (!empty($url)) {
+                        $finalItems[] = ['url' => $url];
                     }
                 }
             } else {
-                // في حال تعديل العنوان فقط، نحتفظ بالفيديوهات السابقة
                 $finalItems = $existingItems;
             }
 
+            // بناء كائن اللغة الحالية وحفظه
             $reviewsAllLangs[$targetLang] = [
-                'title'         => $reviewsTitle,
-                'reviews_title' => $reviewsTitle,
-                'items'         => $finalItems
+                'title' => $reviewsTitle,
+                'items' => $finalItems
             ];
 
             $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);

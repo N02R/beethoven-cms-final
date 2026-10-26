@@ -203,7 +203,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
     <?php if (!empty($is_admin) && $is_admin === true): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars($lang['edit_reviews'] ?? 'تعديل التقييمات', ENT_QUOTES, 'UTF-8'); ?>">
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -211,43 +211,30 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            // 1. استخراج العنوان الخاص باللغة الحالية مع حماية من Array to string conversion
-            $raw_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
-            $activeLang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
-
-            if (is_array($raw_title)) {
-                $final_title = $raw_title[$activeLang] ?? ($raw_title['title'] ?? ($raw_title['ar'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
-            } else {
-                $final_title = (string)$raw_title;
-            }
+            // مطابقة مفتاح قاعدة البيانات الصحيح: reviews_items
+            $r_data    = $getLocalizedData('reviews_items', []);
+            $sec_title = $r_data['section_title'] ?? ($r_data['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
             ?>
             <h2 class="py-5 text-center sec-title">
-                <?php echo htmlspecialchars($final_title, ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
             </h2>
         </div>
     </div>
 
     <div class="custom-container">
         <div class="reviews-carousel-wrapper">
-            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir ?? ($is_rtl ? 'rtl' : 'ltr'), ENT_QUOTES, 'UTF-8'); ?>">
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <div class="carousel-inner">
                     <?php 
-                    // 2. استخراج قائمة الفيديوهات الخاصة باللغة الحالية فقط
-                    $videos_list = $reviews_items ?? ($reviews_section['items'] ?? []);
-
-                    // فحص احتياطي في حال لم يتم تمرير المتغيرات من HomeModel مباشرة
-                    if (empty($videos_list) && function_exists('get_setting')) {
-                        $rawSetting = json_decode((string)get_setting('reviews_items', '{}'), true);
-                        $videos_list = $rawSetting[$activeLang]['items'] ?? ($rawSetting['ar']['items'] ?? []);
+                    // جلب مصفوفة الفيديوهات من داخل items كما هو مخزن في قاعدة البيانات
+                    $reviews_videos = $r_data['items'] ?? [];
+                    if (!is_array($reviews_videos)) {
+                        $reviews_videos = [];
                     }
 
-                    if (!is_array($videos_list)) {
-                        $videos_list = [];
-                    }
-
-                    // تصفية الفيديوهات للتأكد من وجود روابط صالحة
-                    $valid_videos = array_values(array_filter($videos_list, function($v) {
+                    // استبعاد الصفوف الفارغة أو التي لا تحتوي على رابط فيديو
+                    $valid_videos = array_values(array_filter($reviews_videos, function($v) {
                         return is_array($v) && !empty($v['url']);
                     }));
 
@@ -262,9 +249,9 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                    <?php else: ?>
+                    else: ?>
                         <div class="text-center py-4 text-muted">
-                            <p><?php echo htmlspecialchars($lang['no_reviews_available'] ?? 'لا توجد فيديوهات للعرض حالياً.', ENT_QUOTES, 'UTF-8'); ?></p>
+                            <p>لا توجد فيديوهات للعرض حالياً.</p>
                         </div>
                     <?php endif; ?>
                 </div>

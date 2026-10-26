@@ -846,12 +846,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب آمن للبيانات الخاصة باللغة الحالية
-                $reviews_sec_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
-                $reviewsItemsData  = $reviews_items ?? ($reviews_section['items'] ?? []);
-                
-                if (!is_array($reviewsItemsData)) {
-                    $reviewsItemsData = [];
+                // جلب آمن للغة الحالية
+                $curTitle = $reviews_title ?? ($reviews_section['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
+                if (is_array($curTitle)) {
+                    $curTitle = $curTitle[$current_lang ?? 'ar'] ?? ($curTitle['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
+                }
+                $curVideos = $reviews_items ?? ($reviews_section['items'] ?? []);
+                if (!is_array($curVideos)) {
+                    $curVideos = [];
                 }
                 ?>
 
@@ -861,23 +863,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="reviews_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان قسم التقييمات للغة الحالية -->
+                    <!-- عنوان قسم التقييمات -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="<?php echo $modal_align ?? ''; ?>">
                             <label class="small fw-bold mb-1 text-secondary">
                                 <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
                             </label>
-                            <input type="text" class="form-control" name="reviews[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars($reviews_sec_title, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="text" class="form-control" name="reviews[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$curTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
-                    <!-- قائمة فيديوهات العملاء -->
+                    <!-- الفيديوهات -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>">
                         <?php echo htmlspecialchars($lang['added_videos'] ?? 'الفيديوهات المضافة', ENT_QUOTES, 'UTF-8'); ?>
                     </h6>
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($reviewsItemsData as $index => $review): 
-                            $videoUrl = $review['url'] ?? '';
+                        <?php foreach ($curVideos as $index => $item): 
+                            $videoUrl = $item['url'] ?? '';
                         ?>
                             <div class="p-3 shadow-sm review-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">

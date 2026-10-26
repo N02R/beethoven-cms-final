@@ -196,50 +196,84 @@ class HomeSettingsService
             $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 4. تحديث التقييمات وفيديوهات العملاء (Reviews)
-        elseif ($action === 'update_reviews') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+// 4. تحديث التقييمات وفيديوهات العملاء (Reviews)
+elseif ($action === 'update_reviews') {
+    $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
-            $reviewsAllLangs = is_string($rawReviewsSetting) ? json_decode($rawReviewsSetting, true) : (is_array($rawReviewsSetting) ? $rawReviewsSetting : []);
-            if (!is_array($reviewsAllLangs)) {
-                $reviewsAllLangs = [];
-            }
+    $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
+    $reviewsAllLangs = is_string($rawReviewsSetting) ? json_decode($rawReviewsSetting, true) : (is_array($rawReviewsSetting) ? $rawReviewsSetting : []);
+    if (!is_array($reviewsAllLangs)) {
+        $reviewsAllLangs = [];
+    }
 
-            // قراءة بيانات اللغة الحالية لحمايتها من التصفير
-            $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
+    // قراءة بيانات اللغة الحالية لحمايتها من التصفير
+    $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
 
-            // استخراج ما تم إرساله من الفورم
-            $postedReviews = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
+    // استخراج ما تم إرساله من الفورم
+    $postedReviews = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
 
-            // قراءة العنوان (نص نقي)
-            $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'))));
+    // قراءة العنوان (نص نقي)
+    $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'))));
 
-            // قراءة الفيديوهات
-            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
-            $finalItems = [];
+    // 🌟 دالة ذكية لتحويل أي رابط يوتيوب إلى رابط Embed رسمي وآمن
+    $convertToEmbed = function(string $url): string {
+        $url = trim($url);
+        if (empty($url)) return '';
 
-            if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
-                foreach ($postedReviews['items'] as $item) {
-                    if (!is_array($item)) continue;
-                    $url = trim((string)($item['url'] ?? ''));
-                    if (!empty($url)) {
-                        $finalItems[] = ['url' => $url];
-                    }
-                }
-            } else {
-                $finalItems = $existingItems;
-            }
-
-            // بناء كائن اللغة الحالية وحفظه
-            $reviewsAllLangs[$targetLang] = [
-                'title' => $reviewsTitle,
-                'items' => $finalItems
-            ];
-
-            $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+        // إذا كان الرابط هو Embed مسبقاً
+        if (str_contains($url, 'youtube.com/embed/')) {
+            return $url;
         }
+
+        $videoId = '';
+        
+        // فحص الرابط المختصر (https://youtu.be/VIDEO_ID)
+        if (preg_match('/youtu\.be\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+        // فحص الرابط العادي (https://www.youtube.com/watch?v=VIDEO_ID)
+        elseif (preg_match('/youtube\.com\/(?:watch\?v=|v\/|embed\/)([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            $videoId = $matches[1];
+        }
+
+        // إن تم استخراج الـ ID بنجاح، نُرجع رابط الـ Embed النظامي
+        if (!empty($videoId)) {
+            return 'https://www.youtube.com/embed/' . $videoId;
+        }
+
+        // إذا لم يكن رابط يوتيوب أصلاً، يُعاد كما هو أو فارغاً
+        return $url;
+    };
+
+    // قراءة وتصفية وتحويل الفيديوهات
+    $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+    $finalItems = [];
+
+    if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
+        foreach ($postedReviews['items'] as $item) {
+            if (!is_array($item)) continue;
+            $rawUrl = trim((string)($item['url'] ?? ''));
+            
+            // تطبيق التحويل الذكي على الرابط المدخل
+            $embedUrl = $convertToEmbed($rawUrl);
+            
+            if (!empty($embedUrl)) {
+                $finalItems[] = ['url' => $embedUrl];
+            }
+        }
+    } else {
+        $finalItems = $existingItems;
+    }
+
+    // بناء كائن اللغة الحالية وحفظه
+    $reviewsAllLangs[$targetLang] = [
+        'title' => $reviewsTitle,
+        'items' => $finalItems
+    ];
+
+    $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
+    $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+}
 
         // 5. تحديث قسم المميزات (Choose Us) مع حماية ضد فقدان البيانات
         elseif ($action === 'update_choose') {

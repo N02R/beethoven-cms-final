@@ -716,7 +716,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (مصمم على نمط قسم الخدمات تماماً وبدعم كامل للغة الحالية) -->
+<!-- 8. Choose Edit Modal -->
 <div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -729,7 +729,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات القسم للغة الحالية مباشرة عبر الدالة المركزية
+                // جلب بيانات القسم للغة الحالية مباشرة
                 $c_data  = function_exists('getLocalizedData') ? getLocalizedData('choose', []) : [];
                 
                 $choose_sec_title    = $c_data['section_title'] ?? ($c_data['title'] ?? '');
@@ -747,7 +747,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- الجزء الأول: العنوان الرئيسي والوصف للقسم -->
+                    <!-- العنوان الرئيسي والوصف للقسم -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align ?? ''; ?>">
@@ -766,7 +766,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         </div>
                     </div>
 
-                    <!-- الجزء الثاني: كروت وعناصر المميزات المضافة والاحتفاظ بقيمها -->
+                    <!-- العناصر والمميزات -->
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['added_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 

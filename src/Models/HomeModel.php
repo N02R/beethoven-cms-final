@@ -48,8 +48,8 @@ class HomeModel {
         // 3. قسم المميزات (Choose Us) - متوافق تماماً مع نمط الخدمات وتعدد اللغات
         $choose_raw = $getLangData('choose', []);
         $choose_data = [
-            'title' => $choose_raw['title'] ?? ($choose_raw['section_title'] ?? 'ما الذي يميز بيتهوفن سيتي'),
-            'desc'  => $choose_raw['desc'] ?? ($choose_raw['section_subtitle'] ?? ''),
+            'title' => $choose_raw['section_title'] ?? ($choose_raw['title'] ?? 'ما الذي يميز بيتهوفن سيتي'),
+            'desc'  => $choose_raw['section_subtitle'] ?? ($choose_raw['desc'] ?? ''),
             'items' => $choose_raw['items'] ?? []
         ];
 

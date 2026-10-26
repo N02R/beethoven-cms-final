@@ -273,21 +273,23 @@ class HomeSettingsService
                 $chooseAllLangs = [];
             }
 
+            // التحويل للهيكل المتعدد لغات إذا كان قديماً
             if (isset($chooseAllLangs['title']) && !isset($chooseAllLangs['ar'])) {
                 $oldData = $chooseAllLangs;
                 $chooseAllLangs = ['ar' => $oldData];
             }
 
+            // جلب البيانات المرسلة للغة المستهدفة
             $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
 
             $secTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
             $secDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? '');
 
+            // استخراج العناصر القديمة لنفس اللغة للاحتفاظ بالصور القديمة عند عدم رفع صورة جديدة
             $existingItems = $chooseAllLangs[$targetLang]['items'] ?? [];
 
+            // تجهيز بنية اللغة الحالية
             $chooseAllLangs[$targetLang] = [
-                'title'            => $secTitle,
-                'desc'             => $secDesc,
                 'section_title'    => $secTitle,
                 'section_subtitle' => $secDesc,
                 'items'            => []

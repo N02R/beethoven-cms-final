@@ -834,36 +834,59 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 9. Reviews Edit Modal -->
-<div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+<div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-play-btn text-primary"></i> إدارة فيديوهات العملاء</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">
+                    <i class="bi bi-play-btn text-primary <?php echo !empty($is_rtl) ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_customer_videos'] ?? 'إدارة فيديوهات العملاء', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب آمن للبيانات الخاصة باللغة الحالية
+                $reviews_sec_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
+                $reviewsItemsData  = $reviews_items ?? ($reviews_section['items'] ?? []);
+                
+                if (!is_array($reviewsItemsData)) {
+                    $reviewsItemsData = [];
+                }
+                ?>
+
                 <form id="reviewsForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_reviews">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="reviews_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- عنوان قسم التقييمات للغة الحالية -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                        <input type="text" class="form-control" name="reviews_title" value="<?php echo htmlspecialchars(safe_admin_string($data['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="<?php echo $modal_align ?? ''; ?>">
+                            <label class="small fw-bold mb-1 text-secondary">
+                                <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                            </label>
+                            <input type="text" class="form-control" name="reviews[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars($reviews_sec_title, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا', ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
                     </div>
 
+                    <!-- قائمة فيديوهات العملاء -->
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>">
+                        <?php echo htmlspecialchars($lang['added_videos'] ?? 'الفيديوهات المضافة', ENT_QUOTES, 'UTF-8'); ?>
+                    </h6>
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $reviewsItemsData = is_array($data['reviews_items'] ?? null) ? $data['reviews_items'] : [];
-                        foreach ($reviewsItemsData as $index => $review): 
+                        <?php foreach ($reviewsItemsData as $index => $review): 
+                            $videoUrl = $review['url'] ?? '';
                         ?>
                             <div class="p-3 shadow-sm review-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
-                                    <div class="col-md-11">
-                                        <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
-                                        <input type="text" class="form-control review-url" name="reviews[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($review['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط اليوتيوب (Embed URL)">
+                                    <div class="col-md-11 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['review_video_url'] ?? 'رابط الفيديو (Embed URL)', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control review-url" name="reviews[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($videoUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://www.youtube.com/embed/...">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="حذف الفيديو">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_video'] ?? 'حذف الفيديو', ENT_QUOTES, 'UTF-8'); ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -873,13 +896,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addReviewRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة فيديو جديد
+                        <i class="bi bi-plus-circle <?php echo (!empty($is_rtl)) ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_video'] ?? 'إضافة فيديو جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="reviewsForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="reviewsForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1286,7 +1309,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة صف ميزة جديدة لقسم choose مطابقة لمعيار الخدمات
+    // 🌟 دالة إضافة صف ميزة جديدة لقسم choose
     function addChooseRow() {
         const container = document.getElementById('chooseRowsContainer');
         if (!container) return;
@@ -1325,21 +1348,29 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
+    // 🌟 دالة إضافة فيديو جديد لقسم reviews
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.review-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        
+        const langVideoUrl   = "<?php echo $lang['review_video_url'] ?? 'رابط الفيديو (Embed URL)'; ?>";
+        const langDeleteText = "<?php echo $lang['delete_video'] ?? 'حذف الفيديو'; ?>";
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm mb-3 review-row-item';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
-                    <input type="text" class="form-control review-url" name="reviews[${count}][url]" placeholder="رابط اليوتيوب (Embed URL)">
+                    <label class="small fw-bold mb-1 text-secondary">${langVideoUrl}</label>
+                    <input type="text" class="form-control review-url" name="reviews[${currentLang}][items][${count}][url]" placeholder="https://www.youtube.com/embed/...">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الفيديو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -1540,6 +1571,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
                     if (fileInput) fileInput.name = `choose_img_${index}`;
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // 🌟 إعادة ترتيب وتسمية حقول review بدقة عند الـ submit
+                form.querySelectorAll('.review-row-item').forEach((row, index) => {
+                    const urlInput = row.querySelector('.review-url');
+                    if (urlInput) urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
                 });
 
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {

@@ -105,4 +105,13 @@ return [
     'icon_or_image'              => 'Symbol / Bild',
     'delete_feature'             => 'Merkmal löschen',
     'add_new_feature'            => 'Neues Merkmal hinzufügen',
+    'edit_reviews'           => 'Bewertungen bearbeiten',
+'reviews_default_title'  => 'Sehen Sie, was unsere Kunden über uns sagen',
+'no_reviews_available'   => 'Derzeit sind keine Bewertungsvideos verfügbar.',
+'review_video_url'       => 'Video Embed URL',
+'delete_video'           => 'Video löschen',
+'add_new_video'          => 'Neues Video hinzufügen',
+'manage_customer_videos' => 'Kunden-Videos verwalten',
+'added_videos'           => 'Hinzugefügte Videos',
+
 ];

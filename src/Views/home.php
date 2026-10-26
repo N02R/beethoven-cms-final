@@ -203,7 +203,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- review start -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
     <?php if (!empty($is_admin) && $is_admin === true): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="تعديل التقييمات">
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars($lang['edit_reviews'] ?? 'تعديل التقييمات', ENT_QUOTES, 'UTF-8'); ?>">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -211,45 +211,50 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            $reviews_title = $getLocalizedData('reviews_title', 'شاهد ماذا يقول عملاؤنا عنا');
-            if (is_array($reviews_title)) {
-                $reviews_title = $reviews_title['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
-            }
+            // قراءة العنوان من المتغير الجاهز من HomeModel أو استخراجه بأمان
+            $sec_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
             ?>
             <h2 class="py-5 text-center sec-title">
-                <?php echo htmlspecialchars((string)$reviews_title, ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
             </h2>
         </div>
     </div>
 
     <div class="custom-container">
         <div class="reviews-carousel-wrapper">
-            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir ?? ($is_rtl ? 'rtl' : 'ltr'), ENT_QUOTES, 'UTF-8'); ?>">
                 
                 <div class="carousel-inner">
                     <?php 
-                    $reviews_items_raw = get_setting('reviews_items', []);
-                    $reviews_items = is_string($reviews_items_raw) ? (json_decode($reviews_items_raw, true) ?? []) : (is_array($reviews_items_raw) ? $reviews_items_raw : []);
+                    // جلب قائمة الفيديوهات الخاصة باللغة الحالية حصراً
+                    $items_list = $reviews_items ?? ($reviews_section['items'] ?? []);
+                    if (!is_array($items_list)) {
+                        $items_list = [];
+                    }
 
-                    if (!empty($reviews_items) && is_array($reviews_items)): 
-                        foreach ($reviews_items as $index => $item): 
+                    if (!empty($items_list)): 
+                        foreach ($items_list as $index => $item): 
+                            $video_url = $item['url'] ?? '';
+                            if (empty($video_url)) continue;
                     ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen title="Review Video"></iframe>
+                                        <iframe src="<?php echo htmlspecialchars($video_url, ENT_QUOTES, 'UTF-8'); ?>" allowfullscreen title="Review Video"></iframe>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p class="text-center">لا توجد فيديوهات للعرض حالياً.</p>
+                        <p class="text-center py-4 text-muted">
+                            <?php echo htmlspecialchars($lang['no_reviews_available'] ?? 'لا توجد فيديوهات للعرض حالياً.', ENT_QUOTES, 'UTF-8'); ?>
+                        </p>
                     <?php endif; ?>
                 </div>
 
                 <div class="dots mt-4">
-                    <?php if (!empty($reviews_items) && is_array($reviews_items)): ?>
-                        <?php foreach ($reviews_items as $index => $item): ?>
+                    <?php if (!empty($items_list)): ?>
+                        <?php foreach ($items_list as $index => $item): ?>
                             <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
                                   data-bs-target="#carousel-reviews" 
                                   data-bs-slide-to="<?php echo $index; ?>">

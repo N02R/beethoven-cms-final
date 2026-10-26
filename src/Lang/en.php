@@ -105,4 +105,13 @@ return [
     'icon_or_image'              => 'Icon / Image',
     'delete_feature'             => 'Delete Feature',
     'add_new_feature'            => 'Add New Feature',
+    'edit_reviews'           => 'Edit Reviews',
+'reviews_default_title'  => 'See What Our Clients Say About Us',
+'no_reviews_available'   => 'No review videos available currently.',
+'review_video_url'       => 'Video Embed URL',
+'delete_video'           => 'Delete Video',
+'add_new_video'          => 'Add New Video',
+'manage_customer_videos' => 'Manage Client Videos',
+'added_videos'           => 'Added Videos',
+
 ];

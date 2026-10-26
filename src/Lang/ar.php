@@ -105,4 +105,14 @@ return [
     'icon_or_image'              => 'الأيقونة / الصورة',
     'delete_feature'             => 'حذف الميزة',
     'add_new_feature'            => 'إضافة ميزة جديدة',
+    'edit_reviews'           => 'تعديل التقييمات',
+'reviews_default_title'  => 'شاهد ماذا يقول عملاؤنا عنا',
+'no_reviews_available'   => 'لا توجد فيديوهات للعرض حالياً.',
+'review_video_url'       => 'رابط الفيديو (Embed URL)',
+'delete_video'           => 'حذف الفيديو',
+'add_new_video'          => 'إضافة فيديو جديد',
+'manage_customer_videos' => 'إدارة فيديوهات العملاء',
+'added_videos'           => 'الفيديوهات المضافة',
+
 ];
+

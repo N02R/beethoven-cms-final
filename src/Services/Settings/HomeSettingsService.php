@@ -262,82 +262,68 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث المميزات (Choose Us) - الهيكل الهجين الآمن
+        // 5. تحديث قسم المميزات (Choose Us) على نفس نمط الخدمات النظيف
         elseif ($action === 'update_choose') {
             $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $rawChooseSetting = $currentSettings['choose'] ?? (function_exists('get_setting') ? get_setting('choose', '{}') : '{}');
-            $chooseData = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
-            if (!is_array($chooseData)) {
-                $chooseData = [];
+            $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
+            
+            if (!is_array($chooseAllLangs)) {
+                $chooseAllLangs = [];
             }
 
-            // 1. تحديث عناوين القسم للغة الحالية
+            // استقبال البيانات المرسلة للغة الحالية
             $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
-            $inputTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? '');
-            $inputDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? '');
 
-            $chooseData[$targetLang] = [
-                'section_title'    => $inputTitle,
-                'section_subtitle' => $inputDesc
+            $secTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
+            $secDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? '');
+
+            // استخراج العناصر القديمة لنفس اللغة لضمان قراءة الصورة القديمة بشكل صحيح
+            $existingItems = $chooseAllLangs[$targetLang]['items'] ?? [];
+
+            // إعادة بناء مصفوفة اللغة المستهدفة
+            $chooseAllLangs[$targetLang] = [
+                'title'            => $secTitle,
+                'desc'             => $secDesc,
+                'section_title'    => $secTitle,
+                'section_subtitle' => $secDesc,
+                'items'            => []
             ];
 
-            // 2. معالجة عناصر المميزات (items) الواردة من الفورم
-            $rawItems = $postedChoose['items'] ?? [];
-            if (!is_array($rawItems)) {
-                $rawItems = [];
-            }
+            $items = $postedChoose['items'] ?? [];
+            if (is_array($items)) {
+                foreach ($items as $index => $item) {
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
 
-            $existingItems = $chooseData['items'] ?? [];
-            $processedItems = [];
+                    $fileTmp = null;
+                    $fileErr = UPLOAD_ERR_NO_FILE;
 
-            foreach ($rawItems as $index => $item) {
-                if (!is_array($item)) {
-                    continue;
-                }
-
-                // الحفاظ على الأيقونة المشتركة القديمة أو رفع صورة جديدة
-                $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                $finalImg = $oldImg;
-
-                $fileTmp = null;
-                $fileErr = UPLOAD_ERR_NO_FILE;
-
-                if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                    $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
-                    $fileErr = $_FILES['choose_img_' . $index]['error'];
-                }
-
-                if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
-                    if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
-                        $this->deleteOldImageFile($oldImg);
+                    if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
+                        $fileErr = $_FILES['choose_img_' . $index]['error'];
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($fileTmp);
-                    $finalImg = 'assets/uploads/' . $filename;
+
+                    if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    // حفظ تفاصيل العنصر للغة الحالية
+                    $chooseAllLangs[$targetLang]['items'][] = [
+                        'title' => $item['title'] ?? '',
+                        'desc'  => $item['desc'] ?? '',
+                        'img'   => $img
+                    ];
                 }
-
-                // استخراج الترجمات القديمة لهذا العنصر لضمان عدم ضياع اللغات الأخرى (en, de, ar)
-                $itemLangs = $existingItems[$index] ?? [];
-
-                $newItem = [
-                    'img' => $finalImg,
-                    'ar'  => $itemLangs['ar'] ?? ['title' => '', 'desc' => ''],
-                    'en'  => $itemLangs['en'] ?? ['title' => '', 'desc' => ''],
-                    'de'  => $itemLangs['de'] ?? ['title' => '', 'desc' => '']
-                ];
-
-                // تحديث نصوص اللغة المستهدفة الحالية بالقيم المرسلة من المدير
-                $newItem[$targetLang] = [
-                    'title' => $item['title'] ?? '',
-                    'desc'  => $item['desc'] ?? ''
-                ];
-
-                $processedItems[] = $newItem;
             }
 
-            $chooseData['items'] = $processedItems;
-
-            $jsonVal = json_encode($chooseData, JSON_UNESCAPED_UNICODE);
+            // تشفير وحفظ البيانات في قاعدة البيانات
+            $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

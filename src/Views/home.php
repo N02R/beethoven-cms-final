@@ -146,19 +146,17 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <?php endif; ?>
 
   <div class="container-fluid custom-container choose-container">
-    <?php 
-    // الاعتماد على البيانات الجاهزة والمعالجة مسبقاً من الـ Model (لتجنب مشاكل الـ Caching)
-    $c_title = $choose_title ?? $choose_section['title'] ?? $data['choose_title'] ?? '';
-    $c_desc  = $choose_section_desc ?? $choose_section['desc'] ?? $data['choose_section_desc'] ?? '';
-    $c_items = $choose_items ?? $choose_section['items'] ?? $data['choose_items'] ?? [];
+    <?php
+    // جلب البيانات مع دعم الترجمة للقسم
+    $c_data  = $getLocalizedData('choose', []);
     
-    if (!is_array($c_items)) {
-        $c_items = [];
-    }
+    $c_title = $c_data['section_title'] ?? ($c_data['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
+    $c_desc  = $c_data['section_subtitle'] ?? ($c_data['desc'] ?? '');
+    $c_items = $c_data['items'] ?? [];
     ?>
 
     <?php if (!empty($c_title)): ?>
-      <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+      <h2 class="mb-3 sec-title"><?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php endif; ?>
     
     <?php if (!empty($c_desc)): ?>
@@ -167,24 +165,22 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         </p>
     <?php endif; ?>
 
-    <?php if (!empty($c_items)): ?>
-      <div class="row g-3">
-        <?php 
-        foreach ($c_items as $index => $item): 
-          $raw_img    = !empty($item['img']) ? $item['img'] : 'assets/img/default-icon.png';
-          $item_img   = get_image_url($raw_img);
-          
+    <div class="row g-3">
+      <?php if (!empty($c_items) && is_array($c_items)): ?>
+        <?php foreach ($c_items as $index => $item): 
+          $item_img   = get_image_url($item['img'] ?? null, 'assets/img/home/Grouphome1.svg');
           $item_title = $item['title'] ?? '';
           $item_desc  = $item['desc'] ?? '';
           
           if (empty($item_title)) continue;
           
+          // جعل الكارد الثاني نشطاً كافتراضي أو بحسب الحاجة
           $is_active  = ($index === 1) ? 'active' : ''; 
         ?>
           <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="card choose-card <?php echo $is_active; ?>">
               <div class="card-body">
-                <?php if (!empty($item['img'])): ?>
+                <?php if (!empty($item['img']) || !empty($item_img)): ?>
                     <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">
                 <?php endif; ?>
                 <h5 class="card-title"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
@@ -193,8 +189,12 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
             </div>
           </div>
         <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد مميزات مضافة حالياً.</p>
+        </div>
+      <?php endif; ?>
+    </div>
   </div>
 </section>
 <!-- choose end -->

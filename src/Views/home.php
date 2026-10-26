@@ -211,7 +211,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            // مطابقة مفتاح قاعدة البيانات الصحيح: reviews_items
             $r_data    = $getLocalizedData('reviews_items', []);
             $sec_title = $r_data['section_title'] ?? ($r_data['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
             ?>
@@ -227,20 +226,18 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                 
                 <div class="carousel-inner">
                     <?php 
-                    // جلب مصفوفة الفيديوهات من داخل items كما هو مخزن في قاعدة البيانات
                     $reviews_videos = $r_data['items'] ?? [];
                     if (!is_array($reviews_videos)) {
                         $reviews_videos = [];
                     }
 
-                    // استبعاد الصفوف الفارغة أو التي لا تحتوي على رابط فيديو
                     $valid_videos = array_values(array_filter($reviews_videos, function($v) {
                         return is_array($v) && !empty($v['url']);
                     }));
-
-                    if (!empty($valid_videos)): 
-                        foreach ($valid_videos as $index => $item): 
                     ?>
+
+                    <?php if (!empty($valid_videos)): ?>
+                        <?php foreach ($valid_videos as $index => $item): ?>
                             <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
                                 <div class="video-wrapper">
                                     <div class="video-container">
@@ -249,7 +246,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                    else: ?>
+                    <?php else: ?>
                         <div class="text-center py-4 text-muted">
                             <p>لا توجد فيديوهات للعرض حالياً.</p>
                         </div>

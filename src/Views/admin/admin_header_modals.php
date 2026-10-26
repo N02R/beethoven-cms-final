@@ -845,17 +845,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <?php 
-                // جلب آمن للغة الحالية
-                $curTitle = $reviews_title ?? ($reviews_section['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
-                if (is_array($curTitle)) {
-                    $curTitle = $curTitle[$current_lang ?? 'ar'] ?? ($curTitle['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا');
-                }
-                $curVideos = $reviews_items ?? ($reviews_section['items'] ?? []);
-                if (!is_array($curVideos)) {
-                    $curVideos = [];
-                }
-                ?>
+<?php
+// جلب إعدادات التقييمات للغة الحالية بسلامة تامة من مصفوفة الإعدادات الخام أو المتغيرات
+$reviewsSettingRaw = $rawSettings['reviews_items'] ?? $reviews_items ?? '{}';
+$reviewsDataAll = is_string($reviewsSettingRaw) ? json_decode($reviewsSettingRaw, true) : (is_array($reviewsSettingRaw) ? $reviewsSettingRaw : []);
+
+// تحديد اللغة الحالية مع نظام الاحتياط (Fallback)
+$langKey = $current_lang ?? 'ar';
+$currentLangReviews = $reviewsDataAll[$langKey] ?? ($reviewsDataAll['de'] ?? ($reviewsDataAll['ar'] ?? []));
+
+// استخراج العنوان والفيديوهات الخاصة بهذه اللغة حصراً
+$curTitle  = $currentLangReviews['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+$curVideos = $currentLangReviews['items'] ?? [];
+if (!is_array($curVideos)) {
+    $curVideos = [];
+}
+?>
 
                 <form id="reviewsForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_reviews">

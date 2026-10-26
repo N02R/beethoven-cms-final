@@ -1327,7 +1327,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
                     <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
                 </div>
-                <input type="hidden" class="choose-old-img" name="choose[items][${index}][old_img]" value="">
+                <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>
@@ -1550,7 +1550,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
                     if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
                     if (fileInput) fileInput.name = `choose_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `choose[items][${index}][old_img]`;
+                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {

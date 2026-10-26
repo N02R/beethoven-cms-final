@@ -45,7 +45,7 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // 3. قسم المميزات (Choose Us) - متوافق تماماً مع نمط الخدمات وتعدد اللغات
+        // 3. قسم المميزات (Choose Us)
         $choose_raw = $getLangData('choose', []);
         $choose_data = [
             'title' => $choose_raw['section_title'] ?? ($choose_raw['title'] ?? 'ما الذي يميز بيتهوفن سيتي'),
@@ -53,12 +53,12 @@ class HomeModel {
             'items' => $choose_raw['items'] ?? []
         ];
 
-        // 4. قسم الآراء والتقييمات (Reviews)
+        // 4. قسم الآراء والتقييمات (Reviews Videos)
         $reviews_raw = $getLangData('reviews_items', []);
         $reviews_data = [
             'title' => $reviews_raw['title'] ?? ($reviews_raw['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'),
             'desc'  => $reviews_raw['desc'] ?? '',
-            'items' => $reviews_raw['items'] ?? (is_array($reviews_raw) && !isset($reviews_raw['title']) ? $reviews_raw : [])
+            'items' => $reviews_raw['items'] ?? []
         ];
 
         // 5. قسم الأسئلة الشائعة (FAQ)

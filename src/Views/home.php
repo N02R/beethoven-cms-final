@@ -211,11 +211,18 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     <div class="reviews-bg">
         <div class="custom-container">
             <?php 
-            // 1. استخراج العنوان الخاص باللغة الحالية بأمان
-            $sec_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
+            // 1. استخراج العنوان الخاص باللغة الحالية مع حماية من Array to string conversion
+            $raw_title = $reviews_title ?? ($reviews_section['title'] ?? ($lang['reviews_default_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
+            $activeLang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
+
+            if (is_array($raw_title)) {
+                $final_title = $raw_title[$activeLang] ?? ($raw_title['title'] ?? ($raw_title['ar'] ?? 'شاهد ماذا يقول عملاؤنا عنا'));
+            } else {
+                $final_title = (string)$raw_title;
+            }
             ?>
             <h2 class="py-5 text-center sec-title">
-                <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars($final_title, ENT_QUOTES, 'UTF-8'); ?>
             </h2>
         </div>
     </div>
@@ -232,7 +239,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                     // فحص احتياطي في حال لم يتم تمرير المتغيرات من HomeModel مباشرة
                     if (empty($videos_list) && function_exists('get_setting')) {
                         $rawSetting = json_decode((string)get_setting('reviews_items', '{}'), true);
-                        $activeLang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
                         $videos_list = $rawSetting[$activeLang]['items'] ?? ($rawSetting['ar']['items'] ?? []);
                     }
 
@@ -242,7 +248,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
                     // تصفية الفيديوهات للتأكد من وجود روابط صالحة
                     $valid_videos = array_values(array_filter($videos_list, function($v) {
-                        return !empty($v['url']);
+                        return is_array($v) && !empty($v['url']);
                     }));
 
                     if (!empty($valid_videos)): 

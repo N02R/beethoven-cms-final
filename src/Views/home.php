@@ -156,7 +156,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     ?>
 
     <?php if (!empty($sec_title)): ?>
-      <h2 class="mb-3 sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+      <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php endif; ?>
     
     <?php if (!empty($sec_desc)): ?>

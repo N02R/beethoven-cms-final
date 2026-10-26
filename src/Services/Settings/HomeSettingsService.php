@@ -24,7 +24,6 @@ class HomeSettingsService
             'update_services', 
             'update_faq', 
             'update_reviews', 
-            'update_choose', 
             'update_guide'
         ];
 
@@ -262,72 +261,7 @@ class HomeSettingsService
             $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 5. تحديث قسم المميزات (Choose Us) على نفس نمط الخدمات النظيف
-        elseif ($action === 'update_choose') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
-
-            $rawChooseSetting = $currentSettings['choose'] ?? (function_exists('get_setting') ? get_setting('choose', '{}') : '{}');
-            $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
-            
-            if (!is_array($chooseAllLangs)) {
-                $chooseAllLangs = [];
-            }
-
-            // استقبال البيانات المرسلة للغة الحالية
-            $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
-
-            $secTitle = $postedChoose['section_title'] ?? ($postedChoose['title'] ?? 'ما الذي يميز بيتهوفن سيتي');
-            $secDesc  = $postedChoose['section_subtitle'] ?? ($postedChoose['desc'] ?? '');
-
-            // استخراج العناصر القديمة لنفس اللغة لضمان قراءة الصورة القديمة بشكل صحيح
-            $existingItems = $chooseAllLangs[$targetLang]['items'] ?? [];
-
-            // إعادة بناء مصفوفة اللغة المستهدفة
-            $chooseAllLangs[$targetLang] = [
-                'title'            => $secTitle,
-                'desc'             => $secDesc,
-                'section_title'    => $secTitle,
-                'section_subtitle' => $secDesc,
-                'items'            => []
-            ];
-
-            $items = $postedChoose['items'] ?? [];
-            if (is_array($items)) {
-                foreach ($items as $index => $item) {
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                    $img = $oldImg;
-
-                    $fileTmp = null;
-                    $fileErr = UPLOAD_ERR_NO_FILE;
-
-                    if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['choose_img_' . $index]['tmp_name'];
-                        $fileErr = $_FILES['choose_img_' . $index]['error'];
-                    }
-
-                    if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
-                        $img = 'assets/uploads/' . $filename;
-                    }
-
-                    // حفظ تفاصيل العنصر للغة الحالية
-                    $chooseAllLangs[$targetLang]['items'][] = [
-                        'title' => $item['title'] ?? '',
-                        'desc'  => $item['desc'] ?? '',
-                        'img'   => $img
-                    ];
-                }
-            }
-
-            // تشفير وحفظ البيانات في قاعدة البيانات
-            $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        }
-
-        // 6. تحديث الدليل الشامل (Guide)
+        // 5. تحديث الدليل الشامل (Guide)
         elseif ($action === 'update_guide') {
             $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 

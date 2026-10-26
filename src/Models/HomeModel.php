@@ -45,47 +45,7 @@ class HomeModel {
             'items' => $services_raw['items'] ?? []
         ];
 
-        // ==========================================
-        // 🌟 3. قسم المميزات (Why Choose Us) - التصحيح الهجين المباشر
-        // ==========================================
-        $choose_raw_setting = $settings['choose'] ?? '{}';
-        $choose_decoded = json_decode($choose_raw_setting, true);
-        $choose_decoded = is_array($choose_decoded) ? $choose_decoded : [];
-        
-        // استخراج العناوين الرئيسية للقسم حسب اللغة الحالية من مصفوفة الجذر
-        $choose_lang_data = $choose_decoded[$lang] ?? ($choose_decoded['ar'] ?? ($choose_decoded['de'] ?? []));
-        $choose_title = $choose_lang_data['section_title'] ?? ($choose_lang_data['title'] ?? '');
-        $choose_desc  = $choose_lang_data['section_subtitle'] ?? ($choose_lang_data['desc'] ?? '');
-        
-        // استخراج العناصر (items) مباشرة من الجذر العام للـ JSON
-        $choose_raw_items = $choose_decoded['items'] ?? [];
-        $choose_items = [];
-
-        if (is_array($choose_raw_items)) {
-            foreach ($choose_raw_items as $item) {
-                if (!is_array($item)) continue;
-                
-                // استخراج النصوص للغة الحالية لكل بطاقة مع Fallback آمن
-                $itemLangData = isset($item[$lang]) && is_array($item[$lang]) 
-                              ? $item[$lang] 
-                              : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
-                
-                $choose_items[] = [
-                    'img'   => $item['img'] ?? '',
-                    'title' => $itemLangData['title'] ?? '',
-                    'desc'  => $itemLangData['desc'] ?? ''
-                ];
-            }
-        }
-
-        $choose_data = [
-            'title' => $choose_title,
-            'desc'  => $choose_desc,
-            'items' => $choose_items
-        ];
-        // ==========================================
-
-        // 4. قسم الآراء والتقييمات (Reviews)
+        // 3. قسم الآراء والتقييمات (Reviews)
         $reviews_raw = $getLangData('reviews_items', []);
         $reviews_data = [
             'title' => $reviews_raw['title'] ?? ($reviews_raw['reviews_title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'),
@@ -93,7 +53,7 @@ class HomeModel {
             'items' => $reviews_raw['items'] ?? (is_array($reviews_raw) && !isset($reviews_raw['title']) ? $reviews_raw : [])
         ];
 
-        // 5. قسم الأسئلة الشائعة (FAQ)
+        // 4. قسم الأسئلة الشائعة (FAQ)
         $faq_raw = $getLangData('faq_items', []);
         $faq_data = [
             'title' => $faq_raw['title'] ?? ($faq_raw['faq_title'] ?? 'الأسئلة الشائعة'),
@@ -101,7 +61,7 @@ class HomeModel {
             'items' => $faq_raw['items'] ?? (is_array($faq_raw) && !isset($faq_raw['title']) ? $faq_raw : [])
         ];
 
-        // 6. قسم الدليل الشامل (Guide)
+        // 5. قسم الدليل الشامل (Guide)
         $guide_raw = $getLangData('guide_items', []);
         $guide_data = [
             'title' => $guide_raw['title'] ?? ($guide_raw['guide_title'] ?? ''),
@@ -113,10 +73,6 @@ class HomeModel {
         return [
             'hero'                  => $hero_raw,
             'services_section'      => $services_data,
-            'choose_section'        => $choose_data,
-            'choose_title'          => $choose_data['title'],
-            'choose_section_desc'   => $choose_data['desc'],
-            'choose_items'          => $choose_data['items'],
             'reviews_section'       => $reviews_data,
             'reviews_title'         => $reviews_data['title'],
             'reviews_items'         => $reviews_data['items'],

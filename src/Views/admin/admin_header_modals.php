@@ -716,108 +716,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 8. Choose Edit Modal (مصمم على نمط قسم الخدمات تماماً) -->
-<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header d-flex justify-content-between align-items-center">
-                <h5 class="modal-title">
-                    <i class="bi bi-star text-primary <?php echo !empty($is_rtl) ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['edit_features'] ?? 'تعديل المميزات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
-                </h5>
-                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <?php 
-                // الاعتماد على الدالة المركزية لجلب بيانات القسم المهيكلة للغة الحالية
-                $c_data  = function_exists('getLocalizedData') ? getLocalizedData('choose', []) : [];
-                
-                $choose_sec_title    = $c_data['section_title'] ?? ($c_data['title'] ?? '');
-                $choose_sec_subtitle = $c_data['section_subtitle'] ?? ($c_data['desc'] ?? '');
-                $choose_itemsList    = $c_data['items'] ?? [];
-                
-                if (!is_array($choose_itemsList)) {
-                    $choose_itemsList = [];
-                }
-                ?>
-
-                <form id="chooseEditForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_choose">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
-                    
-                    <!-- الجزء الأول: العنوان الرئيسي والوصف للقسم -->
-                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="row g-3">
-                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
-                                <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
-                                </label>
-                                <input type="text" class="form-control" name="choose[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($choose_sec_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم الرئيسي">
-                            </div>
-                            
-                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
-                                <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($lang['section_description_optional'] ?? 'العنوان الفرعي / الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
-                                </label>
-                                <textarea class="form-control" name="choose[<?php echo $current_lang; ?>][section_subtitle]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="وصف القسم"><?php echo htmlspecialchars(safe_admin_string($choose_sec_subtitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- الجزء الثاني: كروت وعناصر المميزات المضافة -->
-                    <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['added_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
-                    <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($choose_itemsList as $index => $item): 
-                            $itemTitle = $item['title'] ?? '';
-                            $itemDesc  = $item['desc'] ?? '';
-                            $itemImg   = $item['img'] ?? '';
-                        ?>
-                            <div class="p-3 shadow-sm choose-row-item" id="choose_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'عنوان الميزة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان الميزة">
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'وصف الميزة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itemDesc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="وصف الميزة">
-                                    </div>
-
-                                    <div class="col-md-11">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['image_or_icon'] ?? 'الصورة / الأيقونة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <input type="file" class="form-control choose-file" name="choose_img_<?php echo $index; ?>" accept="image/*">
-                                            <?php if (!empty($itemImg)): ?>
-                                                <?php $imgUrl = function_exists('get_image_url') ? get_image_url($itemImg) : $itemImg; ?>
-                                                <img src="<?php echo htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Choose Preview" class="rounded border" style="width: 38px; height: 38px; object-fit: cover; flex-shrink: 0;">
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-
-                                    <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
-
-                                    <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف الميزة"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo (!empty($is_rtl)) ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_feature'] ?? 'إضافة ميزة جديدة', ENT_QUOTES, 'UTF-8'); ?>
-                    </button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="chooseEditForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- 9. Reviews Edit Modal -->
 <div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
@@ -1139,7 +1037,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             const el = document.getElementById(target);
             if (el) el.remove();
         } else if (target && target.nodeType) {
-            const row = target.closest('.social-row-item, .menu-row-item, .choose-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
+            const row = target.closest('.social-row-item, .menu-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
             if (row) row.remove();
         }
     }
@@ -1265,45 +1163,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <input type="hidden" class="menu-order" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    // 🌟 دالة إضافة صف ميزة جديدة لقسم choose مطابقة لمعيار الخدمات
-    function addChooseRow() {
-        const container = document.getElementById('chooseRowsContainer');
-        if (!container) return;
-
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const index = container.querySelectorAll('.choose-row-item').length;
-
-        const langTitleLabel = "<?php echo $lang['title'] ?? 'عنوان الميزة'; ?>";
-        const langDescLabel  = "<?php echo $lang['description'] ?? 'وصف الميزة'; ?>";
-        const langIconLabel  = "<?php echo $lang['image_or_icon'] ?? 'الصورة / الأيقونة'; ?>";
-        const langDeleteText = "<?php echo $lang['delete_feature'] ?? 'حذف الميزة'; ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 choose-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel}</label>
-                    <input type="text" class="form-control choose-title" name="choose[${currentLang}][items][${index}][title]" placeholder="عنوان الميزة">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langDescLabel}</label>
-                    <input type="text" class="form-control choose-desc" name="choose[${currentLang}][items][${index}][desc]" placeholder="وصف الميزة">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
-                    <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
-                </div>
-                <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
                     <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
@@ -1513,19 +1372,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (url) url.name = `services[${currentLang}][items][${index}][url]`;
                     if (file) file.name = `service_img_${index}`;
                     if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // 🌟 إعادة تسمية وترتيب حقول choose عند الـ submit تماماً مثل الخدمات
-                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.choose-title');
-                    const descInput = row.querySelector('.choose-desc');
-                    const fileInput = row.querySelector('.choose-file');
-                    const oldImgInput = row.querySelector('.choose-old-img');
-                    
-                    if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
-                    if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
-                    if (fileInput) fileInput.name = `choose_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {

@@ -732,26 +732,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 // جلب البيانات مباشرة وحياً لضمان عدم وجود أي Cache قديم
                 $choose_raw = get_setting('choose', '{}');
                 $choose_all = is_string($choose_raw) ? (json_decode($choose_raw, true) ?? []) : (is_array($choose_raw) ? $choose_raw : []);
-                
-                // عناوين القسم للغة الحالية
-                $c = isset($choose_all[$current_lang]) && is_array($choose_all[$current_lang]) ? $choose_all[$current_lang] : ($choose_all['ar'] ?? ($choose_all['de'] ?? []));
-                $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? ($choose_all['section_title'] ?? ''));
-                $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? ($choose_all['section_subtitle'] ?? ''));
-                
-                // 🌟 حل نهائي وآمن لجلب الitems من أي مكان قد تكون مخزنة فيه
-                $choose_itemsList = [];
-                if (isset($choose_all['items']) && is_array($choose_all['items'])) {
-                    $choose_itemsList = $choose_all['items'];
-                } elseif (isset($c['items']) && is_array($c['items'])) {
-                    $choose_itemsList = $c['items'];
-                } else {
-                    // البحث في باقي اللغات إن لم توجد في الجذر
-                    foreach ($choose_all as $langKey => $langVal) {
-                        if (is_array($langVal) && isset($langVal['items']) && is_array($langVal['items'])) {
-                            $choose_itemsList = $langVal['items'];
-                            break;
-                        }
-                    }
+
+                // 1. استخراج عناوين القسم الخاصة باللغة الحالية
+                $c = $choose_all[$current_lang] ?? ($choose_all['ar'] ?? []);
+                $choose_sec_title    = $c['section_title'] ?? ($c['title'] ?? '');
+                $choose_sec_subtitle = $c['section_subtitle'] ?? ($c['desc'] ?? '');
+
+                // 2. 🌟 الحل النهائي لجلب الـ items من الجذر مباشرة حيث يحفظها الباك إند
+                $choose_itemsList = $choose_all['items'] ?? [];
+                if (!is_array($choose_itemsList)) {
+                    $choose_itemsList = [];
                 }
                 ?>
 
@@ -781,7 +771,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>"><?php echo htmlspecialchars($lang['edit_features'] ?? 'المميزات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
-                            // 🌟 هنا السر: استخراج نصوص اللغة الحالية (عربية، ألمانية، إلخ) بدقة لملء الحقول تلقائياً
+                            // 🌟 استخراج نصوص اللغة الحالية (عربية، ألمانية، إلخ) بدقة لملء الحقول تلقائياً
                             $langItemData = isset($item[$current_lang]) && is_array($item[$current_lang]) 
                                           ? $item[$current_lang] 
                                           : ($item['ar'] ?? ($item['de'] ?? ($item['en'] ?? [])));
@@ -817,8 +807,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <!-- الحقل المخفي للاحتفاظ بمسار الصورة القديمة -->
-                                        <input type="hidden" class="choose-old-img" name="choose[items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <!-- الحقل المخفي للاحتفاظ بمسار الصورة القديمة (مرتبط باللغة الحالية لضمان التطابق السليم) -->
+                                        <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف">

@@ -102,21 +102,21 @@ body {
 
 .editable-wrapper {
     position: relative !important;
+    /* إضافة مساحة داخلية علوية للقسم ليجد القلم متسعاً له داخله دون تداخل */
+    padding-top: 50px !important; 
 }
 
 .editable-wrapper .edit-pen {
-    width: 36px !important;
-    height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
     border-radius: 50% !important;
     
-    /* تموضع مطلق متزن لا يتجاوز طبقات الهيدر */
+    /* تموضع مطلق داخلي آمن لا يخرج خارج حدود القسم */
     position: absolute !important;
-    top: -10px !important;
-    right: -10px !important;
-    z-index: 1020 !important;
-    /* أقل من الـ z-index الخاص بالهيدر الثابت ليبقى تحته عند التمرير */
+    top: 15px !important;  /* أصبح داخل القسم وليس خارجه بالسالب */
+    right: 20px !important; /* داخل بمسافة مريحة من الحافة */
+    z-index: 100 !important;
     
-    /* الألوان والتصميم الأنيق */
     background: #ffc107 !important;
     color: #000000 !important;
     border: 2px solid #ffffff !important;
@@ -125,26 +125,15 @@ body {
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
     transition: transform 0.2s ease, background-color 0.2s ease !important;
-}
-
-.editable-wrapper .edit-pen i {
-    font-size: 0.95rem !important;
-}
-
-.editable-wrapper .edit-pen:hover {
-    background: #000000 !important;
-    color: #ffc107 !important;
-    border-color: #ffc107 !important;
-    transform: scale(1.15) !important;
 }
 
 [dir="rtl"] .editable-wrapper .edit-pen {
     right: auto !important;
-    left: -10px !important;
+    left: 20px !important;
 }
+
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */
 .cookie-banner {
     position: fixed;

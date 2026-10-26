@@ -35,7 +35,7 @@ $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->
-<section class="guide py-5 mt-4 editable-wrapper" style="position: relative;">
+<section class="guide py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="تعديل الدليل الشامل">
         <i class="bi bi-pencil-fill"></i>

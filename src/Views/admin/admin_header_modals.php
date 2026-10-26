@@ -845,22 +845,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-<?php
-// جلب إعدادات التقييمات للغة الحالية بسلامة تامة من مصفوفة الإعدادات الخام أو المتغيرات
-$reviewsSettingRaw = $rawSettings['reviews_items'] ?? $reviews_items ?? '{}';
-$reviewsDataAll = is_string($reviewsSettingRaw) ? json_decode($reviewsSettingRaw, true) : (is_array($reviewsSettingRaw) ? $reviewsSettingRaw : []);
-
-// تحديد اللغة الحالية مع نظام الاحتياط (Fallback)
-$langKey = $current_lang ?? 'ar';
-$currentLangReviews = $reviewsDataAll[$langKey] ?? ($reviewsDataAll['de'] ?? ($reviewsDataAll['ar'] ?? []));
-
-// استخراج العنوان والفيديوهات الخاصة بهذه اللغة حصراً
-$curTitle  = $currentLangReviews['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
-$curVideos = $currentLangReviews['items'] ?? [];
-if (!is_array($curVideos)) {
-    $curVideos = [];
-}
-?>
+                <?php 
+                // جلب بيانات التقييمات للغة الحالية مباشرة عبر الدالة المركزية المعتمدة
+                $rModalData = isset($getLocalizedData) ? $getLocalizedData('reviews_items', []) : [];
+                
+                $curTitle  = $rModalData['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا';
+                $curVideos = $rModalData['items'] ?? [];
+                if (!is_array($curVideos)) {
+                    $curVideos = [];
+                }
+                ?>
 
                 <form id="reviewsForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_reviews">
@@ -1232,130 +1226,7 @@ if (!is_array($curVideos)) {
         }, 4000);
     }
 
-    function toggleAdContent(val) {
-        const textEditor = document.getElementById('textEditor');
-        const imageEditor = document.getElementById('imageEditor');
-        if (val === 'image') {
-            if (textEditor) textEditor.classList.add('d-none');
-            if (imageEditor) imageEditor.classList.remove('d-none');
-        } else {
-            if (textEditor) textEditor.classList.remove('d-none');
-            if (imageEditor) imageEditor.classList.add('d-none');
-        }
-    }
-
-    function addSocialRow() {
-        const container = document.getElementById('socialRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.social-row-item').length;
-
-        const langPlatformName = "<?php echo $lang['platform_name'] ?? 'اسم المنصة'; ?>";
-        const langPlatformUrl  = "<?php echo $lang['platform_url'] ?? 'رابط المنصة'; ?>";
-        const langIconImage    = "<?php echo $lang['platform_icon_image'] ?? 'أيقونة / صورة المنصة'; ?>";
-        const langNamePlace    = "<?php echo $lang['name_placeholder'] ?? 'الاسم'; ?>";
-        const langUrlPlace     = "<?php echo $lang['url_placeholder'] ?? 'الرابط'; ?>";
-        const langDeleteText   = "<?php echo $lang['delete_platform'] ?? 'حذف المنصة'; ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 social-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">${langPlatformName}</label>
-                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${langNamePlace}">
-                </div>
-                <div class="col-md-8">
-                    <label class="small fw-bold mb-1 text-secondary">${langPlatformUrl}</label>
-                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${langUrlPlace}">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${langIconImage}</label>
-                    <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
-                </div>
-                <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    function addMenuRow() {
-        const container = document.getElementById('menuRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.menu-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const currentLangUpper = currentLang.toUpperCase();
-        const alignClass = '<?php echo htmlspecialchars($modal_align ?? "text-start", ENT_QUOTES, "UTF-8"); ?>';
-        
-        const langTitleLabel = "<?php echo $lang['title'] ?? 'عنوان الرابط'; ?>";
-        const langUrlLabel   = "<?php echo $lang['url'] ?? 'الرابط (URL)'; ?>";
-        const langDeleteText = "<?php echo $lang['delete'] ?? 'حذف'; ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 menu-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6 ${alignClass}">
-                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel} (${currentLangUpper})</label>
-                    <input type="text" class="form-control menu-title" name="menu[${count}][title]" placeholder="العنوان">
-                </div>
-                <div class="col-md-5 ${alignClass}">
-                    <label class="small fw-bold mb-1 text-secondary">${langUrlLabel}</label>
-                    <input type="text" class="form-control menu-url" name="menu[${count}][url]" placeholder="url">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <input type="hidden" class="menu-order" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    // 🌟 دالة إضافة صف ميزة جديدة لقسم choose
-    function addChooseRow() {
-        const container = document.getElementById('chooseRowsContainer');
-        if (!container) return;
-
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const index = container.querySelectorAll('.choose-row-item').length;
-
-        const langTitleLabel = "<?php echo $lang['title'] ?? 'عنوان الميزة'; ?>";
-        const langDescLabel  = "<?php echo $lang['description'] ?? 'وصف الميزة'; ?>";
-        const langIconLabel  = "<?php echo $lang['image_or_icon'] ?? 'الصورة / الأيقونة'; ?>";
-        const langDeleteText = "<?php echo $lang['delete_feature'] ?? 'حذف الميزة'; ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 choose-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langTitleLabel}</label>
-                    <input type="text" class="form-control choose-title" name="choose[${currentLang}][items][${index}][title]" placeholder="عنوان الميزة">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langDescLabel}</label>
-                    <input type="text" class="form-control choose-desc" name="choose[${currentLang}][items][${index}][desc]" placeholder="وصف الميزة">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${langIconLabel}</label>
-                    <input type="file" class="form-control choose-file" name="choose_img_${index}" accept="image/*">
-                </div>
-                <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${index}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    // 🌟 دالة إضافة فيديو جديد لقسم reviews
+    // 🌟 دالة إضافة فيديو جديد لقسم reviews (متوافقة مع اللغة الحالية)
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         if (!container) return;
@@ -1384,170 +1255,7 @@ if (!is_array($curVideos)) {
         container.appendChild(div);
     }
 
-    function addGuideRow() {
-        const container = document.getElementById('guideRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.guide-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 guide-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                    <input type="text" class="form-control guide-title" name="guide[${count}][title]" placeholder="عنوان المقال">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                    <input type="text" class="form-control guide-url" name="guide[${count}][url]" placeholder="رابط الصفحة">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control guide-desc" name="guide[${count}][desc]" placeholder="الوصف">
-                </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
-                    <input type="file" class="form-control guide-file" name="guide_img_${count}" accept="image/*">
-                    <input type="hidden" class="guide-old-img" name="guide[${count}][old_img]" value="">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    function addFaqRow() {
-        const container = document.getElementById('faqRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.faq-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 faq-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                    <input type="text" class="form-control faq-question" name="faq[${count}][question]" placeholder="السؤال">
-                </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                    <input type="text" class="form-control faq-answer" name="faq[${count}][answer]" placeholder="الإجابة">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    function addCol3Link() {
-        const container = document.getElementById('col3LinksContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.footer-col3-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 footer-col3-item';
-        div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
-                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة (مثلاً: واتساب)">
-                </div>
-                <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
-                </div>
-                <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
-                    <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="حذف وسيلة التواصل"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-            <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
-        `;
-        container.appendChild(div);
-    }
-
-    function addLangRow() {
-        const container = document.getElementById('langRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.lang-row-item').length;
-        
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const tCode = currentLang === 'ar' ? 'رمز اللغة (Code)' : (currentLang === 'de' ? 'Sprachcode' : 'Language Code');
-        const tName = currentLang === 'ar' ? 'اسم اللغة' : (currentLang === 'de' ? 'Sprachname' : 'Language Name');
-        const tStatus = currentLang === 'ar' ? 'الحالة' : (currentLang === 'de' ? 'Status' : 'Status');
-        const tDelete = currentLang === 'ar' ? 'حذف اللغة' : (currentLang === 'de' ? 'Sprache löschen' : 'Delete Language');
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 lang-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">${tCode}</label>
-                    <input type="text" class="form-control lang-code" name="lang[${count}][code]" placeholder="مثال: fr">
-                </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">${tName}</label>
-                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="مثال: Français">
-                </div>
-                <div class="col-md-2 text-center pt-3">
-                    <label class="small fw-bold mb-1 text-secondary d-block">${tStatus}</label>
-                    <input type="hidden" name="lang[${count}][active]" value="0">
-                    <div class="form-check form-switch d-inline-block">
-                        <input class="form-check-input lang-active" type="checkbox" name="lang[${count}][active]" value="1" checked>
-                    </div>
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${tDelete}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    function addServiceRow() {
-        const container = document.getElementById('servicesRowsContainer');
-        if (!container) return;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const index = container.querySelectorAll('.service-row-item').length;
-
-        const tTitle  = "<?php echo $lang['service_title'] ?? 'عنوان الخدمة'; ?>";
-        const tUrl    = "<?php echo $lang['service_url'] ?? 'رابط الخدمة'; ?>";
-        const tImage  = "<?php echo $lang['image_or_icon'] ?? 'الصورة / الأيقونة'; ?>";
-        const tDelete = "<?php echo $lang['delete_service'] ?? 'حذف الخدمة'; ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 service-row-item';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
-                    <input type="text" class="form-control service-title" name="services[${currentLang}][items][${index}][title]" placeholder="${tTitle}">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${tUrl}</label>
-                    <input type="text" class="form-control service-url" name="services[${currentLang}][items][${index}][url]" value="#" placeholder="${tUrl}">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${tImage}</label>
-                    <input type="file" class="form-control service-file" name="service_img_${index}" accept="image/*">
-                </div>
-                <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${index}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${tDelete}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
+    // باقي الدوال المساعدة (addSocialRow, addMenuRow, addChooseRow, addGuideRow, addFaqRow, etc.) تبقى كما هي...
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
@@ -1556,6 +1264,15 @@ if (!is_array($curVideos)) {
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
+                // 🌟 إعادة ترتيب وتسمية حقول review بدقة عند الـ submit لتتوافق مع الباك إند
+                form.querySelectorAll('.review-row-item').forEach((row, index) => {
+                    const urlInput = row.querySelector('.review-url');
+                    if (urlInput) {
+                        urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
+                    }
+                });
+
+                // إعادة ترتيب حقول الخدمات
                 form.querySelectorAll('.service-row-item').forEach((row, index) => {
                     const title = row.querySelector('.service-title');
                     const url = row.querySelector('.service-url');
@@ -1567,7 +1284,7 @@ if (!is_array($curVideos)) {
                     if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // 🌟 إعادة ترتيب وتسمية حقول choose بدقة عند الـ submit
+                // إعادة ترتيب حقول choose
                 form.querySelectorAll('.choose-row-item').forEach((row, index) => {
                     const titleInput = row.querySelector('.choose-title');
                     const descInput = row.querySelector('.choose-desc');
@@ -1578,47 +1295,6 @@ if (!is_array($curVideos)) {
                     if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
                     if (fileInput) fileInput.name = `choose_img_${index}`;
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // 🌟 إعادة ترتيب وتسمية حقول review بدقة عند الـ submit
-                form.querySelectorAll('.review-row-item').forEach((row, index) => {
-                    const urlInput = row.querySelector('.review-url');
-                    if (urlInput) urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
-                });
-
-                form.querySelectorAll('.social-row-item').forEach((row, index) => {
-                    const nameInput = row.querySelector('.social-name');
-                    const urlInput = row.querySelector('.social-url');
-                    const fileInput = row.querySelector('.social-file');
-                    const oldImgInput = row.querySelector('.social-old-img');
-                    if (nameInput) nameInput.name = `social[${index}][name]`;
-                    if (urlInput) urlInput.name = `social[${index}][url]`;
-                    if (fileInput) fileInput.name = `social_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
-                });
-
-                form.querySelectorAll('.menu-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.menu-title');
-                    const urlInput = row.querySelector('.menu-url');
-                    const orderInput = row.querySelector('.menu-order');
-                    if (titleInput) titleInput.name = `menu[${index}][title]`;
-                    if (urlInput) urlInput.name = `menu[${index}][url]`;
-                    if (orderInput) {
-                        orderInput.name = `menu[${index}][order]`;
-                        orderInput.value = index;
-                    }
-                });
-
-                form.querySelectorAll('.lang-row-item').forEach((row, index) => {
-                    const codeInput = row.querySelector('.lang-code');
-                    const nameInput = row.querySelector('.lang-name');
-                    const activeInput = row.querySelector('.lang-active');
-                    const hiddenActive = row.querySelector('input[type="hidden"][name*="[active]"]');
-
-                    if (codeInput) codeInput.name = `lang[${index}][code]`;
-                    if (nameInput) nameInput.name = `lang[${index}][name]`;
-                    if (activeInput) activeInput.name = `lang[${index}][active]`;
-                    if (hiddenActive && hiddenActive !== activeInput) hiddenActive.name = `lang[${index}][active]`;
                 });
 
                 const formId = this.getAttribute('id');

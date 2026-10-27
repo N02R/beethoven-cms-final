@@ -50,13 +50,15 @@ if (!function_exists('get_setting')) {
                 }
             }
             
-            // فك الـ JSON إن وجد
-            $decoded = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
-                    return $settingsCache[$cacheKey] = ($decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded));
+            // 🌟 فك الـ JSON بأمان تام مع التأكد أنه نص (String) لمنع أي خطأ نوع بيانات
+            if (is_string($value)) {
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
+                        return $settingsCache[$cacheKey] = ($decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded));
+                    }
+                    return $settingsCache[$cacheKey] = $decoded;
                 }
-                return $settingsCache[$cacheKey] = $decoded;
             }
             
             return $settingsCache[$cacheKey] = $value;

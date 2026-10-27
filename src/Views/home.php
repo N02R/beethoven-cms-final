@@ -270,14 +270,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 </section>
 <!-- review end -->
 
-<!-- ===== GUIDE HOME SECTION START ===== -->
-<section class="guide py-2 editable-wrapper" style="position: relative;">
-  <?php if (!empty($is_admin) && $is_admin === true): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="تعديل الدليل الشامل">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
-
+<!-- ===== GUIDE HOME SECTION START (Teaser / Showcase Only) ===== -->
+<section class="guide py-2" style="position: relative;">
   <div class="custom-container">
     <?php 
         $guide_title    = $getLocalizedData('guide_title', 'دليل بيتهوفن الشامل');

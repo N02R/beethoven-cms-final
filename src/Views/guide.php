@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
+
 /**
  * صفحة الدليل الشامل - Guide Page View
- * متوافقة مع الهيكل المدمج الحديث
+ * المقر الرئيسي لعرض الدليل وإدارته (مركز الإدارة المرتبط بالمودل المركزي في الفوتر)
  */
 
 $current_lang = $current_lang ?? get_current_lang();
@@ -73,12 +75,3 @@ $guide_items    = $guide_items ?? [];
   </div>
 </section>
 <!-- ===== GUIDE PAGE END ===== -->
-
-<?php if (!empty($is_admin) && $is_admin === true): ?>
-    <?php 
-    $modals_file = __DIR__ . '/admin/admin_header_modals.php';
-    if (file_exists($modals_file)) {
-        include_once $modals_file;
-    }
-    ?>
-<?php endif; ?>

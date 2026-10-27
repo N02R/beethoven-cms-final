@@ -408,12 +408,3 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 </section>
 <!-- FAQ section end -->
 
-<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
-<?php if (!empty($is_admin) && $is_admin === true): ?>
-    <?php 
-    $modals_file = __DIR__ . '/admin/admin_home_modals.php';
-    if (file_exists($modals_file)) {
-        include_once $modals_file;
-    }
-    ?>
-<?php endif; ?>

@@ -7,10 +7,11 @@
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// دالة جلب البيانات المركزية إن وجدت أو استخدام الآلية الآمنة
-$getLocData = function(string $key, mixed $default = '') {
+// دالة آمنة 100% لجلب وفك الإعدادات وتجنب أخطاء الـ type mismatch
+$safeGetSetting = function(string $key, mixed $default = []) {
     global $current_lang;
     $raw = get_setting($key, $default);
+    
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
         $data = is_array($decoded) ? $decoded : $default;
@@ -18,20 +19,54 @@ $getLocData = function(string $key, mixed $default = '') {
         $data = is_array($raw) ? $raw : $default;
     }
 
-    if (is_array($data)) {
-        return $data[$current_lang] ?? ($data['ar'] ?? ($data['de'] ?? $default));
+    if (is_array($data) && isset($data[$current_lang])) {
+        return $data[$current_lang];
+    } elseif (is_array($data) && isset($data['ar'])) {
+        return $data['ar'];
     }
-    return $data;
+    return is_array($data) ? $data : $default;
 };
 
-// استخراج النصوص المترجمة
-$guide_title    = is_array($t = get_setting('guide_title', [])) ? ($t[$current_lang] ?? $t['ar'] ?? 'الدليل الشامل') : get_setting('guide_title', 'الدليل الشامل');
-$guide_desc     = is_array($d = get_setting('guide_desc', [])) ? ($d[$current_lang] ?? $d['ar'] ?? '') : get_setting('guide_desc', '');
-$read_more_text = is_array($r = get_setting('read_more_btn', [])) ? ($r[$current_lang] ?? $r['ar'] ?? 'قراءة المزيد') : get_setting('read_more_btn', 'قراءة المزيد');
+// استخراج النصوص المترجمة بأمان تام
+$titleRaw = get_setting('guide_title', 'الدليل الشامل');
+if (is_string($titleRaw) && str_starts_with(trim($titleRaw), '{')) {
+    $tArr = json_decode($titleRaw, true) ?? [];
+    $guide_title = $tArr[$current_lang] ?? ($tArr['ar'] ?? 'الدليل الشامل');
+} else {
+    $guide_title = is_array($titleRaw) ? ($titleRaw[$current_lang] ?? $titleRaw['ar'] ?? 'الدليل الشامل') : $titleRaw;
+}
 
-// تنظيف وتجهيز عناصر المقالات
+$descRaw = get_setting('guide_desc', '');
+if (is_string($descRaw) && str_starts_with(trim($descRaw), '{')) {
+    $dArr = json_decode($descRaw, true) ?? [];
+    $guide_desc = $dArr[$current_lang] ?? ($dArr['ar'] ?? '');
+} else {
+    $guide_desc = is_array($descRaw) ? ($descRaw[$current_lang] ?? $descRaw['ar'] ?? '') : $descRaw;
+}
+
+$rmRaw = get_setting('read_more_btn', 'قراءة المزيد');
+if (is_string($rmRaw) && str_starts_with(trim($rmRaw), '{')) {
+    $rArr = json_decode($rmRaw, true) ?? [];
+    $read_more_text = $rArr[$current_lang] ?? ($rArr['ar'] ?? 'قراءة المزيد');
+} else {
+    $read_more_text = is_array($rmRaw) ? ($rmRaw[$current_lang] ?? $rmRaw['ar'] ?? 'قراءة المزيد') : $rmRaw;
+}
+
+// تنظيف وتجهيز عناصر المقالات بسلامة تامة لمنع أي خطأ في الـ json_decode
 $guide_items_raw = get_setting('guide_items', []);
-$guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : (is_array($guide_items_raw) ? $guide_items_raw : []);
+if (is_string($guide_items_raw)) {
+    $decodedItems = json_decode($guide_items_raw, true);
+    $guide_items_arr = is_array($decodedItems) ? $decodedItems : [];
+} else {
+    $guide_items_arr = is_array($guide_items_raw) ? $guide_items_raw : [];
+}
+
+// استخراج عناصر اللغة الحالية
+$currentLangGuide = $guide_items_arr[$current_lang] ?? ($guide_items_arr['ar'] ?? ($guide_items_arr['de'] ?? $guide_items_arr));
+$guide_items = $currentLangGuide['items'] ?? (is_array($guide_items_arr) ? $guide_items_arr : []);
+if (!is_array($guide_items)) {
+    $guide_items = [];
+}
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->
@@ -53,15 +88,15 @@ $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true
     </div>
 
     <div class="row g-4">
-      <?php if (!empty($guide_items) && is_array($guide_items)): ?>
+      <?php if (!empty($guide_items)): ?>
         <?php foreach ($guide_items as $item): 
-            $item_data  = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
-            $item_title = $item_data['title'] ?? ($item['title'] ?? '');
-            $item_desc  = $item_data['desc'] ?? ($item['desc'] ?? '');
+            if (!is_array($item)) continue;
+            $item_title = $item['title'] ?? '';
+            $item_desc  = $item['desc'] ?? '';
 
             $item_img  = get_image_url($item['img'] ?? null);
             $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');
-            $raw_url   = $item['url'] ?? '#';
+            $raw_url   = $item['url'] ?? ($item['link'] ?? '#');
             $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col-lg-4 col-md-6">
@@ -91,13 +126,3 @@ $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true
   </div>
 </section>
 <!-- ===== GUIDE PAGE END ===== -->
-
-<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
-<?php if (!empty($is_admin) && $is_admin === true): ?>
-    <?php 
-    $modals_file = __DIR__ . '/admin/admin_home_modals.php';
-    if (file_exists($modals_file)) {
-        include_once $modals_file;
-    }
-    ?>
-<?php endif; ?>

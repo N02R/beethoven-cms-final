@@ -74,3 +74,11 @@ $guide_items    = $guide_items ?? [];
 </section>
 <!-- ===== GUIDE PAGE END ===== -->
 
+<?php if (!empty($is_admin) && $is_admin === true): ?>
+    <?php 
+    $modals_file = __DIR__ . '/admin/admin_header_modals.php';
+    if (file_exists($modals_file)) {
+        include_once $modals_file;
+    }
+    ?>
+<?php endif; ?>

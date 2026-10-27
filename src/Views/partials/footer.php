@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Footer Partial (Production-Ready & Secure)
- * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، الكوكيز، ومودالات الإدارة.
+ * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، الكوكيز، ومودالات الإدارة المركزية.
  */
 
 // 1. تأكيد تهيئة المسار إذا لم يكن معرفاً
@@ -209,10 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // إرسال الطلب إلى مسار الـ Controller عبر الراوتر المركزي
             fetch('/consult_process.php', {
-    method: 'POST',
-    body: formData
-})
-
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -307,16 +306,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </footer>
 <!-- footer end -->
 
-<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
+<!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع (من خلال الرجوع مجلداً واحداً للخلف) -->
 <?php if (!empty($is_admin) && $is_admin === true): ?>
     <?php 
-    $modals_file = __DIR__ . '/admin/admin_header_modals.php';
+    $modals_file = __DIR__ . '/../admin/admin_header_modals.php';
     if (file_exists($modals_file)) {
         include_once $modals_file;
     }
     ?>
 <?php endif; ?>
-
 
 <?php 
 if (isset($page_js) && is_array($page_js)) {

@@ -73,31 +73,22 @@ class SiteModel {
             $site_logo_path = is_string($rawLogo) ? $rawLogo : '';
         }
 
-        // معالجة آمنة لبيانات الدليل الشامل (تمنع أي تضارب بين النص والمصفوفة وتدعم اللغات)
+        // معالجة بيانات الدليل الشامل (الهيكل المدمج الحديث)
         $guideRaw = $settings['guide_items'] ?? '[]';
         $guideDecoded = is_string($guideRaw) ? json_decode($guideRaw, true) : $guideRaw;
         
-        $guideTitle = 'دليل بيتهوفن الشامل';
-        $guideDesc = '';
-        $guideItems = [];
-
-        if (is_array($guideDecoded)) {
-            // إذا كانت منظمة حسب اللغات (ar, en, de)
-            if (isset($guideDecoded['ar']) || isset($guideDecoded['en']) || isset($guideDecoded['de'])) {
-                $langGuide = $guideDecoded[$lang] ?? ($guideDecoded['ar'] ?? []);
-                $guideTitle = $langGuide['title'] ?? ($langGuide['guide_title'] ?? 'دليل بيتهوفن الشامل');
-                $guideDesc  = $langGuide['desc'] ?? ($langGuide['guide_desc'] ?? '');
-                $guideItems = $langGuide['items'] ?? [];
-            } else {
-                // بنية قديمة أو مسطحة
-                $guideTitle = $guideDecoded['title'] ?? 'دليل بيتهوفن الشامل';
-                $guideDesc  = $guideDecoded['desc'] ?? '';
-                $guideItems = $guideDecoded['items'] ?? $guideDecoded;
+        $getMultiLang = function($settingKey, $default) use ($settings, $lang) {
+            if (!isset($settings[$settingKey])) return $default;
+            $raw = $settings[$settingKey];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+            if (is_array($decoded)) {
+                return $decoded[$lang] ?? ($decoded['ar'] ?? ($decoded['de'] ?? $default));
             }
-        }
+            return is_string($raw) ? $raw : $default;
+        };
 
         return [
-            'site_title'        => $getLangString('site_title', 'Beethoven Services'),
+            'site_title'        => $getMultiLang('site_title', 'Beethoven Services'),
             'site_email'        => $settings['site_email'] ?? '',
             'site_logo_path'    => $site_logo_path,
             'site_logo'         => $site_logo_path,
@@ -106,24 +97,24 @@ class SiteModel {
             'languages'         => isset($settings['languages']) && is_string($settings['languages']) ? json_decode($settings['languages'], true) : [],
             'announcement'      => $getLangData('announcement', []),
             
-            'services_section_title' => $getLangString('services_section_title', 'خدماتنا المميزة'),
-            'services_section_desc'  => $getLangString('services_section_desc', ''),
+            'services_section_title' => $getMultiLang('services_section_title', 'خدماتنا المميزة'),
+            'services_section_desc'  => $getMultiLang('services_section_desc', ''),
             'services'               => $getLangData('services', []),
 
-            'consult_title'     => $getLangString('consult_title', 'احصل على استشارة مجانية'),
-            'consult_desc'      => $getLangString('consult_desc', ''),
+            'consult_title'     => $getMultiLang('consult_title', 'احصل على استشارة مجانية'),
+            'consult_desc'      => $getMultiLang('consult_desc', ''),
             
-            'footer_desc'       => $getLangString('footer_desc', ''),
-            'footer_col2_title' => $getLangString('footer_col2_title', 'روابط سريعة'),
-            'footer_col3_title' => $getLangString('footer_col3_title', 'تواصل معنا'),
+            'footer_desc'       => $getMultiLang('footer_desc', ''),
+            'footer_col2_title' => $getMultiLang('footer_col2_title', 'روابط سريعة'),
+            'footer_col3_title' => $getMultiLang('footer_col3_title', 'تواصل معنا'),
             
             'footer_col3_links' => isset($settings['footer_col3_links']) && is_string($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
             
-            // مخرجات الدليل الشامل الموحدة والآمنة 100%
-            'guide_title'       => $guideTitle,
-            'guide_desc'        => $guideDesc,
-            'guide_items'       => is_array($guideItems) ? $guideItems : [],
-            'guide_all_raw'     => is_string($guideRaw) ? $guideRaw : json_encode($guideRaw)
+            // بيانات الدليل الشامل المدمجة والجاهزة للعرض
+            'guide_title'       => $getMultiLang('guide_title', 'دليل بيتهوفن الشامل'),
+            'guide_desc'        => $getMultiLang('guide_desc', ''),
+            'read_more_btn'     => $getMultiLang('read_more_btn', 'قراءة المزيد'),
+            'guide_items'       => is_array($guideDecoded) ? $guideDecoded : [],
         ];
     }
 

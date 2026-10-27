@@ -307,20 +307,16 @@ document.addEventListener('DOMContentLoaded', function() {
 </footer>
 <!-- footer end -->
 
-<?php 
-// استدعاء ملفات مودالات الإدارة بشكل آمن من داخل الفوتر
-if (!empty($is_admin)) {
-    $admin_modals_file = __DIR__ . '/../admin/admin_header_modals.php';
-    if (file_exists($admin_modals_file)) { 
-        include_once $admin_modals_file; 
-    } 
-
-    $edu_modals_file = __DIR__ . '/../admin/admin_edu_modals.php';
-    if (file_exists($edu_modals_file)) { 
-        include_once $edu_modals_file; 
+<!-- تضمين مودالات التعديل الخاصة بالصفحة الرئيسية في نهاية الملف -->
+<?php if (!empty($is_admin) && $is_admin === true): ?>
+    <?php 
+    $modals_file = __DIR__ . '/admin/admin_header_modals.php';
+    if (file_exists($modals_file)) {
+        include_once $modals_file;
     }
-}
-?>
+    ?>
+<?php endif; ?>
+
 
 <?php 
 if (isset($page_js) && is_array($page_js)) {

@@ -240,13 +240,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="mb-4">
                         <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                             <?php 
+                            // جلب آمن ومحصن ضد اختلاف أنواع البيانات (String / Array) لمنع خطأ json_decode
                             $rawLogoSetting = $currentSettings['site_logo_path'] ?? ($data['site_logo_path'] ?? ($currentSettings['site_logo'] ?? ''));
-                            $logosDecoded = json_decode($rawLogoSetting, true);
+                            
+                            if (is_string($rawLogoSetting)) {
+                                $logosDecoded = json_decode($rawLogoSetting, true);
+                            } elseif (is_array($rawLogoSetting)) {
+                                $logosDecoded = $rawLogoSetting;
+                            } else {
+                                $logosDecoded = [];
+                            }
+
                             $activeLogo = '';
                             if (is_array($logosDecoded)) {
-                                $activeLogo = $logosDecoded[$current_lang] ?? $logosDecoded['ar'] ?? $logosDecoded['de'] ?? reset($logosDecoded) ?? '';
+                                $activeLogo = $logosDecoded[$current_lang] ?? ($logosDecoded['ar'] ?? ($logosDecoded['de'] ?? reset($logosDecoded) ?? ''));
                             } else {
-                                $activeLogo = $rawLogoSetting;
+                                $activeLogo = is_string($rawLogoSetting) ? $rawLogoSetting : '';
                             }
                             ?>
                             <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($activeLogo) : $activeLogo, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Site Logo" style="max-height: 90px; object-fit: contain;">

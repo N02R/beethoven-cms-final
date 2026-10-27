@@ -56,6 +56,14 @@ class GuideController {
             require_once $view_file;
         }
 
+        // 🌟 تضمين مودلات لوحة التحكم المركزية لكي تعمل أزرار القلم في صفحة الدليل
+        if ($is_admin) {
+            $modals_file = __DIR__ . '/../Views/admin/admin_header_modals.php';
+            if (file_exists($modals_file)) {
+                include_once $modals_file;
+            }
+        }
+
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;

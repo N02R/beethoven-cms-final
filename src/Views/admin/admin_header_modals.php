@@ -910,74 +910,87 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 10. Guide Edit Modal -->
-<div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+<div class="modal fade custom-modal" id="guideEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-book text-primary"></i> إدارة الدليل الشامل</h5>
+                <h5 class="modal-title"><i class="bi bi-book text-primary"></i> إدارة الدليل الشامل (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب آمن للبيانات الخاصة باللغة الحالية للمودل
+                $guideRawSetting = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? '{}');
+                $guideAllLangs = is_string($guideRawSetting) ? json_decode($guideRawSetting, true) : (is_array($guideRawSetting) ? $guideRawSetting : []);
+                $langKey = $current_lang ?? 'ar';
+                $curLangGuideData = $guideAllLangs[$langKey] ?? ($guideAllLangs['ar'] ?? []);
+
+                $modalGuideTitle = $curLangGuideData['guide_title'] ?? ($curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل');
+                $modalGuideDesc  = $curLangGuideData['guide_desc'] ?? ($curLangGuideData['desc'] ?? '');
+                $modalGuideItems = $curLangGuideData['items'] ?? [];
+                ?>
+
                 <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="guide_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                            <input type="text" class="form-control" name="guide_title" value="<?php echo htmlspecialchars(safe_admin_string($data['guide_title'] ?? 'دليل بيتهوفن الشامل', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                            <input type="text" class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$modalGuideTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
-                            <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="guide_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['guide_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label class="small fw-bold mb-1 text-secondary">وصف القسم (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                            <textarea class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalGuideDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <div id="guideRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $guideItemsData = is_array($data['guide_items'] ?? null) ? $data['guide_items'] : [];
-                        foreach ($guideItemsData as $index => $item): 
-                        ?>
-                            <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                                        <input type="text" class="form-control guide-title" name="guide[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($item['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                                        <input type="text" class="form-control guide-url" name="guide[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($item['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <input type="text" class="form-control guide-desc" name="guide[<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars(safe_admin_string($item['desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
-                                    </div>
-
-                                    <div class="col-md-5">
-                                        <label class="small fw-bold mb-1 text-secondary">الصورة</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
-                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
-                                                         alt="Guide Item Image" 
-                                                         class="rounded-2" 
-                                                         style="width: 40px; height: 40px; object-fit: cover;">
-                                                </div>
-                                            <?php endif; ?>
-                                            <input type="file" class="form-control guide-file" name="guide_img_<?php echo $index; ?>" accept="image/*">
+                        <?php if (is_array($modalGuideItems)): ?>
+                            <?php foreach ($modalGuideItems as $index => $item): ?>
+                                <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                                            <input type="text" class="form-control guide-title" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
                                         </div>
-                                        <input type="hidden" class="guide-old-img" name="guide[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($item['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="حذف المقال">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                                            <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ($item['link'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                            <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                        </div>
+
+                                        <div class="col-md-5">
+                                            <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <?php if (!empty($item['img'])): ?>
+                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                        <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                                             alt="Guide Item Image" 
+                                                             class="rounded-2" 
+                                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                                    </div>
+                                                <?php endif; ?>
+                                                <input type="file" class="form-control guide-file" name="guide_img_<?php echo $index; ?>" accept="image/*">
+                                            </div>
+                                            <input type="hidden" class="guide-old-img" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        
+                                        <div class="col-md-1 text-center pt-3">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="حذف المقال">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addGuideRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">

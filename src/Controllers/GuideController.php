@@ -42,7 +42,7 @@ class GuideController {
         $user_role = $_SESSION['role'] ?? '';
         $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
 
-        // إتاحة حالة المشرف داخل مصفوفة البيانات
+        // إتاحة حالة المشرف داخل مصفوفة البيانات والمحيط
         $data['is_admin'] = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
@@ -51,8 +51,11 @@ class GuideController {
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css'];
 
-        // استخراج المتغيرات للـ Views
-        extract($data);
+        // 🌟 النهج الآمن والقياسي: تعريف متغيرات صفحة الدليل بوضوح ودون استخدام extract()
+        $guide_title    = $data['guide_title'] ?? 'الدليل الشامل';
+        $guide_desc     = $data['guide_desc'] ?? '';
+        $read_more_text = $data['read_more_btn'] ?? 'قراءة المزيد';
+        $guide_items    = $data['guide_items'] ?? [];
 
         // 1. استدعاء الهيدر المشترك
         $header_file = __DIR__ . '/../Views/partials/header.php';
@@ -70,7 +73,7 @@ class GuideController {
             echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك (الذي يحتوي أو يضمن مودلات لوحة التحكم تماماً كالصفحة الرئيسية)
+        // 3. استدعاء الفوتر المشترك (الذي يحقن مودلات لوحة التحكم مركزياً)
         $footer_file = $root_path . '/src/Views/partials/footer.php';
         if (file_exists($footer_file)) {
             include_once $footer_file;

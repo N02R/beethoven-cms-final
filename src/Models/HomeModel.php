@@ -6,22 +6,17 @@ namespace App\Models;
 use App\Models\SiteModel;
 
 class HomeModel {
-    /**
-     * جلب وتجهيز بيانات أقسام الصفحة الرئيسية الخاصة مع دعم متعدد اللغات
-     */
     public static function getHomeData(): array {
-        // تحديد اللغة الحالية (افتراضياً العربية)
         $lang = $_SESSION['site_lang'] ?? 'ar';
-
-        // جلب كافة الإعدادات باستخدام الموديل المركزي SiteModel
         $settings = SiteModel::getSettings();
+        $globalData = SiteModel::getGlobalData();
         
-        // دالة مساعدة سريعة لاستخراج الهيكل أو النص المناسب حسب اللغة الحالية
         $getLangData = function(string $key, array $default = []) use ($settings, $lang) {
             if (!isset($settings[$key])) {
                 return $default;
             }
-            $decoded = json_decode($settings[$key], true);
+            $raw = $settings[$key];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
             
             if (!is_array($decoded)) {
                 return $default;
@@ -53,7 +48,7 @@ class HomeModel {
             'items' => $choose_raw['items'] ?? []
         ];
 
-        // 4. قسم الآراء والتقييمات (Reviews Videos) - بنية نظيفة وموحدة
+        // 4. قسم الآراء والتقييمات (Reviews Videos)
         $reviews_raw = $getLangData('reviews_items', []);
         $reviews_data = [
             'title' => is_string($reviews_raw['title'] ?? null) ? $reviews_raw['title'] : 'شاهد ماذا يقول عملاؤنا عنا',
@@ -68,15 +63,13 @@ class HomeModel {
             'items' => $faq_raw['items'] ?? (is_array($faq_raw) && !isset($faq_raw['title']) ? $faq_raw : [])
         ];
 
-        // 6. قسم الدليل الشامل (Guide)
-        $guide_raw = $getLangData('guide_items', []);
+        // 6. قسم الدليل الشامل (Guide) - موحد ومستمد مباشرة من الـ SiteModel المركزي لتجنب أي تكرار
         $guide_data = [
-            'title' => $guide_raw['title'] ?? ($guide_raw['guide_title'] ?? ''),
-            'desc'  => $guide_raw['desc'] ?? ($guide_raw['guide_desc'] ?? ''),
-            'items' => $guide_raw['items'] ?? (is_array($guide_raw) && !isset($guide_raw['title']) ? $guide_raw : [])
+            'title' => $globalData['guide_title'],
+            'desc'  => $globalData['guide_desc'],
+            'items' => $globalData['guide_items']
         ];
 
-        // إرجاع مصفوفة موحدة ومنسقة بدقة للغة الحالية لخدمة العرض والمودل
         return [
             'hero'                  => $hero_raw,
             'services_section'      => $services_data,

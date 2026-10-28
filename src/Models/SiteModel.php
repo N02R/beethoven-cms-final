@@ -46,21 +46,13 @@ class SiteModel {
             return is_array($decoded) ? $decoded : $default;
         };
 
-        $getLangString = function(string $key, string $default = '') use ($settings, $lang) {
-            if (!isset($settings[$key])) {
-                return $default;
-            }
-            $raw = $settings[$key];
+        $getMultiLang = function($settingKey, $default) use ($settings, $lang) {
+            if (!isset($settings[$settingKey])) return $default;
+            $raw = $settings[$settingKey];
             $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
-            
-            if (is_array($decoded) && (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de']))){
-                $langBlock = $decoded[$lang] ?? ($decoded['ar'] ?? []);
-                if (is_array($langBlock)) {
-                    return $langBlock['title'] ?? ($langBlock['guide_title'] ?? ($langBlock['desc'] ?? $default));
-                }
-                return is_string($langBlock) ? $langBlock : $default;
+            if (is_array($decoded)) {
+                return $decoded[$lang] ?? ($decoded['ar'] ?? ($decoded['de'] ?? $default));
             }
-            
             return is_string($raw) ? $raw : $default;
         };
         
@@ -73,19 +65,14 @@ class SiteModel {
             $site_logo_path = is_string($rawLogo) ? $rawLogo : '';
         }
 
-        // معالجة بيانات الدليل الشامل (الهيكل المدمج الحديث)
-        $guideRaw = $settings['guide_items'] ?? '[]';
-        $guideDecoded = is_string($guideRaw) ? json_decode($guideRaw, true) : $guideRaw;
-        
-        $getMultiLang = function($settingKey, $default) use ($settings, $lang) {
-            if (!isset($settings[$settingKey])) return $default;
-            $raw = $settings[$settingKey];
-            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
-            if (is_array($decoded)) {
-                return $decoded[$lang] ?? ($decoded['ar'] ?? ($decoded['de'] ?? $default));
-            }
-            return is_string($raw) ? $raw : $default;
-        };
+        // معالجة بيانات الدليل الشامل الموحدة الجديدة (من المفتاح المركزي 'guide')
+        $guideBlock = $getLangData('guide', []);
+        $guide_title = $guideBlock['title'] ?? 'دليل بيتهوفن الشامل';
+        $guide_desc  = $guideBlock['desc'] ?? '';
+        $guide_items = $guideBlock['items'] ?? [];
+        if (!is_array($guide_items)) {
+            $guide_items = [];
+        }
 
         return [
             'site_title'        => $getMultiLang('site_title', 'Beethoven Services'),
@@ -110,11 +97,11 @@ class SiteModel {
             
             'footer_col3_links' => isset($settings['footer_col3_links']) && is_string($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
             
-            // بيانات الدليل الشامل المدمجة والجاهزة للعرض
-            'guide_title'       => $getMultiLang('guide_title', 'دليل بيتهوفن الشامل'),
-            'guide_desc'        => $getMultiLang('guide_desc', ''),
-            'read_more_btn'     => $getMultiLang('read_more_btn', 'قراءة المزيد'),
-            'guide_items'       => is_array($guideDecoded) ? $guideDecoded : [],
+            // بيانات الدليل الشامل الموحدة والجاهزة للعرض عبر النموذج أو القوالب
+            'guide_title'       => $guide_title,
+            'guide_desc'        => $guide_desc,
+            'read_more_btn'     => 'قراءة المزيد',
+            'guide_items'       => $guide_items,
         ];
     }
 

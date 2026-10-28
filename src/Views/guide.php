@@ -1,32 +1,30 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * صفحة الدليل الشامل - Guide Page View
+ * العرض الديناميكي المعتمد على الهيكل الموحد الجديد (guide)
+ */
+
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// جلب بيانات الدليل الشامل من النموذج أو الإعدادات
-$guide_raw = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
+// 1. جلب بيانات الدليل الموحدة حصرياً من المفتاح المركزي 'guide'
+$guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
 $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
 
-// استخراج البيانات الخاصة باللغة الحالية، مع التراجع للعربية
+// 2. استخراج بيانات اللغة الحالية فقط، مع التراجع الآمن للعربية
 $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 
-$guide_title    = $lang_guide_data['title'] ?? ($lang_guide_data['guide_title'] ?? ('دليل بيتهوفن الشامل'));
-$guide_desc     = $lang_guide_data['desc'] ?? ($lang_guide_data['guide_desc'] ?? '');
+$guide_title    = $lang_guide_data['title'] ?? 'دليل بيتهوفن الشامل';
+$guide_desc     = $lang_guide_data['desc'] ?? '';
 $read_more_text = $read_more_btn ?? 'قراءة المزيد';
 
-// استخراج العناصر (Items) بطريقة ذكية تمنع ظهور أي كروت قديمة وهمية
+// 3. استخراج مقالات اللغة الحالية مباشرة وبشكل نظيف
 $guide_items = $lang_guide_data['items'] ?? [];
-
-// إذا كانت البنية القديمة موجودة (مصفوفة رقمية مباشرة وليست تحت مفتاح اللغة)، نقوم بتنقيتها أو دمجها
-if (empty($guide_items) && is_array($guide_all)) {
-    foreach ($guide_all as $key => $val) {
-        if (is_numeric($key) && is_array($val)) {
-            $guide_items[] = $val;
-        }
-    }
+if (!is_array($guide_items)) {
+    $guide_items = [];
 }
-if (!is_array($guide_items)) $guide_items = [];
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->
@@ -52,15 +50,12 @@ if (!is_array($guide_items)) $guide_items = [];
         <?php foreach ($guide_items as $index => $item): 
             if (!is_array($item)) continue;
             
-            // استخراج الترجمة الخاصة باللغة الحالية، مع الاحتياط للعربية ثم الألمانية
-            $langData   = $item[$current_lang] ?? ($item['ar'] ?? ($item['de'] ?? []));
-            $item_title = $langData['title'] ?? ($item['title'] ?? '');
-            $item_desc  = $langData['desc'] ?? ($item['desc'] ?? '');
-
-            $item_img  = get_image_url($item['img'] ?? null);
-            $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');
-            $raw_url   = $item['url'] ?? ($item['link'] ?? '#');
-            $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
+            $item_title = $item['title'] ?? '';
+            $item_desc  = $item['desc'] ?? '';
+            $item_img   = get_image_url($item['img'] ?? null);
+            $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
+            $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
+            $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm">
@@ -80,7 +75,7 @@ if (!is_array($guide_items)) $guide_items = [];
             </div>
           </div>
         <?php endforeach; ?>
-      <?php else: ?>
+      <?else: ?>
         <div class="col-12 text-center text-muted py-4">
           <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>
         </div>

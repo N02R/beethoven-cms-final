@@ -274,17 +274,24 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <section class="guide py-2" style="position: relative;">
   <div class="custom-container">
     <?php 
-        $guide_title    = $getLocalizedData('guide_title', 'دليل بيتهوفن الشامل');
-        $guide_desc     = $getLocalizedData('guide_desc', '');
-        $read_more_text = $getLocalizedData('read_more_btn', 'قراءة المزيد');
+        // 1. جلب بيانات الدليل الموحدة حصرياً من المفتاح المركزي 'guide'
+        $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
+        $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
 
-        if (is_array($guide_title)) $guide_title = $guide_title['title'] ?? 'دليل بيتهوفن الشامل';
-        if (is_array($guide_desc)) $guide_desc = $guide_desc['desc'] ?? '';
-        if (is_array($read_more_text)) $read_more_text = $read_more_text['title'] ?? 'قراءة المزيد';
+        // 2. استخراج بيانات اللغة الحالية فقط، مع التراجع الآمن للعربية
+        $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 
-        $guide_items_raw = get_setting('guide_items', []);
-        $guide_items = is_string($guide_items_raw) ? (json_decode($guide_items_raw, true) ?? []) : (is_array($guide_items_raw) ? $guide_items_raw : []);
+        $guide_title    = $lang_guide_data['title'] ?? 'دليل بيتهوفن الشامل';
+        $guide_desc     = $lang_guide_data['desc'] ?? '';
+        $read_more_text = $read_more_btn ?? 'قراءة المزيد';
+
+        // 3. استخراج مقالات اللغة الحالية مباشرة وبشكل نظيف
+        $guide_items = $lang_guide_data['items'] ?? [];
+        if (!is_array($guide_items)) {
+            $guide_items = [];
+        }
     ?>
+    
     <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php if (!empty($guide_desc)): ?>
         <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
@@ -298,13 +305,13 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
               <div class="row g-4">
                 <?php foreach ($slide_items as $item): 
-                  $item_data  = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
-                  $item_title = $item_data['title'] ?? ($item['title'] ?? '');
-                  $item_desc  = $item_data['desc'] ?? ($item['desc'] ?? '');
-                  
-                  $item_img  = get_image_url($item['img'] ?? null);
-                  $raw_url   = $item['url'] ?? '#';
-                  $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
+                  if (!is_array($item)) continue;
+
+                  $item_title = $item['title'] ?? '';
+                  $item_desc  = $item['desc'] ?? '';
+                  $item_img   = get_image_url($item['img'] ?? null);
+                  $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
+                  $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
                 ?>
                   <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card h-100 border-0 shadow-sm">
@@ -330,13 +337,13 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         <?php else: ?>
           <div class="carousel-item active">
             <div class="col-12 text-center text-muted py-4">
-              <p>لا توجد مقالات مضافة في الدليل حالياً.</p>
+              <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>
             </div>
           </div>
         <?php endif; ?>
       </div>
 
-      <?php if (!empty($chunks)): ?>
+      <?php if (!empty($chunks) && count($chunks) > 1): ?>
         <div class="dots mt-4">
           <?php foreach ($chunks as $index => $slide): ?>
             <span class="dot <?php echo $index === 0 ? 'active' : ''; ?>" data-bs-target="#carousel-guide" data-bs-slide-to="<?php echo $index; ?>"></span>

@@ -1185,7 +1185,49 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // باقي الدوال المساعدة (addSocialRow, addMenuRow, addChooseRow, addGuideRow, addFaqRow, etc.) تبقى كما هي...
+    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل (Guide)
+    function addGuideRow() {
+        const container = document.getElementById('guideRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.guide-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm guide-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="عنوان المقال">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="رابط الصفحة">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="الوصف">
+                </div>
+
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control guide-file" name="guide_img_${count}" accept="image/*">
+                    </div>
+                    <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
+                </div>
+                
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
@@ -1225,6 +1267,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
                     if (fileInput) fileInput.name = `choose_img_${index}`;
                     if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // 🌟 إعادة ترتيب حقول الدليل الشامل (Guide) بدقة عند الـ submit
+                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.guide-title');
+                    const url = row.querySelector('.guide-url');
+                    const desc = row.querySelector('.guide-desc');
+                    const file = row.querySelector('.guide-file');
+                    const oldImg = row.querySelector('.guide-old-img');
+                    
+                    if (title) title.name = `guide[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `guide[${currentLang}][items][${index}][url]`;
+                    if (desc) desc.name = `guide[${currentLang}][items][${index}][desc]`;
+                    if (file) file.name = `guide_img_${index}`;
+                    if (oldImg) oldImg.name = `guide[${currentLang}][items][${index}][old_img]`;
                 });
 
                 const formId = this.getAttribute('id');

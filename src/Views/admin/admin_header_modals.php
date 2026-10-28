@@ -836,27 +836,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب آمن وموحّد للبيانات الخاصة باللغة للمودل (يدعم الهيكل الحديث والقديم)
-                $guideRawSetting = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? '{}');
+                // جلب بيانات الدليل الموحدة من المفتاح المركزي 'guide'
+                $guideRawSetting = $data['guide'] ?? ($currentSettings['guide'] ?? '{}');
                 $guideAllLangs = is_string($guideRawSetting) ? json_decode($guideRawSetting, true) : (is_array($guideRawSetting) ? $guideRawSetting : []);
                 
                 $langKey = $current_lang ?? 'ar';
-                $curLangGuideData = $guideAllLangs[$langKey] ?? ($guideAllLangs['ar'] ?? []);
+                $curLangGuideData = $guideAllLangs[$langKey] ?? [];
 
-                $modalGuideTitle = $curLangGuideData['guide_title'] ?? ($curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل');
-                $modalGuideDesc  = $curLangGuideData['guide_desc'] ?? ($curLangGuideData['desc'] ?? '');
-                
-                // جلب العناصر بطريقة ذكية تدعم الهيكل الحديث والهيكل القديم معاً
+                $modalGuideTitle = $curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل';
+                $modalGuideDesc  = $curLangGuideData['desc'] ?? '';
                 $modalGuideItems = $curLangGuideData['items'] ?? [];
-                
-                if (empty($modalGuideItems) && is_array($guideAllLangs)) {
-                    foreach ($guideAllLangs as $key => $val) {
-                        if (is_numeric($key) && is_array($val)) {
-                            $modalGuideItems[] = $val;
-                        }
-                    }
+                if (!is_array($modalGuideItems)) {
+                    $modalGuideItems = [];
                 }
-                if (!is_array($modalGuideItems)) $modalGuideItems = [];
                 ?>
 
                 <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -887,7 +879,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         </div>
                                         <div class="col-md-6">
                                             <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                                            <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? ($item['link'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                            <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
                                         </div>
                                         
                                         <div class="col-md-6">

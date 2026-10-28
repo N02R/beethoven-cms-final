@@ -344,31 +344,28 @@ elseif ($action === 'update_reviews') {
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 6. تحديث الدليل الشامل (Guide)
+        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد الجديد
         elseif ($action === 'update_guide') {
             $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $rawGuideSetting = $currentSettings['guide_items'] ?? '';
+            // جلب البيانات من المفتاح المركزي الموحد 'guide' بدلاً من 'guide_items'
+            $rawGuideSetting = $currentSettings['guide'] ?? '';
             $guideAllLangs = is_string($rawGuideSetting) ? json_decode($rawGuideSetting, true) : (is_array($rawGuideSetting) ? $rawGuideSetting : []);
             if (!is_array($guideAllLangs)) {
                 $guideAllLangs = [];
             }
 
-            if (isset($guideAllLangs['title']) && !isset($guideAllLangs['ar'])) {
-                $oldData = $guideAllLangs;
-                $guideAllLangs = ['ar' => $oldData];
-            }
+            // استقبال العنوان والوصف الخاصين باللغة المستهدفة من الفورم
+            $guideTitle = $_POST['guide'][$targetLang]['title'] ?? '';
+            $guideDesc  = $_POST['guide'][$targetLang]['desc'] ?? '';
 
-            $guideTitle = $_POST['guide_title'][$targetLang] ?? ($_POST['guide_title'] ?? ($_POST['guide'][$targetLang]['title'] ?? ''));
-            $guideDesc  = $_POST['guide_desc'][$targetLang] ?? ($_POST['guide_desc'] ?? ($_POST['guide'][$targetLang]['desc'] ?? ''));
-
-            $rawItems = $_POST['guide'][$targetLang]['items'] ?? ($_POST['guide']['items'] ?? ($_POST['guide'] ?? ($_POST['guide_items'] ?? [])));
+            $rawItems = $_POST['guide'][$targetLang]['items'] ?? [];
             $existingLangItems = $guideAllLangs[$targetLang]['items'] ?? [];
             $processedItems = [];
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    if (!is_numeric($index) || !is_array($item)) continue;
+                    if (!is_array($item)) continue;
 
                     $oldImg = $item['old_img'] ?? ($existingLangItems[$index]['img'] ?? '');
                     $finalImg = $oldImg;
@@ -376,8 +373,6 @@ elseif ($action === 'update_reviews') {
                     $fileTmp = null;
                     if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         $fileTmp = $_FILES['guide_img_' . $index]['tmp_name'];
-                    } elseif (isset($_FILES['guide']['tmp_name'][$targetLang]['items'][$index]['img']) && $_FILES['guide']['error'][$targetLang]['items'][$index]['img'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['guide']['tmp_name'][$targetLang]['items'][$index]['img'];
                     }
 
                     if ($fileTmp) {
@@ -391,22 +386,23 @@ elseif ($action === 'update_reviews') {
                     $processedItems[] = [
                         'title' => $item['title'] ?? '',
                         'desc'  => $item['desc'] ?? '',
-                        'link'  => $item['link'] ?? ($item['url'] ?? '#'),
+                        'url'   => $item['url'] ?? '#',
                         'img'   => $finalImg
                     ];
                 }
             }
 
+            // تحديث بيانات اللغة الحالية فقط داخل مصفوفة اللغات العامة
             $guideAllLangs[$targetLang] = [
-                'title'       => $guideTitle,
-                'desc'        => $guideDesc,
-                'guide_title' => $guideTitle,
-                'guide_desc'  => $guideDesc,
-                'items'       => $processedItems
+                'title' => $guideTitle,
+                'desc'  => $guideDesc,
+                'items' => $processedItems
             ];
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'guide_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            
+            // الحفظ في المفتاح المركزي الجديد 'guide'
+            $stmt->execute(['k' => 'guide', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;

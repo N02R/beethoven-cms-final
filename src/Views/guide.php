@@ -3,25 +3,18 @@ declare(strict_types=1);
 
 /**
  * صفحة الدليل الشامل - Guide Page View
- * العرض الديناميكي المعتمد على الهيكل الموحد الجديد (guide)
+ * العرض الديناميكي المباشر المستمد من الـ SiteModel / HomeModel
  */
 
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// 1. جلب بيانات الدليل الموحدة حصرياً من المفتاح المركزي 'guide'
-$guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
-$guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
+// استخراج البيانات الجاهزة للغة الحالية مباشرة من الـ data أو currentSettings
+$guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
+$guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
+$read_more_text = $data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? 'قراءة المزيد');
+$guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
 
-// 2. استخراج بيانات اللغة الحالية فقط، مع التراجع الآمن للعربية
-$lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
-
-$guide_title    = $lang_guide_data['title'] ?? 'دليل بيتهوفن الشامل';
-$guide_desc     = $lang_guide_data['desc'] ?? '';
-$read_more_text = $read_more_btn ?? 'قراءة المزيد';
-
-// 3. استخراج مقالات اللغة الحالية مباشرة وبشكل نظيف
-$guide_items = $lang_guide_data['items'] ?? [];
 if (!is_array($guide_items)) {
     $guide_items = [];
 }
@@ -74,8 +67,8 @@ if (!is_array($guide_items)) {
               </div>
             </div>
           </div>
-        <?php endforeach; ?>
-      <?else: ?>
+        <?endforeach; ?>
+      <?php else: ?>
         <div class="col-12 text-center text-muted py-4">
           <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>
         </div>

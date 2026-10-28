@@ -1,18 +1,32 @@
 <?php
 declare(strict_types=1);
 
-/**
- * صفحة الدليل الشامل - Guide Page View
- * المقر الرئيسي لعرض الدليل وإدارته (مركز الإدارة المرتبط بالمودل المركزي في الفوتر)
- */
-
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-$guide_title    = $guide_title ?? 'الدليل الشامل';
-$guide_desc     = $guide_desc ?? '';
+// جلب بيانات الدليل الشامل من النموذج أو الإعدادات
+$guide_raw = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
+$guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
+
+// استخراج البيانات الخاصة باللغة الحالية، مع التراجع للعربية
+$lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
+
+$guide_title    = $lang_guide_data['title'] ?? ($lang_guide_data['guide_title'] ?? ('دليل بيتهوفن الشامل'));
+$guide_desc     = $lang_guide_data['desc'] ?? ($lang_guide_data['guide_desc'] ?? '');
 $read_more_text = $read_more_btn ?? 'قراءة المزيد';
-$guide_items    = $guide_items ?? [];
+
+// استخراج العناصر (Items) بطريقة ذكية تمنع ظهور أي كروت قديمة وهمية
+$guide_items = $lang_guide_data['items'] ?? [];
+
+// إذا كانت البنية القديمة موجودة (مصفوفة رقمية مباشرة وليست تحت مفتاح اللغة)، نقوم بتنقيتها أو دمجها
+if (empty($guide_items) && is_array($guide_all)) {
+    foreach ($guide_all as $key => $val) {
+        if (is_numeric($key) && is_array($val)) {
+            $guide_items[] = $val;
+        }
+    }
+}
+if (!is_array($guide_items)) $guide_items = [];
 ?>
 
 <!-- ===== GUIDE PAGE START ===== -->

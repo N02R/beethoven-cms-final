@@ -35,17 +35,17 @@ $guide_items    = $guide_items ?? [];
 
     <div class="row g-4">
       <?php if (!empty($guide_items) && is_array($guide_items)): ?>
-        <?php foreach ($guide_items as $item): 
+        <?php foreach ($guide_items as $index => $item): 
             if (!is_array($item)) continue;
             
             // استخراج الترجمة الخاصة باللغة الحالية، مع الاحتياط للعربية ثم الألمانية
             $langData   = $item[$current_lang] ?? ($item['ar'] ?? ($item['de'] ?? []));
-            $item_title = $langData['title'] ?? '';
-            $item_desc  = $langData['desc'] ?? '';
+            $item_title = $langData['title'] ?? ($item['title'] ?? '');
+            $item_desc  = $langData['desc'] ?? ($item['desc'] ?? '');
 
             $item_img  = get_image_url($item['img'] ?? null);
             $arrow_img = get_image_url('assets/img/ArrowLeft.svg.webp');
-            $raw_url   = $item['url'] ?? '#';
+            $raw_url   = $item['url'] ?? ($item['link'] ?? '#');
             $final_url = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
         ?>
           <div class="col-lg-4 col-md-6">
@@ -68,7 +68,7 @@ $guide_items    = $guide_items ?? [];
         <?php endforeach; ?>
       <?php else: ?>
         <div class="col-12 text-center text-muted py-4">
-          <p>لا توجد مقالات مضافة في الدليل حالياً.</p>
+          <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>
         </div>
       <?php endif; ?>
     </div>

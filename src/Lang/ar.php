@@ -113,6 +113,14 @@ return [
 'add_new_video'          => 'إضافة فيديو جديد',
 'manage_customer_videos' => 'إدارة فيديوهات العملاء',
 'added_videos'           => 'الفيديوهات المضافة',
+    // ترجمات مودل الدليل الشامل (Guide Modal)
+    'manage_guide'            => 'إدارة الدليل الشامل',
+    'main_section_title'      => 'عنوان القسم الرئيسي',
+    'section_desc'            => 'وصف القسم',
+    'article_title'           => 'عنوان المقال',
+    'page_url'                => 'رابط الصفحة',
+    'delete_article'          => 'حذف المقال',
+    'add_new_article'         => 'إضافة مقال جديد',
 
 ];
 

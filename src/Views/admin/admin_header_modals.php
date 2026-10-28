@@ -831,7 +831,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-book text-primary"></i> إدارة الدليل الشامل (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-book text-primary"></i> 
+                    <?php echo htmlspecialchars($lang['manage_guide'] ?? 'إدارة الدليل الشامل', ENT_QUOTES, 'UTF-8'); ?> 
+                    (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
@@ -859,11 +863,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                            <label class="small fw-bold mb-1 text-secondary">
+                                <?php echo htmlspecialchars($lang['main_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                            </label>
                             <input type="text" class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$modalGuideTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div>
-                            <label class="small fw-bold mb-1 text-secondary">وصف القسم (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                            <label class="small fw-bold mb-1 text-secondary">
+                                <?php echo htmlspecialchars($lang['section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                            </label>
                             <textarea class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalGuideDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
@@ -874,21 +882,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                                            <input type="text" class="form-control guide-title" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان المقال">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <input type="text" class="form-control guide-title" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                                            <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="رابط الصفحة">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                            <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
 
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -904,7 +912,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         </div>
                                         
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="حذف المقال">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -915,13 +923,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addGuideRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة مقال جديد
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_article'] ?? 'إضافة مقال جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="guideForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="guideForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1189,12 +1197,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل (Guide)
+    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل (Guide) متوافقة مع ملفات الترجمة
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        // جلب الترجمات من PHP
+        const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
+        const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
+        const langImage        = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete       = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
 
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm guide-row-item mb-3';
@@ -1202,21 +1217,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
-                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="عنوان المقال">
+                    <label class="small fw-bold mb-1 text-secondary">${langArticleTitle}</label>
+                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="${langArticleTitle}">
                 </div>
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
-                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="رابط الصفحة">
+                    <label class="small fw-bold mb-1 text-secondary">${langPageUrl}</label>
+                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="${langPageUrl}">
                 </div>
                 
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="الوصف">
+                    <label class="small fw-bold mb-1 text-secondary">${langDesc}</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="${langDesc}">
                 </div>
 
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${langImage}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control guide-file" name="guide_img_${count}" accept="image/*">
                     </div>
@@ -1224,7 +1239,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>

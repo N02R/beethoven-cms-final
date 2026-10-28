@@ -113,5 +113,13 @@ return [
 'add_new_video'          => 'Add New Video',
 'manage_customer_videos' => 'Manage Client Videos',
 'added_videos'           => 'Added Videos',
+    // Guide Modal Translations
+    'manage_guide'            => 'Manage Comprehensive Guide',
+    'main_section_title'      => 'Main Section Title',
+    'section_desc'            => 'Section Description',
+    'article_title'           => 'Article Title',
+    'page_url'                => 'Page URL',
+    'delete_article'          => 'Delete Article',
+    'add_new_article'         => 'Add New Article',
 
 ];

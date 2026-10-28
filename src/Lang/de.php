@@ -113,5 +113,13 @@ return [
 'add_new_video'          => 'Neues Video hinzufügen',
 'manage_customer_videos' => 'Kunden-Videos verwalten',
 'added_videos'           => 'Hinzugefügte Videos',
+    // Leitfaden Modal Übersetzungen (Guide Modal)
+    'manage_guide'            => 'Umfassenden Leitfaden verwalten',
+    'main_section_title'      => 'Hauptabschnittstitel',
+    'section_desc'            => 'Abschnitts Beschreibung',
+    'article_title'           => 'ArtikelTitel',
+    'page_url'                => 'Seiten-URL',
+    'delete_article'          => 'Artikel löschen',
+    'add_new_article'         => 'Neuen Artikel hinzufügen',
 
 ];

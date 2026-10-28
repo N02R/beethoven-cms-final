@@ -840,8 +840,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات الدليل الموحدة من المفتاح المركزي 'guide'
-                $guideRawSetting = $data['guide'] ?? ($currentSettings['guide'] ?? '{}');
+                // جلب بيانات الدليل الموحدة مع دعم شامل لكافة متغيرات الإعدادات المتاحة
+                $guideRawSetting = $data['guide'] ?? ($currentSettings['guide'] ?? ($settings['guide'] ?? '{}'));
                 $guideAllLangs = is_string($guideRawSetting) ? json_decode($guideRawSetting, true) : (is_array($guideRawSetting) ? $guideRawSetting : []);
                 
                 $langKey = $current_lang ?? 'ar';
@@ -854,7 +854,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $modalGuideItems = [];
                 }
                 ?>
-
                 <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">

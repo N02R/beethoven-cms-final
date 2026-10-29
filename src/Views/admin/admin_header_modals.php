@@ -1212,21 +1212,20 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة مقال جديد مع تنظيم الصورة وزر الرفع في نفس السطر
+    // 🌟 دالة إضافة مقال جديد (الهيكل الأصلي المستقر والمجرب)
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, '
-        UTF - 8 '); ?>';
-        
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
         // جلب الترجمات الديناميكية من PHP
         const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
-        const langPageUrl = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDesc = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
-        const langImage = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDelete = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
-        
+        const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
+        const langImage        = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete       = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm guide-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -1263,6 +1262,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         `;
         container.appendChild(div);
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {

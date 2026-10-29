@@ -121,5 +121,6 @@ return [
     'page_url'                => 'Page URL',
     'delete_article'          => 'Delete Article',
     'add_new_article'         => 'Add New Article',
+    'image'                   => 'Image',
 
 ];

@@ -868,6 +868,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $modalGuideItems = [];
                 }
                 ?>
+                
                 <form id="guideForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_guide">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
@@ -908,9 +909,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
 
+                                        <!-- قسم الصورة المرتب بشكل أنيق يمنع التداخل -->
                                         <div class="col-md-5">
                                             <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                            <div class="d-flex align-items-center gap-2">
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
                                                         <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], ENT_QUOTES, 'UTF-8'); ?>" 
@@ -919,7 +921,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                              style="width: 40px; height: 40px; object-fit: cover;">
                                                     </div>
                                                 <?php endif; ?>
-                                                <input type="file" class="form-control guide-file" name="guide_img_<?php echo $index; ?>" accept="image/*">
+                                                <input type="file" class="form-control guide-file flex-grow-1" name="guide_img_<?php echo $index; ?>" accept="image/*" style="min-width: 180px;">
                                             </div>
                                             <input type="hidden" class="guide-old-img" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
@@ -1210,14 +1212,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل (Guide) متوافقة مع ملفات الترجمة
+    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل مترجمة بالكامل حسب اللغة الحالية
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-        // جلب الترجمات من PHP
+        // جلب الترجمات الديناميكية من PHP
         const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
         const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
         const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
@@ -1245,8 +1247,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">${langImage}</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control guide-file" name="guide_img_${count}" accept="image/*">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <input type="file" class="form-control guide-file flex-grow-1" name="guide_img_${count}" accept="image/*" style="min-width: 180px;">
                     </div>
                     <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
                 </div>

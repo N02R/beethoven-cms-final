@@ -121,6 +121,7 @@ return [
     'page_url'                => 'رابط الصفحة',
     'delete_article'          => 'حذف المقال',
     'add_new_article'         => 'إضافة مقال جديد',
+    'image'                   => 'الصورة',
 
 ];
 

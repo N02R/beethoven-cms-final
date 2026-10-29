@@ -344,15 +344,21 @@ elseif ($action === 'update_reviews') {
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد الجديد
+        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد الآمن والمحصن
         elseif ($action === 'update_guide') {
             $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب البيانات من المفتاح المركزي الموحد 'guide' بدلاً من 'guide_items'
-            $rawGuideSetting = $currentSettings['guide'] ?? '';
-            $guideAllLangs = is_string($rawGuideSetting) ? json_decode($rawGuideSetting, true) : (is_array($rawGuideSetting) ? $rawGuideSetting : []);
-            if (!is_array($guideAllLangs)) {
-                $guideAllLangs = [];
+            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات لضمان عدم ضياع أي لغة أخرى
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'guide'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $guideAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) {
+                    $guideAllLangs = $decodedDb;
+                }
             }
 
             // استقبال العنوان والوصف الخاصين باللغة المستهدفة من الفورم
@@ -392,7 +398,7 @@ elseif ($action === 'update_reviews') {
                 }
             }
 
-            // تحديث بيانات اللغة الحالية فقط داخل مصفوفة اللغات العامة
+            // تحديث بيانات اللغة المستهدفة فقط داخل مصفوفة اللغات العامة مع الحفاظ على باقي اللغات
             $guideAllLangs[$targetLang] = [
                 'title' => $guideTitle,
                 'desc'  => $guideDesc,
@@ -401,7 +407,7 @@ elseif ($action === 'update_reviews') {
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);
             
-            // الحفظ في المفتاح المركزي الجديد 'guide'
+            // الحفظ المباشر والآمن في جدول global_settings
             $stmt->execute(['k' => 'guide', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

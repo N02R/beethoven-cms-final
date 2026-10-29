@@ -298,7 +298,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         }
     ?>
     
-    <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+    <h2 class="mb-5  sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php if (!empty($guide_desc)): ?>
         <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
     <?php endif; ?>

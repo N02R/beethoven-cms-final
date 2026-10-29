@@ -12,7 +12,10 @@ $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 // استخراج البيانات الجاهزة للغة الحالية مباشرة من الـ data أو currentSettings
 $guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
 $guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
-$read_more_text = $data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? 'قراءة المزيد');
+
+// 🌟 الاعتماد على ملفات الترجمة لتغيير نص "قراءة المزيد" حسب اللغة النشطة
+$read_more_text = $lang['read_more'] ?? ('قراءة المزيد');
+
 $guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
 
 if (!is_array($guide_items)) {
@@ -67,7 +70,7 @@ if (!is_array($guide_items)) {
               </div>
             </div>
           </div>
-        <?endforeach; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <div class="col-12 text-center text-muted py-4">
           <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>

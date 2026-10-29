@@ -840,12 +840,26 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات الدليل الموحدة مع دعم شامل لكافة متغيرات الإعدادات المتاحة
-                $guideRawSetting = $data['guide'] ?? ($currentSettings['guide'] ?? ($settings['guide'] ?? '{}'));
+                // جلب بيانات الدليل الموحدة مع أقصى درجات المرونة والاحتياط
+                $guideRawSetting = $data['guide'] ?? ($currentSettings['guide'] ?? null);
+                if (empty($guideRawSetting)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtGuide = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'guide'");
+                        $stmtGuide->execute();
+                        $guideRawSetting = $stmtGuide->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $guideRawSetting = '{}';
+                    }
+                }
+
                 $guideAllLangs = is_string($guideRawSetting) ? json_decode($guideRawSetting, true) : (is_array($guideRawSetting) ? $guideRawSetting : []);
+                if (!is_array($guideAllLangs)) {
+                    $guideAllLangs = [];
+                }
                 
                 $langKey = $current_lang ?? 'ar';
-                $curLangGuideData = $guideAllLangs[$langKey] ?? [];
+                $curLangGuideData = $guideAllLangs[$langKey] ?? ($guideAllLangs['ar'] ?? []);
 
                 $modalGuideTitle = $curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل';
                 $modalGuideDesc  = $curLangGuideData['desc'] ?? '';

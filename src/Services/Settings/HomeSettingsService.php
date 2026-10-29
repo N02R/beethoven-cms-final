@@ -344,11 +344,11 @@ elseif ($action === 'update_reviews') {
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد الآمن والمحصن
+        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد المحمي ضد فقدان البطاقات
         elseif ($action === 'update_guide') {
             $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات لضمان عدم ضياع أي لغة أخرى
+            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'guide'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
@@ -361,19 +361,25 @@ elseif ($action === 'update_reviews') {
                 }
             }
 
-            // استقبال العنوان والوصف الخاصين باللغة المستهدفة من الفورم
-            $guideTitle = $_POST['guide'][$targetLang]['title'] ?? '';
-            $guideDesc  = $_POST['guide'][$targetLang]['desc'] ?? '';
+            // الاحتفاظ ببيانات اللغة الحالية القديمة لحمايتها
+            $currentLangData = $guideAllLangs[$targetLang] ?? [];
+            $existingItems = $currentLangData['items'] ?? [];
 
-            $rawItems = $_POST['guide'][$targetLang]['items'] ?? [];
-            $existingLangItems = $guideAllLangs[$targetLang]['items'] ?? [];
+            // استقبال العنوان والوصف مع الاحتفاظ بالقديم إن لم يُرسل جديد
+            $postedGuide = $_POST['guide'][$targetLang] ?? [];
+            
+            $guideTitle = trim((string)($postedGuide['title'] ?? ($_POST['guide_title'] ?? ($currentLangData['title'] ?? 'دليل بيتهوفن الشامل'))));
+            $guideDesc  = trim((string)($postedGuide['desc'] ?? ($_POST['guide_desc'] ?? ($currentLangData['desc'] ?? ''))));
+
+            $rawItems = $postedGuide['items'] ?? null;
             $processedItems = [];
 
+            // 🌟 الحماية الذكية: إذا تم إرسال items نعالجها، وإلا فنحتفظ بالبطاقات القديمة كما هي تماماً!
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
                     if (!is_array($item)) continue;
 
-                    $oldImg = $item['old_img'] ?? ($existingLangItems[$index]['img'] ?? '');
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
                     $finalImg = $oldImg;
 
                     $fileTmp = null;
@@ -390,15 +396,18 @@ elseif ($action === 'update_reviews') {
                     }
 
                     $processedItems[] = [
-                        'title' => $item['title'] ?? '',
-                        'desc'  => $item['desc'] ?? '',
-                        'url'   => $item['url'] ?? '#',
+                        'title' => trim($item['title'] ?? ''),
+                        'desc'  => trim($item['desc'] ?? ''),
+                        'url'   => trim($item['url'] ?? '#'),
                         'img'   => $finalImg
                     ];
                 }
+            } else {
+                // لم يتم إرسال items جديدة، إذن نحافظ على القديمة لكي لا تختفي البطاقات عند تعديل العنوان فقط!
+                $processedItems = $existingItems;
             }
 
-            // تحديث بيانات اللغة المستهدفة فقط داخل مصفوفة اللغات العامة مع الحفاظ على باقي اللغات
+            // تحديث بيانات اللغة المستهدفة مع دمج كل شيء بأمان
             $guideAllLangs[$targetLang] = [
                 'title' => $guideTitle,
                 'desc'  => $guideDesc,
@@ -407,7 +416,7 @@ elseif ($action === 'update_reviews') {
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);
             
-            // الحفظ المباشر والآمن في جدول global_settings
+            // الحفظ الآمن في قاعدة البيانات
             $stmt->execute(['k' => 'guide', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 

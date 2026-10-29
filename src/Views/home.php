@@ -278,14 +278,14 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
         $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
 
-        // 2. استخراج بيانات اللغة الحالية فقط، مع التراجع الآمن للعربية
+        // 2. استخراج بيانات اللغة الحالية بدقة (ar, en, de) مع التراجع الآمن للعربية
         $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 
         $guide_title    = $lang_guide_data['title'] ?? 'دليل بيتهوفن الشامل';
         $guide_desc     = $lang_guide_data['desc'] ?? '';
-        $read_more_text = $read_more_btn ?? 'قراءة المزيد';
+        $read_more_text = $data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? 'قراءة المزيد');
 
-        // 3. استخراج مقالات اللغة الحالية مباشرة وبشكل نظيف
+        // 3. استخراج مقالات اللغة الحالية فقط وبشكل نظيف
         $guide_items = $lang_guide_data['items'] ?? [];
         if (!is_array($guide_items)) {
             $guide_items = [];

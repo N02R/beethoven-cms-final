@@ -274,19 +274,25 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <section class="guide py-2" style="position: relative;">
   <div class="custom-container">
     <?php 
-        // 1. جلب بيانات الدليل الموحدة حصرياً من المفتاح المركزي 'guide'
-        $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
-        $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
-
-        // 2. استخراج بيانات اللغة الحالية بدقة (ar, en, de) مع التراجع الآمن للعربية
-        $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
-
-        $guide_title    = $lang_guide_data['title'] ?? 'دليل بيتهوفن الشامل';
-        $guide_desc     = $lang_guide_data['desc'] ?? '';
+        // 1. الاعتماد حصرياً على البيانات المجهزة أو جلبها وفلترتها حسب اللغة الحالية بدقة
+        $guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
+        $guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
         $read_more_text = $data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? 'قراءة المزيد');
+        $guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
 
-        // 3. استخراج مقالات اللغة الحالية فقط وبشكل نظيف
-        $guide_items = $lang_guide_data['items'] ?? [];
+        // احتیاط إضافي: إن كانت البيانات مخزنة بصيغة JSON عامة ولم تُفلتر بعد، نقوم بفلترتها هنا حسب اللغة الحالية
+        if (is_string($guide_items)) {
+            $guide_items = json_decode($guide_items, true) ?? [];
+        }
+        
+        // إذا كان المتغير يحمل مصفوفة اللغات مباشرة (ar, en, de)
+        if (isset($guide_items['ar']) || isset($guide_items['en']) || isset($guide_items['de'])) {
+            $current_lang_data = $guide_items[$current_lang] ?? ($guide_items['ar'] ?? []);
+            $guide_title = $current_lang_data['title'] ?? $guide_title;
+            $guide_desc  = $current_lang_data['desc'] ?? $guide_desc;
+            $guide_items = $current_lang_data['items'] ?? [];
+        }
+
         if (!is_array($guide_items)) {
             $guide_items = [];
         }

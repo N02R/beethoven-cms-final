@@ -909,19 +909,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
 
-                                        <!-- قسم الصورة المرتب بشكل أنيق يمنع التداخل -->
+                                        <!-- قسم الصورة الحالية وزر الرفع في نفس السطر تماماً -->
                                         <div class="col-md-5">
                                             <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
-                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 42px; height: 42px;">
                                                         <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($item['img']) : $item['img'], ENT_QUOTES, 'UTF-8'); ?>" 
                                                              alt="Guide Item Image" 
-                                                             class="rounded-2" 
-                                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                                             class="rounded-2 w-100 h-100" 
+                                                             style="object-fit: cover;">
                                                     </div>
                                                 <?php endif; ?>
-                                                <input type="file" class="form-control guide-file flex-grow-1" name="guide_img_<?php echo $index; ?>" accept="image/*" style="min-width: 180px;">
+                                                <input type="file" class="form-control guide-file w-100" name="guide_img_<?php echo $index; ?>" accept="image/*">
                                             </div>
                                             <input type="hidden" class="guide-old-img" name="guide[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
@@ -1212,20 +1212,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة مقال جديد لقسم الدليل الشامل مترجمة بالكامل حسب اللغة الحالية
+    // 🌟 دالة إضافة مقال جديد مع تنظيم الصورة وزر الرفع في نفس السطر
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, '
+        UTF - 8 '); ?>';
+        
         // جلب الترجمات الديناميكية من PHP
         const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
-        const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
-        const langImage        = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDelete       = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
-
+        const langPageUrl = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDesc = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
+        const langImage = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
+        
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm guide-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -1247,8 +1248,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
                 <div class="col-md-5">
                     <label class="small fw-bold mb-1 text-secondary">${langImage}</label>
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <input type="file" class="form-control guide-file flex-grow-1" name="guide_img_${count}" accept="image/*" style="min-width: 180px;">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control guide-file w-100" name="guide_img_${count}" accept="image/*">
                     </div>
                     <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
                 </div>
@@ -1262,7 +1263,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         `;
         container.appendChild(div);
     }
-
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {

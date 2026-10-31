@@ -75,13 +75,21 @@ class SiteModel {
             $guide_items = [];
         }
 
-        // 🌟 معالجة بيانات الأسئلة الشائعة الموحدة الجديدة (من المفتاح المركزي 'faq')
+        // معالجة بيانات الأسئلة الشائعة الموحدة الجديدة (من المفتاح المركزي 'faq')
         $faqBlock = $getLangData('faq', []);
         $faq_title = $faqBlock['title'] ?? 'الأسئلة الشائعة';
         $faq_items = $faqBlock['items'] ?? [];
         if (!is_array($faq_items)) {
             $faq_items = [];
         }
+
+        // 🌟 معالجة بيانات الفوتر الموحدة الجديدة (من المفتاح المركزي 'footer')
+        $footerBlock = $getLangData('footer', []);
+        $consult_title     = $footerBlock['consult_title'] ?? 'احصل على استشارة مجانية';
+        $consult_desc      = $footerBlock['consult_desc'] ?? '';
+        $footer_desc       = $footerBlock['footer_desc'] ?? '';
+        $footer_col2_title = $footerBlock['col2_title'] ?? 'روابط سريعة';
+        $footer_col3_title = $footerBlock['col3_title'] ?? 'تواصل معنا';
 
         return [
             'site_title'        => $getMultiLang('site_title', 'Beethoven Services'),
@@ -97,12 +105,12 @@ class SiteModel {
             'services_section_desc'  => $getMultiLang('services_section_desc', ''),
             'services'               => $getLangData('services', []),
 
-            'consult_title'     => $getMultiLang('consult_title', 'احصل على استشارة مجانية'),
-            'consult_desc'      => $getMultiLang('consult_desc', ''),
-            
-            'footer_desc'       => $getMultiLang('footer_desc', ''),
-            'footer_col2_title' => $getMultiLang('footer_col2_title', 'روابط سريعة'),
-            'footer_col3_title' => $getMultiLang('footer_col3_title', 'تواصل معنا'),
+            // 🌟 بيانات الفوتر الموحدة والجاهزة للعرض
+            'consult_title'     => $consult_title,
+            'consult_desc'      => $consult_desc,
+            'footer_desc'       => $footer_desc,
+            'footer_col2_title' => $footer_col2_title,
+            'footer_col3_title' => $footer_col3_title,
             
             'footer_col3_links' => isset($settings['footer_col3_links']) && is_string($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
             
@@ -112,7 +120,7 @@ class SiteModel {
             'read_more_btn'     => $read_more_btn,
             'guide_items'       => $guide_items,
 
-            // 🌟 بيانات الأسئلة الشائعة الموحدة والجاهزة للعرض
+            // بيانات الأسئلة الشائعة الموحدة والجاهزة للعرض
             'faq_title'         => $faq_title,
             'faq_items'         => $faq_items,
         ];

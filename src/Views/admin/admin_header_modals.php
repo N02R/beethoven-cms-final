@@ -1052,30 +1052,65 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 12. Footer Edit Modal -->
-<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+<div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-layout-wtf text-primary"></i> إدارة الفوتر بالكامل</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-layout-wtf text-primary"></i> 
+                    <?php echo htmlspecialchars($lang['manage_footer'] ?? 'إدارة الفوتر بالكامل', ENT_QUOTES, 'UTF-8'); ?> 
+                    (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب بيانات الفوتر الموحدة مباشرة من قاعدة البيانات إن لم تكن محملة بالكامل
+                $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? null);
+                if (empty($footerRawSetting)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtFooter = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
+                        $stmtFooter->execute();
+                        $footerRawSetting = $stmtFooter->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $footerRawSetting = '{}';
+                    }
+                }
+
+                $footerAllLangs = is_string($footerRawSetting) ? json_decode($footerRawSetting, true) : (is_array($footerRawSetting) ? $footerRawSetting : []);
+                if (!is_array($footerAllLangs)) {
+                    $footerAllLangs = [];
+                }
+                
+                $langKey = $current_lang ?? 'ar';
+                $curLangFooterData = $footerAllLangs[$langKey] ?? ($footerAllLangs['ar'] ?? []);
+
+                $modalConsultTitle = $curLangFooterData['consult_title'] ?? ($data['consult_title'] ?? 'احصل على استشارة مجانية');
+                $modalConsultDesc  = $curLangFooterData['consult_desc'] ?? ($data['consult_desc'] ?? '');
+                $modalFooterDesc   = $curLangFooterData['footer_desc'] ?? ($data['footer_desc'] ?? '');
+                $modalCol2Title    = $curLangFooterData['col2_title'] ?? ($data['footer_col2_title'] ?? 'روابط سريعة');
+                $modalCol3Title    = $curLangFooterData['col3_title'] ?? ($data['footer_col3_title'] ?? 'تواصل معنا');
+                ?>
+
                 <form id="footerForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_footer">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="footer_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold"><i class="bi bi-chat-dots me-1"></i> إعدادات قسم الاستشارة</h6>
+                                <h6 class="text-primary mb-3 fw-bold"><i class="bi bi-chat-dots me-1"></i> إعدادات قسم الاستشارة (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</h6>
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label class="small fw-bold mb-1 text-secondary">عنوان الاستشارة</label>
-                                        <input type="text" class="form-control consult-title" name="consult_title" value="<?php echo htmlspecialchars(safe_admin_string($data['consult_title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][consult_title]" value="<?php echo htmlspecialchars((string)$modalConsultTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-8">
                                         <label class="small fw-bold mb-1 text-secondary">وصف الاستشارة</label>
-                                        <input type="text" class="form-control consult-desc" name="consult_desc" value="<?php echo htmlspecialchars(safe_admin_string($data['consult_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][consult_desc]" value="<?php echo htmlspecialchars((string)$modalConsultDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -1087,7 +1122,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
                                 <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
-                                <textarea class="form-control footer-desc" name="footer_desc" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($data['footer_desc'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][footer_desc]" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalFooterDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
@@ -1095,7 +1130,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
                                 <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                <input type="text" class="form-control mb-3 footer-col2-title" name="footer_col2_title" value="<?php echo htmlspecialchars(safe_admin_string($data['footer_col2_title'] ?? 'روابط سريعة', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control mb-3" name="footer[<?php echo $current_lang ?? 'ar'; ?>][col2_title]" value="<?php echo htmlspecialchars((string)$modalCol2Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
                                     <i class="bi bi-info-circle me-1"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
                                 </div>
@@ -1109,7 +1144,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
                                 <div class="mb-3" style="max-width: 400px;">
                                     <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
-                                    <input type="text" class="form-control footer-col3-title" name="footer_col3_title" value="<?php echo htmlspecialchars(safe_admin_string($data['footer_col3_title'] ?? 'تواصل معنا', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][col3_title]" value="<?php echo htmlspecialchars((string)$modalCol3Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
@@ -1165,12 +1200,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="footerForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="footerForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
@@ -1403,6 +1439,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (desc) desc.name = `guide[${currentLang}][items][${index}][desc]`;
                     if (file) file.name = `guide_img_${index}`;
                     if (oldImg) oldImg.name = `guide[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // 🌟 إعادة ترتيب حقول تواصل الفوتر (Footer Col3 Links) بدقة عند الـ submit
+                form.querySelectorAll('.footer-col3-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.footer-col3-title-input');
+                    const urlInput = row.querySelector('.footer-col3-url-input');
+                    const fileInput = row.querySelector('.footer-col3-file');
+                    const oldImgInput = row.querySelector('.footer-col3-old-img');
+                    
+                    if (titleInput) titleInput.name = `col3[${index}][title]`;
+                    if (urlInput) urlInput.name = `col3[${index}][url]`;
+                    if (fileInput) fileInput.name = `col3_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `col3[${index}][old_img]`;
                 });
 
                 const formId = this.getAttribute('id');

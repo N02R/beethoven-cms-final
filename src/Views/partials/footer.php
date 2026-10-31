@@ -64,7 +64,7 @@ $t = [
 
 $modal_dir = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
-$is_admin = $is_admin ?? false;
+$is_admin = !empty($is_admin) && $is_admin === true;
 ?>
 
 <!-- تنسيق خاص لعكس اتجاه الأسهم تلقائياً في حالة اللغة العربية (RTL) -->
@@ -79,7 +79,7 @@ $is_admin = $is_admin ?? false;
 
 <!-- footer start -->
 <section class="consult-banner-section editable-wrapper" style="position: relative;">
-    <?php if (!empty($is_admin) && $is_admin === true): ?>
+    <?php if ($is_admin): ?>
         <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="تعديل الفوتر">
             <i class="bi bi-pencil-fill"></i>
         </button>
@@ -89,8 +89,8 @@ $is_admin = $is_admin ?? false;
         <div class="consult-banner">
             <div class="consult-banner-inner">
                 <div class="consult-banner-text">
-                    <h4><?php echo htmlspecialchars(get_multilang_text($data['consult_title'] ?? '', $current_lang, $t['consult_title']), ENT_QUOTES, 'UTF-8'); ?></h4>
-                    <p><?php echo htmlspecialchars(get_multilang_text($data['consult_desc'] ?? '', $current_lang, ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                    <h4><?php echo htmlspecialchars((string)($data['consult_title'] ?? $t['consult_title']), ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <p><?php echo htmlspecialchars((string)($data['consult_desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($path_prefix . 'send_consult.php', ENT_QUOTES, 'UTF-8'); ?>" method="POST">
@@ -196,12 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="row gy-5">
             <div class="col-12 col-lg-5">
                 <img src="<?php echo htmlspecialchars(get_image_url($data['site_logo_path'] ?? null, 'assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="BCS Logo" class="mb-4">
-                <p class="footer-desc"><?php echo htmlspecialchars(get_multilang_text($data['footer_desc'] ?? '', $current_lang, ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="footer-desc"><?php echo htmlspecialchars((string)($data['footer_desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
             <!-- قسم الروابط السريعة (مجلوبة مباشرة من منيو الهيدر) -->
             <div class="col-12 col-md-6 col-lg-3">
-                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col2_title'] ?? '', $current_lang, ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links'))), ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars((string)($data['footer_col2_title'] ?? ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links'))), ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="quick-link">
                     <?php 
                     $menu_links = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars(get_multilang_text($data['footer_col3_title'] ?? '', $current_lang, ($current_lang === 'ar' ? 'تواصل معنا' : ($current_lang === 'de' ? 'Kontaktieren Sie uns' : 'Contact Us'))), ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars((string)($data['footer_col3_title'] ?? ($current_lang === 'ar' ? 'تواصل معنا' : ($current_lang === 'de' ? 'Kontaktieren Sie uns' : 'Contact Us'))), ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="contact-link">
                     <?php 
                     $footer_col3_links = $data['footer_col3_links'] ?? [];
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <?php endif; ?>
                             <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
                         </a>
-                    <?endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -267,8 +267,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </footer>
 <!-- footer end -->
 
-<!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع (من خلال الرجوع مجلداً واحداً للخلف) -->
-<?php if (!empty($is_admin) && $is_admin === true): ?>
+<!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع -->
+<?php if ($is_admin): ?>
     <?php 
     $modals_file = __DIR__ . '/../admin/admin_header_modals.php';
     if (file_exists($modals_file)) {

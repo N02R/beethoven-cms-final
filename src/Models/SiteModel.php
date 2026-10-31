@@ -100,7 +100,7 @@ class SiteModel {
             // بيانات الدليل الشامل الموحدة والجاهزة للعرض عبر النموذج أو القوالب
             'guide_title'       => $guide_title,
             'guide_desc'        => $guide_desc,
-            'read_more_btn'     => 'قراءة المزيد',
+            'read_more_btn'     => $read_more_btn,
             'guide_items'       => $guide_items,
         ];
     }

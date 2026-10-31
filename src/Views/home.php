@@ -275,7 +275,20 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <div class="custom-container">
     <?php 
         // 1. جلب بيانات الدليل الموحدة من المفتاح المركزي 'guide' (JSON) أو المتغيرات الجاهزة
-        $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
+        $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? null);
+
+        // حماية أمان إضافية لجلب البيانات مباشرة من قاعدة البيانات إن لم تكن متوفرة
+        if (empty($guide_raw)) {
+            try {
+                $pdoConn = \App\Config\Database::getConnection();
+                $stmtGuide = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'guide'");
+                $stmtGuide->execute();
+                $guide_raw = $stmtGuide->fetchColumn() ?: '{}';
+            } catch (\Exception $e) {
+                $guide_raw = '{}';
+            }
+        }
+
         $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
 
         // 2. استخراج بيانات اللغة الحالية بدقة (ar, en, de) مع التراجع الآمن للعربية
@@ -284,12 +297,12 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         $guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل'));
         $guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? ''));
         
-        // 🌟 جلب نص زر "قراءة المزيد" المخزن خصيصاً لهذه اللغة في قاعدة البيانات
+        // جلب نص زر "قراءة المزيد" المخزن خصيصاً لهذه اللغة في قاعدة البيانات
         $read_more_text = $lang_guide_data['read_more_btn'] ?? ($data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد')));
         
         $guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? ($currentSettings['guide_items'] ?? []));
 
-        // احتیاط إضافي: إن كانت البيانات مخزنة بصيغة JSON عامة ولم تُفلتر بعد، نقوم بفلترتها هنا حسب اللغة الحالية
+        // احتياط إضافي: إن كانت البيانات مخزنة بصيغة JSON عامة ولم تُفلتر بعد، نقوم بفلترتها هنا حسب اللغة الحالية
         if (is_string($guide_items)) {
             $guide_items = json_decode($guide_items, true) ?? [];
         }
@@ -326,6 +339,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                   $item_title = $item['title'] ?? '';
                   $item_desc  = $item['desc'] ?? '';
                   $item_img   = get_image_url($item['img'] ?? null);
+                  $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
                   $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
                   $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
                 ?>
@@ -341,12 +355,12 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                         <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
                         <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
                           <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                          <img src="<?php echo htmlspecialchars(get_image_url('assets/img/ArrowLeft.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                          <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                         </a>
                       </div>
                     </div>
                   </div>
-                <?php endforeach; ?>
+                <?endforeach; ?>
               </div>
             </div>
           <?php endforeach; ?>

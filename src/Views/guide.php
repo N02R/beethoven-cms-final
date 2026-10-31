@@ -12,7 +12,7 @@ $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 // 1. جلب البيانات من المودل أو الإعدادات العامة
 $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? null);
 
-// 🌟 [حماية أمان إضافية]: إن لم تكن موجودة في المتغيرات، نقوم بجلبها مباشرة من قاعدة البيانات كضمان هندسي مطلق
+// حماية أمان إضافية لجلب البيانات مباشرة من قاعدة البيانات إن لم تكن متوفرة
 if (empty($guide_raw)) {
     try {
         $pdoConn = \App\Config\Database::getConnection();
@@ -32,7 +32,7 @@ $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 $guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? ('دليل بيتهوفن الشامل'));
 $guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? '');
 
-// 🌟 جلب نص زر "قراءة المزيد" المخزن في قاعدة البيانات لكل لغة بدقة تامة
+// جلب نص زر "قراءة المزيد" المخزن في قاعدة البيانات لكل لغة بدقة تامة
 $read_more_text = $lang_guide_data['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد');
 
 $guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? []);
@@ -50,7 +50,7 @@ if (!is_array($guide_items)) {
     </button>
   <?php endif; ?>
 
-  <div class="custom-container pt-3">
+  <div class="custom-container">
     <div class="text-center mb-5">
       <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php if (!empty($guide_desc)): ?>
@@ -76,15 +76,15 @@ if (!is_array($guide_items)) {
             <div class="card h-100 border-0 shadow-sm">
               <?php if (!empty($item_img)): ?>
                 <div class="card-img-wrapper">
-                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top img-fluid">
+                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
                 </div>
               <?php endif; ?>
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-bold"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
-                <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-link text-decoration-none fw-bold p-0 mt-3 d-flex align-items-center gap-2">
+                <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
                   <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                 </a>
               </div>
             </div>

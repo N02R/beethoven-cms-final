@@ -960,46 +960,82 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <!-- 11. FAQ Edit Modal -->
-<div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+<div class="modal fade custom-modal" id="faqEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-question-circle text-primary"></i> إدارة الأسئلة الشائعة</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-question-circle text-primary"></i> 
+                    <?php echo htmlspecialchars($lang['manage_faq'] ?? 'إدارة الأسئلة الشائعة', ENT_QUOTES, 'UTF-8'); ?> 
+                    (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب بيانات الأسئلة الشائعة الموحدة مع أقصى درجات المرونة والاحتياط
+                $faqRawSetting = $data['faq'] ?? ($currentSettings['faq'] ?? null);
+                if (empty($faqRawSetting)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtFaq = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'faq'");
+                        $stmtFaq->execute();
+                        $faqRawSetting = $stmtFaq->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $faqRawSetting = '{}';
+                    }
+                }
+
+                $faqAllLangs = is_string($faqRawSetting) ? json_decode($faqRawSetting, true) : (is_array($faqRawSetting) ? $faqRawSetting : []);
+                if (!is_array($faqAllLangs)) {
+                    $faqAllLangs = [];
+                }
+                
+                $langKey = $current_lang ?? 'ar';
+                $curLangFaqData = $faqAllLangs[$langKey] ?? ($faqAllLangs['ar'] ?? []);
+
+                $modalFaqTitle = $curLangFaqData['title'] ?? ($data['faq_title'] ?? 'الأسئلة الشائعة');
+                $modalFaqItems = $curLangFaqData['items'] ?? ($data['faq_items'] ?? []);
+                if (!is_array($modalFaqItems)) {
+                    $modalFaqItems = [];
+                }
+                ?>
+                
                 <form id="faqForm" class="admin-settings-form">
                     <input type="hidden" name="action" value="update_faq">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="faq_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                        <input type="text" class="form-control" name="faq_title" value="<?php echo htmlspecialchars(safe_admin_string($data['faq_title'] ?? 'الأسئلة الشائعة', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                        <label class="small fw-bold mb-1 text-secondary">
+                            <?php echo htmlspecialchars($lang['main_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                        </label>
+                        <input type="text" class="form-control" name="faq[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$modalFaqTitle, ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
 
                     <div id="faqRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $faqItemsData = is_array($data['faq_items'] ?? null) ? $data['faq_items'] : [];
-                        foreach ($faqItemsData as $index => $item): 
-                        ?>
-                            <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                                        <input type="text" class="form-control faq-question" name="faq[<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars(safe_admin_string($item['question'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                                        <input type="text" class="form-control faq-answer" name="faq[<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars(safe_admin_string($item['answer'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
-                                    </div>
-                                    <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="حذف السؤال">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                        <?php if (is_array($modalFaqItems)): ?>
+                            <?php foreach ($modalFaqItems as $index => $item): ?>
+                                <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-6">
+                                            <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                                            <input type="text" class="form-control faq-question" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                                            <input type="text" class="form-control faq-answer" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                        </div>
+                                        <div class="col-md-1 text-center pt-3">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="حذف السؤال">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFaqRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
@@ -1221,6 +1257,36 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
+    // 🌟 دالة إضافة سؤال وجواب جديد لقسم FAQ
+    function addFaqRow() {
+        const container = document.getElementById('faqRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.faq-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm faq-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="السؤال">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="الإجابة">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     // 🌟 دالة إضافة مقال جديد (الهيكل الأصلي المستقر والمجرب)
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
@@ -1285,6 +1351,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (urlInput) {
                         urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
                     }
+                });
+
+                // 🌟 إعادة ترتيب حقول FAQ بدقة عند الـ submit
+                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
+                    const q = row.querySelector('.faq-question');
+                    const a = row.querySelector('.faq-answer');
+                    if (q) q.name = `faq[${currentLang}][items][${index}][question]`;
+                    if (a) a.name = `faq[${currentLang}][items][${index}][answer]`;
                 });
 
                 // إعادة ترتيب حقول الخدمات

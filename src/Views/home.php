@@ -387,54 +387,47 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- FAQ section start -->
 <section class="popular py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="تعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="tعديل الأسئلة الشائعة"><i class="bi bi-pencil-fill"></i></button>
   <?php endif; ?>
 
-  <div class="container-fluid custom-container">
+  <div class="container-fluid custom-container" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
     <?php 
-        $faq_title = $getLocalizedData('faq_title', 'الأسئلة الشائعة');
-        if (is_array($faq_title)) $faq_title = $faq_title['title'] ?? 'الأسئلة الشائعة';
+        // 🌟 استخدام دالة المساعدة المركزية لجلب بيانات الـ FAQ للغة الحالية بدقة تامة
+        $faq_data  = $getLocalizedData('faq', []);
+        $faq_title = $faq_data['title'] ?? ($data['faq_title'] ?? 'الأسئلة الشائعة');
+        $faq_items = $faq_data['items'] ?? ($data['faq_items'] ?? []);
 
-        $faq_items_raw = get_setting('faq_items', []);
-        $faq_items = is_string($faq_items_raw) ? (json_decode($faq_items_raw, true) ?? []) : (is_array($faq_items_raw) ? $faq_items_raw : []);
-
-        if (empty($faq_items)) {
-            $faq_items = [
-                [
-                    'ar' => ['question' => 'ما هي المتطلبات الأساسية للتقديم على الجامعات الألمانية؟', 'answer' => 'تحتاج إلى شهادة الثانوية العامة أو ما يعادلها، إثبات كفاءة في اللغة الألمانية أو الإنجليزية.'],
-                    'en' => ['question' => 'What are the basic requirements to apply to German universities?', 'answer' => 'You need a high school diploma or equivalent, proof of proficiency in German or English.'],
-                    'de' => ['question' => 'Was sind die Grundvoraussetzungen für die Bewerbung?', 'answer' => 'Sie benötigen ein Abitur oder gleichwertigen Abschluss, Sprachnachweise.']
-                ]
-            ];
+        if (!is_array($faq_items)) {
+            $faq_items = [];
         }
     ?>
 
     <h2 class="sec-title mb-5"><?php echo htmlspecialchars((string)$faq_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     
     <div class="accordion mb-5" id="accordionExample">
-      <?php foreach ($faq_items as $index => $item): 
-            $faq_question = '';
-            $faq_answer = '';
-
-            if (is_array($item)) {
-                $q_data = isset($item[$current_lang]) ? $item[$current_lang] : ($item['ar'] ?? ($item['de'] ?? $item));
-                $faq_question = $q_data['question'] ?? ($item['question'] ?? '');
-                $faq_answer   = $q_data['answer'] ?? ($item['answer'] ?? '');
-            }
-      ?>
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-            <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
-              <?php echo htmlspecialchars($faq_question, ENT_QUOTES, 'UTF-8'); ?>
-            </button>
-          </h2>
-          <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-            <div class="accordion-body"><?php echo htmlspecialchars($faq_answer, ENT_QUOTES, 'UTF-8'); ?></div>
+      <?php if (!empty($faq_items) && is_array($faq_items)): ?>
+        <?php foreach ($faq_items as $index => $item): 
+            if (!is_array($item)) continue;
+            $faq_question = $item['question'] ?? '';
+            $faq_answer   = $item['answer'] ?? '';
+        ?>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading<?php echo $index; ?>">
+              <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
+                <?php echo htmlspecialchars($faq_question, ENT_QUOTES, 'UTF-8'); ?>
+              </button>
+            </h2>
+            <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
+              <div class="accordion-body"><?php echo htmlspecialchars($faq_answer, ENT_QUOTES, 'UTF-8'); ?></div>
+            </div>
           </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p><?php echo $lang['no_faq_questions'] ?? 'لا توجد أسئلة شائعة مضافة حالياً.'; ?></p>
         </div>
-      <?php endforeach; ?>
+      <?php endif; ?>
     </div>
   </div>
 </section>
 <!-- FAQ section end -->
-

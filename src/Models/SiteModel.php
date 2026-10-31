@@ -69,10 +69,18 @@ class SiteModel {
         $guideBlock = $getLangData('guide', []);
         $guide_title = $guideBlock['title'] ?? 'دليل بيتهوفن الشامل';
         $guide_desc  = $guideBlock['desc'] ?? '';
-        $read_more_btn = $guideBlock['read_more_btn'] ?? 'قراءة المزيد'; // ✅ تصحيح استخراج زر قراءة المزيد بدقة من 
+        $read_more_btn = $guideBlock['read_more_btn'] ?? 'قراءة المزيد';
         $guide_items = $guideBlock['items'] ?? [];
         if (!is_array($guide_items)) {
             $guide_items = [];
+        }
+
+        // 🌟 معالجة بيانات الأسئلة الشائعة الموحدة الجديدة (من المفتاح المركزي 'faq')
+        $faqBlock = $getLangData('faq', []);
+        $faq_title = $faqBlock['title'] ?? 'الأسئلة الشائعة';
+        $faq_items = $faqBlock['items'] ?? [];
+        if (!is_array($faq_items)) {
+            $faq_items = [];
         }
 
         return [
@@ -98,11 +106,15 @@ class SiteModel {
             
             'footer_col3_links' => isset($settings['footer_col3_links']) && is_string($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
             
-            // بيانات الدليل الشامل الموحدة والجاهزة للعرض عبر النموذج أو القوالب
+            // بيانات الدليل الشامل الموحدة
             'guide_title'       => $guide_title,
             'guide_desc'        => $guide_desc,
             'read_more_btn'     => $read_more_btn,
             'guide_items'       => $guide_items,
+
+            // 🌟 بيانات الأسئلة الشائعة الموحدة والجاهزة للعرض
+            'faq_title'         => $faq_title,
+            'faq_items'         => $faq_items,
         ];
     }
 

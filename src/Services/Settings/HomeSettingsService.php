@@ -153,47 +153,71 @@ class HomeSettingsService
             $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 3. تحديث الأسئلة الشائعة (FAQ)
+        // 3. تحديث الأسئلة الشائعة (FAQ) - الهيكل الموحد المحمي
         elseif ($action === 'update_faq') {
             $targetLang = $_POST['targetLang'] ?? $_POST['faq_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $rawFaqSetting = $currentSettings['faq_items'] ?? '';
-            $faqAllLangs = is_string($rawFaqSetting) ? json_decode($rawFaqSetting, true) : (is_array($rawFaqSetting) ? $rawFaqSetting : []);
-            if (!is_array($faqAllLangs)) {
-                $faqAllLangs = [];
-            }
+            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات لضمان عدم ضياع أي شيء
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'faq'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
 
-            if (isset($faqAllLangs['title']) && !isset($faqAllLangs['ar'])) {
-                $oldData = $faqAllLangs;
-                $faqAllLangs = ['ar' => $oldData];
-            }
-
-            $faqTitle = $_POST['faq_title'][$targetLang] ?? ($_POST['faq_title'] ?? ($_POST['faq'][$targetLang]['title'] ?? 'الأسئلة الشائعة'));
-            $faqDesc  = $_POST['faq_desc'][$targetLang] ?? ($_POST['faq_desc'] ?? ($_POST['faq'][$targetLang]['desc'] ?? ''));
-
-            $rawItems = $_POST['faq'][$targetLang]['items'] ?? ($_POST['faq']['items'] ?? ($_POST['faq'] ?? ($_POST['faq_items'] ?? [])));
-            $processedItems = [];
-
-            if (is_array($rawItems)) {
-                foreach ($rawItems as $index => $item) {
-                    if (!is_numeric($index) || !is_array($item)) continue;
-
-                    $processedItems[] = [
-                        'question' => $item['question'] ?? ($item['title'] ?? ''),
-                        'answer'   => $item['answer'] ?? ($item['desc'] ?? '')
-                    ];
+            $faqAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) {
+                    $faqAllLangs = $decodedDb;
                 }
             }
 
+            // الاحتفاظ بالبيانات القديمة للغة الحالية لحمايتها من الضياع
+            $currentLangData = $faqAllLangs[$targetLang] ?? [];
+            $existingTitle   = $currentLangData['title'] ?? 'الأسئلة الشائعة';
+            $existingDesc    = $currentLangData['desc'] ?? '';
+            $existingItems   = $currentLangData['items'] ?? [];
+
+            $postedFaq = $_POST['faq'][$targetLang] ?? [];
+
+            // 1. حماية العنوان: إن أرسل عنوان جديد نأخذه، وإلا نحتفظ بالقديم
+            $faqTitle = trim((string)($postedFaq['title'] ?? ($_POST['faq_title'][$targetLang] ?? ($_POST['faq_title'] ?? ''))));
+            if ($faqTitle === '') {
+                $faqTitle = $existingTitle;
+            }
+
+            // 2. حماية الوصف (إن وجد)
+            $faqDesc = isset($postedFaq['desc']) ? trim((string)$postedFaq['desc']) : $existingDesc;
+
+            // 3. حماية الأسئلة والأجوبة (items): إذا تم إرسال items في الـ POST نعالجها، وإلا فنحتفظ بالقديمة تماماً!
+            $rawItems = $postedFaq['items'] ?? ($_POST['faq_items'] ?? null);
+            if (is_array($rawItems)) {
+                $processedItems = [];
+                foreach ($rawItems as $item) {
+                    if (!is_array($item)) continue;
+                    $q = trim((string)($item['question'] ?? ($item['title'] ?? '')));
+                    $a = trim((string)($item['answer'] ?? ($item['desc'] ?? '')));
+                    
+                    if ($q !== '' || $a !== '') {
+                        $processedItems[] = [
+                            'question' => $q,
+                            'answer'   => $a
+                        ];
+                    }
+                }
+            } else {
+                $processedItems = $existingItems;
+            }
+
+            // حفظ البيانات المحدثة للغة المستهدفة بأمان تام
             $faqAllLangs[$targetLang] = [
-                'title'     => $faqTitle,
-                'desc'      => $faqDesc,
-                'faq_title' => $faqTitle,
-                'items'     => $processedItems
+                'title' => $faqTitle,
+                'desc'  => $faqDesc,
+                'items' => $processedItems
             ];
 
             $jsonVal = json_encode($faqAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'faq_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            
+            // الحفظ الآمن في جدول global_settings تحت المفتاح الموحد 'faq'
+            $stmt->execute(['k' => 'faq', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
 // 4. تحديث التقييمات وفيديوهات العملاء (Reviews)

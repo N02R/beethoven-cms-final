@@ -69,6 +69,7 @@ class SiteModel {
         $guideBlock = $getLangData('guide', []);
         $guide_title = $guideBlock['title'] ?? 'دليل بيتهوفن الشامل';
         $guide_desc  = $guideBlock['desc'] ?? '';
+         $read_more_btn = $currentLangData['read_more_btn'] ?? 'قراءة المزيد';
         $guide_items = $guideBlock['items'] ?? [];
         if (!is_array($guide_items)) {
             $guide_items = [];

@@ -344,7 +344,7 @@ elseif ($action === 'update_reviews') {
             $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد المحمي ضد فقدان البيانات
+        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد المحمي مع دعم زر "قراءة المزيد" لكل لغة
         elseif ($action === 'update_guide') {
             $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -363,9 +363,10 @@ elseif ($action === 'update_reviews') {
 
             // الاحتفاظ بالبيانات القديمة للغة الحالية لحمايتها من الضياع
             $currentLangData = $guideAllLangs[$targetLang] ?? [];
-            $existingTitle = $currentLangData['title'] ?? 'دليل بيتهوفن الشامل';
-            $existingDesc  = $currentLangData['desc'] ?? '';
-            $existingItems = $currentLangData['items'] ?? [];
+            $existingTitle   = $currentLangData['title'] ?? 'دليل بيتهوفن الشامل';
+            $existingDesc    = $currentLangData['desc'] ?? '';
+            $existingBtn     = $currentLangData['read_more_btn'] ?? 'قراءة المزيد';
+            $existingItems   = $currentLangData['items'] ?? [];
 
             $postedGuide = $_POST['guide'][$targetLang] ?? [];
 
@@ -378,7 +379,13 @@ elseif ($action === 'update_reviews') {
             // 2. حماية الوصف: إن أرسل وصف نأخذه، وإلا نحتفظ بالقديم
             $guideDesc = isset($postedGuide['desc']) ? trim((string)$postedGuide['desc']) : $existingDesc;
 
-            // 3. حماية البطاقات: إذا تم إرسال items في الـ POST نعالجها، وإلا فنحتفظ بالبطاقات القديمة تماماً!
+            // 3. حماية وتحديث نص زر "قراءة المزيد" الخاص بهذه اللغة
+            $readMoreBtn = trim((string)($postedGuide['read_more_btn'] ?? ($postedGuide['read_more'] ?? '')));
+            if ($readMoreBtn === '') {
+                $readMoreBtn = $existingBtn;
+            }
+
+            // 4. حماية البطاقات: إذا تم إرسال items في الـ POST نعالجها، وإلا فنحتفظ بالبطاقات القديمة تماماً!
             if (isset($postedGuide['items']) && is_array($postedGuide['items'])) {
                 $processedItems = [];
                 foreach ($postedGuide['items'] as $index => $item) {
@@ -412,11 +419,12 @@ elseif ($action === 'update_reviews') {
                 $processedItems = $existingItems;
             }
 
-            // حفظ البيانات المحدثة للغة المستهدفة مع دمج كل شيء بأمان
+            // حفظ البيانات المحدثة للغة المستهدفة متضمنة العنوان، الوصف، زر "قراءة المزيد"، والبطاقات بأمان تام
             $guideAllLangs[$targetLang] = [
-                'title' => $guideTitle,
-                'desc'  => $guideDesc,
-                'items' => $processedItems
+                'title'         => $guideTitle,
+                'desc'          => $guideDesc,
+                'read_more_btn' => $readMoreBtn,
+                'items'         => $processedItems
             ];
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);

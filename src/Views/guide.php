@@ -9,22 +9,20 @@ declare(strict_types=1);
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// تحميل مصفوفة الترجمة يدوياً كاحتياط لضمان عمل $lang['read_more']
-if (!isset($lang) || !is_array($lang)) {
-    $langFile = __DIR__ . '/../Lang/' . $current_lang . '.php';
-    if (file_exists($langFile)) {
-        $lang = require $langFile;
-    } else {
-        $lang = require __DIR__ . '/../Lang/ar.php';
-    }
-}
+// 1. جلب بيانات الدليل الموحدة من المفتاح المركزي 'guide' (JSON) أو المتغيرات الجاهزة
+$guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
+$guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
 
-$read_more_text = $lang['read_more'] ?? 'قراءة المزيد';
+// 2. استخراج بيانات اللغة الحالية بدقة (ar, en, de) مع التراجع الآمن للعربية
+$lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 
-// استخراج البيانات الجاهزة للغة الحالية مباشرة من الـ data أو currentSettings
-$guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
-$guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
-$guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
+$guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل'));
+$guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? ''));
+
+// 🌟 جلب نص زر "قراءة المزيد" المخزن خصيصاً لهذه اللغة في قاعدة البيانات
+$read_more_text = $lang_guide_data['read_more_btn'] ?? ($data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد')));
+
+$guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? ($currentSettings['guide_items'] ?? []));
 
 if (!is_array($guide_items)) {
     $guide_items = [];

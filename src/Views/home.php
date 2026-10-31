@@ -274,11 +274,20 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <section class="guide py-2" style="position: relative;">
   <div class="custom-container">
     <?php 
-        // 1. الاعتماد حصرياً على البيانات المجهزة أو جلبها وفلترتها حسب اللغة الحالية بدقة
-        $guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
-        $guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
-        $read_more_text = $data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? 'قراءة المزيد');
-        $guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
+        // 1. جلب بيانات الدليل الموحدة من المفتاح المركزي 'guide' (JSON) أو المتغيرات الجاهزة
+        $guide_raw = $currentSettings['guide'] ?? ($data['guide'] ?? []);
+        $guide_all = is_string($guide_raw) ? (json_decode($guide_raw, true) ?? []) : (is_array($guide_raw) ? $guide_raw : []);
+
+        // 2. استخراج بيانات اللغة الحالية بدقة (ar, en, de) مع التراجع الآمن للعربية
+        $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
+
+        $guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل'));
+        $guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? ''));
+        
+        // 🌟 جلب نص زر "قراءة المزيد" المخزن خصيصاً لهذه اللغة في قاعدة البيانات
+        $read_more_text = $lang_guide_data['read_more_btn'] ?? ($data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد')));
+        
+        $guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? ($currentSettings['guide_items'] ?? []));
 
         // احتیاط إضافي: إن كانت البيانات مخزنة بصيغة JSON عامة ولم تُفلتر بعد، نقوم بفلترتها هنا حسب اللغة الحالية
         if (is_string($guide_items)) {
@@ -290,6 +299,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
             $current_lang_data = $guide_items[$current_lang] ?? ($guide_items['ar'] ?? []);
             $guide_title = $current_lang_data['title'] ?? $guide_title;
             $guide_desc  = $current_lang_data['desc'] ?? $guide_desc;
+            $read_more_text = $current_lang_data['read_more_btn'] ?? $read_more_text;
             $guide_items = $current_lang_data['items'] ?? [];
         }
 
@@ -298,7 +308,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         }
     ?>
     
-    <h2 class="mb-5  sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+    <h2 class="mb-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php if (!empty($guide_desc)): ?>
         <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
     <?php endif; ?>

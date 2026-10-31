@@ -861,9 +861,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $langKey = $current_lang ?? 'ar';
                 $curLangGuideData = $guideAllLangs[$langKey] ?? ($guideAllLangs['ar'] ?? []);
 
-                $modalGuideTitle = $curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل';
-                $modalGuideDesc  = $curLangGuideData['desc'] ?? '';
-                $modalGuideItems = $curLangGuideData['items'] ?? [];
+                $modalGuideTitle   = $curLangGuideData['title'] ?? 'دليل بيتهوفن الشامل';
+                $modalGuideDesc    = $curLangGuideData['desc'] ?? '';
+                $modalGuideBtn     = $curLangGuideData['read_more_btn'] ?? 'قراءة المزيد';
+                $modalGuideItems   = $curLangGuideData['items'] ?? [];
                 if (!is_array($modalGuideItems)) {
                     $modalGuideItems = [];
                 }
@@ -882,11 +883,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             </label>
                             <input type="text" class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$modalGuideTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
-                        <div>
+                        
+                        <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">
                                 <?php echo htmlspecialchars($lang['section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
                             </label>
                             <textarea class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalGuideDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+
+                        <div>
+                            <label class="small fw-bold mb-1 text-secondary">
+                                <?php echo htmlspecialchars($lang['read_more'] ?? 'نص زر قراءة المزيد', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                            </label>
+                            <input type="text" class="form-control" name="guide[<?php echo $current_lang ?? 'ar'; ?>][read_more_btn]" value="<?php echo htmlspecialchars((string)$modalGuideBtn, ENT_QUOTES, 'UTF-8'); ?>" placeholder="قراءة المزيد / Read More">
                         </div>
                     </div>
 

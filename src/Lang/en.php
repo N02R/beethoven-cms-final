@@ -122,5 +122,6 @@ return [
     'delete_article'          => 'Delete Article',
     'add_new_article'         => 'Add New Article',
     'image'                   => 'Image',
+    'read_more'               => 'Read More',
 
 ];

@@ -122,5 +122,6 @@ return [
     'delete_article'          => 'Artikel löschen',
     'add_new_article'         => 'Neuen Artikel hinzufügen',
     'image'                   => 'Bild',
+    'read_more'               => 'Read More',
 
 ];

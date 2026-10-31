@@ -122,6 +122,7 @@ return [
     'delete_article'          => 'حذف المقال',
     'add_new_article'         => 'إضافة مقال جديد',
     'image'                   => 'الصورة',
+    'read_more'               => 'اقرأ المزيد',
 
 ];
 

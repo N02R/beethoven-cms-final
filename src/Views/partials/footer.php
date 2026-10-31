@@ -78,9 +78,9 @@ $is_admin = $is_admin ?? false;
 </style>
 
 <!-- footer start -->
-<section class="consult-banner-section" style="position: relative;">
-    <?php if ($is_admin): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" style="top: 10px; right: 10px;" title="تعديل الفوتر">
+<section class="consult-banner-section editable-wrapper" style="position: relative;">
+    <?php if (!empty($is_admin) && $is_admin === true): ?>
+        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="تعديل الفوتر">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>

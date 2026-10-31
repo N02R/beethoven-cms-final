@@ -9,13 +9,21 @@ declare(strict_types=1);
 $current_lang = $current_lang ?? get_current_lang();
 $current_dir  = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
+// تحميل مصفوفة الترجمة يدوياً كاحتياط لضمان عمل $lang['read_more']
+if (!isset($lang) || !is_array($lang)) {
+    $langFile = __DIR__ . '/../Lang/' . $current_lang . '.php';
+    if (file_exists($langFile)) {
+        $lang = require $langFile;
+    } else {
+        $lang = require __DIR__ . '/../Lang/ar.php';
+    }
+}
+
+$read_more_text = $lang['read_more'] ?? 'قراءة المزيد';
+
 // استخراج البيانات الجاهزة للغة الحالية مباشرة من الـ data أو currentSettings
 $guide_title    = $data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل');
 $guide_desc     = $data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? '');
-
-// 🌟 الاعتماد على ملفات الترجمة لتغيير نص "قراءة المزيد" حسب اللغة النشطة
-$read_more_text = $lang['read_more'] ?? ('قراءة المزيد');
-
 $guide_items    = $data['guide_items'] ?? ($currentSettings['guide_items'] ?? []);
 
 if (!is_array($guide_items)) {

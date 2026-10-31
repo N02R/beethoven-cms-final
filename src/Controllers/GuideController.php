@@ -29,6 +29,9 @@ class GuideController {
         // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
         $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
         $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+        
+        // إتاحة مصفوفة الترجمة باسم $lang لصفحة الـ View
+        $lang = $lang_data;
         // ==========================================
 
         // تحديد مسار الجذر للمشروع
@@ -51,10 +54,13 @@ class GuideController {
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css'];
 
-        // 🌟 النهج الآمن والقياسي: تعريف متغيرات صفحة الدليل بوضوح ودون استخدام extract()
+        // 🌟 النهج الآمن والقياسي: تعريف متغيرات صفحة الدليل بوضوح
         $guide_title    = $data['guide_title'] ?? 'الدليل الشامل';
         $guide_desc     = $data['guide_desc'] ?? '';
-        $read_more_text = $data['read_more_btn'] ?? 'قراءة المزيد';
+        
+        // ربط نص زر قراءة المزيد بملف الترجمة النشطة حصرياً
+        $read_more_text = $lang_data['read_more'] ?? ('قراءة المزيد');
+        
         $guide_items    = $data['guide_items'] ?? [];
 
         // 1. استدعاء الهيدر المشترك

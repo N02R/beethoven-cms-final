@@ -321,13 +321,13 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         }
     ?>
     
-    <h2 class="mb-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+    <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     <?php if (!empty($guide_desc)): ?>
         <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
     <?php endif; ?>
 
-    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-      <div class="carousel-inner">
+    <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+      <div class="carousel-inner" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
         <?php if (!empty($guide_items) && is_array($guide_items)): ?>
           <?php $chunks = array_chunk($guide_items, 3); ?>
           <?php foreach ($chunks as $index => $slide_items): ?>
@@ -339,28 +339,26 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                   $item_title = $item['title'] ?? '';
                   $item_desc  = $item['desc'] ?? '';
                   $item_img   = get_image_url($item['img'] ?? null);
-                  $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
+                  $arrow_img  = get_image_url('assets/img/home/Arrow..svg');
                   $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
                   $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
                 ?>
                   <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card h-100 border-0 shadow-sm">
-                      <?php if (!empty($item_img)): ?>
-                        <div class="card-img-wrapper">
-                          <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
-                        </div>
-                      <?php endif; ?>
+                    <div class="card h-100">
                       <div class="card-body d-flex flex-column">
+                        <?php if (!empty($item_img)): ?>
+                          <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
+                        <?php endif; ?>
                         <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                        <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
                         <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
                           <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                          <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                          <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="<?php echo ($current_dir === 'ltr' ? 'ms-2' : 'me-2'); ?>" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                         </a>
                       </div>
                     </div>
                   </div>
-                <?endforeach; ?>
+                <?php endforeach; ?>
               </div>
             </div>
           <?php endforeach; ?>
@@ -373,6 +371,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         <?php endif; ?>
       </div>
 
+      <!-- Dots -->
       <?php if (!empty($chunks) && count($chunks) > 1): ?>
         <div class="dots mt-4">
           <?php foreach ($chunks as $index => $slide): ?>

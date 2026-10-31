@@ -339,7 +339,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
                   $item_title = $item['title'] ?? '';
                   $item_desc  = $item['desc'] ?? '';
                   $item_img   = get_image_url($item['img'] ?? null);
-                  $arrow_img  = get_image_url('assets/img/home/Arrow..svg');
+                  $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
                   $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
                   $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
                 ?>

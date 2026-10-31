@@ -42,65 +42,26 @@ $current_lang = $current_lang ?? (function_exists('get_current_lang') ? get_curr
 $current_lang_code = $current_lang;
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-// 4. ترجمات الفوتر ونوافذ الخصوصية والكوكيز باللغات الثلاث (de, en, ar)
-$footer_translations = [
-    'ar' => [
-        'consult_title' => 'احصل على استشارة مجانية',
-        'email_placeholder' => 'ادخل إيميلك...',
-        'privacy_modal_title' => 'الموافقة على سياسة الخصوصية',
-        'privacy_modal_desc' => 'لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في',
-        'privacy_link_text' => 'سياسة الخصوصية',
-        'privacy_checkbox' => 'أوافق على شروط تخزين ومعالجة بياناتي.',
-        'cancel' => 'إلغاء',
-        'agree_and_send' => 'موافق وإرسال الطلب',
-        'alert_checkbox' => 'يجب الموافقة على شروط سياسة الخصوصية للمتابعة.',
-        'alert_success' => 'تم إرسال طلبك بنجاح. شكراً لك!',
-        'alert_error' => 'خطأ: ',
-        'alert_connection_error' => 'حدث خطأ في الاتصال بالخادم',
-        'rights_reserved' => 'Alle Rechte vorbehalten.',
-        'cookie_text' => 'نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في',
-        'cookie_accept' => 'قبول الكل',
-        'cookie_reject' => 'رفض غير الضروري'
-    ],
-    'en' => [
-        'consult_title' => 'Get a Free Consultation',
-        'email_placeholder' => 'Enter your email...',
-        'privacy_modal_title' => 'Privacy Policy Consent',
-        'privacy_modal_desc' => 'To protect your data in accordance with European requirements (GDPR), please agree to store your email so our experts can contact you and provide a free consultation. You can view full details in our',
-        'privacy_link_text' => 'Privacy Policy',
-        'privacy_checkbox' => 'I agree to the terms of storing and processing my data.',
-        'cancel' => 'Cancel',
-        'agree_and_send' => 'Agree and Send Request',
-        'alert_checkbox' => 'You must agree to the privacy policy terms to proceed.',
-        'alert_success' => 'Your request has been sent successfully. Thank you!',
-        'alert_error' => 'Error: ',
-        'alert_connection_error' => 'Server connection error occurred',
-        'rights_reserved' => 'All rights reserved.',
-        'cookie_text' => 'We use cookies to improve your experience and analyze traffic. You can check details in our',
-        'cookie_accept' => 'Accept All',
-        'cookie_reject' => 'Reject Non-Essential'
-    ],
-    'de' => [
-        'consult_title' => 'Kostenlose Beratung erhalten',
-        'email_placeholder' => 'E-Mail eingeben...',
-        'privacy_modal_title' => 'Datenschutz-Einwilligung',
-        'privacy_modal_desc' => 'Um Ihre Daten gemäß der DSGVO zu schützen, stimmen Sie bitte der Speicherung Ihrer E-Mail zu, damit unsere Experten Sie kontaktieren können. Weitere Details finden Sie in unserer',
-        'privacy_link_text' => 'Datenschutzerklärung',
-        'privacy_checkbox' => 'Ich stimme den Bedingungen zur Speicherung und Verarbeitung meiner Daten zu.',
-        'cancel' => 'Abbrechen',
-        'agree_and_send' => 'Zustimmen & Senden',
-        'alert_checkbox' => 'Sie müssen den Datenschutzbestimmungen zustimmen, um fortzufahren.',
-        'alert_success' => 'Ihre Anfrage wurde erfolgreich gesendet. Vielen Dank!',
-        'alert_error' => 'Fehler: ',
-        'alert_connection_error' => 'Serververbindungsfehler aufgetreten',
-        'rights_reserved' => 'Alle Rechte vorbehalten.',
-        'cookie_text' => 'Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Details finden Sie in unserer',
-        'cookie_accept' => 'Alle akzeptieren',
-        'cookie_reject' => 'Nur essenzielle'
-    ]
+// استخدام الترجمات القادمة من ملفات اللغات الخارجية ($lang) مع تراجع آمن
+$t = [
+    'consult_title'           => $lang['consult_title'] ?? 'احصل على استشارة مجانية',
+    'email_placeholder'       => $lang['email_placeholder'] ?? 'ادخل إيميلك...',
+    'privacy_modal_title'     => $lang['privacy_modal_title'] ?? 'الموافقة على سياسة الخصوصية',
+    'privacy_modal_desc'      => $lang['privacy_modal_desc'] ?? 'لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في',
+    'privacy_link_text'       => $lang['privacy_link_text'] ?? 'سياسة الخصوصية',
+    'privacy_checkbox'        => $lang['privacy_checkbox'] ?? 'أوافق على شروط تخزين ومعالجة بياناتي.',
+    'cancel'                  => $lang['cancel'] ?? 'إلغاء',
+    'agree_and_send'          => $lang['agree_and_send'] ?? 'موافق وإرسال الطلب',
+    'alert_checkbox'          => $lang['alert_checkbox'] ?? 'يجب الموافقة على شروط سياسة الخصوصية للمتابعة.',
+    'alert_success'           => $lang['alert_success'] ?? 'تم إرسال طلبك بنجاح. شكراً لك!',
+    'alert_error'             => $lang['alert_error'] ?? 'خطأ: ',
+    'alert_connection_error'  => $lang['alert_connection_error'] ?? 'حدث خطأ في الاتصال بالخادم',
+    'rights_reserved'         => $lang['rights_reserved'] ?? 'Alle Rechte vorbehalten.',
+    'cookie_text'             => $lang['cookie_text'] ?? 'نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في',
+    'cookie_accept'           => $lang['cookie_accept'] ?? 'قبول الكل',
+    'cookie_reject'           => $lang['cookie_reject'] ?? 'رفض غير الضروري'
 ];
 
-$t = $footer_translations[$current_lang] ?? $footer_translations['ar'];
 $modal_dir = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
 $is_admin = $is_admin ?? false;
@@ -286,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <?php endif; ?>
                             <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
                         </a>
-                    <?php endforeach; ?>
+                    <?endforeach; ?>
                 </div>
             </div>
         </div>

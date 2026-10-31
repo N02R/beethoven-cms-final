@@ -19,8 +19,8 @@ $lang_guide_data = $guide_all[$current_lang] ?? ($guide_all['ar'] ?? []);
 $guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? ($currentSettings['guide_title'] ?? 'دليل بيتهوفن الشامل'));
 $guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? ($currentSettings['guide_desc'] ?? ''));
 
-// 🌟 جلب نص زر "قراءة المزيد" المخزن خصيصاً لهذه اللغة في قاعدة البيانات
-$read_more_text = $lang_guide_data['read_more_btn'] ?? ($data['read_more_btn'] ?? ($currentSettings['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد')));
+// 🌟 جلب نص زر "قراءة المزيد" المخزن في قاعدة البيانات لكل لغة مع تراجع آمن لملف الترجمة
+$read_more_text = $lang_guide_data['read_more_btn'] ?? ($lang['read_more'] ?? 'قراءة المزيد');
 
 $guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? ($currentSettings['guide_items'] ?? []));
 

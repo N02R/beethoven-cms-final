@@ -123,5 +123,11 @@ return [
     'add_new_article'         => 'Neuen Artikel hinzufügen',
     'image'                   => 'Bild',
     'read_more'               => 'Read More',
+    // FAQ Modal Übersetzungen
+    'manage_faq'              => 'FAQ verwalten',
+    'faq_question'            => 'Frage',
+    'faq_answer'              => 'Antwort',
+    'delete_faq'              => 'Frage löschen',
+    'add_new_faq'             => 'Neue Frage hinzufügen',
 
 ];

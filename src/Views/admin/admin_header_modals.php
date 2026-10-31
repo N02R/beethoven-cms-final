@@ -1020,15 +1020,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6">
-                                            <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                                            <input type="text" class="form-control faq-question" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="السؤال">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <input type="text" class="form-control faq-question" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                                            <input type="text" class="form-control faq-answer" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الإجابة">
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <input type="text" class="form-control faq-answer" name="faq[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="حذف السؤال">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_faq'] ?? 'حذف السؤال', ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -1039,13 +1039,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFaqRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة سؤال جديد
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_faq'] ?? 'إضافة سؤال جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="faqForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="faqForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1257,12 +1257,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة سؤال وجواب جديد لقسم FAQ
+    // 🌟 دالة إضافة سؤال وجواب جديد لقسم FAQ (مترجمة بالكامل)
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.faq-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const langQuestion = "<?php echo htmlspecialchars($lang['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?>";
+        const langAnswer   = "<?php echo htmlspecialchars($lang['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete   = "<?php echo htmlspecialchars($lang['delete_faq'] ?? 'حذف السؤال', ENT_QUOTES, 'UTF-8'); ?>";
 
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm faq-row-item mb-3';
@@ -1270,15 +1274,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
-                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="السؤال">
+                    <label class="small fw-bold mb-1 text-secondary">${langQuestion}</label>
+                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="${langQuestion}">
                 </div>
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
-                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="الإجابة">
+                    <label class="small fw-bold mb-1 text-secondary">${langAnswer}</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="${langAnswer}">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>

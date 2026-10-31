@@ -123,5 +123,11 @@ return [
     'add_new_article'         => 'Add New Article',
     'image'                   => 'Image',
     'read_more'               => 'Read More',
+    // FAQ Modal Translations
+    'manage_faq'              => 'Manage FAQ',
+    'faq_question'            => 'Question',
+    'faq_answer'              => 'Answer',
+    'delete_faq'              => 'Delete Question',
+    'add_new_faq'             => 'Add New Question',
 
 ];

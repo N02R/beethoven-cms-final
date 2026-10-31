@@ -50,7 +50,7 @@ if (!is_array($guide_items)) {
     </button>
   <?php endif; ?>
 
-  <div class="custom-container">
+  <div class="custom-container" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
     <div class="text-center mb-5">
       <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php if (!empty($guide_desc)): ?>
@@ -68,28 +68,26 @@ if (!is_array($guide_items)) {
             $item_title = $item['title'] ?? '';
             $item_desc  = $item['desc'] ?? '';
             $item_img   = get_image_url($item['img'] ?? null);
-            $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
+            $arrow_img  = get_image_url('assets/img/home/Arrow..svg');
             $raw_url    = $item['url'] ?? ($item['link'] ?? '#');
             $final_url  = ($raw_url !== '#' && !str_starts_with($raw_url, 'http')) ? '/' . $current_lang . '/' . ltrim($raw_url, '/') : $raw_url;
         ?>
-          <div class="col-lg-4 col-md-6">
-            <div class="card h-100 border-0 shadow-sm">
-              <?php if (!empty($item_img)): ?>
-                <div class="card-img-wrapper">
-                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
-                </div>
-              <?php endif; ?>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
               <div class="card-body d-flex flex-column">
+                <?php if (!empty($item_img)): ?>
+                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
+                <?php endif; ?>
                 <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
                 <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
                   <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="mx-2" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="<?php echo ($current_dir === 'ltr' ? 'ms-2' : 'me-2'); ?>" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                 </a>
               </div>
             </div>
           </div>
-        <?php endforeach; ?>
+        <?endforeach; ?>
       <?php else: ?>
         <div class="col-12 text-center text-muted py-4">
           <p><?php echo $lang['no_guide_articles'] ?? 'لا توجد مقالات مضافة في الدليل حالياً.'; ?></p>

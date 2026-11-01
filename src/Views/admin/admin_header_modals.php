@@ -1378,6 +1378,51 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
+    // 🌟 دالة إضافة وسيلة تواصل جديدة للفوتر (متوافقة مع الترجمة)
+    function addCol3Link() {
+        const container = document.getElementById('col3LinksContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.footer-col3-item').length;
+
+        const langContactName = "<?php echo htmlspecialchars($lang['contact_name'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langPlaceholder = "<?php echo htmlspecialchars($lang['contact_name_placeholder'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langUrl         = "<?php echo htmlspecialchars($lang['contact_url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?>";
+        const langIconImg     = "<?php echo htmlspecialchars($lang['contact_icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete      = "<?php echo htmlspecialchars($lang['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm footer-col3-item mb-3';
+        div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">${langContactName}</label>
+                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="${langPlaceholder}">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">${langUrl}</label>
+                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="${langUrl}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="small fw-bold mb-1 text-secondary">${langIconImg}</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
+                    </div>
+                    <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
+                </div>
+
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="${langDelete}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {

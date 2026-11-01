@@ -129,5 +129,30 @@ return [
     'faq_answer'              => 'Answer',
     'delete_faq'              => 'Delete Question',
     'add_new_faq'             => 'Add New Question',
+    // FAQ Modal Translations
+    'manage_faq'              => 'Manage FAQ',
+    'faq_question'            => 'Question',
+    'faq_answer'              => 'Answer',
+    'delete_faq'              => 'Delete Question',
+    'add_new_faq'             => 'Add New Question',
+
+    // Footer Modal Translations
+    'manage_footer'           => 'Manage Full Footer',
+    'consult_section_title'   => 'Consultation Section Settings',
+    'consult_title_label'     => 'Consultation Title',
+    'consult_desc_label'      => 'Consultation Description',
+    'column_one'              => 'Column One',
+    'footer_desc_label'       => 'Footer Description:',
+    'column_two'              => 'Column Two',
+    'column_two_title'        => 'Column Title',
+    'menu_auto_notice'        => 'Links are automatically fetched from the Main Menu.',
+    'column_three'            => 'Column Three (Contact Us)',
+    'column_three_title'      => 'Column Title',
+    'contact_name'            => 'Contact Name',
+    'contact_name_placeholder'=> 'Contact Name (e.g. WhatsApp)',
+    'contact_url'             => 'URL',
+    'contact_icon_image'      => 'Icon / Image',
+    'delete_contact'          => 'Delete Contact',
+    'add_new_contact'         => 'Add New Contact',
 
 ];

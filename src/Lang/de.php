@@ -129,5 +129,30 @@ return [
     'faq_answer'              => 'Antwort',
     'delete_faq'              => 'Frage löschen',
     'add_new_faq'             => 'Neue Frage hinzufügen',
+    // FAQ Modal Übersetzungen
+    'manage_faq'              => 'FAQ verwalten',
+    'faq_question'            => 'Frage',
+    'faq_answer'              => 'Antwort',
+    'delete_faq'              => 'Frage löschen',
+    'add_new_faq'             => 'Neue Frage hinzufügen',
+
+    // Footer Modal Übersetzungen
+    'manage_footer'           => 'Gesamten Footer verwalten',
+    'consult_section_title'   => 'Einstellungen für den Beratungsbereich',
+    'consult_title_label'     => 'Beratungstitel',
+    'consult_desc_label'      => 'Beratungsbeschreibung',
+    'column_one'              => 'Spalte Eins',
+    'footer_desc_label'       => 'Footer-Beschreibung:',
+    'column_two'              => 'Spalte Zwei',
+    'column_two_title'        => 'Spaltentitel',
+    'menu_auto_notice'        => 'Links werden automatisch aus dem Hauptmenü abgerufen.',
+    'column_three'            => 'Spalte Drei (Kontakt)',
+    'column_three_title'      => 'Spaltentitel',
+    'contact_name'            => 'Kontaktname',
+    'contact_name_placeholder'=> 'Name (z.B. WhatsApp)',
+    'contact_url'             => 'URL',
+    'contact_icon_image'      => 'Symbol / Bild',
+    'delete_contact'          => 'Kontakt löschen',
+    'add_new_contact'         => 'Neuen Kontakt hinzufügen',
 
 ];

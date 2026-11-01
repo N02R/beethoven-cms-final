@@ -1065,7 +1065,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات الفوتر الموحدة مباشرة من قاعدة البيانات إن لم تكن محملة بالكامل
                 $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? null);
                 if (empty($footerRawSetting)) {
                     try {
@@ -1102,14 +1101,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold"><i class="bi bi-chat-dots me-1"></i> إعدادات قسم الاستشارة (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</h6>
+                                <h6 class="text-primary mb-3 fw-bold">
+                                    <i class="bi bi-chat-dots me-1"></i> <?php echo htmlspecialchars($lang['consult_section_title'] ?? 'إعدادات قسم الاستشارة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                                </h6>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="small fw-bold mb-1 text-secondary">عنوان الاستشارة</label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['consult_title_label'] ?? 'عنوان الاستشارة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][consult_title]" value="<?php echo htmlspecialchars((string)$modalConsultTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-8">
-                                        <label class="small fw-bold mb-1 text-secondary">وصف الاستشارة</label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['consult_desc_label'] ?? 'وصف الاستشارة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][consult_desc]" value="<?php echo htmlspecialchars((string)$modalConsultDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
@@ -1120,19 +1121,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold">العمود الأول</h6>
-                                <label class="small fw-bold mb-1 text-secondary">وصف الفوتر:</label>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($lang['column_one'] ?? 'العمود الأول', ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['footer_desc_label'] ?? 'وصف الفوتر:', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <textarea class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][footer_desc]" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalFooterDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="p-4 shadow-sm h-100" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold">العمود الثاني</h6>
-                                <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($lang['column_two'] ?? 'العمود الثاني', ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['column_two_title'] ?? 'عنوان العمود', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="text" class="form-control mb-3" name="footer[<?php echo $current_lang ?? 'ar'; ?>][col2_title]" value="<?php echo htmlspecialchars((string)$modalCol2Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
-                                    <i class="bi bi-info-circle me-1"></i> يتم جلب الروابط تلقائياً من <b>القائمة الرئيسية (Menu)</b>.
+                                    <i class="bi bi-info-circle me-1"></i> <?php echo htmlspecialchars($lang['menu_auto_notice'] ?? 'يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).', ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                             </div>
                         </div>
@@ -1141,9 +1142,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="row">
                         <div class="col-12">
                             <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold">العمود الثالث (التواصل)</h6>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($lang['column_three'] ?? 'العمود الثالث (التواصل)', ENT_QUOTES, 'UTF-8'); ?></h6>
                                 <div class="mb-3" style="max-width: 400px;">
-                                    <label class="small fw-bold mb-1 text-secondary">عنوان العمود</label>
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['column_three_title'] ?? 'عنوان العمود', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="text" class="form-control" name="footer[<?php echo $current_lang ?? 'ar'; ?>][col3_title]" value="<?php echo htmlspecialchars((string)$modalCol3Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 
@@ -1156,17 +1157,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <div class="row g-3 align-items-center">
                                                 
                                                 <div class="col-md-4">
-                                                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الوسيلة (مثلاً: واتساب)">
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['contact_name'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['contact_name_placeholder'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
                                                 </div>
 
                                                 <div class="col-md-4">
-                                                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="الرابط">
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['contact_url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?></label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?>">
                                                 </div>
 
                                                 <div class="col-md-3">
-                                                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['contact_icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <?php if (!empty($link['img'])): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -1181,7 +1182,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
 
                                                 <div class="col-md-1 text-center pt-3">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;" title="حذف وسيلة التواصل">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;" title="<?php echo htmlspecialchars($lang['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -1192,7 +1193,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 </div>
 
                                 <button type="button" class="btn w-100 mt-3 py-2" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()">
-                                    <i class="bi bi-plus-circle me-1"></i> إضافة وسيلة تواصل
+                                    <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_contact'] ?? 'إضافة وسيلة تواصل', ENT_QUOTES, 'UTF-8'); ?>
                                 </button>
                             </div>
                         </div>
@@ -1206,7 +1207,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         </div>
     </div>
 </div>
-
 
 <!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>

@@ -130,6 +130,24 @@ return [
     'delete_faq'              => 'حذف السؤال',
     'add_new_faq'             => 'إضافة سؤال جديد',
 
+    // ترجمات مودل الفوتر بالكامل (Footer Modal)
+    'manage_footer'           => 'إدارة الفوتر بالكامل',
+    'consult_section_title'   => 'إعدادات قسم الاستشارة',
+    'consult_title_label'     => 'عنوان الاستشارة',
+    'consult_desc_label'      => 'وصف الاستشارة',
+    'column_one'              => 'العمود الأول',
+    'footer_desc_label'       => 'وصف الفوتر:',
+    'column_two'              => 'العمود الثاني',
+    'column_two_title'        => 'عنوان العمود',
+    'menu_auto_notice'        => 'ي يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).',
+    'column_three'            => 'العمود الثالث (التواصل)',
+    'column_three_title'      => 'عنوان العمود',
+    'contact_name'            => 'اسم الوسيلة',
+    'contact_name_placeholder'=> 'اسم الوسيلة (مثلاً: واتساب)',
+    'contact_url'             => 'الرابط',
+    'contact_icon_image'      => 'الأيقونة / الصورة',
+    'delete_contact'          => 'حذف وسيلة التواصل',
+    'add_new_contact'         => 'إضافة وسيلة تواصل',
 
 ];
 

@@ -1208,8 +1208,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- Dynamic Rows JS Engine & AJAX Handlers -->
 <script>
+    // 🌟 الدالة العامة لحذف أي صف من أي قسم ديناميكياً
     function removeRow(target) {
         if (typeof target === 'string') {
             const el = document.getElementById(target);
@@ -1220,71 +1220,161 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }
     }
 
-    function showNotification(message, type = 'success') {
-        const existingAlert = document.getElementById('customNotificationAlert');
-        if (existingAlert) existingAlert.remove();
+    // 🌟 1. إضافة منصة تواصل اجتماعي جديدة (Social Links)
+    function addSocialRow() {
+        const container = document.getElementById('socialRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.social-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-        let bgClass = 'alert-success';
-        let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
-
-        if (type === 'danger') {
-            bgClass = 'alert-danger';
-            icon = 'bi-x-circle-fill';
-            title = 'عذراً، حدث خطأ!';
-        } else if (type === 'warning') {
-            bgClass = 'alert-warning';
-            icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
-        }
-
-        const alertDiv = document.createElement('div');
-        alertDiv.id = 'customNotificationAlert';
-        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
-        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
-        
-        alertDiv.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi ${icon} fs-4"></i>
-                <div>
-                    <strong>${title}</strong>
-                    <div class="small">${message}</div>
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm social-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">اسم المنصة</label>
+                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="الاسم">
                 </div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="col-md-8">
+                    <label class="small fw-bold mb-1 text-secondary">رابط المنصة</label>
+                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="الرابط">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">أيقونة / صورة المنصة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                </div>
             </div>
         `;
-
-        document.body.appendChild(alertDiv);
-
-        setTimeout(() => {
-            if (alertDiv) {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 300);
-            }
-        }, 4000);
+        container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة فيديو جديد لقسم reviews (متوافقة مع اللغة الحالية)
+    // 🌟 2. إضافة رابط جديد لقائمة التنقل الرئيسية (Menu)
+    function addMenuRow() {
+        const container = document.getElementById('menuRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.menu-row-item').length;
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm menu-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'menu_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الرابط</label>
+                    <input type="text" class="form-control" name="menu[${count}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط (URL)</label>
+                    <input type="text" class="form-control" name="menu[${count}][url]" placeholder="url">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <input type="hidden" name="menu[${count}][order]" value="${count}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 3. إضافة لغة جديدة للنظام (Languages)
+    function addLangRow() {
+        const container = document.getElementById('langRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.lang-row-item').length;
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm lang-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'lang_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <label class="small fw-bold mb-1 text-secondary">رمز اللغة (Code)</label>
+                    <input type="text" class="form-control lang-code" name="lang[${count}][code]" placeholder="مثال: fr">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">اسم اللغة</label>
+                    <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="مثال: Français">
+                </div>
+                <div class="col-md-2 text-center pt-3">
+                    <label class="small fw-bold mb-1 text-secondary d-block">الحالة</label>
+                    <input type="hidden" name="lang[${count}][active]" value="0">
+                    <div class="form-check form-switch d-inline-block">
+                        <input class="form-check-input lang-active" type="checkbox" name="lang[${count}][active]" value="1" checked>
+                    </div>
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 4. إضافة خدمة جديدة (Services)
+    function addServiceRow() {
+        const container = document.getElementById('servicesRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.service-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm service-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'service_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
+                    <input type="text" class="form-control service-title" name="services[${currentLang}][items][${count}][title]" placeholder="عنوان الخدمة">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
+                    <input type="text" class="form-control service-url" name="services[${currentLang}][items][${count}][url]" value="#" placeholder="رابط الخدمة">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
+                    </div>
+                </div>
+                <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${count}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 5. إضافة فيديو جديد (Reviews)
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.review-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        
-        const langVideoUrl   = "<?php echo $lang['review_video_url'] ?? 'رابط الفيديو (Embed URL)'; ?>";
-        const langDeleteText = "<?php echo $lang['delete_video'] ?? 'حذف الفيديو'; ?>";
 
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm mb-3 review-row-item';
+        div.className = 'p-3 shadow-sm review-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'rev_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${langVideoUrl}</label>
+                    <label class="small fw-bold mb-1 text-secondary">رابط الفيديو (Embed URL)</label>
                     <input type="text" class="form-control review-url" name="reviews[${currentLang}][items][${count}][url]" placeholder="https://www.youtube.com/embed/...">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الفيديو">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1293,128 +1383,104 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة سؤال وجواب جديد لقسم FAQ (مترجمة بالكامل)
-    function addFaqRow() {
-        const container = document.getElementById('faqRowsContainer');
-        if (!container) return;
-        const count = container.querySelectorAll('.faq-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
-        const langQuestion = "<?php echo htmlspecialchars($lang['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?>";
-        const langAnswer   = "<?php echo htmlspecialchars($lang['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDelete   = "<?php echo htmlspecialchars($lang['delete_faq'] ?? 'حذف السؤال', ENT_QUOTES, 'UTF-8'); ?>";
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm faq-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langQuestion}</label>
-                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="${langQuestion}">
-                </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">${langAnswer}</label>
-                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="${langAnswer}">
-                </div>
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    // 🌟 دالة إضافة مقال جديد (الهيكل الأصلي المستقر والمجرب)
+    // 🌟 6. إضافة مقال جديد (Guide)
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-        // جلب الترجمات الديناميكية من PHP
-        const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
-        const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
-        const langImage        = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDelete       = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm guide-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'guide_row_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langArticleTitle}</label>
-                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="${langArticleTitle}">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان المقال</label>
+                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="عنوان المقال">
                 </div>
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langPageUrl}</label>
-                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="${langPageUrl}">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الصفحة</label>
+                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="رابط الصفحة">
                 </div>
-                
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${langDesc}</label>
-                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="${langDesc}">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="الوصف">
                 </div>
-
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">${langImage}</label>
+                    <label class="small fw-bold mb-1 text-secondary">الصورة</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control guide-file w-100" name="guide_img_${count}" accept="image/*">
                     </div>
                     <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
                 </div>
-                
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 دالة إضافة وسيلة تواصل جديدة للفوتر (متوافقة مع الترجمة)
+    // 🌟 7. إضافة سؤال جديد (FAQ)
+    function addFaqRow() {
+        const container = document.getElementById('faqRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.faq-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm faq-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'faq_row_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">السؤال</label>
+                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="السؤال">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">الإجابة</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="الإجابة">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 8. إضافة وسيلة تواصل جديدة (Footer Col3)
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         if (!container) return;
         const count = container.querySelectorAll('.footer-col3-item').length;
 
-        const langContactName = "<?php echo htmlspecialchars($lang['contact_name'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langPlaceholder = "<?php echo htmlspecialchars($lang['contact_name_placeholder'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langUrl         = "<?php echo htmlspecialchars($lang['contact_url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?>";
-        const langIconImg     = "<?php echo htmlspecialchars($lang['contact_icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?>";
-        const langDelete      = "<?php echo htmlspecialchars($lang['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>";
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm footer-col3-item mb-3';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'col3_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">${langContactName}</label>
-                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="${langPlaceholder}">
+                    <label class="small fw-bold mb-1 text-secondary">اسم الوسيلة</label>
+                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="اسم الوسيلة">
                 </div>
-
                 <div class="col-md-4">
-                    <label class="small fw-bold mb-1 text-secondary">${langUrl}</label>
-                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="${langUrl}">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="الرابط">
                 </div>
-
                 <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">${langIconImg}</label>
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                     </div>
                     <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
                 </div>
-
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="${langDelete}">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="حذف">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1422,142 +1488,4 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         `;
         container.appendChild(div);
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
-                // 🌟 إعادة ترتيب وتسمية حقول review بدقة عند الـ submit لتتوافق مع الباك إند
-                form.querySelectorAll('.review-row-item').forEach((row, index) => {
-                    const urlInput = row.querySelector('.review-url');
-                    if (urlInput) {
-                        urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
-                    }
-                });
-
-                // 🌟 إعادة ترتيب حقول FAQ بدقة عند الـ submit
-                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
-                    const q = row.querySelector('.faq-question');
-                    const a = row.querySelector('.faq-answer');
-                    if (q) q.name = `faq[${currentLang}][items][${index}][question]`;
-                    if (a) a.name = `faq[${currentLang}][items][${index}][answer]`;
-                });
-
-                // إعادة ترتيب حقول الخدمات
-                form.querySelectorAll('.service-row-item').forEach((row, index) => {
-                    const title = row.querySelector('.service-title');
-                    const url = row.querySelector('.service-url');
-                    const file = row.querySelector('.service-file');
-                    const oldImg = row.querySelector('.service-old-img');
-                    if (title) title.name = `services[${currentLang}][items][${index}][title]`;
-                    if (url) url.name = `services[${currentLang}][items][${index}][url]`;
-                    if (file) file.name = `service_img_${index}`;
-                    if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // إعادة ترتيب حقول choose
-                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.choose-title');
-                    const descInput = row.querySelector('.choose-desc');
-                    const fileInput = row.querySelector('.choose-file');
-                    const oldImgInput = row.querySelector('.choose-old-img');
-                    
-                    if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
-                    if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
-                    if (fileInput) fileInput.name = `choose_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // 🌟 إعادة ترتيب حقول الدليل الشامل (Guide) بدقة عند الـ submit
-                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
-                    const title = row.querySelector('.guide-title');
-                    const url = row.querySelector('.guide-url');
-                    const desc = row.querySelector('.guide-desc');
-                    const file = row.querySelector('.guide-file');
-                    const oldImg = row.querySelector('.guide-old-img');
-                    
-                    if (title) title.name = `guide[${currentLang}][items][${index}][title]`;
-                    if (url) url.name = `guide[${currentLang}][items][${index}][url]`;
-                    if (desc) desc.name = `guide[${currentLang}][items][${index}][desc]`;
-                    if (file) file.name = `guide_img_${index}`;
-                    if (oldImg) oldImg.name = `guide[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // 🌟 إعادة ترتيب حقول تواصل الفوتر (Footer Col3 Links) بدقة عند الـ submit
-                form.querySelectorAll('.footer-col3-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.footer-col3-title-input');
-                    const urlInput = row.querySelector('.footer-col3-url-input');
-                    const fileInput = row.querySelector('.footer-col3-file');
-                    const oldImgInput = row.querySelector('.footer-col3-old-img');
-                    
-                    if (titleInput) titleInput.name = `col3[${index}][title]`;
-                    if (urlInput) urlInput.name = `col3[${index}][url]`;
-                    if (fileInput) fileInput.name = `col3_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `col3[${index}][old_img]`;
-                });
-
-                const formId = this.getAttribute('id');
-                const submitBtn = (formId ? document.querySelector(`button[form="${formId}"]`) : null) || this.querySelector('button[type="submit"]');
-                let originalText = '';
-                if (submitBtn) {
-                    originalText = submitBtn.innerHTML;
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> جاري الحفظ...';
-                }
-
-                const formData = new FormData(this);
-                
-                let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!csrfToken) {
-                    csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';
-                }
-
-                if (csrfToken && !formData.has('csrf_token')) {
-                    formData.append('csrf_token', csrfToken);
-                }
-
-                fetch('index.php?url=admin/settings/save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(text => {
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success || data.status === 'success') {
-                            showNotification(data.message || 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
-                        } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                            if (submitBtn) {
-                                submitBtn.disabled = false;
-                                submitBtn.innerHTML = originalText;
-                            }
-                        }
-                    } catch (e) {
-                        showNotification('خطأ في إستجابة الخادم: ' + text, 'danger');
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalText;
-                        }
-                    }
-                })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                });
-            });
-        });
-    });
 </script>

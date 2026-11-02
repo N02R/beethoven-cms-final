@@ -238,7 +238,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     foreach((is_array($footer_col3_links) ? $footer_col3_links : []) as $link): 
                         $icon_img = get_image_url(is_array($link['img'] ?? null) ? reset($link['img']) : ($link['img'] ?? null));
-                        $col3_title = get_multilang_text($link['title'] ?? '', $current_lang);
+                        
+                        // استخراج العنوان بدقة حسب اللغة الحالية مع التراجع الآمن
+                        $col3_title = '';
+                        if (isset($link[$current_lang]['title'])) {
+                            $col3_title = $link[$current_lang]['title'];
+                        } elseif (isset($link['ar']['title'])) {
+                            $col3_title = $link['ar']['title'];
+                        } else {
+                            $col3_title = $link['title'] ?? '';
+                        }
+                        
                         $col3_url = is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? '#');
                     ?>
                         <a href="<?php echo htmlspecialchars((string)$col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">

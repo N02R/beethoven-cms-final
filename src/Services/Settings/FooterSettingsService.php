@@ -68,10 +68,16 @@ class FooterSettingsService
         $jsonFooterVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
         $stmt->execute(['k' => 'footer', 'v' => $jsonFooterVal, 'v_update' => $jsonFooterVal]);
 
-        // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) مع مرونة كاملة في التقاط البيانات ورفع الصور
+        // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) مع الحفاظ على هيكل اللغات الموجود في القاعدة
         $footerCol3Data = $_POST['col3'] ?? ($_POST['footer'][$targetLang]['col3'] ?? []);
         
         if (is_array($footerCol3Data) && !empty($footerCol3Data)) {
+            // جلب البيانات القديمة من قاعدة البيانات لدمج ترجمات اللغات الأخرى وعدم ضياعها
+            $stmtCol3Fetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer_col3_links'");
+            $stmtCol3Fetch->execute();
+            $oldCol3Raw = $stmtCol3Fetch->fetchColumn();
+            $oldCol3Arr = (is_string($oldCol3Raw)) ? (json_decode($oldCol3Raw, true) ?? []) : [];
+
             $processedCol3 = [];
             foreach ($footerCol3Data as $index => $item) {
                 if (!is_array($item)) continue;
@@ -89,14 +95,30 @@ class FooterSettingsService
                     $img = 'assets/uploads/' . $filename;
                 }
 
-                $processedCol3[] = [
-                    'title' => trim($item['title'] ?? ''),
-                    'url'   => trim($item['url'] ?? '#'),
-                    'img'   => $img
+                $newTitleText = trim($item['title'] ?? '');
+                
+                // الحفاظ على هيكل اللغات (ar, en, de) للعنصر إن كان موجوداً سابقاً
+                $existingItem = $oldCol3Arr[$index] ?? [];
+                $elementData = [
+                    'url' => trim($item['url'] ?? '#'),
+                    'img' => $img
                 ];
+
+                // تعبئة اللغات الثلاث بأمان
+                foreach (['ar', 'en', 'de'] as $langCode) {
+                    if ($langCode === $targetLang) {
+                        $elementData[$langCode] = ['title' => $newTitleText];
+                    } else {
+                        $elementData[$langCode] = $existingItem[$langCode] ?? ['title' => $newTitleText];
+                    }
+                }
+                // دعم التوافقية مع المفتاح المباشر القديم إن وجد
+                $elementData['title'] = $newTitleText;
+
+                $processedCol3[] = $elementData;
             }
             
-            $jsonCol3Val = json_encode($processedCol3, JSON_UNESCAPED_UNICODE);
+            $jsonCol3Val = json_encode(array_values($processedCol3), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
         }
 

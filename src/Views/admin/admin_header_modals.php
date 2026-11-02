@@ -1209,28 +1209,66 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 </div>
 
 <script>
-    // 🌟 الدالة العامة لحذف أي صف من أي قسم ديناميكياً
-    function removeRow(target) {
-        if (typeof target === 'string') {
-            const el = document.getElementById(target);
-            if (el) el.remove();
-        } else if (target && target.nodeType) {
-            const row = target.closest('.social-row-item, .menu-row-item, .choose-row-item, .review-row-item, .guide-row-item, .faq-row-item, .footer-col3-item, .lang-row-item, .service-row-item, .team-row-item, .count-row-item, .partner-row-item');
-            if (row) row.remove();
-        }
+    // 1. دالة عامة لحذف أي صف بناءً على الـ ID (المعيار المعتمد)
+    function removeRow(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
     }
 
-    // 🌟 1. إضافة منصة تواصل اجتماعي جديدة (Social Links)
+    // 2. دالة إظهار التنبيهات الاحترافية فوق المودال
+    function showNotification(message, type = 'success') {
+        const existingAlert = document.getElementById('customNotificationAlert');
+        if (existingAlert) existingAlert.remove();
+
+        let bgClass = 'alert-success';
+        let icon = 'bi-check-circle-fill';
+        let title = 'تم بنجاح!';
+
+        if (type === 'danger') {
+            bgClass = 'alert-danger';
+            icon = 'bi-x-circle-fill';
+            title = 'عذراً، حدث خطأ!';
+        } else if (type === 'warning') {
+            bgClass = 'alert-warning';
+            icon = 'bi-exclamation-triangle-fill';
+            title = 'تنبيه هام';
+        }
+
+        const alertDiv = document.createElement('div');
+        alertDiv.id = 'customNotificationAlert';
+        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+        alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
+        
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi ${icon} fs-4"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <div class="small">${message}</div>
+                </div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            if (alertDiv) {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 300);
+            }
+        }, 4000);
+    }
+
+    // 3. دالة إضافة منصة تواصل اجتماعي جديدة (Social Links)
     function addSocialRow() {
         const container = document.getElementById('socialRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.social-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm social-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'row_' + count;
+        div.id = 'social_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
@@ -1249,23 +1287,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المنصة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف المنصة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 2. إضافة رابط جديد لقائمة التنقل الرئيسية (Menu)
+    // 4. دالة إضافة رابط جديد لقائمة التنقل الرئيسية (Menu)
     function addMenuRow() {
         const container = document.getElementById('menuRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.menu-row-item').length;
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm menu-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'menu_row_' + count;
+        div.id = 'menu_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1278,23 +1315,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <input type="hidden" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 3. إضافة لغة جديدة للنظام (Languages)
+    // 5. دالة إضافة لغة جديدة للنظام (Languages)
     function addLangRow() {
         const container = document.getElementById('langRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.lang-row-item').length;
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm lang-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'lang_row_' + count;
+        div.id = 'lang_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
@@ -1313,24 +1349,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 4. إضافة خدمة جديدة (Services)
+    // 6. دالة إضافة خدمة جديدة (Services)
     function addServiceRow() {
         const container = document.getElementById('servicesRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.service-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm service-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'service_row_' + count;
+        div.id = 'service_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1349,24 +1384,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </div>
                 <input type="hidden" class="service-old-img" name="services[${currentLang}][items][${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 5. إضافة فيديو جديد (Reviews)
+    // 7. دالة إضافة فيديو جديد (Reviews)
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.review-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm review-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'rev_row_' + count;
+        div.id = 'rev_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11">
@@ -1374,7 +1408,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control review-url" name="reviews[${currentLang}][items][${count}][url]" placeholder="https://www.youtube.com/embed/...">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف الفيديو">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الفيديو">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1383,17 +1417,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 🌟 6. إضافة مقال جديد (Guide)
+    // 8. دالة إضافة مقال جديد (Guide)
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.guide-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm guide-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'guide_row_' + count;
+        div.id = 'guide_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1416,24 +1449,23 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف المقال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف المقال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 7. إضافة سؤال جديد (FAQ)
+    // 9. دالة إضافة سؤال جديد (FAQ)
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         if (!container) return;
         const count = container.querySelectorAll('.faq-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm faq-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'faq_row_' + count;
+        div.id = 'faq_row_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
@@ -1445,23 +1477,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="الإجابة">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 🌟 8. إضافة وسيلة تواصل جديدة (Footer Col3)
+    // 10. دالة إضافة وسيلة تواصل جديدة (Footer Col3)
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         if (!container) return;
         const count = container.querySelectorAll('.footer-col3-item').length;
-
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm footer-col3-item mb-3';
         div.style.cssText = 'background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'col3_' + count;
+        div.id = 'col3_' + Date.now() + '_' + count;
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
@@ -1480,7 +1511,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow(this)" style="border-radius: 8px;" title="حذف">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" style="border-radius: 8px;" title="حذف">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1488,4 +1519,146 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         `;
         container.appendChild(div);
     }
+
+    // 11. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+                // إعادة ترقيم Social Links
+                form.querySelectorAll('.social-row-item').forEach((row, index) => {
+                    const nameInput = row.querySelector('.social-name');
+                    const urlInput = row.querySelector('.social-url');
+                    const fileInput = row.querySelector('.social-file');
+                    const oldImgInput = row.querySelector('.social-old-img');
+
+                    if (nameInput) nameInput.name = `social[${index}][name]`;
+                    if (urlInput) urlInput.name = `social[${index}][url]`;
+                    if (fileInput) fileInput.name = `social_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `social[${index}][old_img]`;
+                });
+
+                // إعادة ترقيم Menu Links
+                form.querySelectorAll('.menu-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('input[name*="[title]"]');
+                    const urlInput = row.querySelector('input[name*="[url]"]');
+                    const orderInput = row.querySelector('input[name*="[order]"]');
+
+                    if (titleInput) titleInput.name = `menu[${index}][title]`;
+                    if (urlInput) urlInput.name = `menu[${index}][url]`;
+                    if (orderInput) orderInput.name = `menu[${index}][order]`;
+                });
+
+                // إعادة ترقيم Languages
+                form.querySelectorAll('.lang-row-item').forEach((row, index) => {
+                    const codeInput = row.querySelector('.lang-code');
+                    const nameInput = row.querySelector('.lang-name');
+                    const activeInput = row.querySelector('.lang-active');
+                    const activeHidden = row.querySelector('input[type="hidden"][name*="[active]"]');
+
+                    if (codeInput) codeInput.name = `lang[${index}][code]`;
+                    if (nameInput) nameInput.name = `lang[${index}][name]`;
+                    if (activeInput) activeInput.name = `lang[${index}][active]`;
+                    if (activeHidden) activeHidden.name = `lang[${index}][active]`;
+                });
+
+                // إعادة ترقيم Services
+                form.querySelectorAll('.service-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.service-title');
+                    const url = row.querySelector('.service-url');
+                    const file = row.querySelector('.service-file');
+                    const oldImg = row.querySelector('.service-old-img');
+                    if (title) title.name = `services[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `services[${currentLang}][items][${index}][url]`;
+                    if (file) file.name = `service_img_${index}`;
+                    if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // إعادة ترقيم Reviews
+                form.querySelectorAll('.review-row-item').forEach((row, index) => {
+                    const urlInput = row.querySelector('.review-url');
+                    if (urlInput) {
+                        urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
+                    }
+                });
+
+                // إعادة ترقيم Guide
+                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.guide-title');
+                    const url = row.querySelector('.guide-url');
+                    const desc = row.querySelector('.guide-desc');
+                    const file = row.querySelector('.guide-file');
+                    const oldImg = row.querySelector('.guide-old-img');
+                    
+                    if (title) title.name = `guide[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `guide[${currentLang}][items][${index}][url]`;
+                    if (desc) desc.name = `guide[${currentLang}][items][${index}][desc]`;
+                    if (file) file.name = `guide_img_${index}`;
+                    if (oldImg) oldImg.name = `guide[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // إعادة ترقيم FAQ
+                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
+                    const q = row.querySelector('.faq-question');
+                    const a = row.querySelector('.faq-answer');
+                    if (q) q.name = `faq[${currentLang}][items][${index}][question]`;
+                    if (a) a.name = `faq[${currentLang}][items][${index}][answer]`;
+                });
+
+                // إعادة ترقيم Footer Col3 Links
+                form.querySelectorAll('.footer-col3-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.footer-col3-title-input');
+                    const urlInput = row.querySelector('.footer-col3-url-input');
+                    const fileInput = row.querySelector('.footer-col3-file');
+                    const oldImgInput = row.querySelector('.footer-col3-old-img');
+                    
+                    if (titleInput) titleInput.name = `col3[${index}][title]`;
+                    if (urlInput) urlInput.name = `col3[${index}][url]`;
+                    if (fileInput) fileInput.name = `col3_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `col3[${index}][old_img]`;
+                });
+
+                const formData = new FormData(this);
+                let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';
+                }
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
+
+                fetch('index.php?url=admin/settings/save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success || data.status === 'success') {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                });
+            });
+        });
+    });
 </script>
+

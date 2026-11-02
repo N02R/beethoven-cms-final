@@ -68,23 +68,35 @@ class FooterSettingsService
         $jsonFooterVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
         $stmt->execute(['k' => 'footer', 'v' => $jsonFooterVal, 'v_update' => $jsonFooterVal]);
 
-        // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) مع رفع الصور وتأمينها
-        $footerCol3Data = $_POST['col3'] ?? [];
-        if (is_array($footerCol3Data)) {
+        // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) مع مرونة كاملة في التقاط البيانات ورفع الصور
+        $footerCol3Data = $_POST['col3'] ?? ($_POST['footer'][$targetLang]['col3'] ?? []);
+        
+        if (is_array($footerCol3Data) && !empty($footerCol3Data)) {
+            $processedCol3 = [];
             foreach ($footerCol3Data as $index => $item) {
+                if (!is_array($item)) continue;
+
+                $oldImg = $item['old_img'] ?? '';
+                $img = $oldImg;
+
                 $fileToCheck = $_FILES['col3_img_' . $index] ?? ($_FILES['col3'][$index]['img'] ?? null);
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
+                
+                if ($fileToCheck && is_array($fileToCheck) && ($fileToCheck['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                    if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                        $this->deleteOldImageFile($oldImg);
                     }
                     $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $footerCol3Data[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $footerCol3Data[$index]['img'] = $item['old_img'] ?? '';
+                    $img = 'assets/uploads/' . $filename;
                 }
-                unset($footerCol3Data[$index]['old_img']);
+
+                $processedCol3[] = [
+                    'title' => trim($item['title'] ?? ''),
+                    'url'   => trim($item['url'] ?? '#'),
+                    'img'   => $img
+                ];
             }
-            $jsonCol3Val = json_encode(array_values($footerCol3Data), JSON_UNESCAPED_UNICODE);
+            
+            $jsonCol3Val = json_encode($processedCol3, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
         }
 

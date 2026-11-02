@@ -83,13 +83,17 @@ class SiteModel {
             $faq_items = [];
         }
 
-        // 🌟 معالجة بيانات الفوتر الموحدة الجديدة (من المفتاح المركزي 'footer')
+        // 🌟 معالجة بيانات الفوتر الموحدة الجديدة (من المفتاح المركزي الشامل 'footer')
         $footerBlock = $getLangData('footer', []);
         $consult_title     = $footerBlock['consult_title'] ?? 'احصل على استشارة مجانية';
         $consult_desc      = $footerBlock['consult_desc'] ?? '';
         $footer_desc       = $footerBlock['footer_desc'] ?? '';
         $footer_col2_title = $footerBlock['col2_title'] ?? 'روابط سريعة';
         $footer_col3_title = $footerBlock['col3_title'] ?? 'تواصل معنا';
+        $footer_col3_links = $footerBlock['col3_items'] ?? [];
+        if (!is_array($footer_col3_links)) {
+            $footer_col3_links = [];
+        }
 
         return [
             'site_title'        => $getMultiLang('site_title', 'Beethoven Services'),
@@ -105,14 +109,14 @@ class SiteModel {
             'services_section_desc'  => $getMultiLang('services_section_desc', ''),
             'services'               => $getLangData('services', []),
 
-            // 🌟 بيانات الفوتر الموحدة والجاهزة للعرض
+            // 🌟 بيانات الفوتر الموحدة والجاهزة للعرض لكل صفحات الموقع
+            'footer'            => $settings['footer'] ?? '{}',
             'consult_title'     => $consult_title,
             'consult_desc'      => $consult_desc,
             'footer_desc'       => $footer_desc,
             'footer_col2_title' => $footer_col2_title,
             'footer_col3_title' => $footer_col3_title,
-            
-            'footer_col3_links' => isset($settings['footer_col3_links']) && is_string($settings['footer_col3_links']) ? json_decode($settings['footer_col3_links'], true) : [],
+            'footer_col3_links' => $footer_col3_links,
             
             // بيانات الدليل الشامل الموحدة
             'guide_title'       => $guide_title,

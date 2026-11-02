@@ -24,104 +24,76 @@ class FooterSettingsService
             return false;
         }
 
-        // استخدام جدول global_settings الحقيقي في قاعدة البيانات
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         try {
-            // 1. تحديد اللغة المستهدفة من المودل بدقة (الافتراضية ar)
             $targetLang = $_POST['footer_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب البيانات القديمة للفوتر لتحسس اللغات الثلاث والحفاظ عليها
+            // 1. معالجة وحفظ نصوص الفوتر (footer)
             $rawFooterSetting = $currentSettings['footer'] ?? '{}';
-            $footerAllLangs = json_decode($rawFooterSetting, true);
-            if (!is_array($footerAllLangs)) {
-                $footerAllLangs = [];
-            }
-
-            // جلب البيانات المدخلة من الفورم للمحتوى النصي
+            $footerAllLangs = json_decode($rawFooterSetting, true) ?: [];
             $postedFooter = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
-
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
-            $consultTitle = trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? 'احصل على استشارة مجانية')));
-            $consultDesc  = trim((string)($postedFooter['consult_desc'] ?? ($currentLangData['consult_desc'] ?? '')));
-            $footerDesc   = trim((string)($postedFooter['footer_desc'] ?? ($currentLangData['footer_desc'] ?? '')));
-            $col2Title    = trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? 'روابط سريعة')));
-            $col3Title    = trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? 'تواصل معنا')));
-
-            // تحديث لغة الزائر/المشرف الحالية داخل المصفوفة التجميعية مع الحفاظ على بقية اللغات
             $footerAllLangs[$targetLang] = [
-                'consult_title' => $consultTitle,
-                'consult_desc'  => $consultDesc,
-                'footer_desc'   => $footerDesc,
-                'col2_title'    => $col2Title,
-                'col3_title'    => $col3Title
+                'consult_title' => trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? 'احصل على استشارة مجانية'))),
+                'consult_desc'  => trim((string)($postedFooter['consult_desc'] ?? ($currentLangData['consult_desc'] ?? ''))),
+                'footer_desc'   => trim((string)($postedFooter['footer_desc'] ?? ($currentLangData['footer_desc'] ?? ''))),
+                'col2_title'    => trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? 'روابط سريعة'))),
+                'col3_title'    => trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? 'تواصل معنا')))
             ];
 
-            // ترميز وإنتاج JSON صالح 100% ومختبر ضد قيود القاعدة
             $jsonFooterVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
-            if ($jsonFooterVal === false || trim($jsonFooterVal) === '') {
-                $jsonFooterVal = '{}';
-            }
+            if ($jsonFooterVal === false) $jsonFooterVal = '{}';
             $stmt->execute(['k' => 'footer', 'v' => $jsonFooterVal, 'v_update' => $jsonFooterVal]);
 
-            // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) مع دعم تعدد اللغات لكل عنصر
-            $footerCol3Data = $_POST['col3'] ?? [];
-            
-            $oldCol3Raw = $currentSettings['footer_col3_links'] ?? '[]';
-            $oldCol3Arr = json_decode($oldCol3Raw, true);
-            if (!is_array($oldCol3Arr)) {
-                $oldCol3Arr = [];
+
+            // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) وفق النمط القياسي للغات
+            $rawCol3Setting = $currentSettings['footer_col3_links'] ?? '{}';
+            $col3AllLangs = json_decode($rawCol3Setting, true);
+            if (!is_array($col3AllLangs)) {
+                $col3AllLangs = []; // تحويل الهيكل القديم إن وجد إلى فارغ لتجنب التضارب
             }
 
-            $processedCol3 = [];
-            if (is_array($footerCol3Data)) {
-                foreach ($footerCol3Data as $index => $item) {
-                    if (!is_array($item)) continue;
-                    
-                    $newTitleText = trim($item['title'] ?? '');
-                    if ($newTitleText === '' && empty($item['url'])) continue;
+            // استقبال العناصر المرسلة للغة الحالية عبر الفورم
+            $postedCol3Items = $_POST['col3'] ?? [];
+            $processedItems = [];
 
+            if (is_array($postedCol3Items)) {
+                foreach ($postedCol3Items as $index => $item) {
+                    if (!is_array($item)) continue;
+
+                    $title = trim($item['title'] ?? '');
+                    $url   = trim($item['url'] ?? '#');
                     $oldImg = $item['old_img'] ?? '';
                     $fileToCheck = $_FILES['col3_img_' . $index] ?? null;
 
+                    $imgVal = $oldImg;
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
                         $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $imgVal = 'assets/uploads/' . $filename;
-                    } else {
-                        $imgVal = $oldImg;
                     }
 
-                    // استرجاع العنصر القديم للحفاظ على ترجمات اللغات الأخرى (ar, en, de)
-                    $existingItem = $oldCol3Arr[$index] ?? [];
-                    
-                    $elementData = [
-                        'url' => trim($item['url'] ?? ($existingItem['url'] ?? '#')),
-                        'img' => $imgVal
-                    ];
-
-                    // هيكلة الترجمات المتعددة للعنوان لكل لغة
-                    foreach (['ar', 'en', 'de'] as $langCode) {
-                        if ($langCode === $targetLang) {
-                            $elementData[$langCode] = ['title' => $newTitleText];
-                        } else {
-                            $elementData[$langCode] = $existingItem[$langCode] ?? ['title' => $newTitleText];
-                        }
+                    if ($title !== '' || $url !== '#') {
+                        $processedItems[] = [
+                            'title' => $title,
+                            'url'   => $url,
+                            'img'   => $imgVal
+                        ];
                     }
-                    $elementData['title'] = $newTitleText;
-
-                    $processedCol3[] = $elementData;
                 }
             }
 
-            // إنتاج مصفوفة JSON صالحة وموثوقة بنسبة 100%
-            $jsonCol3Val = json_encode(array_values($processedCol3), JSON_UNESCAPED_UNICODE);
-            if ($jsonCol3Val === false || trim($jsonCol3Val) === '') {
-                $jsonCol3Val = '[]';
-            }
+            // حفظ العناصر تحت مصفوفة items للغة المستهدفة مع الحفاظ على اللغات الأخرى
+            $col3AllLangs[$targetLang] = [
+                'items' => $processedItems
+            ];
+
+            $jsonCol3Val = json_encode($col3AllLangs, JSON_UNESCAPED_UNICODE);
+            if ($jsonCol3Val === false) $jsonCol3Val = '{}';
             $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
 
             return true;

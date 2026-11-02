@@ -229,27 +229,22 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars((string)($data['footer_col3_title'] ?? ($current_lang === 'ar' ? 'تواصل معنا' : ($current_lang === 'de' ? 'Kontaktieren Sie uns' : 'Contact Us'))), ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars((string)($data['footer_col3_title'] ?? 'تواصل معنا'), ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="contact-link">
                     <?php 
-                    $footer_col3_links = $data['footer_col3_links'] ?? [];
-                    if (is_string($footer_col3_links)) {
-                        $footer_col3_links = json_decode($footer_col3_links, true) ?? [];
+                    $footer_col3_raw = $data['footer_col3_links'] ?? [];
+                    if (is_string($footer_col3_raw)) {
+                        $footer_col3_raw = json_decode($footer_col3_raw, true) ?? [];
                     }
-                    foreach((is_array($footer_col3_links) ? $footer_col3_links : []) as $link): 
-                        $icon_img = get_image_url(is_array($link['img'] ?? null) ? reset($link['img']) : ($link['img'] ?? null));
-                        
-                        // استخراج العنوان بدقة حسب اللغة الحالية مع التراجع الآمن
-                        $col3_title = '';
-                        if (isset($link[$current_lang]['title'])) {
-                            $col3_title = $link[$current_lang]['title'];
-                        } elseif (isset($link['ar']['title'])) {
-                            $col3_title = $link['ar']['title'];
-                        } else {
-                            $col3_title = $link['title'] ?? '';
-                        }
-                        
-                        $col3_url = is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? '#');
+                    
+                    // استخراج عناصر اللغة الحالية مع التراجع الآمن للغة العربية
+                    $langCol3Data = $footer_col3_raw[$current_lang] ?? ($footer_col3_raw['ar'] ?? []);
+                    $col3_items = $langCol3Data['items'] ?? [];
+
+                    foreach($col3_items as $link): 
+                        $icon_img = get_image_url($link['img'] ?? null);
+                        $col3_title = $link['title'] ?? '';
+                        $col3_url = $link['url'] ?? '#';
                     ?>
                         <a href="<?php echo htmlspecialchars((string)$col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
                             <?php if(!empty($icon_img)): ?>
@@ -257,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <?php endif; ?>
                             <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
                         </a>
-                    <?php endforeach; ?>
+                    <?endforeach; ?>
                 </div>
             </div>
         </div>

@@ -1051,7 +1051,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 12. Footer Edit Modal -->
+<!-- 12. Footer Edit Modal (Unified Architecture) -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1065,21 +1065,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? null);
-                if (empty($footerRawSetting)) {
-                    try {
-                        $pdoConn = \App\Config\Database::getConnection();
-                        $stmtFooter = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
-                        $stmtFooter->execute();
-                        $footerRawSetting = $stmtFooter->fetchColumn() ?: '{}';
-                    } catch (\Exception $e) {
-                        $footerRawSetting = '{}';
-                    }
-                }
-
-                $footerAllLangs = is_string($footerRawSetting) ? json_decode($footerRawSetting, true) : (is_array($footerRawSetting) ? $footerRawSetting : []);
-                if (!is_array($footerAllLangs)) {
-                    $footerAllLangs = [];
+                // قراءة البيانات من المفتاح الموحد الجديد 'footer'
+                $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? '{}');
+                if (is_string($footerRawSetting)) {
+                    $footerAllLangs = json_decode($footerRawSetting, true) ?? [];
+                } else {
+                    $footerAllLangs = is_array($footerRawSetting) ? $footerRawSetting : [];
                 }
                 
                 $langKey = $current_lang ?? 'ar';
@@ -1090,15 +1081,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $modalFooterDesc   = $curLangFooterData['footer_desc'] ?? ($data['footer_desc'] ?? '');
                 $modalCol2Title    = $curLangFooterData['col2_title'] ?? ($data['footer_col2_title'] ?? 'روابط سريعة');
                 $modalCol3Title    = $curLangFooterData['col3_title'] ?? ($data['footer_col3_title'] ?? 'تواصل معنا');
-
-                // 🌟 جلب روابط العمود الثالث وفق الهيكل القياسي للغة النشطة
-                $footerCol3Raw = $data['footer_col3_links'] ?? ($currentSettings['footer_col3_links'] ?? null);
-                $footerCol3AllLangs = is_string($footerCol3Raw) ? json_decode($footerCol3Raw, true) : (is_array($footerCol3Raw) ? $footerCol3Raw : []);
-                if (!is_array($footerCol3AllLangs)) {
-                    $footerCol3AllLangs = [];
-                }
-                $curLangCol3Data = $footerCol3AllLangs[$langKey] ?? ($footerCol3AllLangs['ar'] ?? []);
-                $footerCol3LinksData = $curLangCol3Data['items'] ?? [];
+                
+                // جلب عناصر العمود الثالث (التواصل) وفق الهيكل الموحد الجديد
+                $footerCol3LinksData = $curLangFooterData['col3_items'] ?? [];
                 ?>
 
                 <form id="footerForm" class="admin-settings-form" enctype="multipart/form-data">

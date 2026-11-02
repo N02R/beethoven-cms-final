@@ -42,9 +42,25 @@ $current_lang = $current_lang ?? (function_exists('get_current_lang') ? get_curr
 $current_lang_code = $current_lang;
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
+// 4. استخراج بيانات الفوتر الموحدة من $data مع دعم فك التشفير الآمن للمفتاح الموحد 'footer'
+$footerRaw = $data['footer'] ?? [];
+if (is_string($footerRaw)) {
+    $footerRaw = json_decode($footerRaw, true) ?? [];
+}
+
+// جلب بيانات اللغة النشطة مع تراجع آمن للغة العربية
+$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['ar'] ?? []);
+
+$consultTitle = $currentLangData['consult_title'] ?? 'احصل على استشارة مجانية';
+$consultDesc  = $currentLangData['consult_desc'] ?? '';
+$footerDesc   = $currentLangData['footer_desc'] ?? '';
+$col2Title    = $currentLangData['col2_title'] ?? ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links'));
+$col3Title    = $currentLangData['col3_title'] ?? ($current_lang === 'ar' ? 'تواصل معنا' : ($current_lang === 'de' ? 'Kontaktieren Sie uns' : 'Contact Us'));
+$col3Items    = $currentLangData['col3_items'] ?? [];
+
 // استخدام الترجمات القادمة من ملفات اللغات الخارجية ($lang) مع تراجع آمن
 $t = [
-    'consult_title'           => $lang['consult_title'] ?? 'احصل على استشارة مجانية',
+    'consult_title'           => $lang['consult_title'] ?? $consultTitle,
     'email_placeholder'       => $lang['email_placeholder'] ?? 'ادخل إيميلك...',
     'privacy_modal_title'     => $lang['privacy_modal_title'] ?? 'الموافقة على سياسة الخصوصية',
     'privacy_modal_desc'      => $lang['privacy_modal_desc'] ?? 'لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في',
@@ -89,8 +105,8 @@ $is_admin = !empty($is_admin) && $is_admin === true;
         <div class="consult-banner">
             <div class="consult-banner-inner">
                 <div class="consult-banner-text">
-                    <h4><?php echo htmlspecialchars((string)($data['consult_title'] ?? $t['consult_title']), ENT_QUOTES, 'UTF-8'); ?></h4>
-                    <p><?php echo htmlspecialchars((string)($data['consult_desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                    <h4><?php echo htmlspecialchars((string)$consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <p><?php echo htmlspecialchars((string)$consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($path_prefix . 'send_consult.php', ENT_QUOTES, 'UTF-8'); ?>" method="POST">
@@ -196,12 +212,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="row gy-5">
             <div class="col-12 col-lg-5">
                 <img src="<?php echo htmlspecialchars(get_image_url($data['site_logo_path'] ?? null, 'assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="BCS Logo" class="mb-4">
-                <p class="footer-desc"><?php echo htmlspecialchars((string)($data['footer_desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
-            <!-- قسم الروابط السريعة (مجلوبة مباشرة من منيو الهيدر) -->
+            <!-- العمود الثاني (روابط سريعة من المنيو) -->
             <div class="col-12 col-md-6 col-lg-3">
-                <h5><?php echo htmlspecialchars((string)($data['footer_col2_title'] ?? ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links'))), ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars((string)$col2Title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="quick-link">
                     <?php 
                     $menu_links = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
@@ -228,20 +244,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
+            <!-- العمود الثالث (وسائل التواصل من col3_items) -->
             <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars((string)($data['footer_col3_title'] ?? 'تواصل معنا'), ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars((string)$col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="contact-link">
                     <?php 
-                    $footer_col3_raw = $data['footer_col3_links'] ?? [];
-                    if (is_string($footer_col3_raw)) {
-                        $footer_col3_raw = json_decode($footer_col3_raw, true) ?? [];
-                    }
-                    
-                    // استخراج عناصر اللغة الحالية مع التراجع الآمن للغة العربية
-                    $langCol3Data = $footer_col3_raw[$current_lang] ?? ($footer_col3_raw['ar'] ?? []);
-                    $col3_items = $langCol3Data['items'] ?? [];
-
-                    foreach($col3_items as $link): 
+                    foreach((is_array($col3Items) ? $col3Items : []) as $link): 
                         $icon_img = get_image_url($link['img'] ?? null);
                         $col3_title = $link['title'] ?? '';
                         $col3_url = $link['url'] ?? '#';
@@ -252,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <?php endif; ?>
                             <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
                         </a>
-                    <?endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

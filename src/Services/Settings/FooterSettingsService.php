@@ -29,9 +29,19 @@ class FooterSettingsService
         try {
             $targetLang = $_POST['footer_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // 1. معالجة وحفظ نصوص الفوتر (footer)
-            $rawFooterSetting = $currentSettings['footer'] ?? '{}';
-            $footerAllLangs = json_decode($rawFooterSetting, true) ?: [];
+            // 1. معالجة وحفظ نصوص الفوتر (footer) بجلبها مباشرة من القاعدة لضمان الحداثة
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
+            $stmtFetch->execute();
+            $dbFooterRaw = $stmtFetch->fetchColumn();
+            
+            $footerAllLangs = [];
+            if ($dbFooterRaw && is_string($dbFooterRaw)) {
+                $decodedFooter = json_decode($dbFooterRaw, true);
+                if (is_array($decodedFooter)) {
+                    $footerAllLangs = $decodedFooter;
+                }
+            }
+
             $postedFooter = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
@@ -44,15 +54,23 @@ class FooterSettingsService
             ];
 
             $jsonFooterVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
-            if ($jsonFooterVal === false) $jsonFooterVal = '{}';
+            if ($jsonFooterVal === false || trim($jsonFooterVal) === '') {
+                $jsonFooterVal = '{}';
+            }
             $stmt->execute(['k' => 'footer', 'v' => $jsonFooterVal, 'v_update' => $jsonFooterVal]);
 
 
-            // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) وفق النمط القياسي للغات
-            $rawCol3Setting = $currentSettings['footer_col3_links'] ?? '{}';
-            $col3AllLangs = json_decode($rawCol3Setting, true);
-            if (!is_array($col3AllLangs)) {
-                $col3AllLangs = []; // تحويل الهيكل القديم إن وجد إلى فارغ لتجنب التضارب
+            // 2. معالجة وحفظ روابط العمود الثالث (footer_col3_links) بجلبها مباشرة من القاعدة لتجنب الضياع
+            $stmtCol3Fetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer_col3_links'");
+            $stmtCol3Fetch->execute();
+            $dbCol3Raw = $stmtCol3Fetch->fetchColumn();
+
+            $col3AllLangs = [];
+            if ($dbCol3Raw && is_string($dbCol3Raw)) {
+                $decodedCol3 = json_decode($dbCol3Raw, true);
+                if (is_array($decodedCol3)) {
+                    $col3AllLangs = $decodedCol3;
+                }
             }
 
             // استقبال العناصر المرسلة للغة الحالية عبر الفورم
@@ -87,13 +105,15 @@ class FooterSettingsService
                 }
             }
 
-            // حفظ العناصر تحت مصفوفة items للغة المستهدفة مع الحفاظ على اللغات الأخرى
+            // تحديث عناصر اللغة المستهدفة فقط مع الحفاظ على بقية اللغات (en, de) في المصفوفة
             $col3AllLangs[$targetLang] = [
                 'items' => $processedItems
             ];
 
             $jsonCol3Val = json_encode($col3AllLangs, JSON_UNESCAPED_UNICODE);
-            if ($jsonCol3Val === false) $jsonCol3Val = '{}';
+            if ($jsonCol3Val === false || trim($jsonCol3Val) === '') {
+                $jsonCol3Val = '{}';
+            }
             $stmt->execute(['k' => 'footer_col3_links', 'v' => $jsonCol3Val, 'v_update' => $jsonCol3Val]);
 
             return true;

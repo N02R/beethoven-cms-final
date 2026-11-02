@@ -725,6 +725,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
+<!-- 8. Choose Edit Modal (Unified Architecture) -->
+<div class="modal fade custom-modal" id="chooseEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">
+                    <i class="bi bi-star text-primary <?php echo !empty($is_rtl) ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_choose'] ?? 'إدارة قسم لماذا نحن / المميزات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
                 <?php 
                 // جلب آمن ومباشر للبيانات مع البرمجة الدفاعية
                 $choose_data_modal = $choose_section ?? [];
@@ -734,7 +746,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         $choose_data_modal = $getLocalizedData('choose', []);
                     } elseif (function_exists('get_setting')) {
                         $raw = get_setting('choose', '{}');
-                        // تطبيق البرمجة الدفاعية: فك الـ JSON فقط إذا كان نصاً، وإلا فخذه كما هو
                         $decodedChoose = is_string($raw) ? (json_decode($raw, true) ?? []) : (is_array($raw) ? $raw : []);
                         $curLang = $current_lang ?? 'ar';
                         $choose_data_modal = $decodedChoose[$curLang] ?? ($decodedChoose['ar'] ?? []);
@@ -749,6 +760,87 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     $choose_itemsList = [];
                 }
                 ?>
+
+                <form id="chooseForm" class="admin-settings-form" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_choose">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="choose_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <!-- عناوين القسم الرئيسي -->
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                                <input type="text" class="form-control" name="choose[<?php echo $current_lang ?? 'ar'; ?>][section_title]" value="<?php echo htmlspecialchars((string)$choose_sec_title, ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['section_subtitle'] ?? 'الوصف الفرعي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)</label>
+                                <textarea class="form-control" name="choose[<?php echo $current_lang ?? 'ar'; ?>][section_subtitle]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$choose_sec_subtitle, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- عناصر المميزات (items) -->
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align ?? ''; ?>">
+                        <?php echo htmlspecialchars($lang['added_items'] ?? 'العناصر المضافة', ENT_QUOTES, 'UTF-8'); ?>
+                    </h6>
+                    <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ($choose_itemsList as $index => $item): 
+                            $itTitle = $item['title'] ?? '';
+                            $itDesc  = $item['desc'] ?? '';
+                            $itUrl   = $item['url'] ?? '#';
+                            $itImg   = $item['img'] ?? '';
+                        ?>
+                            <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">عنوان العنصر</label>
+                                        <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                                        <input type="text" class="form-control choose-url" name="choose[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($itUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="#">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                                        <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itDesc, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الوصف">
+                                    </div>
+                                    <div class="col-md-11">
+                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if (!empty($itImg)): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 42px; height: 42px;">
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($itImg) : $itImg, ENT_QUOTES, 'UTF-8'); ?>" alt="Choose Icon" class="rounded-2 w-100 h-100" style="object-fit: cover;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control choose-file w-100" name="choose_img_<?php echo $index; ?>" accept="image/*">
+                                        </div>
+                                        <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang ?? 'ar'; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                    </div>
+                                    <div class="col-md-1 text-center pt-3">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="حذف العنصر">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> إضافة عنصر جديد
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="chooseForm" class="btn-premium">حفظ التغييرات</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- 9. Reviews Edit Modal -->
 <div class="modal fade custom-modal" id="reviewsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? ($is_rtl ? 'rtl' : 'ltr'); ?>">
@@ -1391,7 +1483,49 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 7. دالة إضافة فيديو جديد (Reviews)
+    // 7. دالة إضافة عنصر جديد لقسم (Choose / لماذا نحن)
+    function addChooseRow() {
+        const container = document.getElementById('chooseRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.choose-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm choose-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.id = 'choose_row_' + Date.now() + '_' + count;
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان العنصر</label>
+                    <input type="text" class="form-control choose-title" name="choose[${currentLang}][items][${count}][title]" placeholder="العنوان">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">الرابط</label>
+                    <input type="text" class="form-control choose-url" name="choose[${currentLang}][items][${count}][url]" value="#" placeholder="#">
+                </div>
+                <div class="col-12">
+                    <label class="small fw-bold mb-1 text-secondary">الوصف</label>
+                    <input type="text" class="form-control choose-desc" name="choose[${currentLang}][items][${count}][desc]" placeholder="الوصف">
+                </div>
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الأيقونة / الصورة</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control choose-file w-100" name="choose_img_${count}" accept="image/*">
+                    </div>
+                    <input type="hidden" class="choose-old-img" name="choose[${currentLang}][items][${count}][old_img]" value="">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العنصر">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 8. دالة إضافة فيديو جديد (Reviews)
     function addReviewRow() {
         const container = document.getElementById('reviewsRowsContainer');
         if (!container) return;
@@ -1417,7 +1551,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 8. دالة إضافة مقال جديد (Guide)
+    // 9. دالة إضافة مقال جديد (Guide)
     function addGuideRow() {
         const container = document.getElementById('guideRowsContainer');
         if (!container) return;
@@ -1456,7 +1590,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 9. دالة إضافة سؤال جديد (FAQ)
+    // 10. دالة إضافة سؤال جديد (FAQ)
     function addFaqRow() {
         const container = document.getElementById('faqRowsContainer');
         if (!container) return;
@@ -1477,14 +1611,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="الإجابة">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف السؤال"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف السؤال">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
         `;
         container.appendChild(div);
     }
 
-    // 10. دالة إضافة وسيلة تواصل جديدة (Footer Col3)
+    // 11. دالة إضافة وسيلة تواصل جديدة (Footer Col3)
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
         if (!container) return;
@@ -1520,7 +1656,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         container.appendChild(div);
     }
 
-    // 11. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
+    // 12. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -1575,6 +1711,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     if (url) url.name = `services[${currentLang}][items][${index}][url]`;
                     if (file) file.name = `service_img_${index}`;
                     if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // إعادة ترقيم Choose Items
+                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.choose-title');
+                    const descInput = row.querySelector('.choose-desc');
+                    const urlInput = row.querySelector('.choose-url');
+                    const fileInput = row.querySelector('.choose-file');
+                    const oldImgInput = row.querySelector('.choose-old-img');
+
+                    if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
+                    if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
+                    if (urlInput) urlInput.name = `choose[${currentLang}][items][${index}][url]`;
+                    if (fileInput) fileInput.name = `choose_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
                 });
 
                 // إعادة ترقيم Reviews
@@ -1661,4 +1812,5 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         });
     });
 </script>
+
 

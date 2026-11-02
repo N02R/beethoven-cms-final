@@ -1051,7 +1051,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 12. Footer Edit Modal (Unified Architecture) -->
+<!-- 12. Footer Edit Modal -->
 <div class="modal fade custom-modal" id="footerEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -1065,12 +1065,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // قراءة البيانات من المفتاح الموحد الجديد 'footer'
-                $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? '{}');
-                if (is_string($footerRawSetting)) {
-                    $footerAllLangs = json_decode($footerRawSetting, true) ?? [];
-                } else {
-                    $footerAllLangs = is_array($footerRawSetting) ? $footerRawSetting : [];
+                $footerRawSetting = $data['footer'] ?? ($currentSettings['footer'] ?? null);
+                if (empty($footerRawSetting)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtFooter = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
+                        $stmtFooter->execute();
+                        $footerRawSetting = $stmtFooter->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $footerRawSetting = '{}';
+                    }
+                }
+
+                $footerAllLangs = is_string($footerRawSetting) ? json_decode($footerRawSetting, true) : (is_array($footerRawSetting) ? $footerRawSetting : []);
+                if (!is_array($footerAllLangs)) {
+                    $footerAllLangs = [];
                 }
                 
                 $langKey = $current_lang ?? 'ar';
@@ -1081,9 +1090,6 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 $modalFooterDesc   = $curLangFooterData['footer_desc'] ?? ($data['footer_desc'] ?? '');
                 $modalCol2Title    = $curLangFooterData['col2_title'] ?? ($data['footer_col2_title'] ?? 'روابط سريعة');
                 $modalCol3Title    = $curLangFooterData['col3_title'] ?? ($data['footer_col3_title'] ?? 'تواصل معنا');
-                
-                // جلب عناصر العمود الثالث (التواصل) وفق الهيكل الموحد الجديد
-                $footerCol3LinksData = $curLangFooterData['col3_items'] ?? [];
                 ?>
 
                 <form id="footerForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -1144,6 +1150,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
                                     <?php 
+                                    $footerCol3LinksData = is_array($data['footer_col3_links'] ?? null) ? $data['footer_col3_links'] : [];
                                     foreach($footerCol3LinksData as $i => $link): 
                                     ?>
                                         <div class="p-3 shadow-sm footer-col3-item" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
@@ -1257,6 +1264,120 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         }, 4000);
     }
 
+    // 🌟 دالة إضافة فيديو جديد لقسم reviews (متوافقة مع اللغة الحالية)
+    function addReviewRow() {
+        const container = document.getElementById('reviewsRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.review-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        
+        const langVideoUrl   = "<?php echo $lang['review_video_url'] ?? 'رابط الفيديو (Embed URL)'; ?>";
+        const langDeleteText = "<?php echo $lang['delete_video'] ?? 'حذف الفيديو'; ?>";
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm mb-3 review-row-item';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">${langVideoUrl}</label>
+                    <input type="text" class="form-control review-url" name="reviews[${currentLang}][items][${count}][url]" placeholder="https://www.youtube.com/embed/...">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDeleteText}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 دالة إضافة سؤال وجواب جديد لقسم FAQ (مترجمة بالكامل)
+    function addFaqRow() {
+        const container = document.getElementById('faqRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.faq-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        const langQuestion = "<?php echo htmlspecialchars($lang['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?>";
+        const langAnswer   = "<?php echo htmlspecialchars($lang['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete   = "<?php echo htmlspecialchars($lang['delete_faq'] ?? 'حذف السؤال', ENT_QUOTES, 'UTF-8'); ?>";
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm faq-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langQuestion}</label>
+                    <input type="text" class="form-control faq-question" name="faq[${currentLang}][items][${count}][question]" placeholder="${langQuestion}">
+                </div>
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">${langAnswer}</label>
+                    <input type="text" class="form-control faq-answer" name="faq[${currentLang}][items][${count}][answer]" placeholder="${langAnswer}">
+                </div>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // 🌟 دالة إضافة مقال جديد (الهيكل الأصلي المستقر والمجرب)
+    function addGuideRow() {
+        const container = document.getElementById('guideRowsContainer');
+        if (!container) return;
+        const count = container.querySelectorAll('.guide-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+        // جلب الترجمات الديناميكية من PHP
+        const langArticleTitle = "<?php echo htmlspecialchars($lang['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?>";
+        const langPageUrl      = "<?php echo htmlspecialchars($lang['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDesc         = "<?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?>";
+        const langImage        = "<?php echo htmlspecialchars($lang['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?>";
+        const langDelete       = "<?php echo htmlspecialchars($lang['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>";
+
+        const div = document.createElement('div');
+        div.className = 'p-3 shadow-sm guide-row-item mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+        div.innerHTML = `
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langArticleTitle}</label>
+                    <input type="text" class="form-control guide-title" name="guide[${currentLang}][items][${count}][title]" placeholder="${langArticleTitle}">
+                </div>
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langPageUrl}</label>
+                    <input type="text" class="form-control guide-url" name="guide[${currentLang}][items][${count}][url]" placeholder="${langPageUrl}">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">${langDesc}</label>
+                    <input type="text" class="form-control guide-desc" name="guide[${currentLang}][items][${count}][desc]" placeholder="${langDesc}">
+                </div>
+
+                <div class="col-md-5">
+                    <label class="small fw-bold mb-1 text-secondary">${langImage}</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control guide-file w-100" name="guide_img_${count}" accept="image/*">
+                    </div>
+                    <input type="hidden" class="guide-old-img" name="guide[${currentLang}][items][${count}][old_img]" value="">
+                </div>
+                
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="${langDelete}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     // 🌟 دالة إضافة وسيلة تواصل جديدة للفوتر (متوافقة مع الترجمة)
     function addCol3Link() {
         const container = document.getElementById('col3LinksContainer');
@@ -1308,6 +1429,62 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 e.preventDefault();
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+                // 🌟 إعادة ترتيب وتسمية حقول review بدقة عند الـ submit لتتوافق مع الباك إند
+                form.querySelectorAll('.review-row-item').forEach((row, index) => {
+                    const urlInput = row.querySelector('.review-url');
+                    if (urlInput) {
+                        urlInput.name = `reviews[${currentLang}][items][${index}][url]`;
+                    }
+                });
+
+                // 🌟 إعادة ترتيب حقول FAQ بدقة عند الـ submit
+                form.querySelectorAll('.faq-row-item').forEach((row, index) => {
+                    const q = row.querySelector('.faq-question');
+                    const a = row.querySelector('.faq-answer');
+                    if (q) q.name = `faq[${currentLang}][items][${index}][question]`;
+                    if (a) a.name = `faq[${currentLang}][items][${index}][answer]`;
+                });
+
+                // إعادة ترتيب حقول الخدمات
+                form.querySelectorAll('.service-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.service-title');
+                    const url = row.querySelector('.service-url');
+                    const file = row.querySelector('.service-file');
+                    const oldImg = row.querySelector('.service-old-img');
+                    if (title) title.name = `services[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `services[${currentLang}][items][${index}][url]`;
+                    if (file) file.name = `service_img_${index}`;
+                    if (oldImg) oldImg.name = `services[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // إعادة ترتيب حقول choose
+                form.querySelectorAll('.choose-row-item').forEach((row, index) => {
+                    const titleInput = row.querySelector('.choose-title');
+                    const descInput = row.querySelector('.choose-desc');
+                    const fileInput = row.querySelector('.choose-file');
+                    const oldImgInput = row.querySelector('.choose-old-img');
+                    
+                    if (titleInput) titleInput.name = `choose[${currentLang}][items][${index}][title]`;
+                    if (descInput) descInput.name = `choose[${currentLang}][items][${index}][desc]`;
+                    if (fileInput) fileInput.name = `choose_img_${index}`;
+                    if (oldImgInput) oldImgInput.name = `choose[${currentLang}][items][${index}][old_img]`;
+                });
+
+                // 🌟 إعادة ترتيب حقول الدليل الشامل (Guide) بدقة عند الـ submit
+                form.querySelectorAll('.guide-row-item').forEach((row, index) => {
+                    const title = row.querySelector('.guide-title');
+                    const url = row.querySelector('.guide-url');
+                    const desc = row.querySelector('.guide-desc');
+                    const file = row.querySelector('.guide-file');
+                    const oldImg = row.querySelector('.guide-old-img');
+                    
+                    if (title) title.name = `guide[${currentLang}][items][${index}][title]`;
+                    if (url) url.name = `guide[${currentLang}][items][${index}][url]`;
+                    if (desc) desc.name = `guide[${currentLang}][items][${index}][desc]`;
+                    if (file) file.name = `guide_img_${index}`;
+                    if (oldImg) oldImg.name = `guide[${currentLang}][items][${index}][old_img]`;
+                });
 
                 // 🌟 إعادة ترتيب حقول تواصل الفوتر (Footer Col3 Links) بدقة عند الـ submit
                 form.querySelectorAll('.footer-col3-item').forEach((row, index) => {

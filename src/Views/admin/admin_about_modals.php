@@ -1,12 +1,14 @@
-<!-- 1. About Section Modal (قسم من نحن) -->
+<!-- ========================================== -->
+<!-- 🌟 مودلات صفحة من نحن المترجمة والمهندسة بالكامل -->
+<!-- ========================================== -->
 <?php
-// 🌟 تأكيد وتحصين لغة المودل لتتطابق مع لغة الجلسة الحالية دائماً
+// التحقق وتحصين لغة المودل لتتطابق مع لغة الجلسة الحالية
 $current_lang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
 $is_rtl = ($current_lang === 'ar');
 $modal_dir = $is_rtl ? 'rtl' : 'ltr';
 $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
-// تحميل ملف اللغة النشطة إن لم يكن مححملاً مسبقاً
+// تحميل ملف الترجمة النشط إن لم يكن محملاً
 if (!isset($lang) || !is_array($lang) || empty($lang)) {
     $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
     if (!file_exists($lang_file)) {
@@ -17,6 +19,7 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
 }
 ?>
 
+<!-- 1. About Section Modal (قسم من نحن الرئيسي) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -30,7 +33,6 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
             </div>
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات من نحن للغة النشطة الحالية بدقة متناهية
                 $aboutRawSetting = $data['about_section'] ?? ($currentSettings['about_section'] ?? null);
                 if (empty($aboutRawSetting)) {
                     try {
@@ -44,9 +46,7 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
                 }
 
                 $aboutAllLangs = is_string($aboutRawSetting) ? json_decode($aboutRawSetting, true) : (is_array($aboutRawSetting) ? $aboutRawSetting : []);
-                if (!is_array($aboutAllLangs)) {
-                    $aboutAllLangs = [];
-                }
+                if (!is_array($aboutAllLangs)) $aboutAllLangs = [];
                 
                 $curLangAbout = $aboutAllLangs[$current_lang] ?? ($aboutAllLangs['ar'] ?? []);
 
@@ -195,93 +195,114 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
 </div>
 
 <!-- 2. Team Edit Modal (قسم فريق العمل) -->
-<div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-people text-primary"></i> إدارة فريق العمل</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-people text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_team'] ?? 'إدارة فريق العمل', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                $teamAllRaw = $currentSettings['team'] ?? ($data['team'] ?? null);
+                if (empty($teamAllRaw)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtTeam = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'team'");
+                        $stmtTeam->execute();
+                        $teamAllRaw = $stmtTeam->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $teamAllRaw = '{}';
+                    }
+                }
+                $teamAllLangs = is_string($teamAllRaw) ? json_decode($teamAllRaw, true) : (is_array($teamAllRaw) ? $teamAllRaw : []);
+                if (!is_array($teamAllLangs)) $teamAllLangs = [];
+                $curLangTeam = $teamAllLangs[$current_lang] ?? ($teamAllLangs['ar'] ?? []);
+                $modalTeamTitle = $curLangTeam['title'] ?? ($data['team_title'] ?? 'فريق العمل');
+                $modalTeamDesc  = $curLangTeam['desc'] ?? ($data['team_desc'] ?? '');
+                $modalTeamItems = $curLangTeam['items'] ?? ($data['team_items'] ?? []);
+                if (!is_array($modalTeamItems)) $modalTeamItems = [];
+                ?>
                 <form id="teamForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_team">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="team_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3">
-                            <label class="small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" class="form-control" name="team_title" value="<?php echo htmlspecialchars($data['team_title'] ?? 'فريق العمل', ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="mb-3 <?php echo $modal_align; ?>">
+                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <input type="text" class="form-control" name="team[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalTeamTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
-                        <div>
-                            <label class="small fw-bold mb-1 text-secondary">وصف القسم</label>
-                            <textarea class="form-control" name="team_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($data['team_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        <div class="<?php echo $modal_align; ?>">
+                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <textarea class="form-control" name="team[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalTeamDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
                     <div id="teamRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $team_items = $data['team_items'] ?? [];
-                        if (!empty($team_items)):
-                            foreach ($team_items as $index => $member): 
-                        ?>
+                        <?php foreach ($modalTeamItems as $index => $member): ?>
                             <div class="p-3 shadow-sm team-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="team_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-3">
-                                        <label class="small fw-bold mb-1 text-secondary">الاسم</label>
-                                        <input type="text" class="form-control team-name" name="team[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="الاسم">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_name'] ?? 'الاسم الكامل', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control team-name" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_name'] ?? 'الاسم', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
-                                        <input type="text" class="form-control team-role" name="team[<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="المسمى الوظيفي">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_role'] ?? 'المسمى الوظيفي', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control team-role" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_role'] ?? 'المسمى الوظيفي', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-5">
-                                        <label class="small fw-bold mb-1 text-secondary">الصورة الشخصية</label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_image'] ?? 'صورة العضو', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($member['img'])): ?>
-                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($member['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Member Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($member['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Member Image" class="rounded-2 w-100 h-100" style="object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" class="form-control team-file" name="team_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control team-file w-100" name="team_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="team-old-img" name="team[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="team-old-img" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_<?php echo $index; ?>')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_member'] ?? 'حذف العضو', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
-                        <?php 
-                            endforeach; 
-                        endif; 
-                        ?>
+                        <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn btn-outline-primary w-100 mt-3 py-2 fw-bold" style="border-radius: 12px; border-style: dashed; border-width: 2px;" onclick="addTeamRow()">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة عضو جديد
+                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addTeamRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_member'] ?? 'إضافة عضو جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="teamForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="teamForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 3. Counts Edit Modal (قسم الإحصائيات/العدادات) -->
-<div class="modal fade custom-modal" id="countsEditModal" tabindex="-1" aria-hidden="true">
+<!-- 3. Counts Edit Modal (قسم العدادات والإحصائيات) -->
+<div class="modal fade custom-modal" id="countsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-calculator text-primary"></i> إدارة العدادات والإحصائيات</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-calculator text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_counts'] ?? 'إدارة العدادات والإحصائيات', ENT_QUOTES, 'UTF-8'); ?>
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
                 <form id="countsForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_counts">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
                         <?php 
@@ -291,39 +312,29 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
                         ?>
                             <div class="p-3 shadow-sm count-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="count_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-end">
-                                    
-                                    <!-- الرقم -->
                                     <div class="col-md-3">
-                                        <label for="count_number_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
-                                        <input type="text" id="count_number_<?php echo $index; ?>" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: +500">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_number'] ?? 'الرقم / القيمة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="+500">
                                     </div>
-                                    
-                                    <!-- الوصف -->
                                     <div class="col-md-4">
-                                        <label for="count_title_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                                        <input type="text" id="count_title_<?php echo $index; ?>" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: مشروع مكتمل">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_title'] ?? 'عنوان العداد / الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مشروع مكتمل">
                                     </div>
-                                    
-                                    <!-- الصورة -->
                                     <div class="col-md-4">
-                                        <label for="count_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_icon_image'] ?? 'أيقونة / صورة العداد', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($c['img'])): ?>
-                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($c['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($c['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Image" class="rounded-2 w-100 h-100" style="object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" id="count_file_<?php echo $index; ?>" class="form-control count-file" name="count_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control count-file w-100" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    
                                     <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    
-                                    <!-- زر الحذف -->
                                     <div class="col-md-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_<?php echo $index; ?>')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_count'] ?? 'حذف العداد', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
-                                    
                                 </div>
                             </div>
                         <?php 
@@ -333,85 +344,94 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCountRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة عداد جديد
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_count'] ?? 'إضافة عداد جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="countsForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="countsForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- 4. Partners Edit Modal (قسم الشركاء) -->
-<div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-handshake text-primary"></i> إدارة الشركاء</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-handshake text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_partners'] ?? 'إدارة الشركاء', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                $partnersRaw = $currentSettings['partners'] ?? ($data['partners'] ?? null);
+                if (empty($partnersRaw)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtPart = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'partners'");
+                        $stmtPart->execute();
+                        $partnersRaw = $stmtPart->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $partnersRaw = '{}';
+                    }
+                }
+                $partnersAllLangs = is_string($partnersRaw) ? json_decode($partnersRaw, true) : (is_array($partnersRaw) ? $partnersRaw : []);
+                if (!is_array($partnersAllLangs)) $partnersAllLangs = [];
+                $curLangPart = $partnersAllLangs[$current_lang] ?? ($partnersAllLangs['ar'] ?? []);
+                $modalPartTitle = $curLangPart['title'] ?? ($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا');
+                $modalPartItems = $curLangPart['items'] ?? ($data['partners_items'] ?? []);
+                if (!is_array($modalPartItems)) $modalPartItems = [];
+                ?>
                 <form id="partnersForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_partners">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="partners_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان القسم -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-0">
-                            <label for="partners_title_input" class="form-label small fw-bold mb-1 text-secondary">عنوان القسم</label>
-                            <input type="text" id="partners_title_input" class="form-control" name="partners_title" value="<?php echo htmlspecialchars($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا', ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="mb-0 <?php echo $modal_align; ?>">
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                            <input type="text" class="form-control" name="partners[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalPartTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
-                    <!-- قائمة الشركاء -->
                     <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $partners_items = $data['partners_items'] ?? [];
-                        if (!empty($partners_items)):
-                            foreach ($partners_items as $index => $partner): 
-                        ?>
+                        <?php foreach ($modalPartItems as $index => $partner): ?>
                             <div class="p-3 shadow-sm partner-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="partner_row_<?php echo $index; ?>">
                                 <div class="row g-2 align-items-end">
-                                    
-                                    <!-- رفع شعار الشريك -->
                                     <div class="col-md-11">
-                                        <label for="partner_file_<?php echo $index; ?>" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['partner_image'] ?? 'شعار / صورة الشريك', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($partner['img'])): ?>
-                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($partner['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Partner Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($partner['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Partner Image" class="rounded-2 w-100 h-100" style="object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
-                                            <input type="file" id="partner_file_<?php echo $index; ?>" class="form-control partner-file" name="partner_img_<?php echo $index; ?>" accept="image/*">
+                                            <input type="file" class="form-control partner-file w-100" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-
-                                    <input type="hidden" class="partner-old-img" name="partners[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    
-                                    <!-- زر الحذف -->
+                                    <input type="hidden" class="partner-old-img" name="partners[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_partner'] ?? 'حذف الشريك', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
-                                    
                                 </div>
                             </div>
-                        <?php 
-                            endforeach; 
-                        endif; 
-                        ?>
+                        <?php endforeach; ?>
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addPartnerRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> إضافة شريك جديد
+                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_partner'] ?? 'إضافة شريك جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="partnersForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="partnersForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -424,7 +444,6 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
         if (el) el.remove();
     }
 
-    // دالة لإنشاء وعرض التنبيهات الاحترافية
     function showNotification(message, type = 'success') {
         const existingAlert = document.getElementById('customNotificationAlert');
         if (existingAlert) existingAlert.remove();
@@ -446,7 +465,7 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
         const alertDiv = document.createElement('div');
         alertDiv.id = 'customNotificationAlert';
         alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
-        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; min-width: 320px; border-radius: 12px; border: none;';
+        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 320px; border-radius: 12px; border: none;';
         
         alertDiv.innerHTML = `
             <div class="d-flex align-items-center gap-2">
@@ -472,29 +491,30 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
         const teamCount = container.querySelectorAll('.team-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm team-row-item';
+        div.className = 'p-3 shadow-sm team-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'team_row_' + teamCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-end">
+            <div class="row g-3 align-items-center">
                 <div class="col-md-3">
-                    <label for="team_name_${teamCount}" class="form-label fw-semibold small text-secondary">الاسم الكامل</label>
-                    <input type="text" id="team_name_${teamCount}" class="form-control team-name" name="team[${teamCount}][name]" placeholder="الاسم">
+                    <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
+                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <label for="team_role_${teamCount}" class="form-label fw-semibold small text-secondary">المسمى الوظيفي</label>
-                    <input type="text" id="team_role_${teamCount}" class="form-control team-role" name="team[${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
+                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
-                    <label for="team_file_${teamCount}" class="form-label fw-semibold small text-secondary">صورة العضو</label>
+                    <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="team_file_${teamCount}" class="form-control team-file" name="team_img_${teamCount}" accept="image/*">
+                        <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
                     </div>
                 </div>
-                <input type="hidden" class="team-old-img" name="team[${teamCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_${teamCount}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][old_img]" value="">
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -504,28 +524,28 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
         const container = document.getElementById('countsRowsContainer');
         const countsCount = container.querySelectorAll('.count-row-item').length;
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm count-row-item';
+        div.className = 'p-3 shadow-sm count-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'count_row_' + countsCount;
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label for="count_number_${countsCount}" class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
-                    <input type="text" id="count_number_${countsCount}" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="الرقم">
+                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="+500">
                 </div>
                 <div class="col-md-4">
-                    <label for="count_title_${countsCount}" class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                    <input type="text" id="count_title_${countsCount}" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="الوصف">
+                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="مشروع مكتمل">
                 </div>
                 <div class="col-md-4">
-                    <label for="count_file_${countsCount}" class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
+                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="count_file_${countsCount}" class="form-control count-file" name="count_img_${countsCount}" accept="image/*">
+                        <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_${countsCount}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -534,102 +554,106 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
         const partnerCount = container.querySelectorAll('.partner-row-item').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm partner-row-item';
+        div.className = 'p-3 shadow-sm partner-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'partner_row_' + partnerCount;
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-11">
-                    <label for="partner_file_${partnerCount}" class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
+                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
                     <div class="d-flex align-items-center gap-2">
-                        <input type="file" id="partner_file_${partnerCount}" class="form-control partner-file" name="partner_img_${partnerCount}" accept="image/*">
+                        <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
                     </div>
                 </div>
-                <input type="hidden" class="partner-old-img" name="partners[${partnerCount}][old_img]" value="">
+                <input type="hidden" class="partner-old-img" name="partners[${currentLang}][items][${partnerCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_${partnerCount}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
     }
 
-    // معالج النماذج الموحد والشامل
-    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    // معالج الحفظ وإعادة الترقيم التلقائي
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            // إعادة ترقيم صفوف الفريق بدقة
-            const teamRows = form.querySelectorAll('.team-row-item');
-            teamRows.forEach((row, index) => {
-                const nameInput = row.querySelector('.team-name');
-                const roleInput = row.querySelector('.team-role');
-                const fileInput = row.querySelector('.team-file');
-                const oldImgInput = row.querySelector('.team-old-img');
+                const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-                if(nameInput) nameInput.name = `team[${index}][name]`;
-                if(roleInput) roleInput.name = `team[${index}][role]`;
-                if(fileInput) fileInput.name = `team_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `team[${index}][old_img]`;
-            });
+                // إعادة ترقيم صفوف الفريق
+                form.querySelectorAll('.team-row-item').forEach((row, index) => {
+                    const nameInput = row.querySelector('.team-name');
+                    const roleInput = row.querySelector('.team-role');
+                    const fileInput = row.querySelector('.team-file');
+                    const oldImgInput = row.querySelector('.team-old-img');
 
-            // إعادة ترقيم صفوف الإحصائيات بدقة
-            const countRows = form.querySelectorAll('.count-row-item');
-            countRows.forEach((row, index) => {
-                const numInput = row.querySelector('.count-number');
-                const titleInput = row.querySelector('.count-title');
-                const fileInput = row.querySelector('.count-file');
-                const oldImgInput = row.querySelector('.count-old-img');
+                    if(nameInput) nameInput.name = `team[${currentLang}][items][${index}][name]`;
+                    if(roleInput) roleInput.name = `team[${currentLang}][items][${index}][role]`;
+                    if(fileInput) fileInput.name = `team_img_${index}`;
+                    if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][old_img]`;
+                });
 
-                if(numInput) numInput.name = `counts[${index}][number]`;
-                if(titleInput) titleInput.name = `counts[${index}][title]`;
-                if(fileInput) fileInput.name = `count_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
-            });
+                // إعادة ترقيم صفوف الإحصائيات
+                form.querySelectorAll('.count-row-item').forEach((row, index) => {
+                    const numInput = row.querySelector('.count-number');
+                    const titleInput = row.querySelector('.count-title');
+                    const fileInput = row.querySelector('.count-file');
+                    const oldImgInput = row.querySelector('.count-old-img');
 
-            // إعادة ترقيم صفوف الشركاء بدقة
-            const partnerRows = form.querySelectorAll('.partner-row-item');
-            partnerRows.forEach((row, index) => {
-                const fileInput = row.querySelector('.partner-file');
-                const oldImgInput = row.querySelector('.partner-old-img');
+                    if(numInput) numInput.name = `counts[${index}][number]`;
+                    if(titleInput) titleInput.name = `counts[${index}][title]`;
+                    if(fileInput) fileInput.name = `count_img_${index}`;
+                    if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
+                });
 
-                if(fileInput) fileInput.name = `partner_img_${index}`;
-                if(oldImgInput) oldImgInput.name = `partners[${index}][old_img]`;
-            });
+                // إعادة ترقيم صفوف الشركاء
+                form.querySelectorAll('.partner-row-item').forEach((row, index) => {
+                    const fileInput = row.querySelector('.partner-file');
+                    const oldImgInput = row.querySelector('.partner-old-img');
 
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo htmlspecialchars($csrf_token ?? '', ENT_QUOTES, 'UTF-8'); ?>';
-            
-            if (csrfToken && !formData.has('csrf_token')) {
-                formData.append('csrf_token', csrfToken);
-            }
+                    if(fileInput) fileInput.name = `partner_img_${index}`;
+                    if(oldImgInput) oldImgInput.name = `partners[${currentLang}][items][${index}][old_img]`;
+                });
 
-            fetch('index.php?url=admin/settings/save', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-Token': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.text())
-            .then(text => {
-                console.log("Raw Server Response:", text);
-                try {
-                    const data = JSON.parse(text);
-                    if (data.success) {
-                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                    }
-                } catch (e) {
-                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                const formData = new FormData(this);
+                let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (!csrfToken) {
+                    csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';
                 }
-            })
-            .catch(err => {
-                console.error('Fetch Error:', err);
-                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                if (csrfToken && !formData.has('csrf_token')) {
+                    formData.append('csrf_token', csrfToken);
+                }
+
+                fetch('index.php?url=admin/settings/save', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw Server Response:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success || data.status === 'success') {
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                        }
+                    } catch (e) {
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch Error:', err);
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                });
             });
         });
     });

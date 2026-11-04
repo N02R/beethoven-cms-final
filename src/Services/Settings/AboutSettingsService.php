@@ -33,9 +33,8 @@ class AboutSettingsService
 
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-        // 1. تحديث قسم من نحن الرئيسي (About Section) مع دعم كامل لتعدد اللغات
+        // 1. تحديث قسم من نحن الرئيسي (About Section) مع دعم كامل لتعدد اللغات والحماية
         if ($action === 'update_about_section') {
-            // التقاط اللغة المستهدفة بدقة
             $targetLang = $_POST['about_lang'] ?? $_POST['targetLang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_section'");
@@ -43,23 +42,17 @@ class AboutSettingsService
             $dbRaw = $stmtFetch->fetchColumn();
 
             $aboutAllLangs = [];
-            if ($dbRaw) {
-                $decodedDb = is_string($dbRaw) ? json_decode($dbRaw, true) : $dbRaw;
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
                 if (is_array($decodedDb)) {
-                    // التحقق مما إذا كان الهيكل متعدد اللغات أو مسطحاً قديماً
-                    if (isset($decodedDb['ar']) || isset($decodedDb['en']) || isset($decodedDb['de'])) {
-                        $aboutAllLangs = $decodedDb;
-                    } else {
-                        $aboutAllLangs['ar'] = $decodedDb;
-                    }
+                    $aboutAllLangs = $decodedDb;
                 }
             }
 
-            // التقاط مصفوفة البيانات القادمة للغة المحددة
-            $postAbout = $_POST['about'][$targetLang] ?? $_POST['about'] ?? [];
             $currentLangData = $aboutAllLangs[$targetLang] ?? ($aboutAllLangs['ar'] ?? []);
+            $postAbout = $_POST['about'][$targetLang] ?? $_POST['about'] ?? [];
 
-            // معالجة الصور الثابتة والرموز مع الحفاظ على القديم إن لم يُرفع جديد
+            // معالجة الصور مع الحفاظ على القديم إن لم يُرفع جديد
             $mainImg = $postAbout['old_main_img'] ?? ($currentLangData['main_img'] ?? '');
             if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
                 if (!empty($currentLangData['main_img']) && str_starts_with($currentLangData['main_img'], 'assets/uploads/')) {
@@ -96,7 +89,6 @@ class AboutSettingsService
                 $messageIcon = 'assets/uploads/' . $filename;
             }
 
-            // تجميع بيانات اللغة النشطة
             $aboutAllLangs[$targetLang] = [
                 'title'         => $postAbout['title'] ?? ($currentLangData['title'] ?? 'من نحن'),
                 'desc'          => $postAbout['desc'] ?? ($currentLangData['desc'] ?? ''),
@@ -115,14 +107,14 @@ class AboutSettingsService
             $jsonVal = json_encode($aboutAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 2. تحديث العدادات والإحصائيات
+        // 2. تحديث العدادات والإحصائيات (Counts)
         elseif ($action === 'update_about_counts') {
             $countsData = $_POST['counts'] ?? [];
             foreach ($countsData as $index => $item) {
                 $fileToCheck = $_FILES['count_img_' . $index] ?? null;
                 
                 if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
+                    if (!empty($item['old_img']) && !str_contains($item['old_img'], 'default')) {
                         $this->deleteOldImageFile($item['old_img']);
                     }
                     $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
@@ -136,56 +128,115 @@ class AboutSettingsService
             $jsonVal = json_encode(array_values($countsData), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 3. تحديث الشركاء
+        // 3. تحديث الشركاء (Partners) مع دعم الهيكل متعدد اللغات كالخدمات والمميزات
         elseif ($action === 'update_about_partners') {
-            $partnersTitle = $_POST['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
-            $stmt->execute(['k' => 'partners_title', 'v' => $partnersTitle, 'v_update' => $partnersTitle]);
+            $targetLang = $_POST['targetLang'] ?? $_POST['partners_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $partnersData = $_POST['partners'] ?? [];
-            foreach ($partnersData as $index => $item) {
-                $fileToCheck = $_FILES['partner_img_' . $index] ?? null;
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $partnersData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $partnersData[$index]['img'] = $item['old_img'] ?? '';
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'partners'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $partnersAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) {
+                    $partnersAllLangs = $decodedDb;
                 }
-                unset($partnersData[$index]['old_img']);
             }
-            
-            $jsonVal = json_encode(array_values($partnersData), JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+
+            $currentLangData = $partnersAllLangs[$targetLang] ?? ($partnersAllLangs['ar'] ?? []);
+            $postedPartners = $_POST['partners'][$targetLang] ?? $_POST['partners'] ?? [];
+
+            $partnersTitle = $postedPartners['title'] ?? ($_POST['partners_title'] ?? ($currentLangData['title'] ?? 'شركاؤنا داخل وخارج ألمانيا'));
+            $existingItems = $currentLangData['items'] ?? [];
+
+            $finalItems = [];
+            $rawItems = $postedPartners['items'] ?? $_POST['partner_items'] ?? [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    if (isset($_FILES['partner_img_' . $index]) && $_FILES['partner_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['partner_img_' . $index]['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = ['img' => $img];
+                }
+            } else {
+                $finalItems = $existingItems;
+            }
+
+            $partnersAllLangs[$targetLang] = [
+                'title' => $partnersTitle,
+                'items' => $finalItems
+            ];
+
+            $jsonVal = json_encode($partnersAllLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'partners', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 4. تحديث فريق العمل
+        // 4. تحديث فريق العمل (Team) مع دعم الهيكل متعدد اللغات والحماية الكاملة
         elseif ($action === 'update_about_team' || $action === 'update_team') {
-            $teamTitle = $_POST['team_title'] ?? 'فريق العمل';
-            $teamDesc  = $_POST['team_desc'] ?? '';
-            
-            $stmt->execute(['k' => 'team_title', 'v' => $teamTitle, 'v_update' => $teamTitle]);
-            $stmt->execute(['k' => 'team_desc', 'v' => $teamDesc, 'v_update' => $teamDesc]);
+            $targetLang = $_POST['targetLang'] ?? $_POST['team_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $teamData = $_POST['team'] ?? [];
-            foreach ($teamData as $index => $item) {
-                $fileToCheck = $_FILES['team_img_' . $index] ?? ($_FILES['team'][$index]['img'] ?? null);
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $teamData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $teamData[$index]['img'] = $item['old_img'] ?? '';
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'team'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $teamAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) {
+                    $teamAllLangs = $decodedDb;
                 }
-                unset($teamData[$index]['old_img']);
             }
-            
-            $jsonVal = json_encode(array_values($teamData), JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'team_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+
+            $currentLangData = $teamAllLangs[$targetLang] ?? ($teamAllLangs['ar'] ?? []);
+            $postedTeam = $_POST['team'][$targetLang] ?? $_POST['team'] ?? [];
+
+            $teamTitle = $postedTeam['title'] ?? ($_POST['team_title'] ?? ($currentLangData['title'] ?? 'فريق العمل'));
+            $teamDesc  = $postedTeam['desc'] ?? ($_POST['team_desc'] ?? ($currentLangData['desc'] ?? ''));
+            $existingItems = $currentLangData['items'] ?? [];
+
+            $finalItems = [];
+            $rawItems = $postedTeam['items'] ?? [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    if (isset($_FILES['team_img_' . $index]) && $_FILES['team_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['team_img_' . $index]['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = [
+                        'name' => trim($item['name'] ?? ''),
+                        'role' => trim($item['role'] ?? ''),
+                        'img'  => $img
+                    ];
+                }
+            } else {
+                $finalItems = $existingItems;
+            }
+
+            $teamAllLangs[$targetLang] = [
+                'title' => $teamTitle,
+                'desc'  => $teamDesc,
+                'items' => $finalItems
+            ];
+
+            $jsonVal = json_encode($teamAllLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'team', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;

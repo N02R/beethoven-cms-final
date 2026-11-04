@@ -28,21 +28,31 @@ class FooterSettingsService
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         try {
-            // تحديد اللغة المستهدفة من المودل (مطابق لمعيار HeaderSettingsService)
+            // تحديد اللغة المستهدفة من المودل
             $targetLang = $_POST['footer_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب البيانات القديمة للفوتر من $currentSettings أو من القاعدة مباشرة لضمان سلامة التعديل المتعدد اللغات
-            $rawFooterSetting = $currentSettings['footer'] ?? '{}';
-            $footerAllLangs = json_decode($rawFooterSetting, true);
-            if (!is_array($footerAllLangs)) {
-                $footerAllLangs = [];
+            // 🌟 جلب أحدث بيانات JSON مباشرة من قاعدة البيانات بأسلوب دفاعي محصن (مطابق لـ HomeSettingsService)
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $footerAllLangs = [];
+            if ($dbRaw) {
+                if (is_string($dbRaw)) {
+                    $decodedDb = json_decode($dbRaw, true);
+                    if (is_array($decodedDb)) {
+                        $footerAllLangs = $decodedDb;
+                    }
+                } elseif (is_array($dbRaw)) {
+                    $footerAllLangs = $dbRaw;
+                }
             }
 
             // البيانات المرسلة للغة المستهدفة من الفورم
             $postedFooter = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
-            // 1. تحديث النصوص العامة للفوتر للغة المستهدفة فقط
+            // 1. تحديث النصوص العامة للفوتر للغة المستهدفة فقط مع حماية البيانات القديمة
             $consultTitle = trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? 'احصل على استشارة مجانية')));
             $consultDesc  = trim((string)($postedFooter['consult_desc'] ?? ($currentLangData['consult_desc'] ?? '')));
             $footerDesc   = trim((string)($postedFooter['footer_desc'] ?? ($currentLangData['footer_desc'] ?? '')));
@@ -53,37 +63,36 @@ class FooterSettingsService
             $incomingCol3 = $_POST['col3'] ?? [];
             $processedItems = [];
 
-            foreach ($incomingCol3 as $index => $item) {
-                if (!is_array($item)) continue;
+            if (is_array($incomingCol3) && !empty($incomingCol3)) {
+                foreach ($incomingCol3 as $index => $item) {
+                    if (!is_array($item)) continue;
 
-                $title = trim($item['title'] ?? '');
-                $url   = trim($item['url'] ?? '#');
-                $oldImg = $item['old_img'] ?? '';
-                
-                // مطابقة تامة لمعيار استلام ملفات الصور في HeaderSettingsService
-                $fileToCheck = $_FILES['col3_img_' . $index] ?? null;
+                    $title = trim($item['title'] ?? '');
+                    $url   = trim($item['url'] ?? '#');
+                    $oldImg = $item['old_img'] ?? '';
+                    
+                    $fileToCheck = $_FILES['col3_img_' . $index] ?? null;
 
-                $imgVal = $oldImg;
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
-                        $this->deleteOldImageFile($oldImg);
+                    $imgVal = $oldImg;
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $imgVal = 'assets/uploads/' . $filename;
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $imgVal = 'assets/uploads/' . $filename;
-                }
 
-                if ($title !== '' || $url !== '#') {
-                    $processedItems[] = [
-                        'title' => $title,
-                        'url'   => $url,
-                        'img'   => $imgVal
-                    ];
+                    if ($title !== '' || $url !== '#') {
+                        $processedItems[] = [
+                            'title' => $title,
+                            'url'   => $url,
+                            'img'   => $imgVal
+                        ];
+                    }
                 }
-            }
-
-            // إذا لم يتم إرسال عناصر جديدة، نحتفظ بالعناصر القديمة لنفس اللغة
-            if (empty($processedItems) && isset($currentLangData['col3_items'])) {
-                $processedItems = $currentLangData['col3_items'];
+            } else {
+                // إذا لم يتم إرسال عناصر جديدة، نحتفظ بالعناصر القديمة لنفس اللغة
+                $processedItems = $currentLangData['col3_items'] ?? [];
             }
 
             // تحديث مصفوفة اللغة المستهدفة داخل الهيكل الشامل مع الحفاظ على باقي اللغات (en, de)
@@ -102,7 +111,7 @@ class FooterSettingsService
                 $jsonVal = '{}';
             }
 
-            // الحفظ في الجدول الموحد للفوتر
+            // الحفظ الآمن في الجدول الموحد للفوتر
             $stmt->execute(['k' => 'footer', 'v' => $jsonVal, 'v_update' => $jsonVal]);
 
             return true;

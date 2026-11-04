@@ -1242,7 +1242,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 
                                 <div id="col3LinksContainer" class="d-flex flex-column gap-3">
                                     <?php 
-                                    $footerCol3LinksData = is_array($data['footer_col3_links'] ?? null) ? $data['footer_col3_links'] : [];
+                                    $footerCol3LinksData = is_array($curLangFooterData['col3_items'] ?? null) ? $curLangFooterData['col3_items'] : [];
                                     foreach($footerCol3LinksData as $i => $link): 
                                     ?>
                                         <div class="p-3 shadow-sm footer-col3-item" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
@@ -1274,7 +1274,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
 
                                                 <div class="col-md-1 text-center pt-3">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm p-2 w-100 mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" style="border-radius: 8px;" title="<?php echo htmlspecialchars($lang['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" title="<?php echo htmlspecialchars($lang['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>

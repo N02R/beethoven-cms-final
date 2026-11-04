@@ -1,25 +1,20 @@
-<!-- ========================================== -->
-<!-- 🌟 مودلات صفحة من نحن المترجمة والمهندسة بالكامل -->
-<!-- ========================================== -->
+<!-- 1. About Section Modal (قسم من نحن الرئيسي) -->
 <?php
-// التحقق وتحصين لغة المودل لتتطابق مع لغة الجلسة الحالية
-$current_lang = $current_lang ?? ($_SESSION['site_lang'] ?? 'ar');
+// 🌟 التحصين الأقوى: جلب اللغة حصراً من الجلسة أو الـ URL لضمان عدم ثباتها على العربية
+$current_lang = $_SESSION['site_lang'] ?? (isset($_GET['lang']) ? htmlspecialchars($_GET['lang'], ENT_QUOTES, 'UTF-8') : 'ar');
 $is_rtl = ($current_lang === 'ar');
 $modal_dir = $is_rtl ? 'rtl' : 'ltr';
 $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
-// تحميل ملف الترجمة النشط إن لم يكن محملاً
-if (!isset($lang) || !is_array($lang) || empty($lang)) {
-    $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
-    if (!file_exists($lang_file)) {
-        $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
-    }
-    $lang = file_exists($lang_file) ? require $lang_file : [];
-    if (!is_array($lang)) $lang = [];
+// تحميل ملف اللغة النشطة بدقة مطلقة
+$lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
+if (!file_exists($lang_file)) {
+    $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
 }
+$lang = file_exists($lang_file) ? require $lang_file : [];
+if (!is_array($lang)) $lang = [];
 ?>
 
-<!-- 1. About Section Modal (قسم من نحن الرئيسي) -->
 <div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -33,6 +28,7 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
             </div>
             <div class="modal-body p-4">
                 <?php 
+                // جلب بيانات من نحن للغة النشطة الحالية مباشرة من القاعدة أو المكدس
                 $aboutRawSetting = $data['about_section'] ?? ($currentSettings['about_section'] ?? null);
                 if (empty($aboutRawSetting)) {
                     try {
@@ -48,6 +44,7 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
                 $aboutAllLangs = is_string($aboutRawSetting) ? json_decode($aboutRawSetting, true) : (is_array($aboutRawSetting) ? $aboutRawSetting : []);
                 if (!is_array($aboutAllLangs)) $aboutAllLangs = [];
                 
+                // 🌟 التقاط البيانات الخاصة باللغة الحالية بدقة تامة مع تراجع آمن
                 $curLangAbout = $aboutAllLangs[$current_lang] ?? ($aboutAllLangs['ar'] ?? []);
 
                 $modalAbTitle       = $curLangAbout['title'] ?? ($ab['title'] ?? 'من نحن');

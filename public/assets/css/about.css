@@ -1,9 +1,15 @@
 /* about style start */
 .about {
   overflow: hidden;
-  direction: rtl;
+  /* جعل الاتجاه يعتمد على سمة الـ dir في عنصر الـ html أو الـ section تلقائياً */
+  direction: inherit; 
 }
 
+/* ضمان أن النصوص تتبع اتجاه الصفحة بمرونة (يمين في العربية، يسار في الأجنبية) */
+.about .about-par,
+.about .card .card-text {
+  text-align: start;
+}
 
 .about .about-par {
   font-weight: 500;
@@ -44,6 +50,7 @@
   font-weight: 700;
   font-size: clamp(16px, 1.2vw, 20px);
   color: rgba(53, 53, 53, 1);
+  text-align: start;
 }
 
 .about .card .card-text {
@@ -73,7 +80,7 @@
   transform: translateY(-3px);
 }
 
-/* Image Stack Logic */
+/* Image Stack Logic (مع جعل التموضع مرناً حسب الاتجاه إن أمكن) */
 .image-stack {
   position: relative;
   padding-bottom: 60px;
@@ -88,7 +95,8 @@
 .sub-img-wrapper {
   position: absolute;
   bottom: 0;
-  left: 0;
+  /* استخدام الموضع المرن بدلاً من الثابت ليتطابق مع الـ ltr والـ rtl */
+  inset-inline-start: 0; 
   width: 60%;
   z-index: 2;
 }
@@ -102,7 +110,8 @@
 .dots-bg {
   position: absolute;
   top: -20px;
-  left: -20px;
+  /* استخدام الموضع المرن للخلفية المنقطه */
+  inset-inline-start: -20px;
   width: 120px;
   height: 120px;
   background-image: radial-gradient(var(--main-color) 2px, transparent 2px);
@@ -112,6 +121,7 @@
 }
 
 /* about style end */
+
 /* team style start */
 .team {
   background: #fff;

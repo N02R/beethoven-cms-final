@@ -24,14 +24,11 @@ class FooterSettingsService
             return false;
         }
 
-        // استخدام جدول global_settings الحقيقي في قاعدة البيانات
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
         try {
-            // تحديد اللغة المستهدفة من المودل
             $targetLang = $_POST['footer_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // 🌟 جلب أحدث بيانات JSON مباشرة من قاعدة البيانات بأسلوب دفاعي محصن (مطابق لـ HomeSettingsService)
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
@@ -48,18 +45,15 @@ class FooterSettingsService
                 }
             }
 
-            // البيانات المرسلة للغة المستهدفة من الفورم
             $postedFooter = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
-            // 1. تحديث النصوص العامة للفوتر للغة المستهدفة فقط مع حماية البيانات القديمة
             $consultTitle = trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? 'احصل على استشارة مجانية')));
             $consultDesc  = trim((string)($postedFooter['consult_desc'] ?? ($currentLangData['consult_desc'] ?? '')));
             $footerDesc   = trim((string)($postedFooter['footer_desc'] ?? ($currentLangData['footer_desc'] ?? '')));
             $col2Title    = trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? 'روابط سريعة')));
             $col3Title    = trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? 'تواصل معنا')));
 
-            // 2. معالجة روابط العمود الثالث (col3_items) للغة المستهدفة مع إدارة الصور
             $incomingCol3 = $_POST['col3'] ?? [];
             $processedItems = [];
 
@@ -78,7 +72,7 @@ class FooterSettingsService
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $imgVal = 'assets/uploads/' . $filename;
                     }
 
@@ -91,11 +85,9 @@ class FooterSettingsService
                     }
                 }
             } else {
-                // إذا لم يتم إرسال عناصر جديدة، نحتفظ بالعناصر القديمة لنفس اللغة
                 $processedItems = $currentLangData['col3_items'] ?? [];
             }
 
-            // تحديث مصفوفة اللغة المستهدفة داخل الهيكل الشامل مع الحفاظ على باقي اللغات (en, de)
             $footerAllLangs[$targetLang] = [
                 'consult_title' => $consultTitle,
                 'consult_desc'  => $consultDesc,
@@ -105,13 +97,15 @@ class FooterSettingsService
                 'col3_items'    => $processedItems
             ];
 
-            // التأكد من أن الناتج JSON صالح 100% ومطابق لشرط قاعدة البيانات
             $jsonVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
             if ($jsonVal === false || trim($jsonVal) === '') {
                 $jsonVal = '{}';
             }
 
-            // الحفظ الآمن في الجدول الموحد للفوتر
+            // 🌟 كشف الحقيقة: تسجيل القيم قبل تنفيذ الإدخال لقاعدة البيانات
+            error_log("DEBUG FOOTER KEY: footer");
+            error_log("DEBUG FOOTER JSON VAL: " . var_export($jsonVal, true));
+
             $stmt->execute(['k' => 'footer', 'v' => $jsonVal, 'v_update' => $jsonVal]);
 
             return true;

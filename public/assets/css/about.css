@@ -1,13 +1,31 @@
 /* about style start */
 .about {
   overflow: hidden;
-  /* جعل الاتجاه يعتمد على سمة الـ dir في عنصر الـ html أو الـ section تلقائياً */
+  /* نورث الاتجاه تلقائياً من سمة الـ dir في عنصر الـ section */
   direction: inherit; 
 }
 
-/* ضمان أن النصوص تتبع اتجاه الصفحة بمرونة (يمين في العربية، يسار في الأجنبية) */
+/* الترتيب الديناميكي للأعمدة حسب لغة الموقع (RTL vs LTR) */
+[dir="rtl"] .about .about-text-col {
+  order: 2;
+  text-align: right;
+}
+[dir="rtl"] .about .about-img-col {
+  order: 1;
+}
+
+[dir="ltr"] .about .about-text-col {
+  order: 2;
+  text-align: left;
+}
+[dir="ltr"] .about .about-img-col {
+  order: 1;
+}
+
+/* ضمان أن النصوص تتبع بداية السطر الطبيعية للغة */
 .about .about-par,
-.about .card .card-text {
+.about .card .card-text,
+.about .card .title span {
   text-align: start;
 }
 
@@ -50,7 +68,6 @@
   font-weight: 700;
   font-size: clamp(16px, 1.2vw, 20px);
   color: rgba(53, 53, 53, 1);
-  text-align: start;
 }
 
 .about .card .card-text {
@@ -80,7 +97,7 @@
   transform: translateY(-3px);
 }
 
-/* Image Stack Logic (مع جعل التموضع مرناً حسب الاتجاه إن أمكن) */
+/* Image Stack Logic */
 .image-stack {
   position: relative;
   padding-bottom: 60px;
@@ -95,7 +112,7 @@
 .sub-img-wrapper {
   position: absolute;
   bottom: 0;
-  /* استخدام الموضع المرن بدلاً من الثابت ليتطابق مع الـ ltr والـ rtl */
+  /* استخدام الموضع المرن المتوافق مع الاتجاهين */
   inset-inline-start: 0; 
   width: 60%;
   z-index: 2;
@@ -110,7 +127,7 @@
 .dots-bg {
   position: absolute;
   top: -20px;
-  /* استخدام الموضع المرن للخلفية المنقطه */
+  /* استخدام الموضع المرن للخلفية المنقطة لتنعكس تلقائياً */
   inset-inline-start: -20px;
   width: 120px;
   height: 120px;
@@ -119,7 +136,6 @@
   opacity: 0.2;
   z-index: -1;
 }
-
 /* about style end */
 
 /* team style start */

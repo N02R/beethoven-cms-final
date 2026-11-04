@@ -1,10 +1,10 @@
 <?php
 return [
-    // General Translations & Common Buttons
+    // General Translations & Buttons
     'home'                    => 'Home',
     'about'                   => 'About Us',
     'services'                => 'Services',
-    'education'               => 'Education',
+    'education'               => 'Education & Study',
     'jobs'                    => 'Jobs & Career',
     'guide'                   => 'Guide',
     'contact'                 => 'Contact Us',
@@ -21,10 +21,10 @@ return [
     'no_file_chosen'          => 'No file chosen',
     'current_image'           => 'Current Image:',
 
-    // Site Logo Management
+    // Logo & Files
     'manage_site_logo'        => 'Change Site Logo',
 
-    // Social Platforms Modal
+    // Social Platforms
     'manage_social_platforms' => 'Manage Social Platforms',
     'platform_name'           => 'Platform Name',
     'name_placeholder'        => 'Name',
@@ -34,44 +34,41 @@ return [
     'delete_platform'         => 'Delete Platform',
     'add_new_platform'        => 'Add New Platform',
     
-    // Announcement Settings Modal
-    'announcement_settings'   => 'Announcement Bar Settings',
-    'ad_status_timing'        => 'Announcement Status & Timing',
+    // Announcements
+    'announcement_settings'   => 'Announcement Board Settings',
+    'ad_status_timing'        => 'Status & Timing',
     'display_status'          => 'Display Status',
     'status_draft'            => 'Hidden (Draft)',
-    'status_published'        => 'Active (Visible to Visitors)',
+    'status_published'        => 'Active (Visible)',
     'start_date'              => 'Start Date',
     'end_date'                => 'End Date',
     'announcement_content'    => 'Announcement Content',
-    'ad_type'                 => 'Announcement Type:',
-    'ad_type_text'            => 'Scrolling Text (Select for quick text)',
-    'ad_type_image'           => 'Image (Full Promotional Banner)',
-    'announcement_text_label' => 'Announcement Text (Message visible to visitors):',
+    'ad_type'                 => 'Ad Type:',
+    'ad_type_text'            => 'Scrolling Text',
+    'ad_type_image'           => 'Banner Image',
+    'announcement_text_label' => 'Announcement Text:',
     'bg_color'                => 'Background Color',
     'text_color'              => 'Text Color',
     'font_size'               => 'Font Size',
-    'upload_ad_image'         => 'Upload Announcement Image (WebP or PNG preferred):',
-    'redirect_link'           => 'Redirect Link (Optional)',
+    'upload_ad_image'         => 'Upload Ad Image:',
+    'redirect_link'           => 'Redirect URL (Optional)',
 
-    // Main Menu Modal
+    // Main Menu
     'manage_main_menu'        => 'Manage Main Menu',
     'link_title'              => 'Link Title',
-    'link_title_placeholder'  => 'Link Title',
+    'link_title_placeholder'  => 'Title',
     'order'                   => 'Order',
     'delete_link'             => 'Delete Link',
     'add_new_link'            => 'Add New Link',
-    
-    // Manage Languages Modal
+
+    // Languages
     'manage_languages'        => 'Manage Languages',
     'lang_code'               => 'Language Code',
     'language_name'           => 'Language Name',
-    'language_name_placeholder'=> 'Language Name',
-    'language_url'            => 'URL',
-    'language_url_placeholder'=> 'URL',
     'delete_lang'             => 'Delete Language',
     'add_new_language'        => 'Add New Language',
-    
-    // Hero Section Modal
+
+    // Hero Section
     'edit_hero_section'       => 'Edit Hero Section',
     'hero_title'              => 'Title',
     'hero_desc'               => 'Description',
@@ -79,80 +76,95 @@ return [
     'hero_btn_url'            => 'Button URL',
     'hero_bg_image'           => 'Background Image',
 
-    // Services Modal
-    'edit_services'           => 'Edit Services',
+    // Services Section
     'edit_services_section'   => 'Edit Services Section',
     'services_section_title'  => 'Main Section Title',
-    'services_section_desc'   => 'Section Description (Optional)',
-    'services_desc_placeholder'=> 'Add a description here or leave it blank to hide',
+    'services_section_desc'   => 'Subtitle / Description',
     'added_services'          => 'Added Services',
     'service_title'           => 'Service Title',
     'service_url'             => 'Service URL',
-    'image_icon'              => 'Image / Icon',
     'image_or_icon'           => 'Image / Icon',
     'delete_service'          => 'Delete Service',
     'add_new_service'         => 'Add New Service',
     
-    // Features / Choose Us Modal Translations
-    'edit_features'              => 'Edit Features',
-    'section_main_title'         => 'Main Section Title',
-    'choose_title_placeholder'   => 'Title for "Why Choose Us"',
-    'section_description_optional'=> 'Section Description (Optional)',
-    'added_features' => 'Added Features',
-    'choose_desc_placeholder'    => 'Add a description here or leave it blank to hide',
-    'feature_title_placeholder'  => 'Feature Title',
-    'feature_desc_placeholder'   => 'Feature Description',
-    'icon_or_image'              => 'Icon / Image',
-    'delete_feature'             => 'Delete Feature',
-    'add_new_feature'            => 'Add New Feature',
-    'edit_reviews'           => 'Edit Reviews',
-'reviews_default_title'  => 'See What Our Clients Say About Us',
-'no_reviews_available'   => 'No review videos available currently.',
-'review_video_url'       => 'Video Embed URL',
-'delete_video'           => 'Delete Video',
-'add_new_video'          => 'Add New Video',
-'manage_customer_videos' => 'Manage Client Videos',
-'added_videos'           => 'Added Videos',
-    // Guide Modal Translations
+    // Choose Us / Features
+    'edit_features'           => 'Edit Features',
+    'section_main_title'      => 'Main Section Title',
+    'section_subtitle'        => 'Subtitle / Description',
+    'added_items'             => 'Added Items',
+    'delete_feature'          => 'Delete Item',
+    'add_new_feature'         => 'Add New Item',
+    
+    // Reviews
+    'edit_reviews'            => 'Edit Reviews',
+    'review_video_url'        => 'Video URL (Embed URL)',
+    'delete_video'            => 'Delete Video',
+    'add_new_video'           => 'Add New Video',
+    'manage_customer_videos'  => 'Manage Customer Videos',
+    'added_videos'            => 'Added Videos',
+
+    // Guide
     'manage_guide'            => 'Manage Comprehensive Guide',
-    'main_section_title'      => 'Main Section Title',
-    'section_desc'            => 'Section Description',
     'article_title'           => 'Article Title',
     'page_url'                => 'Page URL',
     'delete_article'          => 'Delete Article',
     'add_new_article'         => 'Add New Article',
     'image'                   => 'Image',
-    'read_more'               => 'Read More',
-    // FAQ Modal Translations
-    'manage_faq'              => 'Manage FAQ',
-    'faq_question'            => 'Question',
-    'faq_answer'              => 'Answer',
-    'delete_faq'              => 'Delete Question',
-    'add_new_faq'             => 'Add New Question',
-    // FAQ Modal Translations
+
+    // FAQ Section
     'manage_faq'              => 'Manage FAQ',
     'faq_question'            => 'Question',
     'faq_answer'              => 'Answer',
     'delete_faq'              => 'Delete Question',
     'add_new_faq'             => 'Add New Question',
 
-    // Footer Modal Translations
-    'manage_footer'           => 'Manage Full Footer',
-    'consult_section_title'   => 'Consultation Section Settings',
+    // Footer
+    'manage_footer'           => 'Manage Footer',
+    'consult_section_title'   => 'Consultation Section',
     'consult_title_label'     => 'Consultation Title',
     'consult_desc_label'      => 'Consultation Description',
-    'column_one'              => 'Column One',
+    'column_one'              => 'First Column',
     'footer_desc_label'       => 'Footer Description:',
-    'column_two'              => 'Column Two',
+    'column_two'              => 'Second Column',
     'column_two_title'        => 'Column Title',
-    'menu_auto_notice'        => 'Links are automatically fetched from the Main Menu.',
-    'column_three'            => 'Column Three (Contact Us)',
+    'menu_auto_notice'        => 'Links are automatically loaded from the Menu.',
+    'column_three'            => 'Third Column (Contact)',
     'column_three_title'      => 'Column Title',
-    'contact_name'            => 'Contact Name',
-    'contact_name_placeholder'=> 'Contact Name (e.g. WhatsApp)',
+    'contact_name'            => 'Name',
     'contact_url'             => 'URL',
     'contact_icon_image'      => 'Icon / Image',
     'delete_contact'          => 'Delete Contact',
     'add_new_contact'         => 'Add New Contact',
 
+    // About Section & Modals
+    'manage_about_section'    => 'Edit About Us Section',
+    'company_vision'          => 'Company Vision',
+    'company_message'         => 'Company Message',
+    'main_image'              => 'Current Main Image',
+    'sub_image'               => 'Current Sub Image',
+    'icon_image'              => 'Icon / Image',
+    
+    // Team
+    'manage_team'             => 'Manage Team',
+    'team_section_title'      => 'Section Title',
+    'team_section_desc'       => 'Section Description',
+    'member_name'             => 'Full Name',
+    'member_role'             => 'Role / Position',
+    'member_image'            => 'Member Image',
+    'delete_member'           => 'Delete Member',
+    'add_new_member'          => 'Add New Member',
+    
+    // Counts
+    'manage_counts'           => 'Manage Counters',
+    'count_number'            => 'Number / Value',
+    'count_title'             => 'Title / Description',
+    'count_icon_image'        => 'Counter Icon / Image',
+    'delete_count'            => 'Delete Counter',
+    'add_new_count'           => 'Add New Counter',
+
+    // Partners
+    'manage_partners'         => 'Manage Partners',
+    'partner_image'           => 'Partner Logo / Image',
+    'delete_partner'          => 'Delete Partner',
+    'add_new_partner'         => 'Add New Partner',
 ];

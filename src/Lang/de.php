@@ -4,13 +4,13 @@ return [
     'home'                    => 'Startseite',
     'about'                   => 'Über uns',
     'services'                => 'Dienstleistungen',
-    'education'               => 'Studium & Bildung',
+    'education'               => 'Bildung & Studium',
     'jobs'                    => 'Karriere & Jobs',
-    'guide'                   => 'Wegweiser',
+    'guide'                   => 'Leitfaden',
     'contact'                 => 'Kontakt',
     'login'                   => 'Anmelden',
-    'read_more'               => 'Mehr lesen',
-    'send'                    => 'Absenden',
+    'read_more'               => 'Weiterlesen',
+    'send'                    => 'Senden',
     'save_changes'            => 'Änderungen speichern',
     'cancel'                  => 'Abbrechen',
     'title'                   => 'Titel',
@@ -21,138 +21,150 @@ return [
     'no_file_chosen'          => 'Keine Datei ausgewählt',
     'current_image'           => 'Aktuelles Bild:',
 
-    // Logo-Verwaltung
+    // Logo & Dateien
     'manage_site_logo'        => 'Website-Logo ändern',
 
-    // Social-Media-Plattformen Modal
+    // Soziale Netzwerke
     'manage_social_platforms' => 'Social-Media-Plattformen verwalten',
     'platform_name'           => 'Plattformname',
     'name_placeholder'        => 'Name',
     'platform_url'            => 'Plattform-URL',
     'url_placeholder'         => 'URL',
-    'platform_icon_image'     => 'Plattform-Symbol / Bild',
+    'platform_icon_image'     => 'Plattform-Icon / Bild',
     'delete_platform'         => 'Plattform löschen',
     'add_new_platform'        => 'Neue Plattform hinzufügen',
     
-    // Ankündigungseinstellungen Modal
-    'announcement_settings'   => 'Ankündigungseinstellungen',
+    // Ankündigungen
+    'announcement_settings'   => 'Ankündigungs-Einstellungen',
     'ad_status_timing'        => 'Ankündigungsstatus & Timing',
     'display_status'          => 'Anzeigestatus',
     'status_draft'            => 'Versteckt (Entwurf)',
-    'status_published'        => 'Aktiv (Sichtbar für Besucher)',
+    'status_published'        => 'Aktiv (Sichtbar)',
     'start_date'              => 'Startdatum',
     'end_date'                => 'Enddatum',
     'announcement_content'    => 'Ankündigungsinhalt',
     'ad_type'                 => 'Ankündigungstyp:',
-    'ad_type_text'            => 'Lauftext (Für schnellen Text wählen)',
-    'ad_type_image'           => 'Bild (Vollständiges Werbebanner)',
-    'announcement_text_label' => 'Ankündigungstext (Nachricht für Besucher):',
+    'ad_type_text'            => 'Lauftext',
+    'ad_type_image'           => 'Werbebanner (Bild)',
+    'announcement_text_label' => 'Ankündigungstext:',
     'bg_color'                => 'Hintergrundfarbe',
-    'text_color'              => 'Textfarbe',
+    'text_color'              => 'Schriftfarbe',
     'font_size'               => 'Schriftgröße',
-    'upload_ad_image'         => 'Ankündigungsbild hochladen (WebP oder PNG bevorzugt):',
-    'redirect_link'           => 'Weiterleitungslink (Optional)',
+    'upload_ad_image'         => 'Ankündigungsbild hochladen:',
+    'redirect_link'           => 'Weiterleitungs-URL (optional)',
 
-    // Hauptmenü Modal (Menu Modal)
+    // Hauptmenü
     'manage_main_menu'        => 'Hauptmenü verwalten',
     'link_title'              => 'Link-Titel',
-    'link_title_placeholder'  => 'Link-Titel',
+    'link_title_placeholder'  => 'Titel',
     'order'                   => 'Reihenfolge',
     'delete_link'             => 'Link löschen',
     'add_new_link'            => 'Neuen Link hinzufügen',
-    
-    // Sprachen verwalten Modal
+
+    // Sprachen
     'manage_languages'        => 'Sprachen verwalten',
     'lang_code'               => 'Sprachcode',
     'language_name'           => 'Sprachname',
-    'language_name_placeholder'=> 'Sprachname',
-    'language_url'            => 'URL',
-    'language_url_placeholder'=> 'URL',
     'delete_lang'             => 'Sprache löschen',
     'add_new_language'        => 'Neue Sprache hinzufügen',
-    
-    // Hero-Sektion Modal
-    'edit_hero_section'       => 'Hero-Bereich bearbeiten',
+
+    // Hero Sektion
+    'edit_hero_section'       => 'Hero-Sektion bearbeiten',
     'hero_title'              => 'Titel',
     'hero_desc'               => 'Beschreibung',
-    'hero_btn_text'           => 'Schaltflächentext',
-    'hero_btn_url'            => 'Schaltflächen-URL',
+    'hero_btn_text'           => 'Button-Text',
+    'hero_btn_url'            => 'Button-URL',
     'hero_bg_image'           => 'Hintergrundbild',
 
-    // Services Modal
-    'edit_services'           => 'Dienstleistungen bearbeiten',
-    'edit_services_section'   => 'Dienste-Schnittstelle bearbeiten',
-    'services_section_title'  => 'Hauptabschnittstitel',
-    'services_section_desc'   => 'Abschnittsbeschreibung (Optional)',
-    'services_desc_placeholder'=> 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer, um sie auszublenden',
+    // Dienste Sektion
+    'edit_services_section'   => 'Dienstleistungen bearbeiten',
+    'services_section_title'  => 'Haupttitel',
+    'services_section_desc'   => 'Untertitel / Beschreibung',
     'added_services'          => 'Hinzugefügte Dienste',
     'service_title'           => 'Diensttitel',
     'service_url'             => 'Dienst-URL',
-    'image_icon'              => 'Bild / Symbol',
-    'image_or_icon'           => 'Bild / Symbol',
-    'delete_service'          => 'Dienstleistung löschen',
-    'add_new_service'         => 'Neue Dienstleistung hinzufügen',
+    'image_or_icon'           => 'Bild / Icon',
+    'delete_service'          => 'Dienst löschen',
+    'add_new_service'         => 'Neuen Dienst hinzufügen',
     
-    // Features / Choose Us Modal Übersetzungen
-    'edit_features'              => 'Merkmale bearbeiten',
-    'section_main_title'         => 'Hauptabschnittstitel',
-    'choose_title_placeholder'   => 'Titel für "Warum uns wählen"',
-    'section_description_optional'=> 'Abschnittsbeschreibung (Optional)',
-    'added_features' => 'Hinzugefügte Funktionen',
-    'choose_desc_placeholder'    => 'Fügen Sie hier eine Beschreibung hinzu oder lassen Sie sie leer',
-    'feature_title_placeholder'  => 'Merkmalstitel',
-    'feature_desc_placeholder'   => 'Merkmalsbeschreibung',
-    'icon_or_image'              => 'Symbol / Bild',
-    'delete_feature'             => 'Merkmal löschen',
-    'add_new_feature'            => 'Neues Merkmal hinzufügen',
-    'edit_reviews'           => 'Bewertungen bearbeiten',
-'reviews_default_title'  => 'Sehen Sie, was unsere Kunden über uns sagen',
-'no_reviews_available'   => 'Derzeit sind keine Bewertungsvideos verfügbar.',
-'review_video_url'       => 'Video Embed URL',
-'delete_video'           => 'Video löschen',
-'add_new_video'          => 'Neues Video hinzufügen',
-'manage_customer_videos' => 'Kunden-Videos verwalten',
-'added_videos'           => 'Hinzugefügte Videos',
-    // Leitfaden Modal Übersetzungen (Guide Modal)
-    'manage_guide'            => 'Umfassenden Leitfaden verwalten',
-    'main_section_title'      => 'Hauptabschnittstitel',
-    'section_desc'            => 'Abschnitts Beschreibung',
-    'article_title'           => 'ArtikelTitel',
+    // Warum wir Sektion
+    'edit_features'           => 'Vorteile bearbeiten',
+    'section_main_title'      => 'Haupttitel',
+    'section_subtitle'        => 'Untertitel / Beschreibung',
+    'added_items'             => 'Hinzugefügte Elemente',
+    'delete_feature'          => 'Element löschen',
+    'add_new_feature'         => 'Neues Element hinzufügen',
+    
+    // Bewertungen
+    'edit_reviews'            => 'Bewertungen bearbeiten',
+    'review_video_url'        => 'Video-URL (Embed URL)',
+    'delete_video'            => 'Video löschen',
+    'add_new_video'           => 'Neues Video hinzufügen',
+    'manage_customer_videos'  => 'Kundenvideos verwalten',
+    'added_videos'            => 'Hinzugefügte Videos',
+
+    // Leitfaden / Guide
+    'manage_guide'            => 'Leitfaden verwalten',
+    'article_title'           => 'Artikeltitel',
     'page_url'                => 'Seiten-URL',
     'delete_article'          => 'Artikel löschen',
     'add_new_article'         => 'Neuen Artikel hinzufügen',
     'image'                   => 'Bild',
-    'read_more'               => 'Read More',
-    // FAQ Modal Übersetzungen
-    'manage_faq'              => 'FAQ verwalten',
-    'faq_question'            => 'Frage',
-    'faq_answer'              => 'Antwort',
-    'delete_faq'              => 'Frage löschen',
-    'add_new_faq'             => 'Neue Frage hinzufügen',
-    // FAQ Modal Übersetzungen
+
+    // FAQ Sektion
     'manage_faq'              => 'FAQ verwalten',
     'faq_question'            => 'Frage',
     'faq_answer'              => 'Antwort',
     'delete_faq'              => 'Frage löschen',
     'add_new_faq'             => 'Neue Frage hinzufügen',
 
-    // Footer Modal Übersetzungen
-    'manage_footer'           => 'Gesamten Footer verwalten',
-    'consult_section_title'   => 'Einstellungen für den Beratungsbereich',
+    // Footer Sektion
+    'manage_footer'           => 'Footer verwalten',
+    'consult_section_title'   => 'Beratungsbereich',
     'consult_title_label'     => 'Beratungstitel',
     'consult_desc_label'      => 'Beratungsbeschreibung',
-    'column_one'              => 'Spalte Eins',
+    'column_one'              => 'Erste Spalte',
     'footer_desc_label'       => 'Footer-Beschreibung:',
-    'column_two'              => 'Spalte Zwei',
+    'column_two'              => 'Zweite Spalte',
     'column_two_title'        => 'Spaltentitel',
-    'menu_auto_notice'        => 'Links werden automatisch aus dem Hauptmenü abgerufen.',
-    'column_three'            => 'Spalte Drei (Kontakt)',
+    'menu_auto_notice'        => 'Links werden automatisch aus dem Menü geladen.',
+    'column_three'            => 'Dritte Spalte (Kontakt)',
     'column_three_title'      => 'Spaltentitel',
-    'contact_name'            => 'Kontaktname',
-    'contact_name_placeholder'=> 'Name (z.B. WhatsApp)',
+    'contact_name'            => 'Name',
     'contact_url'             => 'URL',
-    'contact_icon_image'      => 'Symbol / Bild',
+    'contact_icon_image'      => 'Icon / Bild',
     'delete_contact'          => 'Kontakt löschen',
     'add_new_contact'         => 'Neuen Kontakt hinzufügen',
 
+    // عن الشركة (About Section & Modals)
+    'manage_about_section'    => 'Über uns bearbeiten',
+    'company_vision'          => 'Unternehmensvision',
+    'company_message'         => 'Unternehmensbotschaft',
+    'main_image'              => 'Aktuelles Hauptbild',
+    'sub_image'               => 'Aktuelles Unterbild',
+    'icon_image'              => 'Icon / Bild',
+    
+    // فريق العمل (Team)
+    'manage_team'             => 'Team verwalten',
+    'team_section_title'      => 'Sektionstitel',
+    'team_section_desc'       => 'Sektionsbeschreibung',
+    'member_name'             => 'Vollständiger Name',
+    'member_role'             => 'Position / Rolle',
+    'member_image'            => 'Mitgliedsbild',
+    'delete_member'           => 'Mitglied löschen',
+    'add_new_member'          => 'Neues Mitglied hinzufügen',
+    
+    // العدادات (Counts)
+    'manage_counts'           => 'Zähler verwalten',
+    'count_number'            => 'Nummer / Wert',
+    'count_title'             => 'Titel / Beschreibung',
+    'count_icon_image'        => 'Icon / Bild',
+    'delete_count'            => 'Zähler löschen',
+    'add_new_count'           => 'Neuen Zähler hinzufügen',
+
+    // الشركاء (Partners)
+    'manage_partners'         => 'Partner verwalten',
+    'partner_image'           => 'Partner-Logo / Bild',
+    'delete_partner'          => 'Partner löschen',
+    'add_new_partner'         => 'Neuen Partner hinzufügen',
 ];

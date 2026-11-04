@@ -148,6 +148,39 @@ return [
     'contact_icon_image'      => 'الأيقونة / الصورة',
     'delete_contact'          => 'حذف وسيلة التواصل',
     'add_new_contact'         => 'إضافة وسيلة تواصل',
+    
+        // ترجمات قسم من نحن (About Section & Modals)
+    'manage_about_section'    => 'تعديل قسم من نحن',
+    'company_vision'          => 'رؤية الشركة',
+    'company_message'         => 'رسالة الشركة',
+    'main_image'              => 'الصورة الرئيسية الحالية',
+    'sub_image'               => 'الصورة الفرعية الحالية',
+    'icon_image'              => 'الأيقونة / الصورة',
+    
+    // ترجمات فريق العمل (Team Modal)
+    'manage_team'             => 'إدارة فريق العمل',
+    'team_section_title'      => 'عنوان القسم',
+    'team_section_desc'       => 'وصف القسم',
+    'member_name'             => 'الاسم الكامل',
+    'member_role'             => 'المسمى الوظيفي',
+    'member_image'            => 'صورة العضو',
+    'delete_member'           => 'حذف العضو',
+    'add_new_member'          => 'إضافة عضو جديد',
+    
+    // ترجمات العدادات والإحصائيات (Counts Modal)
+    'manage_counts'           => 'إدارة العدادات والإحصائيات',
+    'count_number'            => 'الرقم / القيمة',
+    'count_title'             => 'عنوان العداد / الوصف',
+    'count_icon_image'        => 'أيقونة / صورة العداد',
+    'delete_count'            => 'حذف العداد',
+    'add_new_count'           => 'إضافة عداد جديد',
+
+    // ترجمات الشركاء (Partners Modal)
+    'manage_partners'         => 'إدارة الشركاء',
+    'partner_image'           => 'شعار / صورة الشريك',
+    'delete_partner'          => 'حذف الشريك',
+    'add_new_partner'         => 'إضافة شريك جديد',
+
 
 ];
 

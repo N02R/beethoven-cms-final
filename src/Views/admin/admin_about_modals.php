@@ -1,63 +1,109 @@
 <!-- 1. About Section Modal (قسم من نحن) -->
-<div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade custom-modal" id="aboutEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir ?? 'rtl'; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle text-primary"></i> تعديل قسم من نحن</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">
+                    <i class="bi bi-info-circle text-primary <?php echo !empty($is_rtl) ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_about_section'] ?? 'تعديل قسم من نحن', ENT_QUOTES, 'UTF-8'); ?> 
+                    (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                </h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
+                <?php 
+                // جلب بيانات من نحن للغة النشطة الحالية بدقة متناهية
+                $aboutRawSetting = $data['about_section'] ?? ($currentSettings['about_section'] ?? null);
+                if (empty($aboutRawSetting)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtAbout = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_section'");
+                        $stmtAbout->execute();
+                        $aboutRawSetting = $stmtAbout->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $aboutRawSetting = '{}';
+                    }
+                }
+
+                $aboutAllLangs = is_string($aboutRawSetting) ? json_decode($aboutRawSetting, true) : (is_array($aboutRawSetting) ? $aboutRawSetting : []);
+                if (!is_array($aboutAllLangs)) {
+                    $aboutAllLangs = [];
+                }
+                
+                $langKey = $current_lang ?? 'ar';
+                $curLangAbout = $aboutAllLangs[$langKey] ?? ($aboutAllLangs['ar'] ?? []);
+
+                $modalAbTitle       = $curLangAbout['title'] ?? ($ab['title'] ?? 'من نحن');
+                $modalAbDesc        = $curLangAbout['desc'] ?? ($ab['desc'] ?? '');
+                $modalAbBtnText     = $curLangAbout['btn_text'] ?? ($ab['btn_text'] ?? 'قراءة المزيد');
+                $modalAbBtnUrl      = $curLangAbout['btn_url'] ?? ($ab['btn_url'] ?? '#');
+                $modalMainImg       = $curLangAbout['main_img'] ?? ($ab['main_img'] ?? '');
+                $modalSubImg        = $curLangAbout['sub_img'] ?? ($ab['sub_img'] ?? '');
+                $modalVisionTitle   = $curLangAbout['vision_title'] ?? ($ab['vision_title'] ?? 'رؤية الشركة');
+                $modalVisionDesc    = $curLangAbout['vision_desc'] ?? ($ab['vision_desc'] ?? '');
+                $modalVisionIcon    = $curLangAbout['vision_icon'] ?? ($ab['vision_icon'] ?? '');
+                $modalMessageTitle  = $curLangAbout['message_title'] ?? ($ab['message_title'] ?? 'رسالة الشركة');
+                $modalMessageDesc   = $curLangAbout['message_desc'] ?? ($ab['message_desc'] ?? '');
+                $modalMessageIcon   = $curLangAbout['message_icon'] ?? ($ab['message_icon'] ?? '');
+                ?>
+
                 <form id="aboutSectionForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_section">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
-                    
-                    <!-- 🌟 إضافة حقول اللغة الخفية لضمان حفظ التعديلات للغة النشطة فقط -->
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang ?? 'ar'), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="about_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
-
+                    
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <!-- العنوان والوصف -->
-                            <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary">عنوان القسم الرئيسي</label>
-                                <input type="text" class="form-control" name="about_title" value="<?php echo htmlspecialchars($ab['title'] ?? 'من نحن', ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['main_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                                </label>
+                                <input type="text" class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][title]" value="<?php echo htmlspecialchars((string)$modalAbTitle, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
-                            <div class="col-12">
-                                <label class="small fw-bold mb-1 text-secondary">نص الوصف</label>
-                                <textarea class="form-control" name="about_desc" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['description'] ?? 'نص الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                                </label>
+                                <textarea class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][desc]" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalAbDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
 
                             <!-- أزرار التوجيه -->
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">نص الزر</label>
-                                <input type="text" class="form-control" name="about_btn_text" value="<?php echo htmlspecialchars($ab['btn_text'] ?? 'قراءة المزيد', ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['button_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                                </label>
+                                <input type="text" class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][btn_text]" value="<?php echo htmlspecialchars((string)$modalAbBtnText, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">رابط الزر الحالي</label>
-                                <input type="text" class="form-control" name="about_btn_url" value="<?php echo htmlspecialchars($ab['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                            <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['button_url'] ?? 'رابط الزر الحالي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang ?? 'ar'); ?>)
+                                </label>
+                                <input type="text" class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][btn_url]" value="<?php echo htmlspecialchars((string)$modalAbBtnUrl, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
 
                             <!-- الصور الرئيسية والمعاينة -->
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">الصورة الرئيسية الحالية</label>
-                                <?php if (!empty($ab['main_img'])): ?>
+                            <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['main_image'] ?? 'الصورة الرئيسية الحالية', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <?php if (!empty($modalMainImg)): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['main_img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Main Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
+                                        <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($modalMainImg) : $modalMainImg, ENT_QUOTES, 'UTF-8'); ?>" alt="Main Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" class="form-control" name="about_main_img" accept="image/*">
-                                <input type="hidden" name="old_about_main_img" value="<?php echo htmlspecialchars($ab['main_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="about[<?php echo $current_lang ?? 'ar'; ?>][old_main_img]" value="<?php echo htmlspecialchars($modalMainImg, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="small fw-bold mb-1 text-secondary">الصورة الفرعية الحالية</label>
-                                <?php if (!empty($ab['sub_img'])): ?>
+                            <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['sub_image'] ?? 'الصورة الفرعية الحالية', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <?php if (!empty($modalSubImg)): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                        <img src="<?php echo htmlspecialchars(get_image_url($ab['sub_img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Sub Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
+                                        <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($modalSubImg) : $modalSubImg, ENT_QUOTES, 'UTF-8'); ?>" alt="Sub Preview" class="img-thumbnail rounded-3 border-0 bg-transparent" style="max-height: 120px; object-fit: cover;">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" class="form-control" name="about_sub_img" accept="image/*">
-                                <input type="hidden" name="old_about_sub_img" value="<?php echo htmlspecialchars($ab['sub_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="about[<?php echo $current_lang ?? 'ar'; ?>][old_sub_img]" value="<?php echo htmlspecialchars($modalSubImg, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
 
                             <div class="col-12"><hr class="my-3 text-muted opacity-25"></div>
@@ -65,28 +111,28 @@
                             <!-- رؤية الشركة -->
                             <div class="col-12 p-4 shadow-sm" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
-                                    <i class="bi bi-eye"></i> رؤية الشركة
+                                    <i class="bi bi-eye"></i> <?php echo htmlspecialchars($lang['company_vision'] ?? 'رؤية الشركة', ENT_QUOTES, 'UTF-8'); ?>
                                 </h6>
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control" name="vision_title" value="<?php echo htmlspecialchars($ab['vision_title'] ?? 'رؤية الشركة', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][vision_title]" value="<?php echo htmlspecialchars((string)$modalVisionTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية ورفع أيقونة جديدة</label>
+                                    <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($ab['vision_icon'])): ?>
+                                            <?php if (!empty($modalVisionIcon)): ?>
                                                 <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 38px; border-color: #e2e8f0 !important;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['vision_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($modalVisionIcon) : $modalVisionIcon, ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control flex-grow-1" name="about_vision_icon" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="old_vision_icon" value="<?php echo htmlspecialchars($ab['vision_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" name="about[<?php echo $current_lang ?? 'ar'; ?>][old_vision_icon]" value="<?php echo htmlspecialchars($modalVisionIcon, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-12">
-                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <textarea class="form-control" name="vision_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['vision_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <textarea class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][vision_desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalVisionDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -94,28 +140,28 @@
                             <!-- رسالة الشركة -->
                             <div class="col-12 p-4 shadow-sm" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
-                                    <i class="bi bi-chat-square-text"></i> رسالة الشركة
+                                    <i class="bi bi-chat-square-text"></i> <?php echo htmlspecialchars($lang['company_message'] ?? 'رسالة الشركة', ENT_QUOTES, 'UTF-8'); ?>
                                 </h6>
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">العنوان</label>
-                                        <input type="text" class="form-control" name="message_title" value="<?php echo htmlspecialchars($ab['message_title'] ?? 'رسالة الشركة', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][message_title]" value="<?php echo htmlspecialchars((string)$modalMessageTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="small fw-bold mb-1 text-secondary">الأيقونة الحالية ورفع أيقونة جديدة</label>
+                                    <div class="col-md-6 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($ab['message_icon'])): ?>
+                                            <?php if (!empty($modalMessageIcon)): ?>
                                                 <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 38px; border-color: #e2e8f0 !important;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($ab['message_icon']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($modalMessageIcon) : $modalMessageIcon, ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control flex-grow-1" name="about_message_icon" accept="image/*">
                                         </div>
-                                        <input type="hidden" name="old_message_icon" value="<?php echo htmlspecialchars($ab['message_icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="hidden" name="about[<?php echo $current_lang ?? 'ar'; ?>][old_message_icon]" value="<?php echo htmlspecialchars($modalMessageIcon, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-12">
-                                        <label class="small fw-bold mb-1 text-secondary">الوصف</label>
-                                        <textarea class="form-control" name="message_desc" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($ab['message_desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                    <div class="col-12 <?php echo $modal_align ?? ''; ?>">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <textarea class="form-control" name="about[<?php echo $current_lang ?? 'ar'; ?>][message_desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalMessageDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -124,8 +170,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="aboutSectionForm" class="btn-premium">حفظ التغييرات</button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+                <button type="submit" form="aboutSectionForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>

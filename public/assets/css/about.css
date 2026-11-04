@@ -4,13 +4,6 @@
   direction: inherit;
 }
 
-/* محاذاة النصوص ديناميكياً حسب اللغة */
-.about .about-par,
-.about .card .card-text,
-.about .card .title span {
-  text-align: start;
-}
-
 .about .about-par {
   font-weight: 500;
   font-size: clamp(14px, 1.1vw, 16px);
@@ -79,7 +72,7 @@
   transform: translateY(-3px);
 }
 
-/* Image Stack Logic (التصميم الأصلي والنظيف للصور المتراكبة) */
+/* Image Stack Logic (التصميم الأصلي الدقيق مع دعم اتجاهات اللغات) */
 .image-stack {
   position: relative;
   padding-bottom: 60px;
@@ -91,26 +84,25 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.sub-img-wrapper {
-  position: absolute;
-  bottom: 0;
-  /* استخدام inset-inline-start لضمان بقاء الصورة الفرعية متراكبة في الزاوية الصحيحة حسب لغة الصفحة */
-  inset-inline-start: 0;
-  width: 60%;
-  z-index: 2;
-}
-
 .sub-img {
   border-radius: 15px;
   border: 5px solid #fff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.dots-bg {
+/* 🌟 تكييف الصورة الفرعية والخلفية المنقطة حسب اللغة (RTL vs LTR) */
+[dir="rtl"] .sub-img-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0; /* في العربية: الصورة الفرعية على اليسار */
+  width: 60%;
+  z-index: 2;
+}
+
+[dir="rtl"] .dots-bg {
   position: absolute;
   top: -20px;
-  /* الخلفية المنقطة تتكيف تلقائياً مع اتجاه اللغة */
-  inset-inline-start: -20px;
+  left: -20px;
   width: 120px;
   height: 120px;
   background-image: radial-gradient(var(--main-color) 2px, transparent 2px);
@@ -119,7 +111,27 @@
   z-index: -1;
 }
 
+[dir="ltr"] .sub-img-wrapper {
+  position: absolute;
+  bottom: 0;
+  right: 0; /* في اللغات الأجنبية: تنعكس لتكون على اليمين (الجهة الخارجية للصور) */
+  width: 60%;
+  z-index: 2;
+}
+
+[dir="ltr"] .dots-bg {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: radial-gradient(var(--main-color) 2px, transparent 2px);
+  background-size: 20px 20px;
+  opacity: 0.2;
+  z-index: -1;
+}
 /* about style end */
+
 /* team style start */
 .team {
   background: #fff;

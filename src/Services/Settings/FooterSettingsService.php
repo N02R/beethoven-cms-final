@@ -72,7 +72,8 @@ class FooterSettingsService
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        // 🌟 التصحيح هنا: إضافة علامة $ قبل اسم المتغير filename
+                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $imgVal = 'assets/uploads/' . $filename;
                     }
 
@@ -102,7 +103,6 @@ class FooterSettingsService
                 $jsonVal = '{}';
             }
 
-            // 🌟 كشف الحقيقة: تسجيل القيم قبل تنفيذ الإدخال لقاعدة البيانات
             error_log("DEBUG FOOTER KEY: footer");
             error_log("DEBUG FOOTER JSON VAL: " . var_export($jsonVal, true));
 

@@ -14,7 +14,7 @@ use App\Services\Settings\JobSettingsService;
 use App\Services\Settings\GuideBlog1SettingsService;
 use App\Services\Settings\PageContentSettingsService;
 use App\Services\Settings\HomeSettingsService;
-use App\Services\Settings\FooterSettingsService; // 🌟 أضفنا استدعاء خدمة الفوتر هنا
+use App\Services\Settings\FooterSettingsService;
 use Exception;
 use PDO;
 
@@ -63,17 +63,17 @@ class SettingsController
             $currentSettingsStmt = $pdo->query("SELECT setting_key, setting_value FROM global_settings");
             $currentSettings = $currentSettingsStmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 
-            // 🌟 1. خريطة الخدمات (Service Registry) - تم إضافة FooterSettingsService إليها لتتولى الفوتر بتميز
+            // 🌟 خريطة الخدمات (Service Registry) - متضمنة خدمة "من نحن" (About) وباقي الخدمات بتميز
             $services = [
                 new HeaderSettingsService($rootPath, $imageUploader),
                 new PageContentSettingsService($rootPath, $imageUploader),
-                new AboutSettingsService($rootPath, $imageUploader),
+                new AboutSettingsService($rootPath, $imageUploader), // تم ربط خدمة صفحة من نحن بنجاح
                 new EduSettingsService($rootPath, $imageUploader),
                 new JobSettingsService($rootPath, $imageUploader),
                 new ContactSettingsService($rootPath, $imageUploader),
                 new GuideBlog1SettingsService($rootPath, $imageUploader),
                 new HomeSettingsService($rootPath, $imageUploader),
-                new FooterSettingsService($rootPath, $imageUploader), // أضيفت هنا بنجاح
+                new FooterSettingsService($rootPath, $imageUploader),
             ];
 
             $handled = false;
@@ -86,7 +86,7 @@ class SettingsController
 
             if ($handled) {
                 $pdo->commit();
-                echo json_encode(['success' => true, 'message' => 'تم حفظ التغييرات وتحديث الفوتر والصور بنجاح.']);
+                echo json_encode(['success' => true, 'message' => 'تم حفظ التغييرات وتحديث البيانات والصور بنجاح.']);
                 exit;
             }
 

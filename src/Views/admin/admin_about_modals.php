@@ -11,6 +11,10 @@
                     <input type="hidden" name="action" value="update_about_section">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <!-- 🌟 إضافة حقول اللغة الخفية لضمان حفظ التعديلات للغة النشطة فقط -->
+                    <input type="hidden" name="about_lang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang ?? 'ar', ENT_QUOTES, 'UTF-8'); ?>">
+
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <!-- العنوان والوصف -->

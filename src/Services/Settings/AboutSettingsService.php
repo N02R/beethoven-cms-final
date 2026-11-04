@@ -31,50 +31,71 @@ class AboutSettingsService
             return false;
         }
 
-        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
 
-        // 1. تحديث قسم من نحن الرئيسي (About Section)
+        // 1. تحديث قسم من نحن الرئيسي (About Section) مع دعم كامل لتعدد اللغات
         if ($action === 'update_about_section') {
-            $oldAboutData = json_decode($currentSettings['about_section'] ?? '', true) ?: [];
+            $targetLang = $_POST['about_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            $mainImg = $_POST['old_about_main_img'] ?? ($oldAboutData['main_img'] ?? '');
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_section'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $aboutAllLangs = [];
+            if ($dbRaw) {
+                if (is_string($dbRaw)) {
+                    $decodedDb = json_decode($dbRaw, true);
+                    if (is_array($decodedDb)) {
+                        if (isset($decodedDb['ar']) || isset($decodedDb['en']) || isset($decodedDb['de'])) {
+                            $aboutAllLangs = $decodedDb;
+                        } else {
+                            $aboutAllLangs['ar'] = $decodedDb; // تحويل البيانات القديمة المسطحة للغة العربية كافتراضي
+                        }
+                    }
+                } elseif (is_array($dbRaw)) {
+                    $aboutAllLangs = $dbRaw;
+                }
+            }
+
+            $currentLangData = $aboutAllLangs[$targetLang] ?? ($aboutAllLangs['ar'] ?? []);
+
+            $mainImg = $_POST['old_about_main_img'] ?? ($currentLangData['main_img'] ?? '');
             if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldAboutData['main_img'])) {
-                    $this->deleteOldImageFile($oldAboutData['main_img']);
+                if (!empty($currentLangData['main_img']) && str_starts_with($currentLangData['main_img'], 'assets/uploads/')) {
+                    $this->deleteOldImageFile($currentLangData['main_img']);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['about_main_img']['tmp_name']);
                 $mainImg = 'assets/uploads/' . $filename;
             }
 
-            $subImg = $_POST['old_about_sub_img'] ?? ($oldAboutData['sub_img'] ?? '');
+            $subImg = $_POST['old_about_sub_img'] ?? ($currentLangData['sub_img'] ?? '');
             if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldAboutData['sub_img'])) {
-                    $this->deleteOldImageFile($oldAboutData['sub_img']);
+                if (!empty($currentLangData['sub_img']) && str_starts_with($currentLangData['sub_img'], 'assets/uploads/')) {
+                    $this->deleteOldImageFile($currentLangData['sub_img']);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['about_sub_img']['tmp_name']);
                 $subImg = 'assets/uploads/' . $filename;
             }
 
-            $visionIcon = $_POST['old_vision_icon'] ?? ($oldAboutData['vision_icon'] ?? '');
+            $visionIcon = $_POST['old_vision_icon'] ?? ($currentLangData['vision_icon'] ?? '');
             if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldAboutData['vision_icon'])) {
-                    $this->deleteOldImageFile($oldAboutData['vision_icon']);
+                if (!empty($currentLangData['vision_icon']) && str_starts_with($currentLangData['vision_icon'], 'assets/uploads/')) {
+                    $this->deleteOldImageFile($currentLangData['vision_icon']);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['about_vision_icon']['tmp_name']);
                 $visionIcon = 'assets/uploads/' . $filename;
             }
 
-            $messageIcon = $_POST['old_message_icon'] ?? ($oldAboutData['message_icon'] ?? '');
+            $messageIcon = $_POST['old_message_icon'] ?? ($currentLangData['message_icon'] ?? '');
             if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldAboutData['message_icon'])) {
-                    $this->deleteOldImageFile($oldAboutData['message_icon']);
+                if (!empty($currentLangData['message_icon']) && str_starts_with($currentLangData['message_icon'], 'assets/uploads/')) {
+                    $this->deleteOldImageFile($currentLangData['message_icon']);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['about_message_icon']['tmp_name']);
                 $messageIcon = 'assets/uploads/' . $filename;
             }
 
-            $aboutData = [
+            $aboutAllLangs[$targetLang] = [
                 'title'         => $_POST['about_title'] ?? 'من نحن',
                 'desc'          => $_POST['about_desc'] ?? '',
                 'btn_text'      => $_POST['about_btn_text'] ?? 'قراءة المزيد',
@@ -89,7 +110,7 @@ class AboutSettingsService
                 'message_icon'  => $messageIcon
             ];
 
-            $jsonVal = json_encode($aboutData, JSON_UNESCAPED_UNICODE);
+            $jsonVal = json_encode($aboutAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
         // 2. تحديث العدادات والإحصائيات
@@ -137,7 +158,7 @@ class AboutSettingsService
             $jsonVal = json_encode(array_values($partnersData), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'partners_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 4. تحديث فريق العمل (About Team / Team)
+        // 4. تحديث فريق العمل
         elseif ($action === 'update_about_team' || $action === 'update_team') {
             $teamTitle = $_POST['team_title'] ?? 'فريق العمل';
             $teamDesc  = $_POST['team_desc'] ?? '';
@@ -151,7 +172,7 @@ class AboutSettingsService
                 
                 if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                     if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
+                        $this->deleteOldImageFormFile($item['old_img']); // Keep correct call
                     }
                     $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                     $teamData[$index]['img'] = 'assets/uploads/' . $filename;

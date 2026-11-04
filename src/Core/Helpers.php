@@ -127,3 +127,25 @@ if (!function_exists('__')) {
         return $langData[$currentLang][$key] ?? ($default !== '' ? $default : $key);
     }
 }
+
+if (!function_exists('safe_admin_string')) {
+    /**
+     * معالجة وحماية النصوص والمصفوفات داخل حقول لوحة التحكم لمنع أخطاء تحويل البيانات (Array to string)
+     */
+    function safe_admin_string(mixed $val, ?string $current_lang = null): string {
+        $lang = $current_lang ?? get_current_lang();
+
+        if (is_array($val)) {
+            return (string)($val[$lang] ?? ($val['ar'] ?? ($val['de'] ?? ($val['en'] ?? reset($val) ?? ''))));
+        }
+
+        if (is_string($val)) {
+            $decoded = json_decode($val, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return (string)($decoded[$lang] ?? ($decoded['ar'] ?? ($decoded['de'] ?? ($decoded['en'] ?? reset($decoded) ?? ''))));
+            }
+        }
+
+        return (string)($val ?? '');
+    }
+}

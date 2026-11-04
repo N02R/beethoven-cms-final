@@ -349,6 +349,7 @@ section.guide .card p {
 .main-p {
   font-weight: var(--fw-regular);
   font-size: clamp(16px, 1.5vw, 20px);
+  width: 100%;
   line-height: 1.8;
   color: #737373;
   margin-bottom: 2rem;

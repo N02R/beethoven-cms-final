@@ -21,14 +21,25 @@ class AboutController {
             session_start();
         }
 
+        // ==========================================
+        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات (تطابق مع HomeController)
+        // ==========================================
+        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
+        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+
+        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
+        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
+        $lang = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+        // ==========================================
+
         // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');
 
         // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة
-        $aboutData = class_exists('App\Models\AboutModel') ? AboutModel::getAboutData() : [];
+        // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة مع تمرير اللغة
+        $aboutData = class_exists('App\Models\AboutModel') ? AboutModel::getAboutData($current_lang) : [];
         $data = array_merge($data, $aboutData);
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في النظام

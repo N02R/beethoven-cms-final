@@ -35,7 +35,8 @@ class AboutSettingsService
 
         // 1. تحديث قسم من نحن الرئيسي (About Section) مع دعم كامل لتعدد اللغات
         if ($action === 'update_about_section') {
-            $targetLang = $_POST['about_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            // التقاط اللغة المستهدفة بدقة
+            $targetLang = $_POST['about_lang'] ?? $_POST['targetLang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_section'");
             $stmtFetch->execute();
@@ -43,23 +44,23 @@ class AboutSettingsService
 
             $aboutAllLangs = [];
             if ($dbRaw) {
-                if (is_string($dbRaw)) {
-                    $decodedDb = json_decode($dbRaw, true);
-                    if (is_array($decodedDb)) {
-                        if (isset($decodedDb['ar']) || isset($decodedDb['en']) || isset($decodedDb['de'])) {
-                            $aboutAllLangs = $decodedDb;
-                        } else {
-                            $aboutAllLangs['ar'] = $decodedDb; // تحويل البيانات القديمة المسطحة للغة العربية كافتراضي
-                        }
+                $decodedDb = is_string($dbRaw) ? json_decode($dbRaw, true) : $dbRaw;
+                if (is_array($decodedDb)) {
+                    // التحقق مما إذا كان الهيكل متعدد اللغات أو مسطحاً قديماً
+                    if (isset($decodedDb['ar']) || isset($decodedDb['en']) || isset($decodedDb['de'])) {
+                        $aboutAllLangs = $decodedDb;
+                    } else {
+                        $aboutAllLangs['ar'] = $decodedDb;
                     }
-                } elseif (is_array($dbRaw)) {
-                    $aboutAllLangs = $dbRaw;
                 }
             }
 
+            // التقاط مصفوفة البيانات القادمة للغة المحددة
+            $postAbout = $_POST['about'][$targetLang] ?? $_POST['about'] ?? [];
             $currentLangData = $aboutAllLangs[$targetLang] ?? ($aboutAllLangs['ar'] ?? []);
 
-            $mainImg = $_POST['old_about_main_img'] ?? ($currentLangData['main_img'] ?? '');
+            // معالجة الصور الثابتة والرموز مع الحفاظ على القديم إن لم يُرفع جديد
+            $mainImg = $postAbout['old_main_img'] ?? ($currentLangData['main_img'] ?? '');
             if (isset($_FILES['about_main_img']) && $_FILES['about_main_img']['error'] === UPLOAD_ERR_OK) {
                 if (!empty($currentLangData['main_img']) && str_starts_with($currentLangData['main_img'], 'assets/uploads/')) {
                     $this->deleteOldImageFile($currentLangData['main_img']);
@@ -68,7 +69,7 @@ class AboutSettingsService
                 $mainImg = 'assets/uploads/' . $filename;
             }
 
-            $subImg = $_POST['old_about_sub_img'] ?? ($currentLangData['sub_img'] ?? '');
+            $subImg = $postAbout['old_sub_img'] ?? ($currentLangData['sub_img'] ?? '');
             if (isset($_FILES['about_sub_img']) && $_FILES['about_sub_img']['error'] === UPLOAD_ERR_OK) {
                 if (!empty($currentLangData['sub_img']) && str_starts_with($currentLangData['sub_img'], 'assets/uploads/')) {
                     $this->deleteOldImageFile($currentLangData['sub_img']);
@@ -77,7 +78,7 @@ class AboutSettingsService
                 $subImg = 'assets/uploads/' . $filename;
             }
 
-            $visionIcon = $_POST['old_vision_icon'] ?? ($currentLangData['vision_icon'] ?? '');
+            $visionIcon = $postAbout['old_vision_icon'] ?? ($currentLangData['vision_icon'] ?? '');
             if (isset($_FILES['about_vision_icon']) && $_FILES['about_vision_icon']['error'] === UPLOAD_ERR_OK) {
                 if (!empty($currentLangData['vision_icon']) && str_starts_with($currentLangData['vision_icon'], 'assets/uploads/')) {
                     $this->deleteOldImageFile($currentLangData['vision_icon']);
@@ -86,7 +87,7 @@ class AboutSettingsService
                 $visionIcon = 'assets/uploads/' . $filename;
             }
 
-            $messageIcon = $_POST['old_message_icon'] ?? ($currentLangData['message_icon'] ?? '');
+            $messageIcon = $postAbout['old_message_icon'] ?? ($currentLangData['message_icon'] ?? '');
             if (isset($_FILES['about_message_icon']) && $_FILES['about_message_icon']['error'] === UPLOAD_ERR_OK) {
                 if (!empty($currentLangData['message_icon']) && str_starts_with($currentLangData['message_icon'], 'assets/uploads/')) {
                     $this->deleteOldImageFile($currentLangData['message_icon']);
@@ -95,18 +96,19 @@ class AboutSettingsService
                 $messageIcon = 'assets/uploads/' . $filename;
             }
 
+            // تجميع بيانات اللغة النشطة
             $aboutAllLangs[$targetLang] = [
-                'title'         => $_POST['about_title'] ?? 'من نحن',
-                'desc'          => $_POST['about_desc'] ?? '',
-                'btn_text'      => $_POST['about_btn_text'] ?? 'قراءة المزيد',
-                'btn_url'       => $_POST['about_btn_url'] ?? '#',
+                'title'         => $postAbout['title'] ?? ($currentLangData['title'] ?? 'من نحن'),
+                'desc'          => $postAbout['desc'] ?? ($currentLangData['desc'] ?? ''),
+                'btn_text'      => $postAbout['btn_text'] ?? ($currentLangData['btn_text'] ?? 'قراءة المزيد'),
+                'btn_url'       => $postAbout['btn_url'] ?? ($currentLangData['btn_url'] ?? '#'),
                 'main_img'      => $mainImg,
                 'sub_img'       => $subImg,
-                'vision_title'  => $_POST['vision_title'] ?? 'رؤية الشركة',
-                'vision_desc'   => $_POST['vision_desc'] ?? '',
+                'vision_title'  => $postAbout['vision_title'] ?? ($currentLangData['vision_title'] ?? 'رؤية الشركة'),
+                'vision_desc'   => $postAbout['vision_desc'] ?? ($currentLangData['vision_desc'] ?? ''),
                 'vision_icon'   => $visionIcon,
-                'message_title' => $_POST['message_title'] ?? 'رسالة الشركة',
-                'message_desc'  => $_POST['message_desc'] ?? '',
+                'message_title' => $postAbout['message_title'] ?? ($currentLangData['message_title'] ?? 'رسالة الشركة'),
+                'message_desc'  => $postAbout['message_desc'] ?? ($currentLangData['message_desc'] ?? ''),
                 'message_icon'  => $messageIcon
             ];
 
@@ -172,7 +174,7 @@ class AboutSettingsService
                 
                 if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                     if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFormFile($item['old_img']); // Keep correct call
+                        $this->deleteOldImageFile($item['old_img']);
                     }
                     $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                     $teamData[$index]['img'] = 'assets/uploads/' . $filename;

@@ -1,6 +1,5 @@
 <?php
 return [
-    // Allgemeine Übersetzungen & Buttons
     'home'                    => 'Startseite',
     'about'                   => 'Über uns',
     'services'                => 'Dienstleistungen',
@@ -21,10 +20,8 @@ return [
     'no_file_chosen'          => 'Keine Datei ausgewählt',
     'current_image'           => 'Aktuelles Bild:',
 
-    // Logo & Dateien
     'manage_site_logo'        => 'Website-Logo ändern',
 
-    // Soziale Netzwerke
     'manage_social_platforms' => 'Social-Media-Plattformen verwalten',
     'platform_name'           => 'Plattformname',
     'name_placeholder'        => 'Name',
@@ -34,7 +31,6 @@ return [
     'delete_platform'         => 'Plattform löschen',
     'add_new_platform'        => 'Neue Plattform hinzufügen',
     
-    // Ankündigungen
     'announcement_settings'   => 'Ankündigungs-Einstellungen',
     'ad_status_timing'        => 'Ankündigungsstatus & Timing',
     'display_status'          => 'Anzeigestatus',
@@ -53,7 +49,6 @@ return [
     'upload_ad_image'         => 'Ankündigungsbild hochladen:',
     'redirect_link'           => 'Weiterleitungs-URL (optional)',
 
-    // Hauptmenü
     'manage_main_menu'        => 'Hauptmenü verwalten',
     'link_title'              => 'Link-Titel',
     'link_title_placeholder'  => 'Titel',
@@ -61,14 +56,12 @@ return [
     'delete_link'             => 'Link löschen',
     'add_new_link'            => 'Neuen Link hinzufügen',
 
-    // Sprachen
     'manage_languages'        => 'Sprachen verwalten',
     'lang_code'               => 'Sprachcode',
     'language_name'           => 'Sprachname',
     'delete_lang'             => 'Sprache löschen',
     'add_new_language'        => 'Neue Sprache hinzufügen',
 
-    // Hero Sektion
     'edit_hero_section'       => 'Hero-Sektion bearbeiten',
     'hero_title'              => 'Titel',
     'hero_desc'               => 'Beschreibung',
@@ -76,7 +69,6 @@ return [
     'hero_btn_url'            => 'Button-URL',
     'hero_bg_image'           => 'Hintergrundbild',
 
-    // Dienste Sektion
     'edit_services_section'   => 'Dienstleistungen bearbeiten',
     'services_section_title'  => 'Haupttitel',
     'services_section_desc'   => 'Untertitel / Beschreibung',
@@ -87,7 +79,6 @@ return [
     'delete_service'          => 'Dienst löschen',
     'add_new_service'         => 'Neuen Dienst hinzufügen',
     
-    // Warum wir Sektion
     'edit_features'           => 'Vorteile bearbeiten',
     'section_main_title'      => 'Haupttitel',
     'section_subtitle'        => 'Untertitel / Beschreibung',
@@ -95,7 +86,6 @@ return [
     'delete_feature'          => 'Element löschen',
     'add_new_feature'         => 'Neues Element hinzufügen',
     
-    // Bewertungen
     'edit_reviews'            => 'Bewertungen bearbeiten',
     'review_video_url'        => 'Video-URL (Embed URL)',
     'delete_video'            => 'Video löschen',
@@ -103,7 +93,6 @@ return [
     'manage_customer_videos'  => 'Kundenvideos verwalten',
     'added_videos'            => 'Hinzugefügte Videos',
 
-    // Leitfaden / Guide
     'manage_guide'            => 'Leitfaden verwalten',
     'article_title'           => 'Artikeltitel',
     'page_url'                => 'Seiten-URL',
@@ -111,14 +100,12 @@ return [
     'add_new_article'         => 'Neuen Artikel hinzufügen',
     'image'                   => 'Bild',
 
-    // FAQ Sektion
     'manage_faq'              => 'FAQ verwalten',
     'faq_question'            => 'Frage',
     'faq_answer'              => 'Antwort',
     'delete_faq'              => 'Frage löschen',
     'add_new_faq'             => 'Neue Frage hinzufügen',
 
-    // Footer Sektion
     'manage_footer'           => 'Footer verwalten',
     'consult_section_title'   => 'Beratungsbereich',
     'consult_title_label'     => 'Beratungstitel',
@@ -136,7 +123,6 @@ return [
     'delete_contact'          => 'Kontakt löschen',
     'add_new_contact'         => 'Neuen Kontakt hinzufügen',
 
-    // عن الشركة (About Section & Modals)
     'manage_about_section'    => 'Über uns bearbeiten',
     'company_vision'          => 'Unternehmensvision',
     'company_message'         => 'Unternehmensbotschaft',
@@ -144,7 +130,6 @@ return [
     'sub_image'               => 'Aktuelles Unterbild',
     'icon_image'              => 'Icon / Bild',
     
-    // فريق العمل (Team)
     'manage_team'             => 'Team verwalten',
     'team_section_title'      => 'Sektionstitel',
     'team_section_desc'       => 'Sektionsbeschreibung',
@@ -154,7 +139,6 @@ return [
     'delete_member'           => 'Mitglied löschen',
     'add_new_member'          => 'Neues Mitglied hinzufügen',
     
-    // العدادات (Counts)
     'manage_counts'           => 'Zähler verwalten',
     'count_number'            => 'Nummer / Wert',
     'count_title'             => 'Titel / Beschreibung',
@@ -162,7 +146,6 @@ return [
     'delete_count'            => 'Zähler löschen',
     'add_new_count'           => 'Neuen Zähler hinzufügen',
 
-    // الشركاء (Partners)
     'manage_partners'         => 'Partner verwalten',
     'partner_image'           => 'Partner-Logo / Bild',
     'delete_partner'          => 'Partner löschen',

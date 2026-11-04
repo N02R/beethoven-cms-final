@@ -19,6 +19,27 @@ return [
     'status'                  => 'الحالة',
     'choose_file'             => 'اختر ملف',
     'no_file_chosen'          => 'لم يتم اختيار ملف',
+<?php
+return [
+    // الترجمات العامة والأزرار
+    'home'                    => 'الرئيسية',
+    'about'                   => 'من نحن',
+    'services'                => 'الخدمات',
+    'education'               => 'التعليم والدراسة',
+    'jobs'                    => 'الوظائف والمهن',
+    'guide'                   => 'الدليل',
+    'contact'                 => 'اتصل بنا',
+    'login'                   => 'تسجيل الدخول',
+    'read_more'               => 'اقرأ المزيد',
+    'send'                    => 'إرسال',
+    'save_changes'            => 'حفظ التغييرات',
+    'cancel'                  => 'إلغاء',
+    'title'                   => 'العنوان',
+    'description'             => 'الوصف',
+    'url'                     => 'الرابط',
+    'status'                  => 'الحالة',
+    'choose_file'             => 'اختر ملف',
+    'no_file_chosen'          => 'لم يتم اختيار ملف',
     'current_image'           => 'الصورة الحالية:',
 
     // ترجمات إدارة الشعار والملفات
@@ -106,13 +127,14 @@ return [
     'delete_feature'             => 'حذف الميزة',
     'add_new_feature'            => 'إضافة ميزة جديدة',
     'edit_reviews'           => 'تعديل التقييمات',
-'reviews_default_title'  => 'شاهد ماذا يقول عملاؤنا عنا',
-'no_reviews_available'   => 'لا توجد فيديوهات للعرض حالياً.',
-'review_video_url'       => 'رابط الفيديو (Embed URL)',
-'delete_video'           => 'حذف الفيديو',
-'add_new_video'          => 'إضافة فيديو جديد',
-'manage_customer_videos' => 'إدارة فيديوهات العملاء',
-'added_videos'           => 'الفيديوهات المضافة',
+    'reviews_default_title'  => 'شاهد ماذا يقول عملاؤنا عنا',
+    'no_reviews_available'   => 'لا توجد فيديوهات للعرض حالياً.',
+    'review_video_url'       => 'رابط الفيديو (Embed URL)',
+    'delete_video'           => 'حذف الفيديو',
+    'add_new_video'          => 'إضافة فيديو جديد',
+    'manage_customer_videos' => 'إدارة فيديوهات العملاء',
+    'added_videos'           => 'الفيديوهات المضافة',
+
     // ترجمات مودل الدليل الشامل (Guide Modal)
     'manage_guide'            => 'إدارة الدليل الشامل',
     'main_section_title'      => 'عنوان القسم الرئيسي',
@@ -123,7 +145,8 @@ return [
     'add_new_article'         => 'إضافة مقال جديد',
     'image'                   => 'الصورة',
     'read_more'               => 'اقرأ المزيد',
-        // ترجمات مودل الأسئلة الشائعة (FAQ Modal)
+
+    // ترجمات مودل الأسئلة الشائعة (FAQ Modal)
     'manage_faq'              => 'إدارة الأسئلة الشائعة',
     'faq_question'            => 'السؤال',
     'faq_answer'              => 'الإجابة',
@@ -139,7 +162,7 @@ return [
     'footer_desc_label'       => 'وصف الفوتر:',
     'column_two'              => 'العمود الثاني',
     'column_two_title'        => 'عنوان العمود',
-    'menu_auto_notice'        => 'ي يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).',
+    'menu_auto_notice'        => 'يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).',
     'column_three'            => 'العمود الثالث (التواصل)',
     'column_three_title'      => 'عنوان العمود',
     'contact_name'            => 'اسم الوسيلة',
@@ -148,8 +171,8 @@ return [
     'contact_icon_image'      => 'الأيقونة / الصورة',
     'delete_contact'          => 'حذف وسيلة التواصل',
     'add_new_contact'         => 'إضافة وسيلة تواصل',
-    
-        // ترجمات قسم من نحن (About Section & Modals)
+
+    // ترجمات قسم من نحن (About Section & Modals)
     'manage_about_section'    => 'تعديل قسم من نحن',
     'company_vision'          => 'رؤية الشركة',
     'company_message'         => 'رسالة الشركة',
@@ -180,7 +203,4 @@ return [
     'partner_image'           => 'شعار / صورة الشريك',
     'delete_partner'          => 'حذف الشريك',
     'add_new_partner'         => 'إضافة شريك جديد',
-
-
 ];
-

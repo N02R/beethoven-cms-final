@@ -1,6 +1,5 @@
 <?php
 return [
-    // General Translations & Buttons
     'home'                    => 'Home',
     'about'                   => 'About Us',
     'services'                => 'Services',
@@ -21,10 +20,8 @@ return [
     'no_file_chosen'          => 'No file chosen',
     'current_image'           => 'Current Image:',
 
-    // Logo & Files
     'manage_site_logo'        => 'Change Site Logo',
 
-    // Social Platforms
     'manage_social_platforms' => 'Manage Social Platforms',
     'platform_name'           => 'Platform Name',
     'name_placeholder'        => 'Name',
@@ -34,7 +31,6 @@ return [
     'delete_platform'         => 'Delete Platform',
     'add_new_platform'        => 'Add New Platform',
     
-    // Announcements
     'announcement_settings'   => 'Announcement Board Settings',
     'ad_status_timing'        => 'Status & Timing',
     'display_status'          => 'Display Status',
@@ -53,7 +49,6 @@ return [
     'upload_ad_image'         => 'Upload Ad Image:',
     'redirect_link'           => 'Redirect URL (Optional)',
 
-    // Main Menu
     'manage_main_menu'        => 'Manage Main Menu',
     'link_title'              => 'Link Title',
     'link_title_placeholder'  => 'Title',
@@ -61,14 +56,12 @@ return [
     'delete_link'             => 'Delete Link',
     'add_new_link'            => 'Add New Link',
 
-    // Languages
     'manage_languages'        => 'Manage Languages',
     'lang_code'               => 'Language Code',
     'language_name'           => 'Language Name',
     'delete_lang'             => 'Delete Language',
     'add_new_language'        => 'Add New Language',
 
-    // Hero Section
     'edit_hero_section'       => 'Edit Hero Section',
     'hero_title'              => 'Title',
     'hero_desc'               => 'Description',
@@ -76,7 +69,6 @@ return [
     'hero_btn_url'            => 'Button URL',
     'hero_bg_image'           => 'Background Image',
 
-    // Services Section
     'edit_services_section'   => 'Edit Services Section',
     'services_section_title'  => 'Main Section Title',
     'services_section_desc'   => 'Subtitle / Description',
@@ -87,7 +79,6 @@ return [
     'delete_service'          => 'Delete Service',
     'add_new_service'         => 'Add New Service',
     
-    // Choose Us / Features
     'edit_features'           => 'Edit Features',
     'section_main_title'      => 'Main Section Title',
     'section_subtitle'        => 'Subtitle / Description',
@@ -95,7 +86,6 @@ return [
     'delete_feature'          => 'Delete Item',
     'add_new_feature'         => 'Add New Item',
     
-    // Reviews
     'edit_reviews'            => 'Edit Reviews',
     'review_video_url'        => 'Video URL (Embed URL)',
     'delete_video'            => 'Delete Video',
@@ -103,7 +93,6 @@ return [
     'manage_customer_videos'  => 'Manage Customer Videos',
     'added_videos'            => 'Added Videos',
 
-    // Guide
     'manage_guide'            => 'Manage Comprehensive Guide',
     'article_title'           => 'Article Title',
     'page_url'                => 'Page URL',
@@ -111,14 +100,12 @@ return [
     'add_new_article'         => 'Add New Article',
     'image'                   => 'Image',
 
-    // FAQ Section
     'manage_faq'              => 'Manage FAQ',
     'faq_question'            => 'Question',
     'faq_answer'              => 'Answer',
     'delete_faq'              => 'Delete Question',
     'add_new_faq'             => 'Add New Question',
 
-    // Footer
     'manage_footer'           => 'Manage Footer',
     'consult_section_title'   => 'Consultation Section',
     'consult_title_label'     => 'Consultation Title',
@@ -136,7 +123,6 @@ return [
     'delete_contact'          => 'Delete Contact',
     'add_new_contact'         => 'Add New Contact',
 
-    // About Section & Modals
     'manage_about_section'    => 'Edit About Us Section',
     'company_vision'          => 'Company Vision',
     'company_message'         => 'Company Message',
@@ -144,7 +130,6 @@ return [
     'sub_image'               => 'Current Sub Image',
     'icon_image'              => 'Icon / Image',
     
-    // Team
     'manage_team'             => 'Manage Team',
     'team_section_title'      => 'Section Title',
     'team_section_desc'       => 'Section Description',
@@ -154,7 +139,6 @@ return [
     'delete_member'           => 'Delete Member',
     'add_new_member'          => 'Add New Member',
     
-    // Counts
     'manage_counts'           => 'Manage Counters',
     'count_number'            => 'Number / Value',
     'count_title'             => 'Title / Description',
@@ -162,7 +146,6 @@ return [
     'delete_count'            => 'Delete Counter',
     'add_new_count'           => 'Add New Counter',
 
-    // Partners
     'manage_partners'         => 'Manage Partners',
     'partner_image'           => 'Partner Logo / Image',
     'delete_partner'          => 'Delete Partner',

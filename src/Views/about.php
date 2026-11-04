@@ -9,10 +9,10 @@
   <div class="custom-container">
     <?php 
     $ab = $data['about_section'] ?? ($data['about'] ?? []);
-    $about_main_img = get_image_url($ab['main_img'] ?? null, '/assets/img/about us icon, image/about1.jpg');
-    $about_sub_img = get_image_url($ab['sub_img'] ?? null, '/assets/img/about us icon, image/about2.png');
-    $vision_icon = get_image_url($ab['vision_icon'] ?? null, '/assets/img/About us Icon, image/Company vision.svg');
-    $message_icon = get_image_url($ab['message_icon'] ?? null, '/assets/img/About us Icon, image/Company message.svg');
+    $about_main_img = get_image_url($ab['main_img'] ?? null, '/pub/assets/img/about/about1.jpg');
+    $about_sub_img = get_image_url($ab['sub_img'] ?? null, '/assets/img/about/about2.png');
+    $vision_icon = get_image_url($ab['vision_icon'] ?? null, '/assets/img/about/Company vision.svg.webp');
+    $message_icon = get_image_url($ab['message_icon'] ?? null, '/assets/img/about/Company message.svg.webp');
     ?>
     <div class="row align-items-center g-5">
       <div class="col-lg-6 order-2 order-lg-1">

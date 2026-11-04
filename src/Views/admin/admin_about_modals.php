@@ -89,13 +89,13 @@ if (!isset($lang) || !is_array($lang) || empty($lang)) {
                             <!-- أزرار التوجيه -->
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($lang['button_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($lang['hero_btn_text'] ?? $lang['button_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <input type="text" class="form-control" name="about[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars((string)$modalAbBtnText, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($lang['button_url'] ?? 'رابط الزر الحالي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($lang['hero_btn_url'] ?? $lang['button_url'] ?? 'رابط الزر الحالي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <input type="text" class="form-control" name="about[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars((string)$modalAbBtnUrl, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>

@@ -191,7 +191,7 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المطابق حرفياً لستايل خدمات الـ Home) -->
+<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المطابق حرفياً لستايل خدمات الـ Home والمحصن ضد الأخطاء) -->
 <div class="modal fade custom-modal" id="aboutServicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -206,23 +206,18 @@ if (!is_array($lang)) $lang = [];
             
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات about_services للغة الحالية من قاعدة البيانات
-                $aboutServicesRaw = $data['about_services'] ?? ($currentSettings['about_services'] ?? null);
-                if (empty($aboutServicesRaw)) {
-                    try {
-                        $pdoConn = \App\Config\Database::getConnection();
-                        $stmtAS = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_services'");
-                        $stmtAS->execute();
-                        $aboutServicesRaw = $stmtAS->fetchColumn() ?: '{}';
-                    } catch (\Exception $e) {
-                        $aboutServicesRaw = '{}';
-                    }
-                }
-
+                // 🌟 جلب بيانات about_services الخام من قاعدة البيانات أو الإعدادات لضمان دعم تعدد اللغات بشكل صحيح
+                $aboutServicesRaw = get_setting('about_services', '{}');
                 $asAllLangs = is_string($aboutServicesRaw) ? json_decode($aboutServicesRaw, true) : (is_array($aboutServicesRaw) ? $aboutServicesRaw : []);
                 if (!is_array($asAllLangs)) $asAllLangs = [];
                 
-                $curLangAS = $asAllLangs[$current_lang] ?? ($asAllLangs['ar'] ?? []);
+                // إذا كانت البيانات مخزنة بشكل مباشر للغة أو مهيكلة بالمفاتيح (ar, en, de)
+                if (isset($asAllLangs['section_title']) || isset($asAllLangs['items'])) {
+                    $curLangAS = $asAllLangs;
+                } else {
+                    $curLangAS = $asAllLangs[$current_lang] ?? ($asAllLangs['ar'] ?? []);
+                }
+
                 $asTitle   = $curLangAS['section_title'] ?? ($curLangAS['title'] ?? 'خدماتنا المميزة');
                 $asDesc    = $curLangAS['section_subtitle'] ?? ($curLangAS['desc'] ?? '');
                 $asItems   = $curLangAS['items'] ?? [];

@@ -136,7 +136,8 @@ class AboutSettingsService
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    $oldImg = $item['img'] ?? ($existingItems[$index]['img'] ?? '');
+                    // 🌟 التصحيح الجذري هنا لضمان جلب الصورة القديمة سواء جاءت عبر [img] أو [old_img]
+                    $oldImg = $item['img'] ?? ($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $img = $oldImg;
 
                     // التحقق من رفع صورة جديدة للخدمة
@@ -167,6 +168,7 @@ class AboutSettingsService
             $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
+
         // 3. تحديث العدادات والإحصائيات (Counts)
         elseif ($action === 'update_about_counts') {
             $countsData = $_POST['counts'] ?? [];

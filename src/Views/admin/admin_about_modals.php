@@ -201,7 +201,7 @@ if (!is_array($lang)) $lang = [];
                     <?php echo htmlspecialchars($lang['edit_about_services'] ?? 'تعديل خدمات من نحن', ENT_QUOTES, 'UTF-8'); ?> 
                     (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <div class="modal-body p-4">

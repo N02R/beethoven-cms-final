@@ -24,7 +24,8 @@ class AboutSettingsService
             'update_about_counts',
             'update_about_partners',
             'update_about_team',
-            'update_team'
+            'update_team',
+            'update_about_services' // 🌟 تمت الإضافه بنجاح
         ];
 
         if (!in_array($action, $allowedActions, true)) {
@@ -107,7 +108,66 @@ class AboutSettingsService
             $jsonVal = json_encode($aboutAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 2. تحديث العدادات والإحصائيات (Counts)
+        // 🌟 2. تحديث خدمات صفحة من نحن المستقلة (About Services) مع دعم تعدد اللغات ورفع الصور
+        elseif ($action === 'update_about_services') {
+            $targetLang = $_POST['targetLang'] ?? $_POST['about_services_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_services'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $servicesAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) {
+                    $servicesAllLangs = $decodedDb;
+                }
+            }
+
+            $currentLangData = $servicesAllLangs[$targetLang] ?? ($servicesAllLangs['ar'] ?? []);
+            $postedServices = $_POST['about_services'][$targetLang] ?? $_POST['about_services'] ?? [];
+
+            $secTitle = $postedServices['section_title'] ?? ($currentLangData['section_title'] ?? 'خدماتنا المميزة');
+            $secSub   = $postedServices['section_subtitle'] ?? ($currentLangData['section_subtitle'] ?? '');
+            $existingItems = $currentLangData['items'] ?? [];
+
+            $finalItems = [];
+            $rawItems = $postedServices['items'] ?? [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    $oldImg = $item['img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    // التحقق من رفع صورة جديدة للخدمة
+                    if (isset($_FILES['about_services_img_' . $index]) && $_FILES['about_services_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['about_services_img_' . $index]['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = [
+                        'title' => trim($item['title'] ?? ''),
+                        'url'   => trim($item['url'] ?? '#'),
+                        'img'   => $img
+                    ];
+                }
+            } else {
+                $finalItems = $existingItems;
+            }
+
+            $servicesAllLangs[$targetLang] = [
+                'section_title'    => $secTitle,
+                'section_subtitle' => $secSub,
+                'items'            => $finalItems
+            ];
+
+            $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'about_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+        }
+        // 3. تحديث العدادات والإحصائيات (Counts)
         elseif ($action === 'update_about_counts') {
             $countsData = $_POST['counts'] ?? [];
             foreach ($countsData as $index => $item) {
@@ -128,7 +188,7 @@ class AboutSettingsService
             $jsonVal = json_encode(array_values($countsData), JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 3. تحديث الشركاء (Partners) مع دعم الهيكل متعدد اللغات كالخدمات والمميزات
+        // 4. تحديث الشركاء (Partners) مع دعم الهيكل متعدد اللغات
         elseif ($action === 'update_about_partners') {
             $targetLang = $_POST['targetLang'] ?? $_POST['partners_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -180,7 +240,7 @@ class AboutSettingsService
             $jsonVal = json_encode($partnersAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'partners', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 4. تحديث فريق العمل (Team) مع دعم الهيكل متعدد اللغات والحماية الكاملة
+        // 5. تحديث فريق العمل (Team) مع دعم الهيكل متعدد اللغات والحماية الكاملة
         elseif ($action === 'update_about_team' || $action === 'update_team') {
             $targetLang = $_POST['targetLang'] ?? $_POST['team_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 

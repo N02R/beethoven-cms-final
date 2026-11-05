@@ -206,8 +206,8 @@ if (!is_array($lang)) $lang = [];
             
             <div class="modal-body p-4">
                 <?php 
-                // جلب بيانات about_services للغة الحالية من قاعدة البيانات
-                $aboutServicesRaw = $data['about_services'] ?? ($currentSettings['about_services'] ?? null);
+                // جلب بيانات about_services المستقلة للغة الحالية من قاعدة البيانات أو مصفوفة الإعدادات
+                $aboutServicesRaw = $currentSettings['about_services'] ?? ($data['about_services'] ?? null);
                 if (empty($aboutServicesRaw)) {
                     try {
                         $pdoConn = \App\Config\Database::getConnection();
@@ -226,6 +226,7 @@ if (!is_array($lang)) $lang = [];
                 $asTitle   = $curLangAS['section_title'] ?? ($curLangAS['title'] ?? 'خدماتنا المميزة');
                 $asDesc    = $curLangAS['section_subtitle'] ?? ($curLangAS['desc'] ?? '');
                 $asItems   = $curLangAS['items'] ?? [];
+                if (!is_array($asItems)) $asItems = [];
                 ?>
 
                 <form id="aboutServicesForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -239,7 +240,7 @@ if (!is_array($lang)) $lang = [];
                                 <label class="small fw-bold mb-1 text-secondary">
                                     <?php echo htmlspecialchars($lang['services_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
-                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars((string)$asTitle, ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars((string)$asTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="عنوان القسم الرئيسي">
                             </div>
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
@@ -252,45 +253,43 @@ if (!is_array($lang)) $lang = [];
 
                     <!-- قائمة الخدمات المضافة والمستقلة -->
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <h6 class="text-primary fw-bold mb-3"><?php echo htmlspecialchars($lang['added_services'] ?? 'الخدمات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
+                        <h6 class="text-primary fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['added_services'] ?? 'الخدمات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                         
                         <div id="aboutServicesContainer" class="d-flex flex-column gap-3">
-                            <?php if (!empty($asItems) && is_array($asItems)): ?>
-                                <?php foreach ($asItems as $index => $item): 
-                                    $itemTitle = $item['title'] ?? '';
-                                    $itemUrl   = $item['url'] ?? '';
-                                    $itemImg   = $item['img'] ?? '';
-                                ?>
-                                    <div class="service-item-row p-3 border rounded-3 bg-light position-relative">
-                                        <div class="row g-2 align-items-center">
-                                            <div class="col-md-4">
-                                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_title'] ?? 'عنوان الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($itemUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_url'] ?? 'رابط الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <input type="file" class="form-control" name="about_services_img_<?php echo $index; ?>" accept="image/*">
-                                                <input type="hidden" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" title="حذف">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                            <?php foreach ($asItems as $index => $item): 
+                                $itemTitle = $item['title'] ?? '';
+                                $itemUrl   = $item['url'] ?? '';
+                                $itemImg   = $item['img'] ?? '';
+                            ?>
+                                <div class="service-item-row p-3 border rounded-3 bg-light position-relative" id="about_service_row_<?php echo $index; ?>">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control about-service-title" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_title'] ?? 'عنوان الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control about-service-url" name="about_services[<?php echo $current_reg ?? $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($itemUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_url'] ?? 'رابط الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <input type="file" class="form-control about-service-file w-100" name="about_services_img_<?php echo $index; ?>" accept="image/*">
+                                                <?php if (!empty($itemImg)): ?>
+                                                    <img src="<?php echo htmlspecialchars(function_exists('get_image_url') ? get_image_url($itemImg) : $itemImg, ENT_QUOTES, 'UTF-8'); ?>" alt="Preview" class="rounded border" style="width: 38px; height: 38px; object-fit: cover; flex-shrink: 0;">
+                                                <?php endif; ?>
                                             </div>
                                         </div>
-                                        <?php if (!empty($itemImg)): ?>
-                                            <div class="mt-2 text-start">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($itemImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Preview" style="max-height: 40px; border-radius: 4px;">
-                                            </div>
-                                        <?php endif; ?>
+                                        <input type="hidden" class="about-service-old-img" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="col-md-1 text-center">
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('about_service_row_<?php echo $index; ?>')" title="حذف">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
 
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-3" id="addAboutServiceBtn">
-                            <i class="bi bi-plus-lg me-1"></i> <?php echo htmlspecialchars($lang['add_new_service'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
+                        <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" id="addAboutServiceBtn" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                            <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_service'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                         </button>
                     </div>
                 </form>
@@ -303,7 +302,6 @@ if (!is_array($lang)) $lang = [];
         </div>
     </div>
 </div>
-
 
 <!-- 2. Team Edit Modal (قسم فريق العمل) -->
 <div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
@@ -561,16 +559,16 @@ if (!is_array($lang)) $lang = [];
 
         let bgClass = 'alert-success';
         let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
+        let title = 'Milkaa\'inaan raawwatame!';
 
         if (type === 'danger') {
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
-            title = 'عذراً، حدث خطأ!';
+            title = 'Dhiifama, dogoggorri uumameera!';
         } else if (type === 'warning') {
             bgClass = 'alert-warning';
             icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
+            title = 'Hubachiisa barbaachisaa';
         }
 
         const alertDiv = document.createElement('div');
@@ -599,7 +597,7 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
-    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة)
+    // 🌟 Dalagaalee tajaajila fuula "Waa'ee Keenya" (About Us Services) dabalata safara haaraaf
     function addAboutServiceRow() {
         const container = document.getElementById('aboutServicesContainer');
         if (!container) return;
@@ -611,17 +609,17 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-4">
-                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="عنوان الخدمة">
+                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="Madii Tajaajilichaa">
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="رابط الخدمة">
+                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="Geessituu (URL) Tajaajilichaa">
                 </div>
                 <div class="col-md-4">
                     <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
                 </div>
                 <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
                 <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="حذف">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="Haqi">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -629,7 +627,7 @@ if (!is_array($lang)) $lang = [];
         container.appendChild(div);
     }
 
-    // ربط زر الإضافة بحدث الضغط في المودل
+    // Qabsiisa buttons dabalataas Modal keessatti hordofuu
     document.addEventListener('DOMContentLoaded', function() {
         const addBtn = document.getElementById('addAboutServiceBtn');
         if (addBtn) {
@@ -648,22 +646,22 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
-                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="الاسم">
+                    <label class="small fw-bold mb-1 text-secondary">Maqaa Guutuu</label>
+                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="Maqaa">
                 </div>
                 <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
-                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="المسمى الوظيفي">
+                    <label class="small fw-bold mb-1 text-secondary">Gahee Hojii</label>
+                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="Gahee Hojii">
                 </div>
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
+                    <label class="small fw-bold mb-1 text-secondary">Suuraa Miseensichaa</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Miseensa Haqi"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -679,22 +677,22 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
+                    <label class="form-label fw-semibold small text-secondary">Lakkoofsa / Gatii</label>
                     <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="+500">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="مشروع مكتمل">
+                    <label class="form-label fw-semibold small text-secondary">Madii Lakkoofsaa / Ibsa</label>
+                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="Pirojekti xumurame">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
+                    <label class="form-label fw-semibold small text-secondary">Mallattoo / Suuraa Lakkoofsaa</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Lakkoofsa Haqi"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -711,20 +709,20 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-11">
-                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
+                    <label class="form-label fw-semibold small text-secondary">Mallattoo / Suuraa Partner</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="partner-old-img" name="partners[${currentLang}][items][${partnerCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Partner Haqi"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
     }
 
-    // معالج الحفظ وإعادة الترقيم التلقائي
+    // Sirna Quursuu fi Deebisanii Lakkoofsisuu Of-1 (Auto-indexing & Save Handler)
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -732,7 +730,7 @@ if (!is_array($lang)) $lang = [];
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن
+                // 🌟 Deebisanii lakkoofsisuu safara tajaajila "Waa'ee Keenya"
                 form.querySelectorAll('.service-item-row').forEach((row, index) => {
                     const titleInput = row.querySelector('.about-service-title');
                     const urlInput = row.querySelector('.about-service-url');
@@ -745,7 +743,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `about_services[${currentLang}][items][${index}][img]`;
                 });
 
-                // إعادة ترقيم صفوف الفريق
+                // Deebisanii lakkoofsisuu miseensota garee
                 form.querySelectorAll('.team-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.team-name');
                     const roleInput = row.querySelector('.team-role');
@@ -758,7 +756,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // إعادة ترقيم صفوف الإحصائيات
+                // Deebisanii lakkoofsisuu lakkoofsoota
                 form.querySelectorAll('.count-row-item').forEach((row, index) => {
                     const numInput = row.querySelector('.count-number');
                     const titleInput = row.querySelector('.count-title');
@@ -771,7 +769,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
                 });
 
-                // إعادة ترقيم صفوف الشركاء
+                // Deebisanii lakkoofsisuu partneroota
                 form.querySelectorAll('.partner-row-item').forEach((row, index) => {
                     const fileInput = row.querySelector('.partner-file');
                     const oldImgInput = row.querySelector('.partner-old-img');
@@ -803,18 +801,18 @@ if (!is_array($lang)) $lang = [];
                     try {
                         const data = JSON.parse(text);
                         if (data.success || data.status === 'success') {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                            showNotification('Fooyya’iinsi milkaa’inaan kuufameera, fuulichi deebi’ee fe’amaa jira...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
+                            showNotification('Dhiifama, hin kuufamne: ' + (data.message || 'Maaloo ragaa galchite deebitee ilaali'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                        showNotification('Dogoggorri Server irraa dhufuu: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
+                    showNotification('Network irratti dogoggorri uumameera, maaloo booda irra deebi’aa yaalaa.', 'danger');
                 });
             });
         });

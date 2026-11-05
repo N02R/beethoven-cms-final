@@ -150,4 +150,9 @@ return [
     'partner_image'           => 'Partner-Logo / Bild',
     'delete_partner'          => 'Partner löschen',
     'add_new_partner'         => 'Neuen Partner hinzufügen',
+        // ترجمات إضافية لمودل خدمات صفحة من نحن
+    'edit_about_services'     => 'Dienstleistungen "Über uns" bearbeiten',
+    'image_or_icon'           => 'Bild / Icon',
+    'delete_service'          => 'Dienst löschen',
+
 ];

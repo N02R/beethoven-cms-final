@@ -542,289 +542,211 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- Dynamic Rows JS Engine & AJAX Handlers -->
-<script>
-    function removeRow(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
+/**
+ * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine
+ * النمط القياسي الذهبي لإدارة الصفوف الديناميكية وعمليات الحفظ بالـ AJAX
+ */
+
+function removeRow(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function showNotification(message, type = 'success') {
+    const existingAlert = document.getElementById('customNotificationAlert');
+    if (existingAlert) existingAlert.remove();
+
+    let bgClass = 'alert-success';
+    let icon = 'bi-check-circle-fill';
+    let title = 'تم بنجاح!';
+
+    if (type === 'danger') {
+        bgClass = 'alert-danger';
+        icon = 'bi-x-circle-fill';
+        title = 'عذراً، حدث خطأ!';
+    } else if (type === 'warning') {
+        bgClass = 'alert-warning';
+        icon = 'bi-exclamation-triangle-fill';
+        title = 'تنبيه هام';
     }
 
-    function showNotification(message, type = 'success') {
-        const existingAlert = document.getElementById('customNotificationAlert');
-        if (existingAlert) existingAlert.remove();
-
-        let bgClass = 'alert-success';
-        let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
-
-        if (type === 'danger') {
-            bgClass = 'alert-danger';
-            icon = 'bi-x-circle-fill';
-            title = 'عذراً، حدث خطأ!';
-        } else if (type === 'warning') {
-            bgClass = 'alert-warning';
-            icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
-        }
-
-        const alertDiv = document.createElement('div');
-        alertDiv.id = 'customNotificationAlert';
-        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
-        alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 320px; border-radius: 12px; border: none;';
-        
-        alertDiv.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi ${icon} fs-4"></i>
-                <div>
-                    <strong>${title}</strong>
-                    <div class="small">${message}</div>
-                </div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    const alertDiv = document.createElement('div');
+    alertDiv.id = 'customNotificationAlert';
+    alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 320px; border-radius: 12px; border: none;';
+    
+    alertDiv.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi ${icon} fs-4"></i>
+            <div>
+                <strong>${title}</strong>
+                <div class="small">${message}</div>
             </div>
-        `;
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-        document.body.appendChild(alertDiv);
+    document.body.appendChild(alertDiv);
 
-        setTimeout(() => {
-            if (alertDiv) {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 300);
-            }
-        }, 4000);
-    }
-
-    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) - مترجمة بالكامل ومطابقة للستايل
-    function addAboutServiceRow() {
-        const container = document.getElementById('aboutServicesContainer');
-        if (!container) return;
-        const itemCount = container.querySelectorAll('.service-item-row').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        
-        // المتغيرات المترجمة ديناميكياً للغة الحالية
-        const tTitle = '<?php echo addslashes($lang['service_title'] ?? 'عنوان الخدمة'); ?>';
-        const tUrl = '<?php echo addslashes($lang['service_url'] ?? 'رابط الخدمة'); ?>';
-        const tImg = '<?php echo addslashes($lang['image_or_icon'] ?? 'الصورة / الأيقونة'); ?>';
-        const tDelete = '<?php echo addslashes($lang['delete_service'] ?? 'حذف الخدمة'); ?>';
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm service-item-row mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'about_service_row_' + itemCount;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
-                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="${tTitle}">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">${tUrl}</label>
-                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="${tUrl}">
-                </div>
-                <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
-
-    // ربط زر الإضافة بحدث الضغط في المودل
-    document.addEventListener('DOMContentLoaded', function() {
-        const addBtn = document.getElementById('addAboutServiceBtn');
-        if (addBtn) {
-            addBtn.addEventListener('click', addAboutServiceRow);
+    setTimeout(() => {
+        if (alertDiv) {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
         }
-    });
+    }, 4000);
+}
 
-    function addTeamRow() {
-        const container = document.getElementById('teamRowsContainer');
-        if (!container) return;
-        const teamCount = container.querySelectorAll('.team-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm team-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'team_row_' + teamCount;
-        div.innerHTML = `
-            <div class="row g-3 align-items-center">
-                <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
-                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="الاسم">
+// 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة)
+function addAboutServiceRow() {
+    const container = document.getElementById('aboutServicesContainer');
+    if (!container) return;
+    const itemCount = container.querySelectorAll('.service-item-row').length;
+    const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm service-item-row mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'about_service_row_' + itemCount;
+    div.innerHTML = `
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
+                <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="عنوان الخدمة">
+            </div>
+            <div class="col-md-6">
+                <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
+                <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="رابط الخدمة">
+            </div>
+            <div class="col-md-11">
+                <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
                 </div>
-                <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
-                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="المسمى الوظيفي">
+            </div>
+            <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
+            <div class="col-md-1 text-center pt-3">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
+// 🌟 دالة إضافة عضو جديد لفريق العمل
+function addTeamRow() {
+    const container = document.getElementById('teamRowsContainer');
+    if (!container) return;
+    const teamCount = container.querySelectorAll('.team-row-item').length;
+    const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm team-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'team_row_' + teamCount;
+    div.innerHTML = `
+        <div class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
+                <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" value="" placeholder="الاسم الكامل">
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
+                <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" value="" placeholder="المسمى الوظيفي">
+            </div>
+            <div class="col-md-5">
+                <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
                 </div>
-                <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][old_img]" value="">
-                <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
+            </div>
+            <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][img]" value="">
+            <div class="col-md-1 text-center pt-3">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
+// ربط أزرار الإضافة عند تحميل المستند
+document.addEventListener('DOMContentLoaded', function() {
+    const addServiceBtn = document.getElementById('addAboutServiceBtn');
+    if (addServiceBtn) {
+        addServiceBtn.addEventListener('click', addAboutServiceRow);
     }
 
-    function addCountRow() {
-        const container = document.getElementById('countsRowsContainer');
-        if (!container) return;
-        const countsCount = container.querySelectorAll('.count-row-item').length;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm count-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'count_row_' + countsCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
-                    <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="+500">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
-                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="مشروع مكتمل">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
+    const addTeamBtn = document.getElementById('addTeamRowBtn');
+    if (addTeamBtn) {
+        addTeamBtn.addEventListener('click', addTeamRow);
     }
 
-    function addPartnerRow() {
-        const container = document.getElementById('partnersRowsContainer');
-        if (!container) return;
-        const partnerCount = container.querySelectorAll('.partner-row-item').length;
-        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm partner-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'partner_row_' + partnerCount;
-        div.innerHTML = `
-            <div class="row g-2 align-items-end">
-                <div class="col-md-11">
-                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="partner-old-img" name="partners[${currentLang}][items][${partnerCount}][old_img]" value="">
-                <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
+    // معالج الحفظ وإعادة الترقيم التلقائي بالـ AJAX لكل النماذج
+    document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    // معالج الحفظ وإعادة الترقيم التلقائي بالـ AJAX
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+            const currentLang = this.querySelector('input[name="targetLang"]')?.value || 'ar';
 
-                const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+            // إعادة ترقيم صفوف خدمات صفحة من نحن المستقلة
+            form.querySelectorAll('.service-item-row').forEach((row, index) => {
+                const titleInput = row.querySelector('.about-service-title');
+                const urlInput = row.querySelector('.about-service-url');
+                const fileInput = row.querySelector('.about-service-file');
+                const oldImgInput = row.querySelector('.about-service-old-img');
 
-                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن المستقلة بدقة مطابقة للستايل الجديد
-                form.querySelectorAll('.service-item-row').forEach((row, index) => {
-                    const titleInput = row.querySelector('.about-service-title');
-                    const urlInput = row.querySelector('.about-service-url');
-                    const fileInput = row.querySelector('.about-service-file');
-                    const oldImgInput = row.querySelector('.about-service-old-img');
+                if(titleInput) titleInput.name = `about_services[${currentLang}][items][${index}][title]`;
+                if(urlInput) urlInput.name = `about_services[${currentLang}][items][${index}][url]`;
+                if(fileInput) fileInput.name = `about_services_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `about_services[${currentLang}][items][${index}][img]`;
+            });
 
-                    if(titleInput) titleInput.name = `about_services[${currentLang}][items][${index}][title]`;
-                    if(urlInput) urlInput.name = `about_services[${currentLang}][items][${index}][url]`;
-                    if(fileInput) fileInput.name = `about_services_img_${index}`;
-                    if(oldImgInput) oldImgInput.name = `about_services[${currentLang}][items][${index}][img]`;
-                });
+            // إعادة ترقيم صفوف فريق العمل
+            form.querySelectorAll('.team-row-item').forEach((row, index) => {
+                const nameInput = row.querySelector('.team-name');
+                const roleInput = row.querySelector('.team-role');
+                const fileInput = row.querySelector('.team-file');
+                const oldImgInput = row.querySelector('.team-old-img');
 
-                // إعادة ترقيم صفوف الفريق
-                form.querySelectorAll('.team-row-item').forEach((row, index) => {
-                    const nameInput = row.querySelector('.team-name');
-                    const roleInput = row.querySelector('.team-role');
-                    const fileInput = row.querySelector('.team-file');
-                    const oldImgInput = row.querySelector('.team-old-img');
+                if(nameInput) nameInput.name = `team[${currentLang}][items][${index}][name]`;
+                if(roleInput) roleInput.name = `team[${currentLang}][items][${index}][role]`;
+                if(fileInput) fileInput.name = `team_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][img]`;
+            });
 
-                    if(nameInput) nameInput.name = `team[${currentLang}][items][${index}][name]`;
-                    if(roleInput) roleInput.name = `team[${currentLang}][items][${index}][role]`;
-                    if(fileInput) fileInput.name = `team_img_${index}`;
-                    if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][old_img]`;
-                });
+            const formData = new FormData(this);
+            let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                csrfToken = formData.get('csrf_token') || '';
+            }
+            if (csrfToken && !formData.has('csrf_token')) {
+                formData.append('csrf_token', csrfToken);
+            }
 
-                // إعادة ترقيم صفوف الإحصائيات
-                form.querySelectorAll('.count-row-item').forEach((row, index) => {
-                    const numInput = row.querySelector('.count-number');
-                    const titleInput = row.querySelector('.count-title');
-                    const fileInput = row.querySelector('.count-file');
-                    const oldImgInput = row.querySelector('.count-old-img');
-
-                    if(numInput) numInput.name = `counts[${index}][number]`;
-                    if(titleInput) titleInput.name = `counts[${index}][title]`;
-                    if(fileInput) fileInput.name = `count_img_${index}`;
-                    if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
-                });
-
-                // إعادة ترقيم صفوف الشركاء
-                form.querySelectorAll('.partner-row-item').forEach((row, index) => {
-                    const fileInput = row.querySelector('.partner-file');
-                    const oldImgInput = row.querySelector('.partner-old-img');
-
-                    if(fileInput) fileInput.name = `partner_img_${index}`;
-                    if(oldImgInput) oldImgInput.name = `partners[${currentLang}][items][${index}][old_img]`;
-                });
-
-                const formData = new FormData(this);
-                let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                if (!csrfToken) {
-                    csrfToken = formData.get('csrf_token') || '<?php echo htmlspecialchars($csrf_token ?? "", ENT_QUOTES, "UTF-8"); ?>';
-                }
-                if (csrfToken && !formData.has('csrf_token')) {
-                    formData.append('csrf_token', csrfToken);
-                }
-
-                fetch('index.php?url=admin/settings/save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(text => {
-                    console.log("Raw Server Response:", text);
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success || data.status === 'success') {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
-                        } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                        }
-                    } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+            fetch('index.php?url=admin/settings/save', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log("Raw Server Response:", text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success || data.status === 'success') {
+                        showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                     }
-                })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-                });
+                } catch (e) {
+                    showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
+                }
+            })
+            .catch(err => {
+                console.error('Fetch Error:', err);
+                showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
             });
         });
     });
-</script>
+});

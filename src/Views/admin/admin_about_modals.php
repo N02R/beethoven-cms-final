@@ -640,14 +640,14 @@ function addAboutServiceRow() {
     container.appendChild(div);
 }
 
-// 🌟 دالة إضافة عضو جديد لفريق العمل (مترجمة ديناميكياً)
+// 🌟 دالة إضافة عضو جديد لفريق العمل (مترجمة ديناميكياً عبر مفاتيح النظام)
 function addTeamRow() {
     const container = document.getElementById('teamRowsContainer');
     if (!container) return;
     const teamCount = container.querySelectorAll('.team-row-item').length;
     const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
 
-    // استخدام كائن الترجمات المعرّف عاماً أو القيم الافتراضية
+    // سحب الترجمات المحقونة من PHP أو الاعتماد على القيم الافتراضية
     const t = window.CMS_LANG || {};
     const tName = t.member_name || 'الاسم الكامل';
     const tRole = t.member_role || 'المسمى الوظيفي';

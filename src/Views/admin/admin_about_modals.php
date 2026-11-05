@@ -191,7 +191,7 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المطابق حرفياً لستايل خدمات الـ Home والمحصن ضد الأخطاء) -->
+<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المستقل، المترجم، والمطابق لستايل الـ Home) -->
 <div class="modal fade custom-modal" id="aboutServicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -206,12 +206,11 @@ if (!is_array($lang)) $lang = [];
             
             <div class="modal-body p-4">
                 <?php 
-                // 🌟 جلب بيانات about_services الخام من قاعدة البيانات أو الإعدادات لضمان دعم تعدد اللغات بشكل صحيح
+                // جلب بيانات about_services الخام من قاعدة البيانات أو الإعدادات
                 $aboutServicesRaw = get_setting('about_services', '{}');
                 $asAllLangs = is_string($aboutServicesRaw) ? json_decode($aboutServicesRaw, true) : (is_array($aboutServicesRaw) ? $aboutServicesRaw : []);
                 if (!is_array($asAllLangs)) $asAllLangs = [];
                 
-                // إذا كانت البيانات مخزنة بشكل مباشر للغة أو مهيكلة بالمفاتيح (ar, en, de)
                 if (isset($asAllLangs['section_title']) || isset($asAllLangs['items'])) {
                     $curLangAS = $asAllLangs;
                 } else {

@@ -599,7 +599,7 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
-    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) متوافقة تماماً مع الستايل الجديد
+    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) - مطابقة تماماً للستايل وتحتفظ بالبنية
     function addAboutServiceRow() {
         const container = document.getElementById('aboutServicesContainer');
         if (!container) return;
@@ -613,11 +613,11 @@ if (!is_array($lang)) $lang = [];
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
-                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="عنوان الخدمة">
+                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="عنوان الخدمة">
                 </div>
                 <div class="col-md-6">
                     <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
-                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="رابط الخدمة">
+                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="رابط الخدمة">
                 </div>
                 <div class="col-md-11">
                     <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>

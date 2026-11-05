@@ -298,9 +298,20 @@ section.count p {
 /* count style end */
 /* === Partners Section Styles === */
 .partenar {
-  direction: rtl;
+  /* تم إزالة direction الثابتة لتعتمد على الـ dir في عنصر الـ section تلقائياً */
   background: #fff;
   padding: 60px 0;
+}
+
+/* ضبط محاذاة العنوان حسب الاتجاه الديناميكي */
+[dir="rtl"] .partenar {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="ltr"] .partenar {
+  direction: ltr;
+  text-align: left;
 }
 
 .partenar .sec-title {
@@ -326,12 +337,9 @@ section.count p {
   max-height: 100%;
   width: auto;
   object-fit: contain;
-
+  
   /* الشفافية التي أحببتها */
   opacity: 0.9;
-  /* تحويل الصورة لرمادي خفيف لزيادة التناسق (اختياري) */
-
-
   transition: all 0.4s ease-in-out;
 }
 
@@ -345,7 +353,6 @@ section.count p {
   opacity: 1;
   filter: grayscale(0%);
   transform: scale(1.08);
-  /* تكبير بسيط جداً للصورة */
 }
 
 /* ضبط التجاوب */
@@ -354,9 +361,13 @@ section.count p {
     height: 100px;
     padding: 10px;
   }
-
-  /* في الموبايل يفضل بقاء الشفافية أعلى قليلاً لتكون واضحة */
-  .partner-item img {
+  
+  .partenar {
+    text-align: center !important;
+    /* توسيط العنوان في الشاشات الصغيرة لتصميم أنيق */
+  }
+  
+  .partenar img {
     opacity: 0.8;
     filter: grayscale(0%);
   }

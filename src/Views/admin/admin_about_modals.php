@@ -542,11 +542,13 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-/**
- * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine
- * النمط القياسي الذهبي لإدارة الصفوف الديناميكية وعمليات الحفظ بالـ AJAX
- */
+
 <script>
+/**
+ * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine (Fully Localized)
+ * النمط القياسي الذهبي لإدارة الصفوف الديناميكية والترجمة الديناميكية والـ AJAX
+ */
+
 function removeRow(id) {
     const el = document.getElementById(id);
     if (el) el.remove();
@@ -596,12 +598,19 @@ function showNotification(message, type = 'success') {
     }, 4000);
 }
 
-// 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة)
+// 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (مترجمة ديناميكياً)
 function addAboutServiceRow() {
     const container = document.getElementById('aboutServicesContainer');
     if (!container) return;
     const itemCount = container.querySelectorAll('.service-item-row').length;
     const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    // استخدام كائن الترجمات المعرّف عاماً أو القيم الافتراضية
+    const t = window.CMS_LANG || {};
+    const tTitle = t.service_title || 'عنوان الخدمة';
+    const tUrl = t.service_url || 'رابط الخدمة';
+    const tImg = t.image_or_icon || 'الصورة / الأيقونة';
+    const tDelete = t.delete_service || 'حذف الخدمة';
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm service-item-row mb-3';
@@ -610,33 +619,40 @@ function addAboutServiceRow() {
     div.innerHTML = `
         <div class="row g-3 align-items-center">
             <div class="col-md-6">
-                <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
-                <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="عنوان الخدمة">
+                <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
+                <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="${tTitle}">
             </div>
             <div class="col-md-6">
-                <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
-                <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="رابط الخدمة">
+                <label class="small fw-bold mb-1 text-secondary">${tUrl}</label>
+                <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="${tUrl}">
             </div>
             <div class="col-md-11">
-                <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
                 <div class="d-flex align-items-center gap-2">
                     <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
                 </div>
             </div>
             <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
             <div class="col-md-1 text-center pt-3">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
             </div>
         </div>`;
     container.appendChild(div);
 }
 
-// 🌟 دالة إضافة عضو جديد لفريق العمل
+// 🌟 دالة إضافة عضو جديد لفريق العمل (مترجمة ديناميكياً)
 function addTeamRow() {
     const container = document.getElementById('teamRowsContainer');
     if (!container) return;
     const teamCount = container.querySelectorAll('.team-row-item').length;
     const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    // استخدام كائن الترجمات المعرّف عاماً أو القيم الافتراضية
+    const t = window.CMS_LANG || {};
+    const tName = t.member_name || 'الاسم الكامل';
+    const tRole = t.member_role || 'المسمى الوظيفي';
+    const tImg = t.member_image || 'صورة العضو';
+    const tDelete = t.delete_member || 'حذف العضو';
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm team-row-item mb-3';
@@ -645,28 +661,28 @@ function addTeamRow() {
     div.innerHTML = `
         <div class="row g-3 align-items-center">
             <div class="col-md-3">
-                <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
-                <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" value="" placeholder="الاسم الكامل">
+                <label class="small fw-bold mb-1 text-secondary">${tName}</label>
+                <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" value="" placeholder="${tName}">
             </div>
             <div class="col-md-3">
-                <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
-                <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" value="" placeholder="المسمى الوظيفي">
+                <label class="small fw-bold mb-1 text-secondary">${tRole}</label>
+                <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" value="" placeholder="${tRole}">
             </div>
             <div class="col-md-5">
-                <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
+                <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
                 <div class="d-flex align-items-center gap-2">
                     <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
                 </div>
             </div>
             <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][img]" value="">
             <div class="col-md-1 text-center pt-3">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
             </div>
         </div>`;
     container.appendChild(div);
 }
 
-// ربط أزرار الإضافة عند تحميل المستند
+// ربط أزرار الإضافة ومعالجات الـ AJAX عند تحميل المستند
 document.addEventListener('DOMContentLoaded', function() {
     const addServiceBtn = document.getElementById('addAboutServiceBtn');
     if (addServiceBtn) {
@@ -750,4 +766,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 </script>

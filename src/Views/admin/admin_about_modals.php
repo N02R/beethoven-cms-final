@@ -559,16 +559,16 @@ if (!is_array($lang)) $lang = [];
 
         let bgClass = 'alert-success';
         let icon = 'bi-check-circle-fill';
-        let title = 'Milkaa\'inaan raawwatame!';
+        let title = 'تم بنجاح!';
 
         if (type === 'danger') {
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
-            title = 'Dhiifama, dogoggorri uumameera!';
+            title = 'عذراً، حدث خطأ!';
         } else if (type === 'warning') {
             bgClass = 'alert-warning';
             icon = 'bi-exclamation-triangle-fill';
-            title = 'Hubachiisa barbaachisaa';
+            title = 'تنبيه هام';
         }
 
         const alertDiv = document.createElement('div');
@@ -597,7 +597,7 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
-    // 🌟 Dalagaalee tajaajila fuula "Waa'ee Keenya" (About Us Services) dabalata safara haaraaf
+    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) متوافقة تماماً مع هيكل المودل
     function addAboutServiceRow() {
         const container = document.getElementById('aboutServicesContainer');
         if (!container) return;
@@ -609,17 +609,19 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-center">
                 <div class="col-md-4">
-                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="Madii Tajaajilichaa">
+                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="عنوان الخدمة">
                 </div>
                 <div class="col-md-3">
-                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="Geessituu (URL) Tajaajilichaa">
+                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="رابط الخدمة">
                 </div>
                 <div class="col-md-4">
-                    <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
+                    </div>
                 </div>
                 <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
                 <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="Haqi">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="حذف">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -627,7 +629,7 @@ if (!is_array($lang)) $lang = [];
         container.appendChild(div);
     }
 
-    // Qabsiisa buttons dabalataas Modal keessatti hordofuu
+    // ربط زر الإضافة بحدث الضغط في المودل
     document.addEventListener('DOMContentLoaded', function() {
         const addBtn = document.getElementById('addAboutServiceBtn');
         if (addBtn) {
@@ -637,6 +639,7 @@ if (!is_array($lang)) $lang = [];
 
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
+        if (!container) return;
         const teamCount = container.querySelectorAll('.team-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
@@ -646,22 +649,22 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">Maqaa Guutuu</label>
-                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="Maqaa">
+                    <label class="small fw-bold mb-1 text-secondary">الاسم الكامل</label>
+                    <input type="text" class="form-control team-name" name="team[${currentLang}][items][${teamCount}][name]" placeholder="الاسم">
                 </div>
                 <div class="col-md-3">
-                    <label class="small fw-bold mb-1 text-secondary">Gahee Hojii</label>
-                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="Gahee Hojii">
+                    <label class="small fw-bold mb-1 text-secondary">المسمى الوظيفي</label>
+                    <input type="text" class="form-control team-role" name="team[${currentLang}][items][${teamCount}][role]" placeholder="المسمى الوظيفي">
                 </div>
                 <div class="col-md-5">
-                    <label class="small fw-bold mb-1 text-secondary">Suuraa Miseensichaa</label>
+                    <label class="small fw-bold mb-1 text-secondary">صورة العضو</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="team-old-img" name="team[${currentLang}][items][${teamCount}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Miseensa Haqi"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العضو"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -669,6 +672,7 @@ if (!is_array($lang)) $lang = [];
 
     function addCountRow() {
         const container = document.getElementById('countsRowsContainer');
+        if (!container) return;
         const countsCount = container.querySelectorAll('.count-row-item').length;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm count-row-item mb-3';
@@ -677,22 +681,22 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">Lakkoofsa / Gatii</label>
+                    <label class="form-label fw-semibold small text-secondary">الرقم / القيمة</label>
                     <input type="text" class="form-control count-number" name="counts[${countsCount}][number]" placeholder="+500">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">Madii Lakkoofsaa / Ibsa</label>
-                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="Pirojekti xumurame">
+                    <label class="form-label fw-semibold small text-secondary">عنوان العداد / الوصف</label>
+                    <input type="text" class="form-control count-title" name="counts[${countsCount}][title]" placeholder="مشروع مكتمل">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold small text-secondary">Mallattoo / Suuraa Lakkoofsaa</label>
+                    <label class="form-label fw-semibold small text-secondary">أيقونة / صورة العداد</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="count-old-img" name="counts[${countsCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Lakkoofsa Haqi"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف العداد"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -700,6 +704,7 @@ if (!is_array($lang)) $lang = [];
 
     function addPartnerRow() {
         const container = document.getElementById('partnersRowsContainer');
+        if (!container) return;
         const partnerCount = container.querySelectorAll('.partner-row-item').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
@@ -709,20 +714,20 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-2 align-items-end">
                 <div class="col-md-11">
-                    <label class="form-label fw-semibold small text-secondary">Mallattoo / Suuraa Partner</label>
+                    <label class="form-label fw-semibold small text-secondary">شعار / صورة الشريك</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="partner-old-img" name="partners[${currentLang}][items][${partnerCount}][old_img]" value="">
                 <div class="col-md-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="Partner Haqi"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الشريك"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
     }
 
-    // Sirna Quursuu fi Deebisanii Lakkoofsisuu Of-1 (Auto-indexing & Save Handler)
+    // معالج الحفظ وإعادة الترقيم التلقائي بالـ AJAX
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
@@ -730,7 +735,7 @@ if (!is_array($lang)) $lang = [];
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-                // 🌟 Deebisanii lakkoofsisuu safara tajaajila "Waa'ee Keenya"
+                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن المستقلة بدقة
                 form.querySelectorAll('.service-item-row').forEach((row, index) => {
                     const titleInput = row.querySelector('.about-service-title');
                     const urlInput = row.querySelector('.about-service-url');
@@ -743,7 +748,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `about_services[${currentLang}][items][${index}][img]`;
                 });
 
-                // Deebisanii lakkoofsisuu miseensota garee
+                // إعادة ترقيم صفوف الفريق
                 form.querySelectorAll('.team-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.team-name');
                     const roleInput = row.querySelector('.team-role');
@@ -756,7 +761,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][old_img]`;
                 });
 
-                // Deebisanii lakkoofsisuu lakkoofsoota
+                // إعادة ترقيم صفوف الإحصائيات
                 form.querySelectorAll('.count-row-item').forEach((row, index) => {
                     const numInput = row.querySelector('.count-number');
                     const titleInput = row.querySelector('.count-title');
@@ -769,7 +774,7 @@ if (!is_array($lang)) $lang = [];
                     if(oldImgInput) oldImgInput.name = `counts[${index}][old_img]`;
                 });
 
-                // Deebisanii lakkoofsisuu partneroota
+                // إعادة ترقيم صفوف الشركاء
                 form.querySelectorAll('.partner-row-item').forEach((row, index) => {
                     const fileInput = row.querySelector('.partner-file');
                     const oldImgInput = row.querySelector('.partner-old-img');
@@ -801,18 +806,18 @@ if (!is_array($lang)) $lang = [];
                     try {
                         const data = JSON.parse(text);
                         if (data.success || data.status === 'success') {
-                            showNotification('Fooyya’iinsi milkaa’inaan kuufameera, fuulichi deebi’ee fe’amaa jira...', 'success');
+                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification('Dhiifama, hin kuufamne: ' + (data.message || 'Maaloo ragaa galchite deebitee ilaali'), 'danger');
+                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                         }
                     } catch (e) {
-                        showNotification('Dogoggorri Server irraa dhufuu: ' + text, 'danger');
+                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification('Network irratti dogoggorri uumameera, maaloo booda irra deebi’aa yaalaa.', 'danger');
+                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
                 });
             });
         });

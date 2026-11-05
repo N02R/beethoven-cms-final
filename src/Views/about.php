@@ -295,7 +295,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- count end -->
 
 <!-- 5. partenar start -->
-<section class="partenar py-5 editable-wrapper" style="position: relative;">
+<section class="partenar py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#partnersEditModal" title="تعديل الشركاء">
         <i class="bi bi-pencil-fill"></i>
@@ -305,12 +305,16 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <div class="custom-container">
     <?php
     $partners_data  = $getLocalizedData('partners', []);
-    $partners_title = $partners_data['title'] ?? (get_setting('partners_title', 'شركاؤنا داخل وخارج ألمانيا'));
-    $partners_items = $partners_data['items'] ?? (get_setting('partners_items', []));
-
-    if (is_string($partners_items)) {
-        $partners_items = json_decode($partners_items, true) ?? [];
+    // دعم الهيكل متعدد اللغات للعنوان، مع Fallback نظيف
+    $partners_title = is_array($partners_data) ? ($partners_data['title'] ?? 'شركاؤنا داخل وخارج ألمانيا') : 'شركاؤنا داخل وخارج ألمانيا';
+    $partners_items = is_array($partners_data) ? ($partners_data['items'] ?? []) : [];
+    
+    if (empty($partners_items)) {
+        // Fallback في حال كانت مخزنة بالشكل القديم
+        $old_items = get_setting('partners_items', []);
+        $partners_items = is_string($old_items) ? (json_decode($old_items, true) ?? []) : $old_items;
     }
+    if (!is_array($partners_items)) $partners_items = [];
     ?>
     <h2 class="sec-title mb-5"><?php echo htmlspecialchars((string)$partners_title, ENT_QUOTES, 'UTF-8'); ?></h2>
     

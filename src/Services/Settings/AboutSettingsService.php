@@ -23,9 +23,10 @@ class AboutSettingsService
             'update_about_section',
             'update_about_counts',
             'update_about_partners',
+            'update_partners', // 🌟 إضافة الإجراء المباشر للشركاء
             'update_about_team',
             'update_team',
-            'update_about_services' // 🌟 تمت الإضافه بنجاح
+            'update_about_services' // 🌟 تمت الإضافة بنجاح
         ];
 
         if (!in_array($action, $allowedActions, true)) {
@@ -136,11 +137,9 @@ class AboutSettingsService
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    // 🌟 التصحيح الجذري هنا لضمان جلب الصورة القديمة سواء جاءت عبر [img] أو [old_img]
                     $oldImg = $item['img'] ?? ($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $img = $oldImg;
 
-                    // التحقق من رفع صورة جديدة للخدمة
                     if (isset($_FILES['about_services_img_' . $index]) && $_FILES['about_services_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
@@ -168,11 +167,10 @@ class AboutSettingsService
             $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
-
-                elseif ($action === 'update_about_counts') {
+        // 🌟 3. تحديث العدادات والإحصائيات (About Counts)
+        elseif ($action === 'update_about_counts') {
             $targetLang = $_POST['targetLang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب البيانات القديمة الخام من قاعدة البيانات
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_counts'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
@@ -183,7 +181,6 @@ class AboutSettingsService
                 if (is_array($decodedDb)) $countsAllLangs = $decodedDb;
             }
 
-            // استخراج العناصر القديمة للغة المستهدفة للتعامل مع الصور القديمة
             $currentLangData = $countsAllLangs[$targetLang] ?? [];
             $existingItems = $currentLangData['items'] ?? [];
 
@@ -195,7 +192,6 @@ class AboutSettingsService
                     $oldImg = $item['img'] ?? ($existingItems[$index]['img'] ?? '');
                     $img = $oldImg;
 
-                    // فحص رفع صورة أو أيقونة جديدة للعداد
                     if (isset($_FILES['count_img_' . $index]) && $_FILES['count_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
@@ -212,7 +208,6 @@ class AboutSettingsService
                 }
             }
 
-            // تحديث اللغة المستهدفة فقط داخل مصفوفة اللغات الثلاث
             $countsAllLangs[$targetLang] = [
                 'items' => $finalItems
             ];
@@ -220,9 +215,8 @@ class AboutSettingsService
             $jsonVal = json_encode($countsAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
-
-        // 4. تحديث الشركاء (Partners) مع دعم الهيكل متعدد اللغات
-        elseif ($action === 'update_about_partners') {
+        // 🌟 4. تحديث الشركاء (Partners)
+        elseif ($action === 'update_partners' || $action === 'update_about_partners') {
             $targetLang = $_POST['targetLang'] ?? $_POST['partners_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'partners'");
@@ -248,11 +242,11 @@ class AboutSettingsService
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $oldImg = $item['img'] ?? ($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $img = $oldImg;
 
                     if (isset($_FILES['partner_img_' . $index]) && $_FILES['partner_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
                         $filename = $this->imageUploader->processAndUploadFile($_FILES['partner_img_' . $index]['tmp_name']);
@@ -273,7 +267,7 @@ class AboutSettingsService
             $jsonVal = json_encode($partnersAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'partners', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 5. تحديث فريق العمل (Team) مع دعم الهيكل متعدد اللغات والحماية الكاملة
+        // 🌟 5. تحديث فريق العمل (Team)
         elseif ($action === 'update_about_team' || $action === 'update_team') {
             $targetLang = $_POST['targetLang'] ?? $_POST['team_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
@@ -301,11 +295,11 @@ class AboutSettingsService
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $oldImg = $item['img'] ?? ($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $img = $oldImg;
 
                     if (isset($_FILES['team_img_' . $index]) && $_FILES['team_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
                         $filename = $this->imageUploader->processAndUploadFile($_FILES['team_img_' . $index]['tmp_name']);

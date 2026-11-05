@@ -517,67 +517,77 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 4. Partners Edit Modal (قسم الشركاء) -->
+<!-- 🌟 مودل تعديل الشركاء (المستقل، المترجم بالكامل، والمطابق للستايل القياسي) -->
 <div class="modal fade custom-modal" id="partnersEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-                    <i class="bi bi-handshake text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
                     <?php echo htmlspecialchars($lang['manage_partners'] ?? 'إدارة الشركاء', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body p-4">
                 <?php 
-                $partnersRaw = $currentSettings['partners'] ?? ($data['partners'] ?? null);
-                if (empty($partnersRaw)) {
-                    try {
-                        $pdoConn = \App\Config\Database::getConnection();
-                        $stmtPart = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'partners'");
-                        $stmtPart->execute();
-                        $partnersRaw = $stmtPart->fetchColumn() ?: '{}';
-                    } catch (\Exception $e) {
-                        $partnersRaw = '{}';
-                    }
-                }
+                $partnersRaw = get_setting('partners', '{}');
                 $partnersAllLangs = is_string($partnersRaw) ? json_decode($partnersRaw, true) : (is_array($partnersRaw) ? $partnersRaw : []);
                 if (!is_array($partnersAllLangs)) $partnersAllLangs = [];
-                $curLangPart = $partnersAllLangs[$current_lang] ?? ($partnersAllLangs['ar'] ?? []);
-                $modalPartTitle = $curLangPart['title'] ?? ($data['partners_title'] ?? 'شركاؤنا داخل وخارج ألمانيا');
-                $modalPartItems = $curLangPart['items'] ?? ($data['partners_items'] ?? []);
-                if (!is_array($modalPartItems)) $modalPartItems = [];
+                
+                if (isset($partnersAllLangs['title']) || isset($partnersAllLangs['items'])) {
+                    $curLangPartners = $partnersAllLangs;
+                } else {
+                    $curLangPartners = $partnersAllLangs[$current_lang] ?? ($partnersAllLangs['ar'] ?? []);
+                }
+
+                $partnersTitle = $curLangPartners['title'] ?? 'شركاؤنا داخل وخارج ألمانيا';
+                $partnersItems = $curLangPartners['items'] ?? [];
+                if (!is_array($partnersItems)) $partnersItems = [];
                 ?>
+
+                <!-- 🌟 حقن كائن الترجمات لدالة الـ JS الخاصة بالشركاء -->
+                <script>
+                    window.CMS_LANG = window.CMS_LANG || {};
+                    window.CMS_LANG.partner_image = '<?php echo addslashes($lang['partner_image'] ?? 'شعار / صورة الشريك'); ?>';
+                    window.CMS_LANG.delete_partner = '<?php echo addslashes($lang['delete_partner'] ?? 'حذف الشريك'); ?>';
+                </script>
+
                 <form id="partnersForm" class="admin-settings-form" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="update_about_partners">
+                    <input type="hidden" name="action" value="update_partners">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="partners_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <input type="text" class="form-control" name="partners[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalPartTitle, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="col-12 <?php echo $modal_align; ?>">
+                            <label class="small fw-bold mb-1 text-secondary">
+                                <?php echo htmlspecialchars($lang['title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                            </label>
+                            <input type="text" class="form-control" name="partners[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$partnersTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['manage_partners'] ?? 'شعارات الشركاء', ENT_QUOTES, 'UTF-8'); ?></h6>
+
                     <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($modalPartItems as $index => $partner): ?>
+                        <?php foreach ($partnersItems as $index => $p): 
+                            $pImg = $p['img'] ?? '';
+                        ?>
                             <div class="p-3 shadow-sm partner-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="partner_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-end">
+                                <div class="row g-3 align-items-center">
                                     <div class="col-md-11">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['partner_image'] ?? 'شعار / صورة الشريك', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['partner_image'] ?? 'شعار / صورة الشريك', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($partner['img'])): ?>
+                                            <?php if (!empty($pImg)): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($partner['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Partner Image" class="rounded-2 w-100 h-100" style="object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($pImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Partner Logo" class="rounded-2 w-100 h-100" style="object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control partner-file w-100" name="partner_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="partner-old-img" name="partners[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($partner['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center pb-1">
+                                    <input type="hidden" class="partner-old-img" name="partners[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($pImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('partner_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_partner'] ?? 'حذف الشريك', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
@@ -585,11 +595,12 @@ if (!is_array($lang)) $lang = [];
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addPartnerRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_partner'] ?? 'إضافة شريك جديد', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addPartnerRowBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_partner'] ?? 'إضافة شريك جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
+            
             <div class="modal-footer">
                 <button type="submit" form="partnersForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
@@ -776,6 +787,53 @@ function addCountRow() {
         </div>`;
     container.appendChild(div);
 }
+// 🌟 دالة إضافة شريك جديد (مترجمة ديناميكياً)
+function addPartnerRow() {
+    const container = document.getElementById('partnersRowsContainer');
+    if (!container) return;
+    const partnerCount = container.querySelectorAll('.partner-row-item').length;
+    const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    const t = window.CMS_LANG || {};
+    const tImg = t.partner_image || 'شعار / صورة الشريك';
+    const tDelete = t.delete_partner || 'حذف الشريك';
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm partner-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'partner_row_' + partnerCount;
+    div.innerHTML = `
+        <div class="row g-3 align-items-center">
+            <div class="col-md-11">
+                <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
+                </div>
+            </div>
+            <input type="hidden" class="partner-old-img" name="partners[${currentLang}][items][${partnerCount}][img]" value="">
+            <div class="col-md-1 text-center pt-3">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
+// ربط زر الشركاء بحدث التحميل
+document.addEventListener('DOMContentLoaded', function() {
+    const addPartnerBtn = document.getElementById('addPartnerRowBtn');
+    if (addPartnerBtn) {
+        addPartnerBtn.addEventListener('click', addPartnerRow);
+    }
+});
+
+// داخل معالج الـ AJAX العام، أضيفي حلقة إعادة الترقيم الخاصة بالشركاء:
+form.querySelectorAll('.partner-row-item').forEach((row, index) => {
+    const fileInput = row.querySelector('.partner-file');
+    const oldImgInput = row.querySelector('.partner-old-img');
+
+    if(fileInput) fileInput.name = `partner_img_${index}`;
+    if(oldImgInput) oldImgInput.name = `partners[${currentLang}][items][${index}][img]`;
+});
 
 // ربط أزرار الإضافة ومعالجات الـ AJAX عند تحميل المستند
 document.addEventListener('DOMContentLoaded', function() {

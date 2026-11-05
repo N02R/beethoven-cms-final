@@ -205,7 +205,6 @@ if (!is_array($lang)) $lang = [];
             </div>
             
             <div class="modal-body p-4">
-                <?>
                 <?php 
                 // جلب بيانات about_services للغة الحالية من قاعدة البيانات
                 $aboutServicesRaw = $data['about_services'] ?? ($currentSettings['about_services'] ?? null);

@@ -191,6 +191,120 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
+<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المستقل تماماً) -->
+<div class="modal fade custom-modal" id="aboutServicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title">
+                    <i class="bi bi-gear text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['edit_about_services'] ?? 'تعديل خدمات من نحن', ENT_QUOTES, 'UTF-8'); ?> 
+                    (<?php echo strtoupper($current_lang); ?>)
+                </h5>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <?php 
+                // جلب بيانات about_services للغة الحالية من قاعدة البيانات
+                $aboutServicesRaw = $data['about_services'] ?? ($currentSettings['about_services'] ?? null);
+                if (empty($aboutServicesRaw)) {
+                    try {
+                        $pdoConn = \App\Config\Database::getConnection();
+                        $stmtAS = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_services'");
+                        $stmtAS->execute();
+                        $aboutServicesRaw = $stmtAS->fetchColumn() ?: '{}';
+                    } catch (\Exception $e) {
+                        $aboutServicesRaw = '{}';
+                    }
+                }
+
+                $asAllLangs = is_string($aboutServicesRaw) ? json_decode($aboutServicesRaw, true) : (is_array($aboutServicesRaw) ? $aboutServicesRaw : []);
+                if (!is_array($asAllLangs)) $asAllLangs = [];
+                
+                $curLangAS = $asAllLangs[$current_lang] ?? ($asAllLangs['ar'] ?? []);
+                $asTitle   = $curLangAS['section_title'] ?? ($curLangAS['title'] ?? 'خدماتنا المميزة');
+                $asDesc    = $curLangAS['section_subtitle'] ?? ($curLangAS['desc'] ?? '');
+                $asItems   = $curLangAS['items'] ?? [];
+                ?>
+
+                <form id="aboutServicesForm" class="admin-settings-form" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="update_about_services">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
+                    
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="row g-3">
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['services_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
+                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars((string)$asTitle, ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['services_section_desc'] ?? 'وصف القسم (اختياري)', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
+                                <textarea class="form-control" name="about_services[<?php echo $current_lang; ?>][section_subtitle]" rows="2" style="height: auto;"><?php echo htmlspecialchars((string)$asDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- قائمة الخدمات المضافة والمستقلة -->
+                    <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <h6 class="text-primary fw-bold mb-3"><?php echo htmlspecialchars($lang['added_services'] ?? 'الخدمات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
+                        
+                        <div id="aboutServicesContainer" class="d-flex flex-column gap-3">
+                            <?php if (!empty($asItems) && is_array($asItems)): ?>
+                                <?php foreach ($asItems as $index => $item): 
+                                    $itemTitle = $item['title'] ?? '';
+                                    $itemUrl   = $item['url'] ?? '';
+                                    $itemImg   = $item['img'] ?? '';
+                                ?>
+                                    <div class="service-item-row p-3 border rounded-3 bg-light position-relative">
+                                        <div class="row g-2 align-items-center">
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itemTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_title'] ?? 'عنوان الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($itemUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['service_url'] ?? 'رابط الخدمة', ENT_QUOTES, 'UTF-8'); ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="file" class="form-control" name="about_services_img_<?php echo $index; ?>" accept="image/*">
+                                                <input type="hidden" name="about_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($itemImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                            </div>
+                                            <div class="col-md-1 text-center">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" title="حذف">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <?php if (!empty($itemImg)): ?>
+                                            <div class="mt-2 text-start">
+                                                <img src="<?php echo htmlspecialchars(get_image_url($itemImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Preview" style="max-height: 40px; border-radius: 4px;">
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-3" id="addAboutServiceBtn">
+                            <i class="bi bi-plus-lg me-1"></i> <?php echo htmlspecialchars($lang['add_new_service'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="submit" form="aboutServicesForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- 2. Team Edit Modal (قسم فريق العمل) -->
 <div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
@@ -485,6 +599,44 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
+    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة)
+    function addAboutServiceRow() {
+        const container = document.getElementById('aboutServicesContainer');
+        if (!container) return;
+        const itemCount = container.querySelectorAll('.service-item-row').length;
+        const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        const div = document.createElement('div');
+        div.className = 'service-item-row p-3 border rounded-3 bg-light position-relative mb-3';
+        div.id = 'about_service_row_' + itemCount;
+        div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="عنوان الخدمة">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="رابط الخدمة">
+                </div>
+                <div class="col-md-4">
+                    <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
+                </div>
+                <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="حذف">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    // ربط زر الإضافة بحدث الضغط في المودل
+    document.addEventListener('DOMContentLoaded', function() {
+        const addBtn = document.getElementById('addAboutServiceBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', addAboutServiceRow);
+        }
+    });
+
     function addTeamRow() {
         const container = document.getElementById('teamRowsContainer');
         const teamCount = container.querySelectorAll('.team-row-item').length;
@@ -579,6 +731,19 @@ if (!is_array($lang)) $lang = [];
                 e.preventDefault();
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+
+                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن
+                form.querySelectorAll('.service-item-row').forEach((row, index) => {
+                    const titleInput = row.querySelector('.about-service-title');
+                    const urlInput = row.querySelector('.about-service-url');
+                    const fileInput = row.querySelector('.about-service-file');
+                    const oldImgInput = row.querySelector('.about-service-old-img');
+
+                    if(titleInput) titleInput.name = `about_services[${currentLang}][items][${index}][title]`;
+                    if(urlInput) urlInput.name = `about_services[${currentLang}][items][${index}][url]`;
+                    if(fileInput) fileInput.name = `about_services_img_${index}`;
+                    if(oldImgInput) oldImgInput.name = `about_services[${currentLang}][items][${index}][img]`;
+                });
 
                 // إعادة ترقيم صفوف الفريق
                 form.querySelectorAll('.team-row-item').forEach((row, index) => {

@@ -131,17 +131,18 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 </section>
 <!-- about end -->
 
-<!-- 2. services start -->
+<!-- 2. about services start (Independent) -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
-    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل الخدمات">
+    <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#aboutServicesEditModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="تعديل خدمات من نحن">
         <i class="bi bi-pencil-fill"></i>
     </button>
   <?php endif; ?>
 
   <div class="custom-container">
     <?php
-    $s_data = $getLocalizedData('services', []);
+    // 🌟 الاعتماد على المفتاح المستقل خاص بصفحة من نحن فقط
+    $s_data = $getLocalizedData('about_services', []);
     
     $sec_title = $s_data['section_title'] ?? ($s_data['title'] ?? 'خدماتنا المميزة');
     $sec_desc  = $s_data['section_subtitle'] ?? ($s_data['desc'] ?? '');
@@ -184,7 +185,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
     </div>
   </div>
 </section>
-<!-- services end -->
+<!-- about services end -->
 
 <!-- 3. team start -->
 <section class="team py-5 editable-wrapper" style="position: relative;">

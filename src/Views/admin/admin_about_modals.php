@@ -599,33 +599,35 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
-    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) متوافقة تماماً مع هيكل المودل
+    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) متوافقة تماماً مع الستايل الجديد
     function addAboutServiceRow() {
         const container = document.getElementById('aboutServicesContainer');
         if (!container) return;
         const itemCount = container.querySelectorAll('.service-item-row').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
         const div = document.createElement('div');
-        div.className = 'service-item-row p-3 border rounded-3 bg-light position-relative mb-3';
+        div.className = 'p-3 shadow-sm service-item-row mb-3';
+        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
         div.id = 'about_service_row_' + itemCount;
         div.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-md-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
                     <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" placeholder="عنوان الخدمة">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
+                    <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
                     <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" placeholder="رابط الخدمة">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-11">
+                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
-                <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-service-row" onclick="removeRow('${div.id}')" title="حذف">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                <div class="col-md-1 text-center pt-3">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);
@@ -737,7 +739,7 @@ if (!is_array($lang)) $lang = [];
 
                 const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
 
-                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن المستقلة بدقة
+                // 🌟 إعادة ترقيم صفوف خدمات صفحة من نحن المستقلة بدقة مطابقة للستايل الجديد
                 form.querySelectorAll('.service-item-row').forEach((row, index) => {
                     const titleInput = row.querySelector('.about-service-title');
                     const urlInput = row.querySelector('.about-service-url');

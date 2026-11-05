@@ -191,7 +191,7 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المستقل، المترجم، والمطابق لستايل الـ Home) -->
+<!-- 🌟 مودل تعديل خدمات صفحة من نحن (المستقل، المترجم بالكامل، والمطابق لستايل الـ Home) -->
 <div class="modal fade custom-modal" id="aboutServicesEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

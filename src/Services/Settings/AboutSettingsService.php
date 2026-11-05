@@ -169,10 +169,10 @@ class AboutSettingsService
             $stmt->execute(['k' => 'about_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        elseif ($action === 'update_about_counts') {
+                elseif ($action === 'update_about_counts') {
             $targetLang = $_POST['targetLang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-            // جلب البيانات القديمة الخزنة في قاعدة البيانات
+            // جلب البيانات القديمة الخام من قاعدة البيانات
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_counts'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
@@ -183,7 +183,7 @@ class AboutSettingsService
                 if (is_array($decodedDb)) $countsAllLangs = $decodedDb;
             }
 
-            // استخراج العناصر القديمة للغة الحالية لضمان الاحتفاظ بالصور إن لم يتم رفع صور جديدة
+            // استخراج العناصر القديمة للغة المستهدفة للتعامل مع الصور القديمة
             $currentLangData = $countsAllLangs[$targetLang] ?? [];
             $existingItems = $currentLangData['items'] ?? [];
 
@@ -195,7 +195,7 @@ class AboutSettingsService
                     $oldImg = $item['img'] ?? ($existingItems[$index]['img'] ?? '');
                     $img = $oldImg;
 
-                    // فحص رفع صورة جديدة للعداد
+                    // فحص رفع صورة أو أيقونة جديدة للعداد
                     if (isset($_FILES['count_img_' . $index]) && $_FILES['count_img_' . $index]['error'] === UPLOAD_ERR_OK) {
                         if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
@@ -212,7 +212,7 @@ class AboutSettingsService
                 }
             }
 
-            // تحديث مصفوفة اللغة المستهدفة فقط مع الحفاظ على باقي اللغات
+            // تحديث اللغة المستهدفة فقط داخل مصفوفة اللغات الثلاث
             $countsAllLangs[$targetLang] = [
                 'items' => $finalItems
             ];

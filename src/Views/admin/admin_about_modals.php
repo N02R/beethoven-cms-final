@@ -546,7 +546,7 @@ if (!is_array($lang)) $lang = [];
  * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine
  * النمط القياسي الذهبي لإدارة الصفوف الديناميكية وعمليات الحفظ بالـ AJAX
  */
-
+<script>
 function removeRow(id) {
     const el = document.getElementById(id);
     if (el) el.remove();
@@ -750,3 +750,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</script>

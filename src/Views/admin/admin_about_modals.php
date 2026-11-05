@@ -593,12 +593,19 @@ if (!is_array($lang)) $lang = [];
         }, 4000);
     }
 
-    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) - مطابقة تماماً للستايل وتحتفظ بالبنية
+    // 🌟 دالة إضافة صف جديد لخدمات صفحة من نحن (المستقلة) - مترجمة بالكامل ومطابقة للستايل
     function addAboutServiceRow() {
         const container = document.getElementById('aboutServicesContainer');
         if (!container) return;
         const itemCount = container.querySelectorAll('.service-item-row').length;
         const currentLang = '<?php echo htmlspecialchars($current_lang ?? "ar", ENT_QUOTES, "UTF-8"); ?>';
+        
+        // المتغيرات المترجمة ديناميكياً للغة الحالية
+        const tTitle = '<?php echo addslashes($lang['service_title'] ?? 'عنوان الخدمة'); ?>';
+        const tUrl = '<?php echo addslashes($lang['service_url'] ?? 'رابط الخدمة'); ?>';
+        const tImg = '<?php echo addslashes($lang['image_or_icon'] ?? 'الصورة / الأيقونة'); ?>';
+        const tDelete = '<?php echo addslashes($lang['delete_service'] ?? 'حذف الخدمة'); ?>';
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm service-item-row mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -606,22 +613,22 @@ if (!is_array($lang)) $lang = [];
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">عنوان الخدمة</label>
-                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="عنوان الخدمة">
+                    <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
+                    <input type="text" class="form-control about-service-title" name="about_services[${currentLang}][items][${itemCount}][title]" value="" placeholder="${tTitle}">
                 </div>
                 <div class="col-md-6">
-                    <label class="small fw-bold mb-1 text-secondary">رابط الخدمة</label>
-                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="رابط الخدمة">
+                    <label class="small fw-bold mb-1 text-secondary">${tUrl}</label>
+                    <input type="text" class="form-control about-service-url" name="about_services[${currentLang}][items][${itemCount}][url]" value="" placeholder="${tUrl}">
                 </div>
                 <div class="col-md-11">
-                    <label class="small fw-bold mb-1 text-secondary">الصورة / الأيقونة</label>
+                    <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="about-service-old-img" name="about_services[${currentLang}][items][${itemCount}][img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
         container.appendChild(div);

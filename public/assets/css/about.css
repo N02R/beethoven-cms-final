@@ -72,7 +72,7 @@
   transform: translateY(-3px);
 }
 
-/* Image Stack Logic (التصميم الأصلي الدقيق مع دعم اتجاهات اللغات) */
+/* Image Stack Logic */
 .image-stack {
   position: relative;
   padding-bottom: 60px;
@@ -114,7 +114,7 @@
 [dir="ltr"] .sub-img-wrapper {
   position: absolute;
   bottom: 0;
-  right: 0; /* في اللغات الأجنبية: تنعكس لتكون على اليمين (الجهة الخارجية للصور) */
+  right: 0; /* في اللغات الأجنبية: تنعكس لتكون على اليمين */
   width: 60%;
   z-index: 2;
 }

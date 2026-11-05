@@ -188,7 +188,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- about services end -->
 
 <!-- 3. team start -->
-<section class="team py-5 editable-wrapper" style="position: relative;">
+<section class="team py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#teamEditModal" title="تعديل فريق العمل">
         <i class="bi bi-pencil-fill"></i>
@@ -197,24 +197,26 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="custom-container">
     <?php
+    // 🌟 الاعتماد حصرياً على الدالة الموحدة المتوافقة مع الهيكلية الذهبية
     $team_data  = $getLocalizedData('team', []);
-    $team_title = $team_data['title'] ?? (get_setting('team_title', 'فريق العمل'));
-    $team_desc  = $team_data['desc'] ?? (get_setting('team_desc', ''));
-    $team_items = $team_data['items'] ?? (get_setting('team_items', []));
-
-    if (is_string($team_items)) {
-        $team_items = json_decode($team_items, true) ?? [];
-    }
+    
+    $team_title = $team_data['title'] ?? 'فريق العمل';
+    $team_desc  = $team_data['desc'] ?? '';
+    $team_items = $team_data['items'] ?? [];
+    if (!is_array($team_items)) $team_items = [];
     ?>
+    
     <div class="team-text mb-5">
       <h2 class="sec-title"><?php echo htmlspecialchars((string)$team_title, ENT_QUOTES, 'UTF-8'); ?></h2>
-      <p class="description main-p"><?php echo htmlspecialchars((string)$team_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+      <?php if (!empty($team_desc)): ?>
+        <p class="description main-p"><?php echo htmlspecialchars((string)$team_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+      <?php endif; ?>
     </div>
     
     <div class="swiper-container-wrapper">
       <div class="swiper mySwiper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
         <div class="swiper-wrapper">
-          <?php if (!empty($team_items) && is_array($team_items)): ?>
+          <?php if (!empty($team_items)): ?>
             <?php foreach ($team_items as $member): 
               $m_name = $member['name'] ?? '';
               $m_role = $member['role'] ?? '';

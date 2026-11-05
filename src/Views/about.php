@@ -258,9 +258,9 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
   <div class="custom-container">
     <?php
-    // 🌟 الاعتماد حصرياً على الدالة الموحدة لتعدد اللغات
+    // 🌟 جلب بيانات العدادات الخاصة بصفحة من نحن متعدية اللغات
     $counts_data  = $getLocalizedData('about_counts', []);
-    $counts_items = $counts_data['items'] ?? ($counts_data ?? []); // دعم الهيكل القديم والجديد بمرونة
+    $counts_items = $counts_data['items'] ?? [];
     if (!is_array($counts_items)) $counts_items = [];
     ?>
     <div class="row g-4">

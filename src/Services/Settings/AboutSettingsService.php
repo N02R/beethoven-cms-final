@@ -169,27 +169,58 @@ class AboutSettingsService
             $stmt->execute(['k' => 'about_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 3. تحديث العدادات والإحصائيات (Counts)
         elseif ($action === 'update_about_counts') {
-            $countsData = $_POST['counts'] ?? [];
-            foreach ($countsData as $index => $item) {
-                $fileToCheck = $_FILES['count_img_' . $index] ?? null;
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img']) && !str_contains($item['old_img'], 'default')) {
-                        $this->deleteOldImageFile($item['old_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $countsData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $countsData[$index]['img'] = $item['old_img'] ?? '';
-                }
-                unset($countsData[$index]['old_img']);
+            $targetLang = $_POST['targetLang'] ?? $_SESSION['site_lang'] ?? 'ar';
+
+            // جلب البيانات القديمة الخزنة في قاعدة البيانات
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'about_counts'");
+            $stmtFetch->execute();
+            $dbRaw = $stmtFetch->fetchColumn();
+
+            $countsAllLangs = [];
+            if ($dbRaw && is_string($dbRaw)) {
+                $decodedDb = json_decode($dbRaw, true);
+                if (is_array($decodedDb)) $countsAllLangs = $decodedDb;
             }
-            
-            $jsonVal = json_encode(array_values($countsData), JSON_UNESCAPED_UNICODE);
+
+            // استخراج العناصر القديمة للغة الحالية لضمان الاحتفاظ بالصور إن لم يتم رفع صور جديدة
+            $currentLangData = $countsAllLangs[$targetLang] ?? [];
+            $existingItems = $currentLangData['items'] ?? [];
+
+            $postedItems = $_POST['about_counts'][$targetLang]['items'] ?? [];
+            $finalItems = [];
+
+            if (is_array($postedItems)) {
+                foreach ($postedItems as $index => $item) {
+                    $oldImg = $item['img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    // فحص رفع صورة جديدة للعداد
+                    if (isset($_FILES['count_img_' . $index]) && $_FILES['count_img_' . $index]['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['count_img_' . $index]['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = [
+                        'number' => trim($item['number'] ?? ''),
+                        'title'  => trim($item['title'] ?? ''),
+                        'img'    => $img
+                    ];
+                }
+            }
+
+            // تحديث مصفوفة اللغة المستهدفة فقط مع الحفاظ على باقي اللغات
+            $countsAllLangs[$targetLang] = [
+                'items' => $finalItems
+            ];
+
+            $jsonVal = json_encode($countsAllLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'about_counts', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        } 
+        }
+
         // 4. تحديث الشركاء (Partners) مع دعم الهيكل متعدد اللغات
         elseif ($action === 'update_about_partners') {
             $targetLang = $_POST['targetLang'] ?? $_POST['partners_lang'] ?? $_SESSION['site_lang'] ?? 'ar';

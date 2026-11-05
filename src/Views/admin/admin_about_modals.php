@@ -598,7 +598,7 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-
+<script>
 /**
  * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine (Fully Localized)
  * النمط القياسي الذهبي لإدارة الصفوف الديناميكية والترجمة الديناميكية والـ AJAX
@@ -879,3 +879,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</script>

@@ -299,17 +299,18 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 2. Team Edit Modal (قسم فريق العمل) -->
+<!-- 2. Team Edit Modal (قسم فريق العمل - متوافق تماماً مع معيار الخدمات) -->
 <div class="modal fade custom-modal" id="teamEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-people text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
                     <?php echo htmlspecialchars($lang['manage_team'] ?? 'إدارة فريق العمل', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body p-4">
                 <?php 
                 $teamAllRaw = $currentSettings['team'] ?? ($data['team'] ?? null);
@@ -325,12 +326,28 @@ if (!is_array($lang)) $lang = [];
                 }
                 $teamAllLangs = is_string($teamAllRaw) ? json_decode($teamAllRaw, true) : (is_array($teamAllRaw) ? $teamAllRaw : []);
                 if (!is_array($teamAllLangs)) $teamAllLangs = [];
-                $curLangTeam = $teamAllLangs[$current_lang] ?? ($teamAllLangs['ar'] ?? []);
+                
+                if (isset($teamAllLangs['title']) || isset($teamAllLangs['items'])) {
+                    $curLangTeam = $teamAllLangs;
+                } else {
+                    $curLangTeam = $teamAllLangs[$current_lang] ?? ($teamAllLangs['ar'] ?? []);
+                }
+
                 $modalTeamTitle = $curLangTeam['title'] ?? ($data['team_title'] ?? 'فريق العمل');
                 $modalTeamDesc  = $curLangTeam['desc'] ?? ($data['team_desc'] ?? '');
                 $modalTeamItems = $curLangTeam['items'] ?? ($data['team_items'] ?? []);
                 if (!is_array($modalTeamItems)) $modalTeamItems = [];
                 ?>
+
+                <!-- 🌟 حقن كائن الترجمات ليستخدمه السكربت تماماً مثل قسم الخدمات -->
+                <script>
+                    window.CMS_LANG = window.CMS_LANG || {};
+                    window.CMS_LANG.member_name  = '<?php echo addslashes($lang['member_name'] ?? 'الاسم الكامل'); ?>';
+                    window.CMS_LANG.member_role  = '<?php echo addslashes($lang['member_role'] ?? 'المسمى الوظيفي'); ?>';
+                    window.CMS_LANG.member_image = '<?php echo addslashes($lang['member_image'] ?? 'صورة العضو'); ?>';
+                    window.CMS_LANG.delete_member  = '<?php echo addslashes($lang['delete_member'] ?? 'حذف العضو'); ?>';
+                </script>
+
                 <form id="teamForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_team">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
@@ -338,40 +355,52 @@ if (!is_array($lang)) $lang = [];
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <input type="text" class="form-control" name="team[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalTeamTitle, ENT_QUOTES, 'UTF-8'); ?>">
-                        </div>
-                        <div class="<?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['team_section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                            <textarea class="form-control" name="team[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalTeamDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        <div class="row g-3">
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
+                                <input type="text" class="form-control" name="team[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalTeamTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['team_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="col-12 <?php echo $modal_align; ?>">
+                                <label class="small fw-bold mb-1 text-secondary">
+                                    <?php echo htmlspecialchars($lang['team_section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                </label>
+                                <textarea class="form-control" name="team[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="<?php echo htmlspecialchars($lang['team_section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string)$modalTeamDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
                         </div>
                     </div>
 
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['manage_team'] ?? 'أعضاء الفريق المضافون', ENT_QUOTES, 'UTF-8'); ?></h6>
+
                     <div id="teamRowsContainer" class="d-flex flex-column gap-3">
-                        <?php foreach ($modalTeamItems as $index => $member): ?>
+                        <?php foreach ($modalTeamItems as $index => $member): 
+                            $mName = $member['name'] ?? '';
+                            $mRole = $member['role'] ?? '';
+                            $mImg  = $member['img'] ?? '';
+                        ?>
                             <div class="p-3 shadow-sm team-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="team_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-3">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_name'] ?? 'الاسم الكامل', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control team-name" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($member['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_name'] ?? 'الاسم', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control team-name" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars($mName, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_name'] ?? 'الاسم', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_role'] ?? 'المسمى الوظيفي', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control team-role" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($member['role'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_role'] ?? 'المسمى الوظيفي', ENT_QUOTES, 'UTF-8'); ?>">
+                                        <input type="text" class="form-control team-role" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][role]" value="<?php echo htmlspecialchars($mRole, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lang['member_role'] ?? 'المسمى الوظيفي', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-5">
                                         <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['member_image'] ?? 'صورة العضو', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($member['img'])): ?>
+                                            <?php if (!empty($mImg)): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($member['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Member Image" class="rounded-2 w-100 h-100" style="object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($mImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Member Image" class="rounded-2 w-100 h-100" style="object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control team-file w-100" name="team_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="team-old-img" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($member['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="team-old-img" name="team[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($mImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('team_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_member'] ?? 'حذف العضو', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
@@ -380,11 +409,12 @@ if (!is_array($lang)) $lang = [];
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addTeamRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_member'] ?? 'إضافة عضو جديد', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addTeamRowBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_member'] ?? 'إضافة عضو جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
+            
             <div class="modal-footer">
                 <button type="submit" form="teamForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
@@ -640,14 +670,14 @@ function addAboutServiceRow() {
     container.appendChild(div);
 }
 
-// 🌟 دالة إضافة عضو جديد لفريق العمل (مترجمة ديناميكياً عبر مفاتيح النظام)
+// 🌟 دالة إضافة عضو جديد لفريق العمل (مترجمة ديناميكياً من كائن الترجمات العام)
 function addTeamRow() {
     const container = document.getElementById('teamRowsContainer');
     if (!container) return;
     const teamCount = container.querySelectorAll('.team-row-item').length;
     const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
 
-    // سحب الترجمات المحقونة من PHP أو الاعتماد على القيم الافتراضية
+    // سحب الترجمات من كائن الـ CMS_LANG العام مثل قسم الخدمات تماماً
     const t = window.CMS_LANG || {};
     const tName = t.member_name || 'الاسم الكامل';
     const tRole = t.member_role || 'المسمى الوظيفي';
@@ -681,6 +711,14 @@ function addTeamRow() {
         </div>`;
     container.appendChild(div);
 }
+
+// ربط زر إضافة عضو جديد بحدث الـ DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    const addTeamBtn = document.getElementById('addTeamRowBtn');
+    if (addTeamBtn) {
+        addTeamBtn.addEventListener('click', addTeamRow);
+    }
+});
 
 // ربط أزرار الإضافة ومعالجات الـ AJAX عند تحميل المستند
 document.addEventListener('DOMContentLoaded', function() {

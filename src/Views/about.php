@@ -249,7 +249,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 <!-- team end -->
 
 <!-- 4. count start -->
-<section class="count editable-wrapper" style="position: relative;">
+<section class="count editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
   <?php if (!empty($is_admin) && $is_admin === true): ?>
     <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#countsEditModal" title="تعديل الإحصائيات">
         <i class="bi bi-pencil-fill"></i>
@@ -257,35 +257,38 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
   <?php endif; ?>
 
   <div class="custom-container">
+    <?php
+    // 🌟 الاعتماد حصرياً على الدالة الموحدة لتعدد اللغات
+    $counts_data  = $getLocalizedData('about_counts', []);
+    $counts_items = $counts_data['items'] ?? ($counts_data ?? []); // دعم الهيكل القديم والجديد بمرونة
+    if (!is_array($counts_items)) $counts_items = [];
+    ?>
     <div class="row g-4">
-      <?php 
-      $counts = get_setting('about_counts', []);
-      if (is_string($counts)) {
-          $counts = json_decode($counts, true) ?? [];
-      }
-      if (!empty($counts) && is_array($counts)):
-          foreach ($counts as $c): 
+      <?php if (!empty($counts_items) && is_array($counts_items)): ?>
+        <?php foreach ($counts_items as $c): 
             $c_num   = $c['number'] ?? '';
             $c_title = $c['title'] ?? '';
             $c_img   = get_image_url($c['img'] ?? null);
-      ?>
-        <div class="col-lg-3 col-md-6">
-          <div class="count-card">
-            <?php if (!empty($c_img)): ?>
-              <div class="count-img">
-                <img src="<?php echo htmlspecialchars($c_img, ENT_QUOTES, 'UTF-8'); ?>" alt="icon">
+        ?>
+          <div class="col-lg-3 col-md-6">
+            <div class="count-card">
+              <?php if (!empty($c_img)): ?>
+                <div class="count-img">
+                  <img src="<?php echo htmlspecialchars($c_img, ENT_QUOTES, 'UTF-8'); ?>" alt="icon">
+                </div>
+              <?php endif; ?>
+              <div class="count-info">
+                <span><?php echo htmlspecialchars($c_num, ENT_QUOTES, 'UTF-8'); ?></span>
+                <p><?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?></p>
               </div>
-            <?php endif; ?>
-            <div class="count-info">
-              <span><?php echo htmlspecialchars($c_num, ENT_QUOTES, 'UTF-8'); ?></span>
-              <p><?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
           </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 text-center text-muted py-4">
+          <p>لا توجد إحصائيات مضافة حالياً.</p>
         </div>
-      <?php 
-          endforeach;
-      endif; 
-      ?>
+      <?php endif; ?>
     </div>
   </div>
 </section>

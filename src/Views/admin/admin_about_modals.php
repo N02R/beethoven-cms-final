@@ -423,66 +423,92 @@ if (!is_array($lang)) $lang = [];
     </div>
 </div>
 
-<!-- 3. Counts Edit Modal (قسم العدادات والإحصائيات) -->
+<!-- 🌟 مودل تعديل الإحصائيات والعدادات (المستقل، المترجم بالكامل، والمطابق للستايل القياسي) -->
 <div class="modal fade custom-modal" id="countsEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
-                    <i class="bi bi-calculator text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_counts'] ?? 'إدارة العدادات والإحصائيات', ENT_QUOTES, 'UTF-8'); ?>
+                    <i class="bi bi-bar-chart text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
+                    <?php echo htmlspecialchars($lang['manage_counts'] ?? 'إدارة العدادات والإحصائيات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
             <div class="modal-body p-4">
+                <?php 
+                $countsRaw = get_setting('about_counts', '{}');
+                $countsAllLangs = is_string($countsRaw) ? json_decode($countsRaw, true) : (is_array($countsRaw) ? $countsRaw : []);
+                if (!is_array($countsAllLangs)) $countsAllLangs = [];
+                
+                if (isset($countsAllLangs['items'])) {
+                    $curLangCounts = $countsAllLangs;
+                } else {
+                    $curLangCounts = $countsAllLangs[$current_lang] ?? ($countsAllLangs['ar'] ?? []);
+                }
+
+                $countsItems = $curLangCounts['items'] ?? (is_array($countsAllLangs) && !isset($countsAllLangs['ar']) ? $countsAllLangs : []);
+                if (!is_array($countsItems)) $countsItems = [];
+                ?>
+
+                <!-- 🌟 حقن كائن الترجمات لدالة الـ JS الخاصة بالعدادات -->
+                <script>
+                    window.CMS_LANG = window.CMS_LANG || {};
+                    window.CMS_LANG.count_number = '<?php echo addslashes($lang['count_number'] ?? 'الرقم / القيمة'); ?>';
+                    window.CMS_LANG.count_title  = '<?php echo addslashes($lang['count_title'] ?? 'عنوان العداد / الوصف'); ?>';
+                    window.CMS_LANG.count_image  = '<?php echo addslashes($lang['count_icon_image'] ?? 'أيقونة / صورة العداد'); ?>';
+                    window.CMS_LANG.delete_count = '<?php echo addslashes($lang['delete_count'] ?? 'حذف العداد'); ?>';
+                </script>
+
                 <form id="countsForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_about_counts">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['manage_counts'] ?? 'العدادات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
+
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
-                        <?php 
-                        $counts_items = $data['about_counts'] ?? [];
-                        if (!empty($counts_items)):
-                            foreach ($counts_items as $index => $c): 
+                        <?php foreach ($countsItems as $index => $c): 
+                            $cNum   = $c['number'] ?? '';
+                            $cTitle = $c['title'] ?? '';
+                            $cImg   = $c['img'] ?? '';
                         ?>
                             <div class="p-3 shadow-sm count-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="count_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-end">
+                                <div class="row g-3 align-items-center">
                                     <div class="col-md-3">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_number'] ?? 'الرقم / القيمة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control count-number" name="counts[<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($c['number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="+500">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['count_number'] ?? 'الرقم / القيمة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control count-number" name="about_counts[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][number]" value="<?php echo htmlspecialchars($cNum, ENT_QUOTES, 'UTF-8'); ?>" placeholder="+500">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_title'] ?? 'عنوان العداد / الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control count-title" name="counts[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($c['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مشروع مكتمل">
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['count_title'] ?? 'عنوان العداد / الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control count-title" name="about_counts[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($cTitle, ENT_QUOTES, 'UTF-8'); ?>" placeholder="مشروع مكتمل">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['count_icon_image'] ?? 'أيقونة / صورة العداد', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['count_icon_image'] ?? 'أيقونة / صورة العداد', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($c['img'])): ?>
+                                            <?php if (!empty($cImg)): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 40px; height: 40px;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($c['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Image" class="rounded-2 w-100 h-100" style="object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($cImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Count Icon" class="rounded-2 w-100 h-100" style="object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control count-file w-100" name="count_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="count-old-img" name="counts[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($c['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="col-md-1 text-center pb-1">
+                                    <input type="hidden" class="count-old-img" name="about_counts[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][img]" value="<?php echo htmlspecialchars($cImg, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-1 text-center pt-3">
                                         <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('count_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_count'] ?? 'حذف العداد', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
-                        <?php 
-                            endforeach; 
-                        endif; 
-                        ?>
+                        <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCountRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle me-1"></i> <?php echo htmlspecialchars($lang['add_new_count'] ?? 'إضافة عداد جديد', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addCountRowBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['add_new_count'] ?? 'إضافة عداد جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
+            
             <div class="modal-footer">
                 <button type="submit" form="countsForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
@@ -573,7 +599,6 @@ if (!is_array($lang)) $lang = [];
 </div>
 
 
-<script>
 /**
  * Beethoven CMS - Dynamic Rows & AJAX Handlers Engine (Fully Localized)
  * النمط القياسي الذهبي لإدارة الصفوف الديناميكية والترجمة الديناميكية والـ AJAX
@@ -677,7 +702,6 @@ function addTeamRow() {
     const teamCount = container.querySelectorAll('.team-row-item').length;
     const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
 
-    // سحب الترجمات من كائن الـ CMS_LANG العام مثل قسم الخدمات تماماً
     const t = window.CMS_LANG || {};
     const tName = t.member_name || 'الاسم الكامل';
     const tRole = t.member_role || 'المسمى الوظيفي';
@@ -712,13 +736,46 @@ function addTeamRow() {
     container.appendChild(div);
 }
 
-// ربط زر إضافة عضو جديد بحدث الـ DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    const addTeamBtn = document.getElementById('addTeamRowBtn');
-    if (addTeamBtn) {
-        addTeamBtn.addEventListener('click', addTeamRow);
-    }
-});
+// 🌟 دالة إضافة عداد جديد (مترجمة ديناميكياً)
+function addCountRow() {
+    const container = document.getElementById('countsRowsContainer');
+    if (!container) return;
+    const countsCount = container.querySelectorAll('.count-row-item').length;
+    const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
+
+    const t = window.CMS_LANG || {};
+    const tNum = t.count_number || 'الرقم / القيمة';
+    const tTitle = t.count_title || 'عنوان العداد / الوصف';
+    const tImg = t.count_image || 'أيقونة / صورة العداد';
+    const tDelete = t.delete_count || 'حذف العداد';
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm count-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'count_row_' + countsCount;
+    div.innerHTML = `
+        <div class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <label class="small fw-bold mb-1 text-secondary">${tNum}</label>
+                <input type="text" class="form-control count-number" name="about_counts[${currentLang}][items][${countsCount}][number]" value="" placeholder="+500">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold mb-1 text-secondary">${tTitle}</label>
+                <input type="text" class="form-control count-title" name="about_counts[${currentLang}][items][${countsCount}][title]" value="" placeholder="مشروع مكتمل">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold mb-1 text-secondary">${tImg}</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
+                </div>
+            </div>
+            <input type="hidden" class="count-old-img" name="about_counts[${currentLang}][items][${countsCount}][img]" value="">
+            <div class="col-md-1 text-center pt-3">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}"><i class="bi bi-trash"></i></button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
 
 // ربط أزرار الإضافة ومعالجات الـ AJAX عند تحميل المستند
 document.addEventListener('DOMContentLoaded', function() {
@@ -730,6 +787,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const addTeamBtn = document.getElementById('addTeamRowBtn');
     if (addTeamBtn) {
         addTeamBtn.addEventListener('click', addTeamRow);
+    }
+
+    const addCountBtn = document.getElementById('addCountRowBtn');
+    if (addCountBtn) {
+        addCountBtn.addEventListener('click', addCountRow);
     }
 
     // معالج الحفظ وإعادة الترقيم التلقائي بالـ AJAX لكل النماذج
@@ -763,6 +825,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(roleInput) roleInput.name = `team[${currentLang}][items][${index}][role]`;
                 if(fileInput) fileInput.name = `team_img_${index}`;
                 if(oldImgInput) oldImgInput.name = `team[${currentLang}][items][${index}][img]`;
+            });
+
+            // إعادة ترقيم صفوف الإحصائيات
+            form.querySelectorAll('.count-row-item').forEach((row, index) => {
+                const numInput = row.querySelector('.count-number');
+                const titleInput = row.querySelector('.count-title');
+                const fileInput = row.querySelector('.count-file');
+                const oldImgInput = row.querySelector('.count-old-img');
+
+                if(numInput) numInput.name = `about_counts[${currentLang}][items][${index}][number]`;
+                if(titleInput) titleInput.name = `about_counts[${currentLang}][items][${index}][title]`;
+                if(fileInput) fileInput.name = `count_img_${index}`;
+                if(oldImgInput) oldImgInput.name = `about_counts[${currentLang}][items][${index}][img]`;
             });
 
             const formData = new FormData(this);
@@ -804,5 +879,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-</script>

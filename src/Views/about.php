@@ -73,7 +73,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
 
     <div class="row align-items-center g-5">
       
-      <!-- العمود الأول: النصوص (يمين في العربية، يسار في اللغات الأجنبية) -->
+      <!-- العمود الأول: النصوص -->
+      <!-- في الـ RTL: يأخذ order-lg-1 (ليظهر في اليمين) | في الـ LTR: يأخذ order-lg-2 (ليظهر في اليسار) -->
       <div class="col-lg-6 <?php echo ($current_dir === 'rtl') ? 'order-2 order-lg-1 text-end' : 'order-2 order-lg-2 text-start'; ?>">
         <h2 class="sec-title mb-3"><?php echo htmlspecialchars($ab_title, ENT_QUOTES, 'UTF-8'); ?></h2>
         <p class="about-par mb-4"><?php echo nl2br(htmlspecialchars($ab_desc, ENT_QUOTES, 'UTF-8')); ?></p>
@@ -115,7 +116,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         </a>
       </div>
 
-      <!-- العمود الثاني: الصور المتراكبة (يسار في العربية، يمين في اللغات الأجنبية) -->
+      <!-- العمود الثاني: الصور المتراكبة -->
+      <!-- في الـ RTL: يأخذ order-lg-2 (ليظهر في اليسار) | في الـ LTR: يأخذ order-lg-1 (ليظهر في اليمين) -->
       <div class="col-lg-6 <?php echo ($current_dir === 'rtl') ? 'order-1 order-lg-2' : 'order-1 order-lg-1'; ?> position-relative">
         <div class="image-stack">
           <img src="<?php echo htmlspecialchars($about_main_img, ENT_QUOTES, 'UTF-8'); ?>" alt="Main About Image" class="img-fluid main-img">

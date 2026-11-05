@@ -124,6 +124,7 @@ return [
     'add_new_contact'         => 'Add New Contact',
 
     'manage_about_section'    => 'Edit About Us Section',
+    'edit_about_services'     => 'Edit About Us Services', // 🌟 المفتاح المضاف حديثاً
     'company_vision'          => 'Company Vision',
     'company_message'         => 'Company Message',
     'main_image'              => 'Current Main Image',

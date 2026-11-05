@@ -153,6 +153,7 @@ return [
 
     // ترجمات قسم من نحن (About Section & Modals)
     'manage_about_section'    => 'تعديل قسم من نحن',
+    'edit_about_services'     => 'تعديل خدمات من نحن', // 🌟 المفتاح المضاف حديثاً للمودل المستقل
     'company_vision'          => 'رؤية الشركة',
     'company_message'         => 'رسالة الشركة',
     'main_image'              => 'الصورة الرئيسية الحالية',

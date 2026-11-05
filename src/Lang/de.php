@@ -124,6 +124,7 @@ return [
     'add_new_contact'         => 'Neuen Kontakt hinzufügen',
 
     'manage_about_section'    => 'Über uns bearbeiten',
+    'edit_about_services'     => 'Dienstleistungen "Über uns" bearbeiten', // 🌟 المفتاح المضاف حديثاً
     'company_vision'          => 'Unternehmensvision',
     'company_message'         => 'Unternehmensbotschaft',
     'main_image'              => 'Aktuelles Hauptbild',
@@ -150,9 +151,4 @@ return [
     'partner_image'           => 'Partner-Logo / Bild',
     'delete_partner'          => 'Partner löschen',
     'add_new_partner'         => 'Neuen Partner hinzufügen',
-        // ترجمات إضافية لمودل خدمات صفحة من نحن
-    'edit_about_services'     => 'Dienstleistungen "Über uns" bearbeiten',
-    'image_or_icon'           => 'Bild / Icon',
-    'delete_service'          => 'Dienst löschen',
-
 ];

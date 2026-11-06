@@ -174,7 +174,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
               $num = sprintf("%02d", $idx + 1);
               $dotClass = $dots[$idx % count($dots)];
               
-              // تحديد مسار الأيقونة الداخلية وحساب مسار الصورة الخلفية للرقم
               $defaultIcon = 'assets/img/vector/Grouptime' . ($idx + 1) . '.png';
               $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
               $groupNumImg = get_image_url('assets/img/vector/Group' . ($idx + 1) . '.png');
@@ -303,4 +302,3 @@ if (!empty($is_admin) && $is_admin === true && file_exists($edu_modals_file)) {
     include_once $edu_modals_file; 
 } 
 ?>
-

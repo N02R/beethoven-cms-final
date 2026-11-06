@@ -90,25 +90,25 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان الرئيسي', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_title'] ?? 'العنوان الرئيسي', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_hero['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_desc'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <textarea class="form-control" name="edu_hero[<?php echo $current_lang; ?>][desc]" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_hero['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
 
                             <div class="col-md-6 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['hero_btn_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_btn_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['url'] ?? 'رابط الزر', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_url'] ?? 'رابط الزر', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
 
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['main_image'] ?? 'الصورة الرئيسية', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_image'] ?? 'الصورة الرئيسية', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <div class="d-flex align-items-center gap-2">
                                     <?php if (!empty($edu_hero['img'])): ?>
                                         <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">

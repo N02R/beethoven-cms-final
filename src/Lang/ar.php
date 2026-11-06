@@ -183,4 +183,16 @@ return [
     'partner_image'           => 'شعار / صورة الشريك',
     'delete_partner'          => 'حذف الشريك',
     'add_new_partner'         => 'إضافة شريك جديد',
+        // ترجمات صفحة التعليم (Education Modals & Sections)
+    'manage_edu_hero'         => 'تعديل هيرو التعليم العالي',
+    'manage_edu_why'          => 'إدارة لماذا الدراسة في ألمانيا',
+    'manage_edu_timeline'     => 'إدارة خطوات الرحلة والخط الزمني',
+    'manage_edu_services'     => 'إدارة خدمات التعليم العالي',
+    // ترجمات مودل هيرو التعليم (Edu Hero Modal)
+    'edu_hero_title'          => 'العنوان الرئيسي',
+    'edu_hero_desc'           => 'الوصف',
+    'edu_hero_btn_text'       => 'نص الزر',
+    'edu_hero_url'            => 'رابط الزر',
+    'edu_hero_image'          => 'الصورة الرئيسية',
+
 ];

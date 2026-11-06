@@ -151,4 +151,17 @@ return [
     'partner_image'           => 'Partner Logo / Image',
     'delete_partner'          => 'Delete Partner',
     'add_new_partner'         => 'Add New Partner',
+        // Education Page Translations (Education Modals & Sections)
+    'manage_edu_hero'         => 'Edit Higher Education Hero',
+    'manage_edu_why'          => 'Manage Why Study in Germany',
+    'manage_edu_timeline'     => 'Manage Timeline Steps',
+    'manage_edu_services'     => 'Manage Higher Education Services',
+        // Edu Hero Modal Translations
+    'edu_hero_title'          => 'Main Title',
+    'edu_hero_desc'           => 'Description',
+    'edu_hero_btn_text'       => 'Button Text',
+    'edu_hero_url'            => 'Button URL',
+    'edu_hero_image'          => 'Main Image',
+
+
 ];

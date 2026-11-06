@@ -151,4 +151,16 @@ return [
     'partner_image'           => 'Partner-Logo / Bild',
     'delete_partner'          => 'Partner löschen',
     'add_new_partner'         => 'Neuen Partner hinzufügen',
+        // Bildungsseite Übersetzungen (Education Modals & Sections)
+    'manage_edu_hero'         => 'Hochschul-Hero bearbeiten',
+    'manage_edu_why'          => 'Warum in Deutschland studieren verwalten',
+    'manage_edu_timeline'     => 'Ablaufschritte und Zeitplan verwalten',
+    'manage_edu_services'     => 'Hochschul- und Bildungsdienste verwalten',
+    // Edu Hero Modal Übersetzungen
+    'edu_hero_title'          => 'Haupttitel',
+    'edu_hero_desc'           => 'Beschreibung',
+    'edu_hero_btn_text'       => 'Button-Text',
+    'edu_hero_url'            => 'Button-URL',
+    'edu_hero_image'          => 'Hauptbild',
+
 ];

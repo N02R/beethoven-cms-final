@@ -30,117 +30,218 @@ class EduSettingsService
             return false;
         }
 
-        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        $targetLang = $_POST['targetLang'] ?? $_POST['edu_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-        // 1. تحديث هيرو التعليم العالي (Edu Hero)
+        // دالة مساعدة ذكية لجلب وتحليل بيانات الـ JSON لضمان تعدد اللغات من قاعدة البيانات مباشرة
+        $getSettingAllLangs = function(string $key) use ($pdo): array {
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = :k");
+            $stmtFetch->execute(['k' => $key]);
+            $dbRaw = $stmtFetch->fetchColumn();
+            if ($dbRaw && is_string($dbRaw)) {
+                $decoded = json_decode($dbRaw, true);
+                if (is_array($decoded)) return $decoded;
+            }
+            return [];
+        };
+
+        // 1. تحديث هيرو التعليم العالي (Edu Hero) متعدد اللغات
         if ($action === 'update_edu_hero') {
-            $oldEduHeroData = json_decode($currentSettings['edu_hero'] ?? '', true) ?: [];
+            $allLangs = $getSettingAllLangs('edu_hero');
+            $currentLangData = $allLangs[$targetLang] ?? [];
 
-            $heroImg = $_POST['old_edu_hero_img'] ?? ($oldEduHeroData['img'] ?? 'assets/img/education/hero.jpg');
+            $oldHeroImg = $_POST['old_edu_hero_img'] ?? ($currentLangData['img'] ?? 'assets/img/education/hero.jpg');
+            
             if (isset($_FILES['edu_hero_img']) && $_FILES['edu_hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldEduHeroData['img'])) {
-                    $this->deleteOldImageFile($oldEduHeroData['img']);
+                if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/education/hero.jpg') {
+                    $this->deleteOldImageFile($oldHeroImg);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['edu_hero_img']['tmp_name']);
                 $heroImg = 'assets/uploads/' . $filename;
+            } else {
+                $heroImg = $oldHeroImg;
             }
 
-            $eduHeroData = [
-                'title'    => $_POST['edu_hero_title'] ?? '',
-                'desc'     => $_POST['edu_hero_desc'] ?? '',
-                'btn_text' => $_POST['edu_hero_btn_text'] ?? 'ابدأ الآن',
-                'btn_url'  => $_POST['edu_hero_btn_url'] ?? '#',
+            $postedHero = $_POST['edu_hero'][$targetLang] ?? $_POST;
+
+            $allLangs[$targetLang] = [
+                'title'    => trim((string)($postedHero['title'] ?? ($postedHero['edu_hero_title'] ?? ($currentLangData['title'] ?? '')))),
+                'desc'     => trim((string)($postedHero['desc'] ?? ($postedHero['edu_hero_desc'] ?? ($currentLangData['desc'] ?? '')))),
+                'btn_text' => trim((string)($postedHero['btn_text'] ?? ($postedHero['edu_hero_btn_text'] ?? ($currentLangData['btn_text'] ?? 'ابدأ الآن')))),
+                'btn_url'  => trim((string)($postedHero['btn_url'] ?? ($postedHero['edu_hero_btn_url'] ?? ($currentLangData['btn_url'] ?? '#')))),
                 'img'      => $heroImg
             ];
 
-            $jsonVal = json_encode($eduHeroData, JSON_UNESCAPED_UNICODE);
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
             $stmt->execute(['k' => 'edu_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 2. تحديث لماذا الدراسة في ألمانيا (Edu Why)
+
+        // 2. تحديث لماذا الدراسة في ألمانيا (Edu Why) متعدد اللغات مع الحماية الكاملة
         elseif ($action === 'update_edu_why') {
-            $eduWhyTitle = $_POST['edu_why_title'] ?? '';
-            $eduWhyDesc  = $_POST['edu_why_desc'] ?? '';
+            $allLangs = $getSettingAllLangs('edu_why');
+            $currentLangData = $allLangs[$targetLang] ?? [];
             
-            $stmt->execute(['k' => 'edu_why_title', 'v' => $eduWhyTitle, 'v_update' => $eduWhyTitle]);
-            $stmt->execute(['k' => 'edu_why_desc', 'v' => $eduWhyDesc, 'v_update' => $eduWhyDesc]);
+            $existingTitle = $currentLangData['title'] ?? 'لماذا الدراسة في ألمانيا؟';
+            $existingDesc  = $currentLangData['desc'] ?? '';
+            $existingItems = $currentLangData['items'] ?? [];
 
-            $eduWhyData = $_POST['edu_why'] ?? [];
-            foreach ($eduWhyData as $index => $item) {
-                $fileToCheck = $_FILES['edu_why_img_' . $index] ?? null;
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $eduWhyData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $eduWhyData[$index]['img'] = $item['old_img'] ?? '';
-                }
-                unset($eduWhyData[$index]['old_img']);
-            }
+            $postedWhy = $_POST['edu_why'][$targetLang] ?? $_POST;
+
+            $eduWhyTitle = trim((string)($postedWhy['title'] ?? ($postedWhy['edu_why_title'] ?? '')));
+            if ($eduWhyTitle === '') $eduWhyTitle = $existingTitle;
+
+            $eduWhyDesc = isset($postedWhy['desc']) ? trim((string)$postedWhy['desc']) : ($postedWhy['edu_why_desc'] ?? $existingDesc);
             
-            $jsonVal = json_encode(array_values($eduWhyData), JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'edu_why_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            $rawItems = $postedWhy['items'] ?? $_POST['edu_why'] ?? null;
+            $finalItems = [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_array($item)) continue;
+                    
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    $fileToCheck = $_FILES['edu_why_img_' . $index] ?? null;
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = [
+                        'title' => trim($item['title'] ?? ''),
+                        'desc'  => trim($item['desc'] ?? ''),
+                        'img'   => $img
+                    ];
+                }
+            } else {
+                $finalItems = $existingItems;
+            }
+
+            $allLangs[$targetLang] = [
+                'title' => $eduWhyTitle,
+                'desc'  => $eduWhyDesc,
+                'items' => $finalItems
+            ];
+            
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'edu_why', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 3. تحديث خطوات الرحلة والخط الزمني (Edu Timeline)
+
+        // 3. تحديث خطوات الرحلة والخط الزمني (Edu Timeline) متعدد اللغات
         elseif ($action === 'update_edu_timeline') {
-            $eduTimelineTitle = $_POST['edu_timeline_title'] ?? '';
-            $eduTimelineDesc  = $_POST['edu_timeline_desc'] ?? '';
+            $allLangs = $getSettingAllLangs('edu_timeline');
+            $currentLangData = $allLangs[$targetLang] ?? [];
+
+            $existingTitle = $currentLangData['title'] ?? 'خطوات الدراسة في ألمانيا';
+            $existingDesc  = $currentLangData['desc'] ?? '';
+            $existingItems = $currentLangData['steps'] ?? ($currentLangData['items'] ?? []);
+
+            $postedTimeline = $_POST['edu_timeline'][$targetLang] ?? $_POST;
+
+            $eduTimelineTitle = trim((string)($postedTimeline['title'] ?? ($postedTimeline['edu_timeline_title'] ?? '')));
+            if ($eduTimelineTitle === '') $eduTimelineTitle = $existingTitle;
+
+            $eduTimelineDesc = isset($postedTimeline['desc']) ? trim((string)$postedTimeline['desc']) : ($postedTimeline['edu_timeline_desc'] ?? $existingDesc);
             
-            $stmt->execute(['k' => 'edu_timeline_title', 'v' => $eduTimelineTitle, 'v_update' => $eduTimelineTitle]);
-            $stmt->execute(['k' => 'edu_timeline_desc', 'v' => $eduTimelineDesc, 'v_update' => $eduTimelineDesc]);
+            $rawSteps = $postedTimeline['steps'] ?? ($postedTimeline['items'] ?? $_POST['edu_timeline'] ?? null);
+            $finalSteps = [];
 
-            $eduTimelineData = $_POST['edu_timeline'] ?? [];
-            usort($eduTimelineData, function($a, $b) {
-                return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
-            });
+            if (is_array($rawSteps)) {
+                foreach ($rawSteps as $index => $item) {
+                    if (!is_array($item)) continue;
 
-            foreach ($eduTimelineData as $index => $item) {
-                $fileToCheck = $_FILES['edu_timeline_icon_' . $index] ?? null;
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_icon'])) {
-                        $this->deleteOldImageFile($item['old_icon']);
+                    $oldIcon = $item['old_icon'] ?? ($existingItems[$index]['icon'] ?? '');
+                    $icon = $oldIcon;
+
+                    $fileToCheck = $_FILES['edu_timeline_icon_' . $index] ?? null;
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldIcon) && str_starts_with($oldIcon, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldIcon);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $icon = 'assets/uploads/' . $filename;
                     }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $eduTimelineData[$index]['icon'] = 'assets/uploads/' . $filename;
-                } else {
-                    $eduTimelineData[$index]['icon'] = $item['old_icon'] ?? '';
+
+                    $finalSteps[] = [
+                        'title'    => trim($item['title'] ?? ''),
+                        'subtitle' => trim($item['subtitle'] ?? ''),
+                        'desc'     => trim($item['desc'] ?? ''),
+                        'icon'     => $icon
+                    ];
                 }
-                unset($eduTimelineData[$index]['old_icon']);
+            } else {
+                $finalSteps = $existingItems;
             }
+
+            $allLangs[$targetLang] = [
+                'title' => $eduTimelineTitle,
+                'desc'  => $eduTimelineDesc,
+                'steps' => $finalSteps
+            ];
             
-            $jsonVal = json_encode(array_values($eduTimelineData), JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'edu_timeline_steps', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'edu_timeline', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 4. تحديث خدمات التعليم (Edu Services)
-        elseif ($action === 'update_edu_services') {
-            $eduServicesTitle = $_POST['edu_services_title'] ?? '';
-            $eduServicesDesc  = $_POST['edu_services_desc'] ?? '';
-            
-            $stmt->execute(['k' => 'edu_services_title', 'v' => $eduServicesTitle, 'v_update' => $eduServicesTitle]);
-            $stmt->execute(['k' => 'edu_services_desc', 'v' => $eduServicesDesc, 'v_update' => $eduServicesDesc]);
 
-            $eduServicesData = $_POST['edu_services'] ?? [];
-            foreach ($eduServicesData as $index => $item) {
-                $fileToCheck = $_FILES['edu_service_img_' . $index] ?? null;
-                
-                if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                    if (!empty($item['old_img'])) {
-                        $this->deleteOldImageFile($item['old_img']);
-                    }
-                    $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                    $eduServicesData[$index]['img'] = 'assets/uploads/' . $filename;
-                } else {
-                    $eduServicesData[$index]['img'] = $item['old_img'] ?? '';
-                }
-                unset($eduServicesData[$index]['old_img']);
-            }
+        // 4. تحديث خدمات التعليم (Edu Services) متعدد اللغات
+        elseif ($action === 'update_edu_services') {
+            $allLangs = $getSettingAllLangs('edu_services');
+            $currentLangData = $allLangs[$targetLang] ?? [];
+
+            $existingTitle = $currentLangData['title'] ?? ($currentLangData['section_title'] ?? 'خدمات التعليم');
+            $existingDesc  = $currentLangData['desc'] ?? ($currentLangData['section_subtitle'] ?? '');
+            $existingItems = $currentLangData['items'] ?? [];
+
+            $postedServices = $_POST['edu_services'][$targetLang] ?? $_POST;
+
+            $eduServicesTitle = trim((string)($postedServices['title'] ?? ($postedServices['section_title'] ?? ($postedServices['edu_services_title'] ?? ''))));
+            if ($eduServicesTitle === '') $eduServicesTitle = $existingTitle;
+
+            $eduServicesDesc = isset($postedServices['desc']) ? trim((string)$postedServices['desc']) : (isset($postedServices['section_subtitle']) ? trim((string)$postedServices['section_subtitle']) : ($postedServices['edu_services_desc'] ?? $existingDesc));
             
-            $jsonVal = json_encode(array_values($eduServicesData), JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'edu_services_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            $rawItems = $postedServices['items'] ?? $_POST['edu_services'] ?? null;
+            $finalItems = [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_array($item)) continue;
+
+                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $img = $oldImg;
+
+                    $fileToCheck = $_FILES['edu_service_img_' . $index] ?? null;
+                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
+                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                            $this->deleteOldImageFile($oldImg);
+                        }
+                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
+                        $img = 'assets/uploads/' . $filename;
+                    }
+
+                    $finalItems[] = [
+                        'title' => trim($item['title'] ?? ''),
+                        'url'   => trim($item['url'] ?? '#'),
+                        'img'   => $img
+                    ];
+                }
+            } else {
+                $finalItems = $existingItems;
+            }
+
+            $allLangs[$targetLang] = [
+                'title'            => $eduServicesTitle,
+                'desc'             => $eduServicesDesc,
+                'section_title'    => $eduServicesTitle,
+                'section_subtitle' => $eduServicesDesc,
+                'items'            => $finalItems
+            ];
+            
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'edu_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;

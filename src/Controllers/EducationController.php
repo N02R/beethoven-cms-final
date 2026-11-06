@@ -21,6 +21,19 @@ class EducationController {
             session_start();
         }
 
+        // ==========================================
+        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات (مطابق لـ HomeController)
+        // ==========================================
+        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
+        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+        $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
+
+        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
+        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
+        $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+        $lang = $lang_data; // توافقاً تاماً مع المتغير المعتمد في الهيدر والفوتر والصفحة
+        // ==========================================
+
         // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');
 

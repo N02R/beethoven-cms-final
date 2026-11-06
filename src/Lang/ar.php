@@ -185,7 +185,6 @@ return [
     'add_new_partner'         => 'إضافة شريك جديد',
         // ترجمات صفحة التعليم (Education Modals & Sections)
     'manage_edu_hero'         => 'تعديل هيرو التعليم العالي',
-    'manage_edu_why'          => 'إدارة لماذا الدراسة في ألمانيا',
     'manage_edu_timeline'     => 'إدارة خطوات الرحلة والخط الزمني',
     'manage_edu_services'     => 'إدارة خدمات التعليم العالي',
     // ترجمات مودل هيرو التعليم (Edu Hero Modal)
@@ -194,5 +193,14 @@ return [
     'edu_hero_btn_text'       => 'نص الزر',
     'edu_hero_url'            => 'رابط الزر',
     'edu_hero_image'          => 'الصورة الرئيسية',
+    // ترجمات مودل لماذا الدراسة (Edu Why Modal)
+    'edu_why_section_title'   => 'إدارة لماذا الدراسة في ألمانيا',
+    'edu_why_title_label'     => 'عنوان القسم',
+    'edu_why_desc_label'      => 'وصف القسم',
+    'edu_why_item_title'      => 'العنوان',
+    'edu_why_item_desc'       => 'الوصف المختصر',
+    'edu_why_item_icon'       => 'الأيقونة / الصورة',
+    'edu_why_add_btn'         => 'إضافة سبب جديد',
+    'edu_why_delete_title'    => 'حذف السبب',
 
 ];

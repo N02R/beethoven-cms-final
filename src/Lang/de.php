@@ -153,7 +153,6 @@ return [
     'add_new_partner'         => 'Neuen Partner hinzufügen',
         // Bildungsseite Übersetzungen (Education Modals & Sections)
     'manage_edu_hero'         => 'Hochschul-Hero bearbeiten',
-    'manage_edu_why'          => 'Warum in Deutschland studieren verwalten',
     'manage_edu_timeline'     => 'Ablaufschritte und Zeitplan verwalten',
     'manage_edu_services'     => 'Hochschul- und Bildungsdienste verwalten',
     // Edu Hero Modal Übersetzungen
@@ -162,5 +161,14 @@ return [
     'edu_hero_btn_text'       => 'Button-Text',
     'edu_hero_url'            => 'Button-URL',
     'edu_hero_image'          => 'Hauptbild',
+    // Edu Why Modal Übersetzungen
+    'edu_why_section_title'   => 'Warum in Deutschland studieren verwalten',
+    'edu_why_title_label'     => 'Sektionstitel',
+    'edu_why_desc_label'      => 'Sektionsbeschreibung',
+    'edu_why_item_title'      => 'Titel',
+    'edu_why_item_desc'       => 'Kurzbeschreibung',
+    'edu_why_item_icon'       => 'Icon / Bild',
+    'edu_why_add_btn'         => 'Neuen Grund hinzufügen',
+    'edu_why_delete_title'    => 'Grund löschen',
 
 ];

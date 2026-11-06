@@ -138,17 +138,17 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-patch-question text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_edu_why'] ?? 'إدارة لماذا الدراسة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['edu_why_section_title'] ?? 'إدارة لماذا الدراسة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <script>
                     window.CMS_LANG = window.CMS_LANG || {};
-                    window.CMS_LANG.edu_why_title = '<?php echo addslashes($lang['title'] ?? 'العنوان'); ?>';
-                    window.CMS_LANG.edu_why_desc = '<?php echo addslashes($lang['description'] ?? 'الوصف المختصر'); ?>';
-                    window.CMS_LANG.edu_why_image = '<?php echo addslashes($lang['icon_image'] ?? 'الأيقونة / الصورة'); ?>';
-                    window.CMS_LANG.delete_item = '<?php echo addslashes($lang['delete'] ?? 'حذف'); ?>';
+                    window.CMS_LANG.edu_why_title = '<?php echo addslashes($lang['edu_why_item_title'] ?? 'العنوان'); ?>';
+                    window.CMS_LANG.edu_why_desc = '<?php echo addslashes($lang['edu_why_item_desc'] ?? 'الوصف المختصر'); ?>';
+                    window.CMS_LANG.edu_why_image = '<?php echo addslashes($lang['edu_why_item_icon'] ?? 'الأيقونة / الصورة'); ?>';
+                    window.CMS_LANG.delete_item = '<?php echo addslashes($lang['edu_why_delete_title'] ?? 'حذف'); ?>';
                 </script>
 
                 <form id="eduWhyForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -159,11 +159,11 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                     <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_title_label'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
                             <input type="text" class="form-control" name="edu_why[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_desc_label'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
                             <textarea class="form-control" name="edu_why[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
@@ -174,18 +174,18 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                             <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="why_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control edu-why-title" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: جودة التعليم">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'الوصف المختصر', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_desc'] ?? 'الوصف المختصر', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control edu-why-desc" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="شرح بسيط للسبب">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_icon'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -199,7 +199,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                                     <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="حذف"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['edu_why_delete_title'] ?? 'حذف', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -207,7 +207,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduWhyRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> إضافة سبب جديد
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_why_add_btn'] ?? 'إضافة سبب جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
@@ -442,12 +442,19 @@ if (!isset($edu_hero) || empty($edu_hero)) {
         }, 4000);
     }
 
-    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة"
+    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة" (مترجمة ديناميكياً)
     function addEduWhyRow() {
         const container = document.getElementById('eduWhyContainer');
         if (!container) return;
         const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
         const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
+
+        const t = window.CMS_LANG || {};
+        const tTitle = t.edu_why_title || 'العنوان';
+        const tDesc = t.edu_why_desc || 'الوصف المختصر';
+        const tImg = t.edu_why_image || 'الأيقونة / الصورة';
+        const tDelete = t.delete_item || 'حذف';
+
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm edu-why-row-item mb-3';
         div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
@@ -455,24 +462,24 @@ if (!isset($edu_hero) || empty($edu_hero)) {
         div.innerHTML = `
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">العنوان</label>
+                    <label class="form-label fw-semibold small text-secondary">${tTitle}</label>
                     <input type="text" class="form-control edu-why-title" name="edu_why[${currentLang}][items][${eduWhyCount}][title]" placeholder="مثال: جودة التعليم">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">الوصف المختصر</label>
+                    <label class="form-label fw-semibold small text-secondary">${tDesc}</label>
                     <input type="text" class="form-control edu-why-desc" name="edu_why[${currentLang}][items][${eduWhyCount}][desc]" placeholder="شرح بسيط للسبب">
                 </div>
             </div>
             <div class="row g-2 align-items-end">
                 <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">الأيقونة / الصورة</label>
+                    <label class="form-label fw-semibold small text-secondary">${tImg}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control edu-why-file" name="edu_why_img_${eduWhyCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="edu-why-old-img" name="edu_why[${currentLang}][items][${eduWhyCount}][old_img]" value="">
                 <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -670,3 +677,4 @@ if (!isset($edu_hero) || empty($edu_hero)) {
         });
     });
 </script>
+

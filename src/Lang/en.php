@@ -153,7 +153,6 @@ return [
     'add_new_partner'         => 'Add New Partner',
         // Education Page Translations (Education Modals & Sections)
     'manage_edu_hero'         => 'Edit Higher Education Hero',
-    'manage_edu_why'          => 'Manage Why Study in Germany',
     'manage_edu_timeline'     => 'Manage Timeline Steps',
     'manage_edu_services'     => 'Manage Higher Education Services',
         // Edu Hero Modal Translations
@@ -162,6 +161,15 @@ return [
     'edu_hero_btn_text'       => 'Button Text',
     'edu_hero_url'            => 'Button URL',
     'edu_hero_image'          => 'Main Image',
+    // Edu Why Modal Translations
+    'edu_why_section_title'   => 'Manage Why Study in Germany',
+    'edu_why_title_label'     => 'Section Title',
+    'edu_why_desc_label'      => 'Section Description',
+    'edu_why_item_title'      => 'Title',
+    'edu_why_item_desc'       => 'Short Description',
+    'edu_why_item_icon'       => 'Icon / Image',
+    'edu_why_add_btn'         => 'Add New Reason',
+    'edu_why_delete_title'    => 'Delete Reason',
 
 
 ];

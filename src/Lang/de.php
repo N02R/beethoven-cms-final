@@ -179,5 +179,12 @@ return [
     'step_icon_lbl'           => 'Aktuelles / Neues Icon',
     'edu_timeline_add_btn'    => 'Neuen Schritt hinzufügen',
     'delete_step'             => 'Schritt löschen',
+    // Edu Services Modal Übersetzungen
+    'manage_edu_services'     => 'Hochschul- und Bildungsdienste verwalten',
+    'edu_srv_title_lbl'       => 'Dienstname',
+    'edu_srv_url_lbl'         => 'Dienst-URL (Nur Seitenname)',
+    'edu_srv_img_lbl'         => 'Aktuelles / Neues Hintergrundbild',
+    'edu_services_add_btn'    => 'Neuen Dienst hinzufügen',
+    'delete_edu_service'      => 'Dienst löschen',
 
 ];

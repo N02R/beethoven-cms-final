@@ -179,6 +179,13 @@ return [
     'step_icon_lbl'           => 'Current / New Icon',
     'edu_timeline_add_btn'    => 'Add New Step',
     'delete_step'             => 'Delete Step',
+    // Edu Services Modal Translations
+    'manage_edu_services'     => 'Manage Higher Education Services',
+    'edu_srv_title_lbl'       => 'Service Name',
+    'edu_srv_url_lbl'         => 'Service URL (Page name only)',
+    'edu_srv_img_lbl'         => 'Current / New Background Image',
+    'edu_services_add_btn'    => 'Add New Service',
+    'delete_edu_service'      => 'Delete Service',
 
 
 ];

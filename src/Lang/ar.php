@@ -211,5 +211,12 @@ return [
     'step_icon_lbl'           => 'الأيقونة الحالية / الجديدة',
     'edu_timeline_add_btn'    => 'إضافة خطوة جديدة',
     'delete_step'             => 'حذف الخطوة',
+    // ترجمات مودل خدمات التعليم (Edu Services Modal)
+    'manage_edu_services'     => 'إدارة خدمات التعليم العالي',
+    'edu_srv_title_lbl'       => 'اسم الخدمة',
+    'edu_srv_url_lbl'         => 'رابط الخدمة (اسم الصفحة فقط)',
+    'edu_srv_img_lbl'         => 'صورة الخلفية الحالية / الجديدة',
+    'edu_services_add_btn'    => 'إضافة خدمة جديدة',
+    'delete_edu_service'      => 'حذف الخدمة',
 
 ];

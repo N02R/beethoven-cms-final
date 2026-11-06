@@ -153,8 +153,6 @@ return [
     'add_new_partner'         => 'Add New Partner',
         // Education Page Translations (Education Modals & Sections)
     'manage_edu_hero'         => 'Edit Higher Education Hero',
-    'manage_edu_timeline'     => 'Manage Timeline Steps',
-    'manage_edu_services'     => 'Manage Higher Education Services',
         // Edu Hero Modal Translations
     'edu_hero_title'          => 'Main Title',
     'edu_hero_desc'           => 'Description',
@@ -170,6 +168,17 @@ return [
     'edu_why_item_icon'       => 'Icon / Image',
     'edu_why_add_btn'         => 'Add New Reason',
     'edu_why_delete_title'    => 'Delete Reason',
+    // Edu Timeline Modal Translations
+    'manage_edu_timeline'     => 'Manage Timeline Steps',
+    'edu_timeline_title_lbl'  => 'Section Title',
+    'edu_timeline_desc_lbl'   => 'Section Description',
+    'step_title_lbl'          => 'Step Name',
+    'step_subtitle_lbl'       => 'Subtitle',
+    'step_desc_lbl'           => 'Details',
+    'step_order_lbl'          => 'Order',
+    'step_icon_lbl'           => 'Current / New Icon',
+    'edu_timeline_add_btn'    => 'Add New Step',
+    'delete_step'             => 'Delete Step',
 
 
 ];

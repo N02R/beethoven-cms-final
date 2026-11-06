@@ -153,8 +153,6 @@ return [
     'add_new_partner'         => 'Neuen Partner hinzufügen',
         // Bildungsseite Übersetzungen (Education Modals & Sections)
     'manage_edu_hero'         => 'Hochschul-Hero bearbeiten',
-    'manage_edu_timeline'     => 'Ablaufschritte und Zeitplan verwalten',
-    'manage_edu_services'     => 'Hochschul- und Bildungsdienste verwalten',
     // Edu Hero Modal Übersetzungen
     'edu_hero_title'          => 'Haupttitel',
     'edu_hero_desc'           => 'Beschreibung',
@@ -170,5 +168,16 @@ return [
     'edu_why_item_icon'       => 'Icon / Bild',
     'edu_why_add_btn'         => 'Neuen Grund hinzufügen',
     'edu_why_delete_title'    => 'Grund löschen',
+    // Edu Timeline Modal Übersetzungen
+    'manage_edu_timeline'     => 'Ablaufschritte verwalten',
+    'edu_timeline_title_lbl'  => 'Sektionstitel',
+    'edu_timeline_desc_lbl'   => 'Sektionsbeschreibung',
+    'step_title_lbl'          => 'Schrittname',
+    'step_subtitle_lbl'       => 'Untertitel',
+    'step_desc_lbl'           => 'Details',
+    'step_order_lbl'          => 'Reihenfolge',
+    'step_icon_lbl'           => 'Aktuelles / Neues Icon',
+    'edu_timeline_add_btn'    => 'Neuen Schritt hinzufügen',
+    'delete_step'             => 'Schritt löschen',
 
 ];

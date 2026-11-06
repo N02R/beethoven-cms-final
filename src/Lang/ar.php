@@ -185,8 +185,6 @@ return [
     'add_new_partner'         => 'إضافة شريك جديد',
         // ترجمات صفحة التعليم (Education Modals & Sections)
     'manage_edu_hero'         => 'تعديل هيرو التعليم العالي',
-    'manage_edu_timeline'     => 'إدارة خطوات الرحلة والخط الزمني',
-    'manage_edu_services'     => 'إدارة خدمات التعليم العالي',
     // ترجمات مودل هيرو التعليم (Edu Hero Modal)
     'edu_hero_title'          => 'العنوان الرئيسي',
     'edu_hero_desc'           => 'الوصف',
@@ -202,5 +200,16 @@ return [
     'edu_why_item_icon'       => 'الأيقونة / الصورة',
     'edu_why_add_btn'         => 'إضافة سبب جديد',
     'edu_why_delete_title'    => 'حذف السبب',
+    // ترجمات مودل خطوات الرحلة (Edu Timeline Modal)
+    'manage_edu_timeline'     => 'إدارة خطوات الرحلة والخط الزمني',
+    'edu_timeline_title_lbl'  => 'عنوان القسم',
+    'edu_timeline_desc_lbl'   => 'وصف القسم',
+    'step_title_lbl'          => 'اسم الخطوة',
+    'step_subtitle_lbl'       => 'العنوان الفرعي',
+    'step_desc_lbl'           => 'التفاصيل',
+    'step_order_lbl'          => 'الترتيب',
+    'step_icon_lbl'           => 'الأيقونة الحالية / الجديدة',
+    'edu_timeline_add_btn'    => 'إضافة خطوة جديدة',
+    'delete_step'             => 'حذف الخطوة',
 
 ];

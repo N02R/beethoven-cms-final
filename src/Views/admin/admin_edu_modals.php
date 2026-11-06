@@ -231,6 +231,16 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
+                <script>
+                    window.CMS_LANG = window.CMS_LANG || {};
+                    window.CMS_LANG.step_title = '<?php echo addslashes($lang['step_title_lbl'] ?? 'اسم الخطوة'); ?>';
+                    window.CMS_LANG.step_subtitle = '<?php echo addslashes($lang['step_subtitle_lbl'] ?? 'العنوان الفرعي'); ?>';
+                    window.CMS_LANG.step_desc = '<?php echo addslashes($lang['step_desc_lbl'] ?? 'التفاصيل'); ?>';
+                    window.CMS_LANG.step_order = '<?php echo addslashes($lang['step_order_lbl'] ?? 'الترتيب'); ?>';
+                    window.CMS_LANG.step_icon = '<?php echo addslashes($lang['step_icon_lbl'] ?? 'الأيقونة الحالية / الجديدة'); ?>';
+                    window.CMS_LANG.delete_step = '<?php echo addslashes($lang['delete_step'] ?? 'حذف الخطوة'); ?>';
+                </script>
+
                 <form id="eduTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_timeline">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
@@ -239,11 +249,11 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                     <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_title_lbl'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
                             <input type="text" class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_timeline_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_desc_lbl'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
                             <textarea class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_timeline_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
@@ -254,29 +264,29 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                             <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_title_lbl'] ?? 'اسم الخطوة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control edu-step-title" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_subtitle_lbl'] ?? 'العنوان الفرعي', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-9 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_desc_lbl'] ?? 'التفاصيل', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control edu-step-desc" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
                                     </div>
                                     <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">الترتيب</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_order_lbl'] ?? 'الترتيب', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="number" class="form-control edu-step-order" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_icon_lbl'] ?? 'الأيقونة الحالية / الجديدة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -290,7 +300,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                                     <input type="hidden" class="edu-step-old-icon" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('step_row_<?php echo $index; ?>')" title="حذف"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('step_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_step'] ?? 'حذف الخطوة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +308,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> إضافة خطوة جديدة
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_timeline_add_btn'] ?? 'إضافة خطوة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
@@ -487,7 +497,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
         container.appendChild(div);
     }
 
-    // 4. دالة إضافة صف جديد لـ "خطوات الرحلة التعليمية" مع قيد الـ 6 عناصر
+    // دالة إضافة صف جديد لـ "خطوات الرحلة التعليمية" مع قيد الـ 6 عناصر والترجمة الديناميكية
     function addEduStepRow() {
         const container = document.getElementById('eduTimelineContainer');
         if (!container) return;
@@ -499,6 +509,14 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             return;
         }
 
+        const t = window.CMS_LANG || {};
+        const tTitle = t.step_title || 'اسم الخطوة';
+        const tSubtitle = t.step_subtitle || 'العنوان الفرعي';
+        const tDesc = t.step_desc || 'التفاصيل';
+        const tOrder = t.step_order || 'الترتيب';
+        const tIcon = t.step_icon || 'الأيقونة الحالية / الجديدة';
+        const tDelete = t.delete_step || 'حذف الخطوة';
+
         const eduStepCount = currentRows;
         const div = document.createElement('div');
         div.className = 'p-3 shadow-sm edu-timeline-row-item mb-3';
@@ -507,34 +525,34 @@ if (!isset($edu_hero) || empty($edu_hero)) {
         div.innerHTML = `
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
-                    <input type="text" class="form-control edu-step-title" name="edu_timeline[${currentLang}][steps][${eduStepCount}][title]" placeholder="اسم الخطوة">
+                    <label class="form-label fw-semibold small text-secondary">${tTitle}</label>
+                    <input type="text" class="form-control edu-step-title" name="edu_timeline[${currentLang}][steps][${eduStepCount}][title]" placeholder="${tTitle}">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
-                    <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[${currentLang}][steps][${eduStepCount}][subtitle]" placeholder="العنوان الفرعي">
+                    <label class="form-label fw-semibold small text-secondary">${tSubtitle}</label>
+                    <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[${currentLang}][steps][${eduStepCount}][subtitle]" placeholder="${tSubtitle}">
                 </div>
             </div>
             <div class="row g-2 mb-3">
                 <div class="col-md-9">
-                    <label class="form-label fw-semibold small text-secondary">التفاصيل</label>
-                    <input type="text" class="form-control edu-step-desc" name="edu_timeline[${currentLang}][steps][${eduStepCount}][desc]" placeholder="التفاصيل">
+                    <label class="form-label fw-semibold small text-secondary">${tDesc}</label>
+                    <input type="text" class="form-control edu-step-desc" name="edu_timeline[${currentLang}][steps][${eduStepCount}][desc]" placeholder="${tDesc}">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">الترتيب</label>
-                    <input type="number" class="form-control edu-step-order" name="edu_timeline[${currentLang}][steps][${eduStepCount}][order]" value="${eduStepCount}" placeholder="الترتيب">
+                    <label class="form-label fw-semibold small text-secondary">${tOrder}</label>
+                    <input type="number" class="form-control edu-step-order" name="edu_timeline[${currentLang}][steps][${eduStepCount}][order]" value="${eduStepCount}" placeholder="${tOrder}">
                 </div>
             </div>
             <div class="row g-2 align-items-end">
                 <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                    <label class="form-label fw-semibold small text-secondary">${tIcon}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control edu-step-file" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="edu-step-old-icon" name="edu_timeline[${currentLang}][steps][${eduStepCount}][old_icon]" value="">
                 <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="حذف">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>

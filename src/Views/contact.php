@@ -120,7 +120,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         <div class="contact-info-icon">
           <img src="<?php echo get_image_url($phone_icon, 'assets/img/Call.svg'); ?>" alt="Call" />
         </div>
-        <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
+        <img src="<?php echo get_image_url('assets/img/Line.png'); ?>" alt="" />
         <a href="tel:<?php echo htmlspecialchars($phone, ENT_QUOTES, 'UTF-8'); ?>" dir="ltr" style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($phone, ENT_QUOTES, 'UTF-8'); ?></a>
       </div>
     </div>

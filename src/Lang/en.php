@@ -201,5 +201,8 @@ return [
     // Job Timeline Modal Translations
     'manage_job_timeline'     => 'Manage Employment & Training Steps',
     'job_timeline_add_btn'    => 'Add New Step',
+    // Job Services Modal Translations
+    'manage_job_services'     => 'Manage Employment Service Cards',
+    'job_services_add_btn'    => 'Add New Service',
 
 ];

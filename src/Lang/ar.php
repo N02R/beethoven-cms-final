@@ -233,5 +233,8 @@ return [
     // ترجمات مودل خطوط الزمن للوظائف (Job Timeline Modal)
     'manage_job_timeline'     => 'إدارة خطوات التوظيف والتدريب',
     'job_timeline_add_btn'    => 'إضافة خطوة جديدة',
+    // ترجمات مودل خدمات الوظائف (Job Services Modal)
+    'manage_job_services'     => 'إدارة كروت الخدمات والتوظيف',
+    'job_services_add_btn'    => 'إضافة خدمة جديدة',
 
 ];

@@ -483,18 +483,18 @@ if (!isset($job_hero) || empty($job_hero)) {
                             <div class="p-3 shadow-sm job-srv-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_srv_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">اسم الخدمة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['service_title'] ?? 'اسم الخدمة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control job-srv-title" name="job_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">رابط الخدمة (اسم الصفحة فقط)</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['service_url'] ?? 'رابط الخدمة (اسم الصفحة فقط)', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control job-srv-url" name="job_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: job-package">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">صورة الخلفية الحالية / الجديدة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['image_or_icon'] ?? 'صورة الخلفية الحالية / الجديدة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($item['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -508,7 +508,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                                     <input type="hidden" class="job-srv-old-img" name="job_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_srv_row_<?php echo $index; ?>')" title="حذف الخدمة"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_srv_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_service'] ?? 'حذف الخدمة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -516,7 +516,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> إضافة خدمة جديدة
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['job_services_add_btn'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>

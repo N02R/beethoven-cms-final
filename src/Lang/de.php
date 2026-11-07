@@ -201,5 +201,8 @@ return [
     // Job Timeline Modal Übersetzungen
     'manage_job_timeline'     => 'Beschäftigungs- und Ausbildungsschritte verwalten',
     'job_timeline_add_btn'    => 'Neuen Schritt hinzufügen',
+    // Job Services Modal Übersetzungen
+    'manage_job_services'     => 'Beschäftigungs-Servicekarten verwalten',
+    'job_services_add_btn'    => 'Neuen Dienst hinzufügen',
 
 ];

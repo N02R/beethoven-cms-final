@@ -220,5 +220,8 @@ return [
     'delete_edu_service'      => 'حذف الخدمة',
     // ترجمات هيرو الوظائف (Job Hero Modal)
     'manage_job_hero'         => 'تعديل قسم البداية للتدريب والتوظيف',
+    // ترجمات مودل لماذا التدريب (Job Why Modal)
+    'manage_job_why'          => 'إدارة لماذا التدريب معنا',
+    'job_why_add_btn'         => 'إضافة سبب جديد',
 
 ];

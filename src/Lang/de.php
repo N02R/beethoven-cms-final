@@ -188,5 +188,8 @@ return [
     'delete_edu_service'      => 'Dienst löschen',
     // Job Hero Modal Übersetzungen
     'manage_job_hero'         => 'Karriere- und Ausbildungs-Hero bearbeiten',
+    // Job Why Modal Übersetzungen
+    'manage_job_why'          => 'Warum bei uns ausbilden verwalten',
+    'job_why_add_btn'         => 'Neuen Grund hinzufügen',
 
 ];

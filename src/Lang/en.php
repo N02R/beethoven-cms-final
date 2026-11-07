@@ -188,6 +188,9 @@ return [
     'delete_edu_service'      => 'Delete Service',
     // Job Hero Modal Translations
     'manage_job_hero'         => 'Edit Job & Training Hero Section',
+    // Job Why Modal Translations
+    'manage_job_why'          => 'Manage Why Train With Us',
+    'job_why_add_btn'         => 'Add New Reason',
 
 
 ];

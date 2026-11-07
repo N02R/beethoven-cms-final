@@ -384,29 +384,29 @@ if (!isset($job_hero) || empty($job_hero)) {
                             <div class="p-3 shadow-sm job-step-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_step_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">اسم الخطوة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_title_lbl'] ?? 'اسم الخطوة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control job-step-title" name="job_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">العنوان الفرعي</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_subtitle_lbl'] ?? 'العنوان الفرعي', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control job-step-subtitle" name="job_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-9 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">التفاصيل</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_desc_lbl'] ?? 'التفاصيل', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control job-step-desc" name="job_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
                                     </div>
                                     <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">الترتيب</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_order_lbl'] ?? 'الترتيب', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="number" class="form-control job-step-order" name="job_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">الأيقونة الحالية / الجديدة</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_icon_lbl'] ?? 'الأيقونة الحالية / الجديدة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($step['icon'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -420,7 +420,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                                     <input type="hidden" class="job-step-old-icon" name="job_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_step_row_<?php echo $index; ?>')" title="حذف"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_step_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_step'] ?? 'حذف الخطوة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -428,7 +428,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> إضافة خطوة جديدة
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['job_timeline_add_btn'] ?? 'إضافة خطوة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>

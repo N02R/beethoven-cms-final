@@ -198,5 +198,8 @@ return [
     'prog_img_lbl'            => 'Programmbild',
     'prog_dark_lbl'           => 'Dunkles Design (Highlight)',
     'prog_add_btn'            => 'Neues Programm hinzufügen',
+    // Job Timeline Modal Übersetzungen
+    'manage_job_timeline'     => 'Beschäftigungs- und Ausbildungsschritte verwalten',
+    'job_timeline_add_btn'    => 'Neuen Schritt hinzufügen',
 
 ];

@@ -230,5 +230,8 @@ return [
     'prog_img_lbl'            => 'صورة البرنامج',
     'prog_dark_lbl'           => 'تصميم داكن (Highlight)',
     'prog_add_btn'            => 'إضافة برنامج جديد',
+    // ترجمات مودل خطوط الزمن للوظائف (Job Timeline Modal)
+    'manage_job_timeline'     => 'إدارة خطوات التوظيف والتدريب',
+    'job_timeline_add_btn'    => 'إضافة خطوة جديدة',
 
 ];

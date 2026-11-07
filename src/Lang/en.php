@@ -198,6 +198,8 @@ return [
     'prog_img_lbl'            => 'Program Image',
     'prog_dark_lbl'           => 'Dark Design (Highlight)',
     'prog_add_btn'            => 'Add New Program',
-
+    // Job Timeline Modal Translations
+    'manage_job_timeline'     => 'Manage Employment & Training Steps',
+    'job_timeline_add_btn'    => 'Add New Step',
 
 ];

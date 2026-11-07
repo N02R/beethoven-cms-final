@@ -186,5 +186,7 @@ return [
     'edu_srv_img_lbl'         => 'Aktuelles / Neues Hintergrundbild',
     'edu_services_add_btn'    => 'Neuen Dienst hinzufügen',
     'delete_edu_service'      => 'Dienst löschen',
+    // Job Hero Modal Übersetzungen
+    'manage_job_hero'         => 'Karriere- und Ausbildungs-Hero bearbeiten',
 
 ];

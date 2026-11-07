@@ -218,5 +218,7 @@ return [
     'edu_srv_img_lbl'         => 'صورة الخلفية الحالية / الجديدة',
     'edu_services_add_btn'    => 'إضافة خدمة جديدة',
     'delete_edu_service'      => 'حذف الخدمة',
+    // ترجمات هيرو الوظائف (Job Hero Modal)
+    'manage_job_hero'         => 'تعديل قسم البداية للتدريب والتوظيف',
 
 ];

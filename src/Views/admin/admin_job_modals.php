@@ -85,7 +85,7 @@ if (!isset($job_hero) || empty($job_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-briefcase-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_job_hero'] ?? 'تعديل هيرو الوظائف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['manage_job_hero'] ?? 'تعديل قسم البداية للتدريب والتوظيف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -120,13 +120,13 @@ if (!isset($job_hero) || empty($job_hero)) {
                     </div>
 
                     <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['current_image'] ?? 'الصورة الحالية', ENT_QUOTES, 'UTF-8'); ?></label>
+                        <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['current_image'] ?? 'الصورة الحالية:', ENT_QUOTES, 'UTF-8'); ?></label>
                         <?php if (!empty($job_hero['img'])): ?>
                             <div class="mb-3 p-2 border rounded-3 bg-light text-center" style="max-width: 200px;">
                                 <img src="<?php echo htmlspecialchars(get_image_url($job_hero['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Job Hero Image" class="rounded-2" style="max-height: 100px; object-fit: contain;">
                             </div>
                         <?php endif; ?>
-                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['choose_file'] ?? 'تغيير الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
+                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['choose_file'] ?? 'اختر ملف', ENT_QUOTES, 'UTF-8'); ?></label>
                         <input type="file" class="form-control" name="job_hero_img" accept="image/*">
                         <input type="hidden" name="old_job_hero_img" value="<?php echo htmlspecialchars($job_hero['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                     </div>

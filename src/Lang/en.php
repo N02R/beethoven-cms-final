@@ -186,6 +186,8 @@ return [
     'edu_srv_img_lbl'         => 'Current / New Background Image',
     'edu_services_add_btn'    => 'Add New Service',
     'delete_edu_service'      => 'Delete Service',
+    // Job Hero Modal Translations
+    'manage_job_hero'         => 'Edit Job & Training Hero Section',
 
 
 ];

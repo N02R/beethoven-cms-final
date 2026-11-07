@@ -21,14 +21,27 @@ class ContactController {
             session_start();
         }
 
+        // ==========================================
+        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات (تطابق مع AboutController)
+        // ==========================================
+        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
+        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+        $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
+
+        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
+        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
+        $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
+        $lang = $lang_data; // توافقاً تاماً مع المتغير المعتمد في الهيدر والفوتر والصفحة
+        // ==========================================
+
         // تحديد مسار الجذر للمشروع
         $root_path = realpath(__DIR__ . '/../../');
 
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة التواصل الخاصة باستخدام ContactModel
-        $contactData = ContactModel::getContactData(); 
+        // 2. جلب بيانات صفحة التواصل الخاصة باستخدام ContactModel مع تمرير اللغة
+        $contactData = class_exists('App\Models\ContactModel') ? ContactModel::getContactData($current_lang) : [];
         $data = array_merge($data, $contactData);
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
@@ -41,7 +54,7 @@ class ContactController {
         $data['is_logged_in'] = $is_logged_in;
         $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
 
-        // متغيرات إضافية قد تحتاجها الـ View
+        // متغيرات إضافية ومسارات
         $path_prefix = '/';
         $page_css = ['/assets/css/style.css', '/assets/css/contact.css'];
 
@@ -69,7 +82,7 @@ class ContactController {
         if (file_exists($footer_file)) {
             include_once $footer_file;
         } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 }

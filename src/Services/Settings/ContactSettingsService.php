@@ -29,83 +29,121 @@ class ContactSettingsService
             return false;
         }
 
-        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
         $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        $targetLang = $_POST['targetLang'] ?? $_POST['contact_lang'] ?? $_SESSION['site_lang'] ?? 'ar';
 
-        // 1. تحديث صورة الهيرو لصفحة تواصل معنا (Contact Hero)
+        // دالة مساعدة لجلب وتحليل بيانات الـ JSON لضمان تعدد اللغات من قاعدة البيانات
+        $getSettingAllLangs = function(string $key) use ($pdo): array {
+            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = :k");
+            $stmtFetch->execute(['k' => $key]);
+            $dbRaw = $stmtFetch->fetchColumn();
+            if ($dbRaw && is_string($dbRaw)) {
+                $decoded = json_decode($dbRaw, true);
+                if (is_array($decoded)) return $decoded;
+            }
+            return [];
+        };
+
+        // 1. تحديث هيرو صفحة تواصل معنا (Contact Hero) متعدد اللغات
         if ($action === 'update_contact_hero') {
-            $oldHeroImg = $_POST['old_contact_hero_img'] ?? ($currentSettings['contact_hero_img'] ?? '');
+            $allLangs = $getSettingAllLangs('contact_hero');
+            $currentLangData = $allLangs[$targetLang] ?? ($allLangs['ar'] ?? []);
+
+            $oldHeroImg = $_POST['old_contact_hero_img'] ?? ($currentLangData['img'] ?? 'assets/img/contacthero.png');
             $heroImg = $oldHeroImg;
 
             if (isset($_FILES['contact_hero_img']) && $_FILES['contact_hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldHeroImg)) {
+                if (!empty($oldHeroImg) && str_starts_with($oldHeroImg, 'assets/uploads/')) {
                     $this->deleteOldImageFile($oldHeroImg);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['contact_hero_img']['tmp_name']);
                 $heroImg = 'assets/uploads/' . $filename;
             }
 
-            $stmt->execute(['k' => 'contact_hero_img', 'v' => $heroImg, 'v_update' => $heroImg]);
+            $allLangs[$targetLang] = [
+                'img' => $heroImg
+            ];
+
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'contact_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         } 
-        // 2. تحديث معلومات وأيقونات التواصل (Contact Info & Icons)
+        // 2. تحديث معلومات وأيقونات التواصل (Contact Info & Icons) متعدد اللغات
         elseif ($action === 'update_contact_info') {
-            $title = $_POST['contact_info_title'] ?? 'معلومات التواصل';
-            $desc  = $_POST['contact_info_desc'] ?? '';
-            $addr  = $_POST['contact_address'] ?? '';
-            $email = $_POST['contact_email'] ?? '';
-            $phone = $_POST['contact_phone'] ?? '';
+            $allLangs = $getSettingAllLangs('contact_info');
+            $currentLangData = $allLangs[$targetLang] ?? ($allLangs['ar'] ?? []);
+            $postedInfo = $_POST['contact_info'][$targetLang] ?? $_POST;
 
-            $stmt->execute(['k' => 'contact_info_title', 'v' => $title, 'v_update' => $title]);
-            $stmt->execute(['k' => 'contact_info_desc', 'v' => $desc, 'v_update' => $desc]);
-            $stmt->execute(['k' => 'contact_address', 'v' => $addr, 'v_update' => $addr]);
-            $stmt->execute(['k' => 'contact_email', 'v' => $email, 'v_update' => $email]);
-            $stmt->execute(['k' => 'contact_phone', 'v' => $phone, 'v_update' => $phone]);
+            $title = trim((string)($postedInfo['title'] ?? ($postedInfo['contact_info_title'] ?? ($currentLangData['title'] ?? 'معلومات التواصل'))));
+            $desc  = trim((string)($postedInfo['desc'] ?? ($postedInfo['contact_info_desc'] ?? ($currentLangData['desc'] ?? ''))));
+            $addr  = trim((string)($postedInfo['address'] ?? ($postedInfo['contact_address'] ?? ($currentLangData['address'] ?? ''))));
+            $email = trim((string)($postedInfo['email'] ?? ($postedInfo['contact_email'] ?? ($currentLangData['email'] ?? ''))));
+            $phone = trim((string)($postedInfo['phone'] ?? ($postedInfo['contact_phone'] ?? ($currentLangData['phone'] ?? ''))));
 
-            // أيقونة العنوان
-            $oldAddrIcon = $_POST['old_contact_address_icon'] ?? ($currentSettings['contact_address_icon'] ?? '');
+            // معالجة أيقونة العنوان (Address Icon)
+            $oldAddrIcon = $postedInfo['old_address_icon'] ?? ($currentLangData['address_icon'] ?? 'assets/img/Location.svg');
             $addrIcon = $oldAddrIcon;
             if (isset($_FILES['contact_address_icon']) && $_FILES['contact_address_icon']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldAddrIcon)) {
+                if (!empty($oldAddrIcon) && str_starts_with($oldAddrIcon, 'assets/uploads/')) {
                     $this->deleteOldImageFile($oldAddrIcon);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['contact_address_icon']['tmp_name']);
                 $addrIcon = 'assets/uploads/' . $filename;
             }
-            $stmt->execute(['k' => 'contact_address_icon', 'v' => $addrIcon, 'v_update' => $addrIcon]);
 
-            // أيقونة البريد الإلكتروني
-            $oldEmailIcon = $_POST['old_contact_email_icon'] ?? ($currentSettings['contact_email_icon'] ?? '');
+            // معالجة أيقونة البريد الإلكتروني (Email Icon)
+            $oldEmailIcon = $postedInfo['old_email_icon'] ?? ($currentLangData['email_icon'] ?? 'assets/img/Mail.svg');
             $emailIcon = $oldEmailIcon;
             if (isset($_FILES['contact_email_icon']) && $_FILES['contact_email_icon']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldEmailIcon)) {
+                if (!empty($oldEmailIcon) && str_starts_with($oldEmailIcon, 'assets/uploads/')) {
                     $this->deleteOldImageFile($oldEmailIcon);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['contact_email_icon']['tmp_name']);
                 $emailIcon = 'assets/uploads/' . $filename;
             }
-            $stmt->execute(['k' => 'contact_email_icon', 'v' => $emailIcon, 'v_update' => $emailIcon]);
 
-            // أيقونة الهاتف
-            $oldPhoneIcon = $_POST['old_contact_phone_icon'] ?? ($currentSettings['contact_phone_icon'] ?? '');
+            // معالجة أيقونة الهاتف (Phone Icon)
+            $oldPhoneIcon = $postedInfo['old_phone_icon'] ?? ($currentLangData['phone_icon'] ?? 'assets/img/Call.svg');
             $phoneIcon = $oldPhoneIcon;
             if (isset($_FILES['contact_phone_icon']) && $_FILES['contact_phone_icon']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldPhoneIcon)) {
+                if (!empty($oldPhoneIcon) && str_starts_with($oldPhoneIcon, 'assets/uploads/')) {
                     $this->deleteOldImageFile($oldPhoneIcon);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['contact_phone_icon']['tmp_name']);
                 $phoneIcon = 'assets/uploads/' . $filename;
             }
-            $stmt->execute(['k' => 'contact_phone_icon', 'v' => $phoneIcon, 'v_update' => $phoneIcon]);
-        } 
-        // 3. تحديث قسم الواتساب والتواصل المباشر (WhatsApp Section)
-        elseif ($action === 'update_whatsapp_section') {
-            $waText   = $_POST['whatsapp_text'] ?? '';
-            $waUrl    = $_POST['whatsapp_url'] ?? '';
-            $waBtnTxt = $_POST['whatsapp_btn_txt'] ?? 'تواصل عبر الواتساب';
 
-            $stmt->execute(['k' => 'whatsapp_text', 'v' => $waText, 'v_update' => $waText]);
-            $stmt->execute(['k' => 'whatsapp_url', 'v' => $waUrl, 'v_update' => $waUrl]);
-            $stmt->execute(['k' => 'whatsapp_btn_txt', 'v' => $waBtnTxt, 'v_update' => $waBtnTxt]);
+            $allLangs[$targetLang] = [
+                'title'        => $title,
+                'desc'         => $desc,
+                'address'      => $addr,
+                'email'        => $email,
+                'phone'        => $phone,
+                'address_icon' => $addrIcon,
+                'email_icon'   => $emailIcon,
+                'phone_icon'   => $phoneIcon
+            ];
+
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'contact_info', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+        } 
+        // 3. تحديث قسم الواتساب والتواصل المباشر (WhatsApp Section) متعدد اللغات
+        elseif ($action === 'update_whatsapp_section') {
+            $allLangs = $getSettingAllLangs('whatsapp_section');
+            $currentLangData = $allLangs[$targetLang] ?? ($allLangs['ar'] ?? []);
+            $postedWa = $_POST['whatsapp_section'][$targetLang] ?? $_POST;
+
+            $waText   = trim((string)($postedWa['text'] ?? ($postedWa['whatsapp_text'] ?? ($currentLangData['text'] ?? ''))));
+            $waUrl    = trim((string)($postedWa['url'] ?? ($postedWa['whatsapp_url'] ?? ($currentLangData['url'] ?? '#'))));
+            $waBtnTxt = trim((string)($postedWa['btn_text'] ?? ($postedWa['whatsapp_btn_txt'] ?? ($currentLangData['btn_text'] ?? 'تواصل عبر الواتساب'))));
+
+            $allLangs[$targetLang] = [
+                'text'     => $waText,
+                'url'      => $waUrl,
+                'btn_text' => $waBtnTxt
+            ];
+
+            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
+            $stmt->execute(['k' => 'whatsapp_section', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;

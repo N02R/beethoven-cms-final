@@ -223,5 +223,12 @@ return [
     // ترجمات مودل لماذا التدريب (Job Why Modal)
     'manage_job_why'          => 'إدارة لماذا التدريب معنا',
     'job_why_add_btn'         => 'إضافة سبب جديد',
+    // ترجمات مودل برامج التدريب (Job Program Modal)
+    'manage_job_programs'     => 'إدارة برامج وأنواع التدريب المهني',
+    'prog_name_lbl'           => 'اسم البرنامج',
+    'prog_desc_lbl'           => 'تفاصيل البرنامج',
+    'prog_img_lbl'            => 'صورة البرنامج',
+    'prog_dark_lbl'           => 'تصميم داكن (Highlight)',
+    'prog_add_btn'            => 'إضافة برنامج جديد',
 
 ];

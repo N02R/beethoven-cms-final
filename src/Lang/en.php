@@ -191,6 +191,13 @@ return [
     // Job Why Modal Translations
     'manage_job_why'          => 'Manage Why Train With Us',
     'job_why_add_btn'         => 'Add New Reason',
+    // Job Program Modal Translations
+    'manage_job_programs'     => 'Manage Vocational Training Programs',
+    'prog_name_lbl'           => 'Program Name',
+    'prog_desc_lbl'           => 'Program Details',
+    'prog_img_lbl'            => 'Program Image',
+    'prog_dark_lbl'           => 'Dark Design (Highlight)',
+    'prog_add_btn'            => 'Add New Program',
 
 
 ];

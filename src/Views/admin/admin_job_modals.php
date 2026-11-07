@@ -235,18 +235,19 @@ if (!isset($job_hero) || empty($job_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-journal-bookmark-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_job_programs'] ?? 'إدارة برامج التدريب المهني', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['manage_job_programs'] ?? 'إدارة برامج وأنواع التدريب المهني', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <script>
                     window.CMS_LANG = window.CMS_LANG || {};
-                    window.CMS_LANG.prog_title = '<?php echo addslashes($lang['title'] ?? 'اسم البرنامج'); ?>';
-                    window.CMS_LANG.prog_desc = '<?php echo addslashes($lang['description'] ?? 'تفاصيل البرنامج'); ?>';
+                    window.CMS_LANG.prog_title = '<?php echo addslashes($lang['prog_name_lbl'] ?? 'اسم البرنامج'); ?>';
+                    window.CMS_LANG.prog_desc = '<?php echo addslashes($lang['prog_desc_lbl'] ?? 'تفاصيل البرنامج'); ?>';
                     window.CMS_LANG.prog_btn_text = '<?php echo addslashes($lang['hero_btn_text'] ?? 'نص الزر'); ?>';
                     window.CMS_LANG.prog_btn_url = '<?php echo addslashes($lang['url'] ?? 'رابط الزر'); ?>';
-                    window.CMS_LANG.prog_image = '<?php echo addslashes($lang['image_or_icon'] ?? 'صورة البرنامج'); ?>';
+                    window.CMS_LANG.prog_image = '<?php echo addslashes($lang['prog_img_lbl'] ?? 'صورة البرنامج'); ?>';
+                    window.CMS_LANG.prog_dark = '<?php echo addslashes($lang['prog_dark_lbl'] ?? 'تصميم داكن (Highlight)'); ?>';
                     window.CMS_LANG.delete_prog = '<?php echo addslashes($lang['delete'] ?? 'حذف'); ?>';
                 </script>
 
@@ -273,29 +274,29 @@ if (!isset($job_hero) || empty($job_hero)) {
                             <div class="p-3 shadow-sm job-prog-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="prog_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">اسم البرنامج</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['prog_name_lbl'] ?? 'اسم البرنامج', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control prog-title" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($prog['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم البرنامِج">
                                     </div>
                                     <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">نص الزر</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['hero_btn_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control prog-btn-text" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][btn_text]" value="<?php echo htmlspecialchars($prog['btn_text'] ?? 'اطلب الآن', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اطلب الآن">
                                     </div>
                                     <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">رابط الزر</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['url'] ?? 'رابط الزر', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control prog-btn-url" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][btn_url]" value="<?php echo htmlspecialchars($prog['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>" placeholder="#">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-12 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">تفاصيل البرنامج</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['prog_desc_lbl'] ?? 'تفاصيل البرنامج', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <textarea class="form-control prog-desc" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;" placeholder="تفاصيل البرنامِج"><?php echo htmlspecialchars($prog['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end mb-3">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary">صورة البرنامج</label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['prog_img_lbl'] ?? 'صورة البرنامج', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($prog['img'])): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -309,7 +310,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                                     <input type="hidden" class="prog-old-img" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($prog['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="حذف"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('prog_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete'] ?? 'حذف', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
 
@@ -317,7 +318,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                                     <div class="col-12">
                                         <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
                                             <input class="form-check-input ms-0 me-2" type="checkbox" name="job_programs[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][is_dark]" value="1" <?php echo !empty($prog['is_dark']) ? 'checked' : ''; ?>>
-                                            <label class="form-check-label small text-secondary fw-semibold cursor-pointer">تصميم داكن (Highlight)</label>
+                                            <label class="form-check-label small text-secondary fw-semibold cursor-pointer"><?php echo htmlspecialchars($lang['prog_dark_lbl'] ?? 'تصميم داكن (Highlight)', ENT_QUOTES, 'UTF-8'); ?></label>
                                         </div>
                                     </div>
                                 </div>
@@ -326,7 +327,7 @@ if (!isset($job_hero) || empty($job_hero)) {
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addJobProgramRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> إضافة برنامج جديد
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['prog_add_btn'] ?? 'إضافة برنامج جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>

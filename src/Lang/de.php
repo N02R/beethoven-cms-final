@@ -191,5 +191,12 @@ return [
     // Job Why Modal Übersetzungen
     'manage_job_why'          => 'Warum bei uns ausbilden verwalten',
     'job_why_add_btn'         => 'Neuen Grund hinzufügen',
+    // Job Program Modal Übersetzungen
+    'manage_job_programs'     => 'Berufsausbildungsprogramme verwalten',
+    'prog_name_lbl'           => 'Programmname',
+    'prog_desc_lbl'           => 'Programmdetails',
+    'prog_img_lbl'            => 'Programmbild',
+    'prog_dark_lbl'           => 'Dunkles Design (Highlight)',
+    'prog_add_btn'            => 'Neues Programm hinzufügen',
 
 ];

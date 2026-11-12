@@ -9,14 +9,84 @@ use PDO;
 class AuthController {
 
     private const MAX_LOGIN_ATTEMPTS = 5;
-    private const LOCKOUT_SECONDS    = 900; // 15 دقيقة حظر عند تجاوز المحاولات
-    private const OTP_EXPIRY_SECONDS = 300; // 5 دقائق صلاحية رمز التحقق الثنائي
+    private const LOCKOUT_SECONDS    = 900;
+    private const OTP_EXPIRY_SECONDS = 300;
     private const MAX_OTP_ATTEMPTS   = 3;
 
     private function ensureSession(): void {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+    }
+
+    private function getCurrentLang(): string {
+        $supported = ['de', 'en', 'ar'];
+        if (isset($_POST['ui_lang']) && in_array($_POST['ui_lang'], $supported, true)) {
+            $_SESSION['admin_login_lang'] = $_POST['ui_lang'];
+            $_SESSION['site_lang'] = $_POST['ui_lang'];
+        }
+        $lang = $_SESSION['admin_login_lang'] ?? ($_SESSION['site_lang'] ?? 'de');
+        return in_array($lang, $supported, true) ? $lang : 'de';
+    }
+
+    private function msg(string $key, array $replace = []): string {
+        $lang = $this->getCurrentLang();
+        $messages = [
+            'de' => [
+                'lockout'        => 'Anmeldeversuche aus Sicherheitsgründen vorübergehend gesperrt. Bitte versuchen Sie es in {min} Minuten erneut.',
+                'csrf_expired'   => 'Sicherheitssitzung abgelaufen. Bitte laden Sie die Seite neu.',
+                'captcha_wrong'  => 'Die Antwort auf die Sicherheitsüberprüfung (Captcha) ist falsch.',
+                'invalid_format' => 'Bitte geben Sie eine gültige E-Mail-Adresse und ein Passwort ein.',
+                'server_error'   => 'Interner Serverfehler. Bitte versuchen Sie es später erneut.',
+                '2fa_redirect'   => 'Zugangsdaten bestätigt. Weiterleitung zur Zwei-Faktor-Authentifizierung...',
+                'bad_creds'      => 'E-Mail-Adresse oder Passwort ist ungültig.',
+                '2fa_expired'    => 'Der Bestätigungscode ist abgelaufen. Bitte melden Sie sich erneut an.',
+                '2fa_invalid'    => 'Bitte geben Sie einen gültigen 6-stelligen Code ein.',
+                '2fa_wrong'      => 'Falscher Sicherheitscode. Verbleibende Versuche: {left}',
+                '2fa_max'        => 'Maximale Anzahl an Versuchen überschritten. Bitte melden Sie sich erneut an.',
+                'logout_success' => 'Sie wurden erfolgreich abgemeldet.',
+                'mail_subject'   => 'Beethoven CMS - Ihr Sicherheitscode (2FA)',
+                'mail_body'      => "Hallo {name},\n\nIhr Bestätigungscode für die Anmeldung lautet: {code}\nDieser Code ist 5 Minuten gültig.\n\nFalls Sie diese Anmeldung nicht angefordert haben, ändern Sie bitte umgehend Ihr Passwort."
+            ],
+            'en' => [
+                'lockout'        => 'Login attempts temporarily suspended for security reasons. Please try again in {min} minutes.',
+                'csrf_expired'   => 'Security session expired. Please refresh the page and try again.',
+                'captcha_wrong'  => 'The security verification (Captcha) answer is incorrect.',
+                'invalid_format' => 'Please enter a valid email address and password.',
+                'server_error'   => 'Internal server error. Please try again later.',
+                '2fa_redirect'   => 'Credentials verified. Redirecting to Two-Factor Authentication...',
+                'bad_creds'      => 'Invalid email address or password.',
+                '2fa_expired'    => 'Verification code has expired. Please log in again.',
+                '2fa_invalid'    => 'Please enter a valid 6-digit code.',
+                '2fa_wrong'      => 'Incorrect verification code. Remaining attempts: {left}',
+                '2fa_max'        => 'Maximum verification attempts exceeded. Please log in again.',
+                'logout_success' => 'You have been logged out securely.',
+                'mail_subject'   => 'Beethoven CMS - Your Security Code (2FA)',
+                'mail_body'      => "Hello {name},\n\nYour two-factor verification code is: {code}\nThis code is valid for 5 minutes.\n\nIf you did not request this login, please change your password immediately."
+            ],
+            'ar' => [
+                'lockout'        => 'تم تعليق محاولات الدخول مؤقتاً لأسباب أمنية. يرجى المحاولة بعد {min} دقيقة.',
+                'csrf_expired'   => 'انتهت صلاحية جلسة الأمان، يرجى تحديث الصفحة والمحاولة مجدداً.',
+                'captcha_wrong'  => 'إجابة التحقق الأمني (Captcha) غير صحيحة.',
+                'invalid_format' => 'يرجى إدخال بريد إلكتروني وكلمة مرور بصيغة صحيحة.',
+                'server_error'   => 'حدث خطأ داخلي في الخادم، يرجى المحاولة لاحقاً.',
+                '2fa_redirect'   => 'تم التحقق من بياناتك، جاري تحويلك لإدخال رمز الأمان (2FA)...',
+                'bad_creds'      => 'بيانات الدخول غير صحيحة.',
+                '2fa_expired'    => 'انتهت صلاحية رمز التحقق الثنائي، يرجى تسجيل الدخول مجدداً.',
+                '2fa_invalid'    => 'يرجى إدخال رمز مكون من 6 أرقام صحيحة.',
+                '2fa_wrong'      => 'رمز التحقق غير صحيح. المحاولات المتبقية: {left}',
+                '2fa_max'        => 'تم تجاوز الحد الأقصى لمحاولات التحقق الثنائي. يرجى إعادة تسجيل الدخول.',
+                'logout_success' => 'تم تسجيل الخروج بنجاح.',
+                'mail_subject'   => 'Beethoven CMS - رمز التحقق الثنائي (2FA)',
+                'mail_body'      => "مرحباً {name},\n\nرمز التحقق الثنائي الخاص بتسجيل الدخول إلى لوحة التحكم هو: {code}\nهذا الرمز صالح لمدة 5 دقائق فقط.\n\nإذا لم تطلب تسجيل الدخول، يرجى تغيير كلمة المرور فوراً."
+            ]
+        ];
+
+        $text = $messages[$lang][$key] ?? $messages['de'][$key] ?? $key;
+        foreach ($replace as $k => $v) {
+            $text = str_replace('{' . $k . '}', (string)$v, $text);
+        }
+        return $text;
     }
 
     private function respond(bool $isAjax, bool $success, string $message, string $redirectUrl = '/admin/login', int $statusCode = 200): void {
@@ -38,9 +108,6 @@ class AuthController {
         exit;
     }
 
-    /**
-     * 1. عرض صفحة تسجيل الدخول
-     */
     public function login(): void {
         $this->ensureSession();
 
@@ -71,11 +138,9 @@ class AuthController {
         }
     }
 
-    /**
-     * 2. معالجة بيانات الدخول وإطلاق مرحلة التحقق الثنائي (2FA)
-     */
     public function authenticate(): void {
         $this->ensureSession();
+        $this->getCurrentLang();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: /admin/login");
@@ -85,46 +150,35 @@ class AuthController {
         $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
                   || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
 
-        // الحماية من التخمين العشوائي (Rate Limiting)
         $lockUntil = (int)($_SESSION['login_lock_until'] ?? 0);
         if ($lockUntil > time()) {
             $remainingMinutes = (int)ceil(($lockUntil - time()) / 60);
-            $this->respond(
-                $isAjax,
-                false,
-                "تم تعليق محاولات الدخول مؤقتاً لأسباب أمنية. يرجى المحاولة بعد {$remainingMinutes} دقيقة.",
-                '/admin/login',
-                429
-            );
+            $this->respond($isAjax, false, $this->msg('lockout', ['min' => $remainingMinutes]), '/admin/login', 429);
         }
 
-        // التحقق من CSRF Token
         $token        = (string)($_POST['csrf_token'] ?? '');
         $sessionToken = (string)($_SESSION['login_csrf'] ?? '');
 
         if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
-            $this->respond($isAjax, false, 'انتهت صلاحية جلسة الأمان، يرجى تحديث الصفحة والمحاولة مجدداً.', '/admin/login', 403);
+            $this->respond($isAjax, false, $this->msg('csrf_expired'), '/admin/login', 403);
         }
 
-        // التحقق من الكابتشا الرياضية
         if (isset($_POST['captcha'])) {
             $userCaptcha     = trim((string)$_POST['captcha']);
             $expectedCaptcha = (string)($_SESSION['captcha_result'] ?? '');
             if ($expectedCaptcha === '' || !hash_equals($expectedCaptcha, $userCaptcha)) {
                 $this->recordFailedAttempt();
-                $this->respond($isAjax, false, 'إجابة التحقق الأمني (Captcha) غير صحيحة.', '/admin/login', 400);
+                $this->respond($isAjax, false, $this->msg('captcha_wrong'), '/admin/login', 400);
             }
         }
 
-        // تنقية المدخلات
         $email    = trim((string)($_POST['email'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
 
         if ($email === '' || $password === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190 || mb_strlen($password) > 255) {
-            $this->respond($isAjax, false, 'يرجى إدخال بريد إلكتروني وكلمة مرور بصيغة صحيحة.', '/admin/login', 400);
+            $this->respond($isAjax, false, $this->msg('invalid_format'), '/admin/login', 400);
         }
 
-        // التحقق من قاعدة البيانات مع منع Timing Attack
         $adminData = null;
         $dummyHash = '$2y$12$eImiTXuWVxfM37uY4JANjQ.5k0Z6F6W8V2B7N9M1L3K5J7H9G2F4D';
 
@@ -146,23 +200,24 @@ class AuthController {
 
                 $adminData = [
                     'role'  => $admin['role'] ?? 'admin',
-                    'name'  => $admin['name'] ?? 'المشرف',
+                    'name'  => $admin['name'] ?? 'Admin',
                     'email' => $admin['email'],
                     'id'    => (int)$admin['id']
                 ];
             }
         } catch (\Throwable $e) {
             error_log("Critical Auth Database Error: " . $e->getMessage());
-            $this->respond($isAjax, false, 'حدث خطأ داخلي في الخادم، يرجى المحاولة لاحقاً.', '/admin/login', 500);
+            $this->respond($isAjax, false, $this->msg('server_error'), '/admin/login', 500);
         }
 
-        // نجاح التحقق الأولي -> الانتقال لمرحلة 2FA
         if ($adminData !== null) {
+            $savedLang = $this->getCurrentLang();
             unset($_SESSION['login_attempts'], $_SESSION['login_lock_until'], $_SESSION['login_csrf'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result']);
 
             session_regenerate_id(true);
+            $_SESSION['admin_login_lang'] = $savedLang;
+            $_SESSION['site_lang']        = $savedLang;
 
-            // توليد كود 2FA مكون من 6 أرقام مشفرة
             $otpCode = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
             $_SESSION['pending_2fa_admin'] = $adminData;
@@ -172,7 +227,6 @@ class AuthController {
             $_SESSION['2fa_csrf']          = bin2hex(random_bytes(32));
             $_SESSION['user_agent_hash']   = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
 
-            // إتاحة الكود في بيئة التطوير المحلية فقط
             if (($_ENV['APP_ENV'] ?? 'production') !== 'production') {
                 $_SESSION['2fa_code'] = $otpCode;
             } else {
@@ -180,22 +234,13 @@ class AuthController {
                 $this->send2faEmail($adminData['email'], $adminData['name'], $otpCode);
             }
 
-            $this->respond(
-                $isAjax,
-                true,
-                'تم التحقق من بياناتك، جاري تحويلك لإدخال رمز الأمان (2FA)...',
-                '/admin/verify-2fa',
-                200
-            );
+            $this->respond($isAjax, true, $this->msg('2fa_redirect'), '/admin/verify-2fa', 200);
         }
 
         $this->recordFailedAttempt();
-        $this->respond($isAjax, false, 'بيانات الدخول غير صحيحة.', '/admin/login', 401);
+        $this->respond($isAjax, false, $this->msg('bad_creds'), '/admin/login', 401);
     }
 
-    /**
-     * 3. عرض صفحة التحقق الثنائي (2FA)
-     */
     public function show2fa(): void {
         $this->ensureSession();
 
@@ -204,16 +249,14 @@ class AuthController {
             exit;
         }
 
-        // منع الوصول المباشر دون اجتياز الخطوة الأولى
         if (empty($_SESSION['pending_2fa_admin']) || empty($_SESSION['2fa_code_hash'])) {
             header("Location: /admin/login");
             exit;
         }
 
-        // التحقق من انتهاء صلاحية الرمز
         if (time() > (int)($_SESSION['2fa_expires_at'] ?? 0)) {
             $this->clear2faSession();
-            $_SESSION['login_error'] = 'انتهت صلاحية رمز التحقق الثنائي، يرجى تسجيل الدخول مجدداً.';
+            $_SESSION['login_error'] = $this->msg('2fa_expired');
             header("Location: /admin/login");
             exit;
         }
@@ -234,9 +277,6 @@ class AuthController {
         }
     }
 
-    /**
-     * 4. التحقق من رمز 2FA وتفعيل جلسة المشرف الكاملة
-     */
     public function verify2fa(): void {
         $this->ensureSession();
 
@@ -250,24 +290,21 @@ class AuthController {
             exit;
         }
 
-        // التحقق من CSRF
         $token        = (string)($_POST['csrf_token'] ?? '');
         $sessionToken = (string)($_SESSION['2fa_csrf'] ?? '');
         if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
-            $_SESSION['2fa_error'] = 'انتهت صلاحية الجلسة الأمنية، يرجى المحاولة مجدداً.';
+            $_SESSION['2fa_error'] = $this->msg('csrf_expired');
             header("Location: /admin/verify-2fa");
             exit;
         }
 
-        // التحقق من مهلة الصلاحية (5 دقائق)
         if (time() > (int)($_SESSION['2fa_expires_at'] ?? 0)) {
             $this->clear2faSession();
-            $_SESSION['login_error'] = 'انتهت صلاحية رمز التحقق، يرجى تسجيل الدخول مرة أخرى.';
+            $_SESSION['login_error'] = $this->msg('2fa_expired');
             header("Location: /admin/login");
             exit;
         }
 
-        // التحقق من تطابق بصمة المتصفح
         $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
         if (!empty($_SESSION['user_agent_hash']) && !hash_equals($_SESSION['user_agent_hash'], $currentAgentHash)) {
             $this->clear2faSession();
@@ -277,7 +314,7 @@ class AuthController {
 
         $inputCode = trim((string)($_POST['verification_code'] ?? ''));
         if (!preg_match('/^[0-9]{6}$/', $inputCode)) {
-            $_SESSION['2fa_error'] = 'يرجى إدخال رمز مكون من 6 أرقام صحيحة.';
+            $_SESSION['2fa_error'] = $this->msg('2fa_invalid');
             header("Location: /admin/verify-2fa");
             exit;
         }
@@ -285,33 +322,34 @@ class AuthController {
         $inputHash = hash('sha256', $inputCode);
         if (hash_equals((string)$_SESSION['2fa_code_hash'], $inputHash)) {
             $adminData = $_SESSION['pending_2fa_admin'];
+            $savedLang = $this->getCurrentLang();
             $this->clear2faSession();
 
-            // تجديد الجلسة وتأسيس صلاحيات المشرف الكاملة
             session_regenerate_id(true);
-            $_SESSION['is_logged_in']    = true;
-            $_SESSION['role']            = $adminData['role'];
-            $_SESSION['admin_name']      = $adminData['name'];
-            $_SESSION['admin_id']        = $adminData['id'];
-            $_SESSION['user_agent_hash'] = $currentAgentHash;
-            $_SESSION['LAST_ACTIVITY']   = time();
+            $_SESSION['is_logged_in']     = true;
+            $_SESSION['role']             = $adminData['role'];
+            $_SESSION['admin_name']       = $adminData['name'];
+            $_SESSION['admin_id']         = $adminData['id'];
+            $_SESSION['admin_login_lang'] = $savedLang;
+            $_SESSION['site_lang']        = $savedLang;
+            $_SESSION['user_agent_hash']  = $currentAgentHash;
+            $_SESSION['LAST_ACTIVITY']    = time();
 
             header("Location: /admin/dashboard");
             exit;
         }
 
-        // تسجيل محاولة 2FA فاشلة
         $attempts = (int)($_SESSION['2fa_attempts'] ?? 0) + 1;
         $_SESSION['2fa_attempts'] = $attempts;
 
         if ($attempts >= self::MAX_OTP_ATTEMPTS) {
             $this->clear2faSession();
-            $_SESSION['login_error'] = 'تم تجاوز الحد الأقصى لمحاولات التحقق الثنائي. يرجى إعادة تسجيل الدخول.';
+            $_SESSION['login_error'] = $this->msg('2fa_max');
             header("Location: /admin/login");
             exit;
         }
 
-        $_SESSION['2fa_error'] = 'رمز التحقق غير صحيح. المحاولات المتبقية: ' . (self::MAX_OTP_ATTEMPTS - $attempts);
+        $_SESSION['2fa_error'] = $this->msg('2fa_wrong', ['left' => (self::MAX_OTP_ATTEMPTS - $attempts)]);
         header("Location: /admin/verify-2fa");
         exit;
     }
@@ -330,11 +368,8 @@ class AuthController {
 
     private function send2faEmail(string $toEmail, string $adminName, string $otpCode): void {
         $fromEmail = $_ENV['MAIL_FROM_ADDRESS'] ?? ('no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'beethoven-services.de'));
-        $subject   = 'Beethoven CMS - رمز التحقق الثنائي (2FA)';
-        $body      = "مرحباً {$adminName},\n\n"
-                   . "رمز التحقق الثنائي الخاص بتسجيل الدخول إلى لوحة التحكم هو: {$otpCode}\n"
-                   . "هذا الرمز صالح لمدة 5 دقائق فقط.\n\n"
-                   . "إذا لم تطلب تسجيل الدخول، يرجى تجاهل هذه الرسالة وتغيير كلمة المرور فوراً.";
+        $subject   = $this->msg('mail_subject');
+        $body      = $this->msg('mail_body', ['name' => $adminName, 'code' => $otpCode]);
 
         $headers = [
             'MIME-Version: 1.0',
@@ -356,11 +391,9 @@ class AuthController {
         }
     }
 
-    /**
-     * 5. تسجيل الخروج الآمن
-     */
     public function logout(): void {
         $this->ensureSession();
+        $logoutText = $this->msg('logout_success');
 
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {
@@ -377,7 +410,7 @@ class AuthController {
         }
         session_destroy();
 
-        header("Location: /admin/login?message=" . urlencode('تم تسجيل الخروج بنجاح.'));
+        header("Location: /admin/login?message=" . urlencode($logoutText));
         exit;
     }
 }

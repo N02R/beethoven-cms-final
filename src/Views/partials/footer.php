@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Beethoven CMS - Footer Partial (Production-Ready & Secure)
- * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، الكوكيز، ومودالات الإدارة المركزية.
+ * Beethoven CMS - Footer Partial (Production-Ready, Secure & Fully Multilingual)
+ * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، شريط الكوكيز المتوافق مع تسلسل اللغة، ومودالات الإدارة.
  */
 
 // 1. تأكيد تهيئة المسار إذا لم يكن معرفاً
@@ -18,13 +18,13 @@ if (!function_exists('get_multilang_text')) {
             if (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '[')) {
                 $arr = json_decode($trimmed, true);
                 if (is_array($arr)) {
-                    $res = $arr[$current_lang] ?? ($arr['ar'] ?? ($arr['de'] ?? ($arr['en'] ?? $default)));
+                    $res = $arr[$current_lang] ?? ($arr['de'] ?? ($arr['en'] ?? ($arr['ar'] ?? $default)));
                 }
             } else {
                 $res = $raw_data;
             }
         } elseif (is_array($raw_data)) {
-            $res = $raw_data[$current_lang] ?? ($raw_data['ar'] ?? ($raw_data['de'] ?? ($raw_data['en'] ?? $default)));
+            $res = $raw_data[$current_lang] ?? ($raw_data['de'] ?? ($raw_data['en'] ?? ($raw_data['ar'] ?? $default)));
         } elseif (is_numeric($raw_data)) {
             $res = (string)$raw_data;
         }
@@ -37,46 +37,135 @@ if (!function_exists('get_multilang_text')) {
     }
 }
 
-// 3. تحديد اللغة الحالية والاتجاه
-$current_lang = $current_lang ?? (function_exists('get_current_lang') ? get_current_lang() : 'ar');
+// 3. تحديد اللغة الحالية والاتجاه وضمان صحة الرمز
+$supported_langs = ['de', 'en', 'ar'];
+$current_lang = $current_lang ?? (function_exists('get_current_lang') ? get_current_lang() : ($_SESSION['site_lang'] ?? 'de'));
+if (!in_array($current_lang, $supported_langs, true)) {
+    $current_lang = 'de';
+}
 $current_lang_code = $current_lang;
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-// 4. استخراج بيانات الفوتر الموحدة من $data مع دعم فك التشفير الآمن للمفتاح الموحد 'footer'
+// التأكد من تحميل ملف اللغة النشط إذا لم يكن معرفاً مسبقاً
+if (!isset($lang) || !is_array($lang)) {
+    $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
+    if (!file_exists($lang_file)) {
+        $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
+    }
+    $lang = file_exists($lang_file) ? require $lang_file : [];
+    if (!is_array($lang)) {
+        $lang = [];
+    }
+}
+
+// 4. مصفوفة ترجمة افتراضية كاملة للغات الثلاث (تُستخدم كمرجع إذا غاب المفتاح عن ملف اللغة)
+$fallback_translations = [
+    'de' => [
+        'consult_title'          => 'Kostenlose Beratung anfordern',
+        'email_placeholder'      => 'Geben Sie Ihre E-Mail-Adresse ein...',
+        'privacy_modal_title'    => 'Zustimmung zur Datenschutzerklärung',
+        'privacy_modal_desc'     => 'Zum Schutz Ihrer Daten gemäß DSGVO stimmen Sie bitte der Speicherung Ihrer E-Mail-Adresse zu, damit unsere Experten Sie kontaktieren können. Weitere Details finden Sie in unserer',
+        'privacy_link_text'      => 'Datenschutzerklärung',
+        'impressum_link_text'    => 'Impressum',
+        'privacy_checkbox'       => 'Ich stimme der Speicherung und Verarbeitung meiner Daten zu.',
+        'cancel'                 => 'Abbrechen',
+        'agree_and_send'         => 'Zustimmen & Senden',
+        'alert_checkbox'         => 'Bitte stimmen Sie der Datenschutzerklärung zu, um fortzufahren.',
+        'alert_success'          => 'Ihre Anfrage wurde erfolgreich gesendet. Vielen Dank!',
+        'alert_error'            => 'Fehler: ',
+        'alert_connection_error' => 'Verbindungsfehler zum Server.',
+        'rights_reserved'        => 'Alle Rechte vorbehalten.',
+        'cookie_text'            => 'Wir verwenden Cookies, um Ihre Erfahrung auf unserer Website zu verbessern und Zugriffe zu analysieren. Details finden Sie in unserer',
+        'cookie_accept'          => 'Alle akzeptieren',
+        'cookie_reject'          => 'Nur essenzielle',
+        'col2_default'           => 'Schnelle Links',
+        'col3_default'           => 'Kontaktieren Sie uns'
+    ],
+    'en' => [
+        'consult_title'          => 'Get a Free Consultation',
+        'email_placeholder'      => 'Enter your email address...',
+        'privacy_modal_title'    => 'Privacy Policy Consent',
+        'privacy_modal_desc'     => 'To protect your data under European GDPR regulations, please consent to saving your email address so our experts can contact you. Full details are available in our',
+        'privacy_link_text'      => 'Privacy Policy',
+        'impressum_link_text'    => 'Legal Notice (Impressum)',
+        'privacy_checkbox'       => 'I agree to the storage and processing of my data.',
+        'cancel'                 => 'Cancel',
+        'agree_and_send'         => 'Agree & Send Request',
+        'alert_checkbox'         => 'You must agree to the privacy policy terms to continue.',
+        'alert_success'          => 'Your request has been sent successfully. Thank you!',
+        'alert_error'            => 'Error: ',
+        'alert_connection_error' => 'Server connection error.',
+        'rights_reserved'        => 'All rights reserved.',
+        'cookie_text'            => 'We use cookies to improve your browsing experience and analyze traffic. You can view the full details in our',
+        'cookie_accept'          => 'Accept All',
+        'cookie_reject'          => 'Reject Non-Essential',
+        'col2_default'           => 'Quick Links',
+        'col3_default'           => 'Contact Us'
+    ],
+    'ar' => [
+        'consult_title'          => 'احصل على استشارة مجانية',
+        'email_placeholder'      => 'ادخل إيميلك...',
+        'privacy_modal_title'    => 'الموافقة على سياسة الخصوصية',
+        'privacy_modal_desc'     => 'لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في',
+        'privacy_link_text'      => 'سياسة الخصوصية',
+        'impressum_link_text'    => 'بيان قانوني (Impressum)',
+        'privacy_checkbox'       => 'أوافق على شروط تخزين ومعالجة بياناتي.',
+        'cancel'                 => 'إلغاء',
+        'agree_and_send'         => 'موافق وإرسال الطلب',
+        'alert_checkbox'         => 'يجب الموافقة على شروط سياسة الخصوصية للمتابعة.',
+        'alert_success'          => 'تم إرسال طلبك بنجاح. شكراً لك!',
+        'alert_error'            => 'خطأ: ',
+        'alert_connection_error' => 'حدث خطأ في الاتصال بالخادم',
+        'rights_reserved'        => 'جميع الحقوق محفوظة.',
+        'cookie_text'            => 'نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة الموقع وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في',
+        'cookie_accept'          => 'قبول الكل',
+        'cookie_reject'          => 'رفض غير الضروري',
+        'col2_default'           => 'روابط سريعة',
+        'col3_default'           => 'تواصل معنا'
+    ]
+];
+
+$fb = $fallback_translations[$current_lang];
+
+// 5. استخراج بيانات الفوتر الموحدة من $data
 $footerRaw = $data['footer'] ?? [];
 if (is_string($footerRaw)) {
     $footerRaw = json_decode($footerRaw, true) ?? [];
 }
 
-// جلب بيانات اللغة النشطة مع تراجع آمن للغة العربية
-$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['ar'] ?? []);
+$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['ar'] ?? []));
 
-$consultTitle = $currentLangData['consult_title'] ?? 'احصل على استشارة مجانية';
+$consultTitle = $currentLangData['consult_title'] ?? ($lang['consult_title'] ?? $fb['consult_title']);
 $consultDesc  = $currentLangData['consult_desc'] ?? '';
 $footerDesc   = $currentLangData['footer_desc'] ?? '';
-$col2Title    = $currentLangData['col2_title'] ?? ($current_lang === 'ar' ? 'روابط سريعة' : ($current_lang === 'de' ? 'Schnelle Links' : 'Quick Links'));
-$col3Title    = $currentLangData['col3_title'] ?? ($current_lang === 'ar' ? 'تواصل معنا' : ($current_lang === 'de' ? 'Kontaktieren Sie uns' : 'Contact Us'));
+$col2Title    = $currentLangData['col2_title'] ?? $fb['col2_default'];
+$col3Title    = $currentLangData['col3_title'] ?? $fb['col3_default'];
 $col3Items    = $currentLangData['col3_items'] ?? [];
 
-// استخدام الترجمات القادمة من ملفات اللغات الخارجية ($lang) مع تراجع آمن
 $t = [
-    'consult_title'           => $lang['consult_title'] ?? $consultTitle,
-    'email_placeholder'       => $lang['email_placeholder'] ?? 'ادخل إيميلك...',
-    'privacy_modal_title'     => $lang['privacy_modal_title'] ?? 'الموافقة على سياسة الخصوصية',
-    'privacy_modal_desc'      => $lang['privacy_modal_desc'] ?? 'لحماية بياناتك وفقاً للمتطلبات الأوروبية (DSGVO)، يرجى الموافقة على حفظ بريدك الإلكتروني لتمكين خبرائنا من التواصل معك وتقديم الاستشارة المجانية. يمكنك الاطلاع على التفاصيل الكاملة في',
-    'privacy_link_text'       => $lang['privacy_link_text'] ?? 'سياسة الخصوصية',
-    'privacy_checkbox'        => $lang['privacy_checkbox'] ?? 'أوافق على شروط تخزين ومعالجة بياناتي.',
-    'cancel'                  => $lang['cancel'] ?? 'إلغاء',
-    'agree_and_send'          => $lang['agree_and_send'] ?? 'موافق وإرسال الطلب',
-    'alert_checkbox'          => $lang['alert_checkbox'] ?? 'يجب الموافقة على شروط سياسة الخصوصية للمتابعة.',
-    'alert_success'           => $lang['alert_success'] ?? 'تم إرسال طلبك بنجاح. شكراً لك!',
-    'alert_error'             => $lang['alert_error'] ?? 'خطأ: ',
-    'alert_connection_error'  => $lang['alert_connection_error'] ?? 'حدث خطأ في الاتصال بالخادم',
-    'rights_reserved'         => $lang['rights_reserved'] ?? 'Alle Rechte vorbehalten.',
-    'cookie_text'             => $lang['cookie_text'] ?? 'نحن نستخدم ملفات تعريف الارتباط لتحسين تجربة المتجر وتحليل الزيارات. يمكنك الاطلاع على التفاصيل في',
-    'cookie_accept'           => $lang['cookie_accept'] ?? 'قبول الكل',
-    'cookie_reject'           => $lang['cookie_reject'] ?? 'رفض غير الضروري'
+    'consult_title'          => $lang['consult_title'] ?? $consultTitle,
+    'email_placeholder'      => $lang['email_placeholder'] ?? $fb['email_placeholder'],
+    'privacy_modal_title'    => $lang['privacy_modal_title'] ?? $fb['privacy_modal_title'],
+    'privacy_modal_desc'     => $lang['privacy_modal_desc'] ?? $fb['privacy_modal_desc'],
+    'privacy_link_text'      => $lang['privacy_link_text'] ?? $fb['privacy_link_text'],
+    'impressum_link_text'    => $lang['impressum_link_text'] ?? $fb['impressum_link_text'],
+    'privacy_checkbox'       => $lang['privacy_checkbox'] ?? $fb['privacy_checkbox'],
+    'cancel'                 => $lang['cancel'] ?? $fb['cancel'],
+    'agree_and_send'         => $lang['agree_and_send'] ?? $fb['agree_and_send'],
+    'alert_checkbox'         => $lang['alert_checkbox'] ?? $fb['alert_checkbox'],
+    'alert_success'          => $lang['alert_success'] ?? $fb['alert_success'],
+    'alert_error'            => $lang['alert_error'] ?? $fb['alert_error'],
+    'alert_connection_error' => $lang['alert_connection_error'] ?? $fb['alert_connection_error'],
+    'rights_reserved'        => $lang['rights_reserved'] ?? $fb['rights_reserved'],
+    'cookie_text'            => $lang['cookie_text'] ?? $fb['cookie_text'],
+    'cookie_accept'          => $lang['cookie_accept'] ?? $fb['cookie_accept'],
+    'cookie_reject'          => $lang['cookie_reject'] ?? $fb['cookie_reject'],
 ];
+
+// روابط الصفحات القانونية بتسلسل اللغة الموحد
+$privacyUrl   = '/' . $current_lang_code . '/datenschutz';
+$impressumUrl = '/' . $current_lang_code . '/impressum';
+$consultPostUrl = '/' . $current_lang_code . '/send-consult';
 
 $modal_dir = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
@@ -109,10 +198,10 @@ $is_admin = !empty($is_admin) && $is_admin === true;
                     <p><?php echo htmlspecialchars((string)$consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 
-                <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($path_prefix . 'send_consult.php', ENT_QUOTES, 'UTF-8'); ?>" method="POST">
+                <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
                     <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
                     <button type="button" id="openConsentModalBtn">
-                        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="إرسال" width="35">
+                        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
                     </button>
                 </form>
             </div>
@@ -123,7 +212,7 @@ $is_admin = !empty($is_admin) && $is_admin === true;
 <!-- نافذة منبثقة (Popup Modal) للموافقة على سياسة الخصوصية (DSGVO) -->
 <div class="modal fade custom-modal" id="privacyConsentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content <?php echo htmlspecialchars($modal_dir, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo htmlspecialchars(($current_lang === 'ar') ? 'rtl' : 'ltr', ENT_QUOTES, 'UTF-8'); ?>">
+        <div class="modal-content <?php echo htmlspecialchars($modal_dir, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold"><i class="bi bi-shield-check text-primary"></i> <?php echo htmlspecialchars($t['privacy_modal_title'], ENT_QUOTES, 'UTF-8'); ?></h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -131,7 +220,7 @@ $is_admin = !empty($is_admin) && $is_admin === true;
             <div class="modal-body p-4">
                 <p class="text-muted mb-3" style="font-size: 0.95rem; line-height: 1.6;">
                     <?php echo htmlspecialchars($t['privacy_modal_desc'], ENT_QUOTES, 'UTF-8'); ?> 
-                    <a href="<?php echo htmlspecialchars($path_prefix . 'index.php?url=datenschutz', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="text-primary text-decoration-underline"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
+                    <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="text-primary text-decoration-underline"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
                 </p>
                 <div class="form-check bg-light p-3 rounded border">
                     <input class="form-check-input <?php echo htmlspecialchars($modal_align_class, ENT_QUOTES, 'UTF-8'); ?>" type="checkbox" id="modalPrivacyCheckbox">
@@ -175,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (confirmBtn) {
         confirmBtn.addEventListener('click', function() {
             if (!modalCheckbox.checked) {
-                alert('<?php echo addslashes($t['alert_checkbox']); ?>');
+                alert(<?php echo json_encode($t['alert_checkbox'], JSON_UNESCAPED_UNICODE); ?>);
                 return;
             }
             consentModal.hide();
@@ -183,24 +272,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('email', emailInput.value);
             formData.append('privacy_consent', 'on');
+            formData.append('lang', <?php echo json_encode($current_lang_code, JSON_UNESCAPED_UNICODE); ?>);
 
-            // إرسال الطلب إلى مسار الـ Controller عبر الراوتر المركزي
-            fetch('/consult_process.php', {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
+
+            fetch(<?php echo json_encode($consultPostUrl, JSON_UNESCAPED_UNICODE); ?>, {
                 method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('<?php echo addslashes($t['alert_success']); ?>');
+                    alert(<?php echo json_encode($t['alert_success'], JSON_UNESCAPED_UNICODE); ?>);
                     consultForm.reset();
                 } else {
-                    alert('<?php echo addslashes($t['alert_error']); ?>' + (data.message || ''));
+                    alert(<?php echo json_encode($t['alert_error'], JSON_UNESCAPED_UNICODE); ?> + (data.message || ''));
                 }
             })
             .catch(err => {
                 console.error('Error:', err);
-                alert('<?php echo addslashes($t['alert_connection_error']); ?>');
+                alert(<?php echo json_encode($t['alert_connection_error'], JSON_UNESCAPED_UNICODE); ?>);
             });
         });
     }
@@ -271,9 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>&copy;</span> <?php echo date('Y'); ?> Beethoven City Services. <?php echo htmlspecialchars($t['rights_reserved'], ENT_QUOTES, 'UTF-8'); ?>
             </p>
             <div class="legal-links d-flex gap-3 align-items-center">
-                <a href="<?php echo htmlspecialchars($path_prefix . 'index.php?url=impressum', ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small">Impressum</a>
+                <a href="<?php echo htmlspecialchars($impressumUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['impressum_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
                 <span class="text-muted">|</span>
-                <a href="<?php echo htmlspecialchars($path_prefix . 'index.php?url=datenschutz', ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small">Datenschutzerklärung</a>
+                <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
             </div>
         </div>
     </div>
@@ -300,12 +398,12 @@ if (isset($page_js) && is_array($page_js)) {
 }
 ?>
 
-<!-- شريط الموافقة على الكوكيز -->
-<div id="cookie-banner" class="cookie-banner" style="display: none;">
+<!-- شريط الموافقة على الكوكيز (DSGVO Compliant & Language-Aware) -->
+<div id="cookie-banner" class="cookie-banner" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>" style="display: none;">
     <div class="cookie-content">
         <p>
-            <?php echo $t['cookie_text']; ?> 
-            <a href="<?php echo htmlspecialchars($path_prefix . 'index.php?url=datenschutz', ENT_QUOTES, 'UTF-8'); ?>" target="_blank" style="color: #fff; text-decoration: underline;"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
+            <?php echo htmlspecialchars($t['cookie_text'], ENT_QUOTES, 'UTF-8'); ?> 
+            <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" style="color: #fff; text-decoration: underline;"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
         </p>
         <div class="cookie-buttons">
             <button id="accept-cookies" class="btn-accept"><?php echo htmlspecialchars($t['cookie_accept'], ENT_QUOTES, 'UTF-8'); ?></button>

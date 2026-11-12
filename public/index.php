@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Beethoven CMS - Entry Point (public/index.php)
  * مُحصّن وفق معايير الأمان الصارمة (BSI / GDPR Production Ready)
+ * مع دعم كامل لثبات اللغة عبر الجلسات والمسارات
  */
 
 // 1. إزالة ترويسة إصدار PHP لمنع كشف معلومات السيرفر
@@ -168,7 +169,7 @@ $router->add('POST', 'admin/verify-2fa', [\App\Controllers\Admin\AuthController:
 $router->add('POST', 'admin/announcement/save', [\App\Controllers\Admin\AnnouncementController::class, 'save']);
 $router->add('POST', 'admin/settings/save', [\App\Controllers\Admin\SettingsController::class, 'save']);
 
-// 9. معالجة الـ URI واللغات وتوجيه الطلب بأمان
+// 9. معالجة الـ URI واللغات وتوجيه الطلب بأمان مع الحفاظ على لغة الجلسة
 try {
     if (isset($_GET['url']) && is_string($_GET['url'])) {
         $uri = '/' . trim($_GET['url'], '/');
@@ -186,15 +187,20 @@ try {
     }
 
     $uriSegments = explode('/', trim($uri, '/'));
-    $currentLang = 'de';
+    $supportedLangs = ['ar', 'en', 'de'];
 
-    if (!empty($uriSegments[0]) && in_array($uriSegments[0], ['ar', 'en', 'de'], true)) {
+    if (!empty($uriSegments[0]) && in_array($uriSegments[0], $supportedLangs, true)) {
         $currentLang = $uriSegments[0];
         array_shift($uriSegments);
         $uri = '/' . implode('/', $uriSegments);
+        $_SESSION['site_lang'] = $currentLang;
+    } else {
+        $currentLang = (isset($_SESSION['site_lang']) && in_array($_SESSION['site_lang'], $supportedLangs, true))
+            ? $_SESSION['site_lang']
+            : 'de';
+        $_SESSION['site_lang'] = $currentLang;
     }
 
-    $_SESSION['site_lang'] = $currentLang;
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     $router->dispatch($uri, $method);

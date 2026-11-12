@@ -1,23 +1,48 @@
+# ==============================================================================
+# Beethoven CMS - Single Root .htaccess (OWASP / BSI Hardened & Asset-Aware)
+# ==============================================================================
+
+# 1. منع تصفح المجلدات وإخفاء توقيع السيرفر
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# 2. حماية شاملة للملفات الحساسة والبيئة والنسخ الاحتياطية والسجلات
+<FilesMatch "(^\.env|^\.git|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|\.(sql|log|bak|old|swp|sh|ini|md|yml|yaml|dist))$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.h>
     RewriteEngine On
 
-    # منع تصفح المجلدات تماماً لأسباب أمنية
-    Options -Indexes
+    # 3. حظر طرق HTTP الخطرة (TRACE / TRACK) لمنع هجمات XST
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
+    RewriteRule .* - [F,L]
 
-    # حماية ملف البيئة .env (متوافق مع أباتشي 2.2 و 2.4 الحديث)
-    <Files .env>
-        <IfModule mod_authz_core.c>
-            Require all denied
-        </IfModule>
-        <IfModule !mod_authz_core.c>
-            Order allow,deny
-            Deny from all
-        </IfModule>
-    </Files>
+    # 4. حظر الوصول المباشر من المتصفح إلى المجلدات البرمجية الداخلية
+    RewriteRule ^(src|vendor|config|database|storage|logs|tests|\.git)(/.*)?$ - [F,L]
 
-    # استثناء مجلد public والملفات أو المجلدات الحقيقية الموجودة فعلياً على السيرفر من إعادة التوجيه
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+    # 5. حظر تنفيذ أي سكربتات برمجية داخل مجلدات الأصول والرفع (assets / uploads)
+    RewriteRule ^(public/)?assets/.*\.(php|phtml|php3|php4|php5|php7|php8|phar|pl|py|jsp|asp|sh|cgi)$ - [F,L]
+
+    # 6. إعادة توجيه روابط الأصول (/assets/...) داخلياً وبصمت إلى مجلد public/assets/
+    RewriteCond %{DOCUMENT_ROOT}/public/assets/$1 -f
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+    # 7. السماح بتمرير الملفات الثابتة داخل public/assets مباشرة (في حال طُلبت بمسارها الكامل)
+    RewriteCond %{REQUEST_URI} ^/public/assets/ [NC]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # 8. توجيه الصفحة الرئيسية الجذرية (/) مباشرة إلى بوابة الدخول الآمنة
+    RewriteRule ^$ public/index.php [L]
+
+    # 9. توجيه كافة الطلبات الأخرى إلى البوابة المركزية الوحيدة (Front Controller)
+    RewriteCond %{REQUEST_URI} !^/public/index\.php$ [NC]
     RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>

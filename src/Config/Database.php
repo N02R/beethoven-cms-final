@@ -7,45 +7,63 @@ use PDO;
 use PDOException;
 use RuntimeException;
 
-class Database {
+class Database
+{
     private static ?PDO $instance = null;
 
     /**
-     * منع إنشاء كنسخة جديدة (Singleton Pattern)
+     * منع إنشاء أو استنساخ كائن جديد (Strict Singleton Pattern)
      */
     private function __construct() {}
     private function __clone() {}
+    public function __wakeup(): void
+    {
+        throw new RuntimeException('Cannot unserialize a singleton Database instance.');
+    }
 
-    public static function getConnection(): PDO {
+    public static function getConnection(): PDO
+    {
         if (self::$instance === null) {
-            // جلب البيانات حصرياً من متغيرات البيئة دون أي قيم افتراضية محلية
+            // جلب إعدادات الاتصال حصرياً من متغيرات البيئة
             $host    = $_ENV['DB_HOST'] ?? null;
+            $port    = $_ENV['DB_PORT'] ?? '3306';
             $db      = $_ENV['DB_NAME'] ?? null;
             $user    = $_ENV['DB_USER'] ?? null;
             $pass    = $_ENV['DB_PASS'] ?? null;
             $charset = 'utf8mb4';
 
-            // التحقق الصارم من توفر الإعدادات الأساسية
-            if (!$host || !$db || !$user) {
-                throw new RuntimeException("Database configuration is missing in environment variables.");
+            if (empty($host) || empty($db) || empty($user) || $pass === null) {
+                throw new RuntimeException('Database configuration is missing in environment variables.');
             }
 
-            $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+            $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
             $options = [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES   => false, // حماية صارمة ضد SQL Injection
+                PDO::ATTR_STRINGIFY_FETCHES  => false,
             ];
 
+            if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
+                $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci";
+            }
+
             try {
-                self::$instance = new PDO($dsn, $user, $pass, $options);
+                self::$instance = new PDO($dsn, (string)$user, (string)$pass, $options);
             } catch (PDOException $e) {
-                // تسجيل الخطأ سرياً في السيرفر ورمي استثناء ليتم التعامل معه مركزياً
-                error_log("Database Connection Error: " . $e->getMessage());
-                throw new RuntimeException("A database connection error occurred.");
+                error_log('Database Connection Error: ' . $e->getMessage());
+                throw new RuntimeException('A database connection error occurred.');
             }
         }
 
         return self::$instance;
+    }
+
+    /**
+     * إغلاق الاتصال يدوياً عند الحاجة
+     */
+    public static function disconnect(): void
+    {
+        self::$instance = null;
     }
 }

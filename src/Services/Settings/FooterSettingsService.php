@@ -5,17 +5,40 @@ namespace App\Services\Settings;
 
 use App\Services\ImageUploader;
 use PDO;
-use Exception;
+use Throwable;
 
 class FooterSettingsService
 {
     private string $rootPath;
     private ImageUploader $imageUploader;
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 
     public function __construct(string $rootPath, ImageUploader $imageUploader)
     {
         $this->rootPath = $rootPath;
         $this->imageUploader = $imageUploader;
+    }
+
+    private function resolveTargetLang(string ...$candidates): string
+    {
+        foreach ($candidates as $lang) {
+            if ($lang !== '' && in_array($lang, self::SUPPORTED_LANGS, true)) {
+                return $lang;
+            }
+        }
+        return 'de';
+    }
+
+    private function sanitizeUrl(mixed $rawUrl, string $default = '#'): string
+    {
+        $url = trim((string)($rawUrl ?? ''));
+        if ($url === '' || $url === '#') {
+            return $default;
+        }
+        if (preg_match('/^(javascript|data|vbscript):/i', $url)) {
+            return $default;
+        }
+        return $url;
     }
 
     public function handleAction(string $action, PDO $pdo, array $currentSettings): bool
@@ -24,10 +47,19 @@ class FooterSettingsService
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        $stmt = $pdo->prepare("
+            INSERT INTO global_settings (setting_key, setting_value) 
+            VALUES (:k, :v) 
+            ON DUPLICATE KEY UPDATE setting_value = :v_update
+        ");
 
         try {
-            $targetLang = $_POST['footer_lang'] ?? $_POST['targetLang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['footer_lang'] ?? ''),
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'footer'");
             $stmtFetch->execute();
@@ -45,34 +77,33 @@ class FooterSettingsService
                 }
             }
 
-            $postedFooter = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
+            $postedFooter    = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
-            $consultTitle = trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? 'احصل على استشارة مجانية')));
+            $consultTitle = trim((string)($postedFooter['consult_title'] ?? ($currentLangData['consult_title'] ?? '')));
             $consultDesc  = trim((string)($postedFooter['consult_desc'] ?? ($currentLangData['consult_desc'] ?? '')));
             $footerDesc   = trim((string)($postedFooter['footer_desc'] ?? ($currentLangData['footer_desc'] ?? '')));
-            $col2Title    = trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? 'روابط سريعة')));
-            $col3Title    = trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? 'تواصل معنا')));
+            $col2Title    = trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? '')));
+            $col3Title    = trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? '')));
 
-            $incomingCol3 = $_POST['col3'] ?? [];
+            $incomingCol3   = $_POST['col3'] ?? [];
             $processedItems = [];
 
-            if (is_array($incomingCol3) && !empty($incomingCol3)) {
+            if (is_array($incomingCol3)) {
                 foreach ($incomingCol3 as $index => $item) {
                     if (!is_array($item)) continue;
 
-                    $title = trim($item['title'] ?? '');
-                    $url   = trim($item['url'] ?? '#');
-                    $oldImg = $item['old_img'] ?? '';
+                    $title  = trim((string)($item['title'] ?? ''));
+                    $url    = $this->sanitizeUrl($item['url'] ?? '#');
+                    $oldImg = (string)($item['old_img'] ?? '');
                     
                     $fileToCheck = $_FILES['col3_img_' . $index] ?? null;
 
                     $imgVal = $oldImg;
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
+                        if ($oldImg !== '' && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        // التصحيح هنا: إضافة علامة $ قبل المتغير filename
                         $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
                         $imgVal = 'assets/uploads/' . $filename;
                     }
@@ -85,8 +116,6 @@ class FooterSettingsService
                         ];
                     }
                 }
-            } else {
-                $processedItems = $currentLangData['col3_items'] ?? [];
             }
 
             $footerAllLangs[$targetLang] = [
@@ -103,27 +132,25 @@ class FooterSettingsService
                 $jsonVal = '{}';
             }
 
-            // كاميرا المراقبة لتتبع محتوى الـ JSON المسجل
-            error_log("DEBUG FOOTER KEY: footer");
-            error_log("DEBUG FOOTER JSON VAL: " . var_export($jsonVal, true));
+            return $stmt->execute(['k' => 'footer', 'v' => $jsonVal, 'v_update' => $jsonVal]);
 
-            $stmt->execute(['k' => 'footer', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-
-            return true;
-
-        } catch (Exception $e) {
-            error_log("FooterSettingsService Error: " . $e->getMessage());
+        } catch (Throwable $e) {
+            error_log('FooterSettingsService Error: ' . $e->getMessage());
             return false;
         }
     }
 
     private function deleteOldImageFile(string $imagePath): void
     {
-        if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
-            $fullPath = $this->rootPath . '/public/' . $imagePath;
-            if (file_exists($fullPath) && is_file($fullPath)) {
-                @unlink($fullPath);
-            }
+        if ($imagePath === '' || !str_starts_with($imagePath, 'assets/uploads/')) {
+            return;
+        }
+
+        $uploadsBase = realpath($this->rootPath . '/public/assets/uploads');
+        $targetFile  = realpath($this->rootPath . '/public/' . $imagePath);
+
+        if ($uploadsBase !== false && $targetFile !== false && str_starts_with($targetFile, $uploadsBase . DIRECTORY_SEPARATOR) && is_file($targetFile)) {
+            @unlink($targetFile);
         }
     }
 }

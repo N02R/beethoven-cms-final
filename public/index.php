@@ -3,36 +3,41 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Entry Point (public/index.php)
- * مُحصّن وفق معايير الأمان الصارمة (BSI / GDPR Production Ready)
- * مع دعم كامل لثبات اللغة عبر الجلسات والمسارات
+ * مُحصّن وفق معايير الأمان الصارمة (BSI / OWASP / DSGVO Production Ready)
  */
 
-// 1. إزالة ترويسة إصدار PHP لمنع كشف معلومات السيرفر
+// 1. تعريف ثابت الدخول الشرعي للنظام وإزالة ترويسة إصدار PHP
+define('ALLOWED_ACCESS', true);
 header_remove('X-Powered-By');
+date_default_timezone_set('Europe/Berlin');
 
 // 2. قراءة ملف البيئة .env وتحميله بأمان
 $envFile = __DIR__ . '/../.env';
 if (is_file($envFile) && is_readable($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $trimmed = trim($line);
-        if ($trimmed === '' || str_starts_with($trimmed, '#')) {
-            continue;
-        }
+    if (is_array($lines)) {
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if ($trimmed === '' || str_starts_with($trimmed, '#')) {
+                continue;
+            }
 
-        $parts = explode('=', $trimmed, 2);
-        if (count($parts) === 2) {
-            $name = trim($parts[0]);
-            $value = trim($parts[1], "\"' \t\n\r\0\x0B");
+            $parts = explode('=', $trimmed, 2);
+            if (count($parts) === 2) {
+                $name  = trim($parts[0]);
+                $value = trim($parts[1], "\"' \t\n\r\0\x0B");
 
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
-            putenv("$name=$value");
+                if ($name !== '' && !array_key_exists($name, $_ENV)) {
+                    $_ENV[$name] = $value;
+                    $_SERVER[$name] = $value;
+                    putenv("$name=$value");
+                }
+            }
         }
     }
 }
 
-// 3. ضبط الأخطاء بناءً على بيئة العمل فقط (بدون تفعيل مسبق)
+// 3. ضبط عرض الأخطاء بناءً على بيئة العمل
 $appEnv = $_ENV['APP_ENV'] ?? 'production';
 
 if ($appEnv === 'production') {
@@ -47,11 +52,14 @@ if ($appEnv === 'production') {
 }
 
 // 4. تطبيق معايير الأمان الصارمة للجلسات
-$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+$isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
-            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
 
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
@@ -65,52 +73,52 @@ if (session_status() === PHP_SESSION_NONE) {
 
     if (!isset($_SESSION['CREATED'])) {
         $_SESSION['CREATED'] = time();
-    } elseif (time() - $_SESSION['CREATED'] > 1800) {
+    } elseif (time() - (int)$_SESSION['CREATED'] > 1800) {
         session_regenerate_id(true);
         $_SESSION['CREATED'] = time();
     }
 }
 
-// 5. تفعيل رؤوس الأمان المتقدمة (BSI & OWASP Standards)
-header("X-Frame-Options: DENY");
-header("X-Content-Type-Options: nosniff");
-header("Referrer-Policy: strict-origin-when-cross-origin");
-header("Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()");
+// 5. تفعيل رؤوس الأمان المتقدمة المتوافقة مع معايير BSI و DSGVO الألمانية
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()');
 
 if ($isSecure) {
-    header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
 }
 
 header(
     "Content-Security-Policy: " .
     "default-src 'self'; " .
     "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; " .
-    "style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; " .
-    "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com data:; " .
+    "style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; " .
+    "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:; " .
     "img-src 'self' data: https:; " .
-    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; " .
+    "frame-src 'self' https://www.youtube-nocookie.com; " .
     "object-src 'none'; " .
     "base-uri 'self'; " .
     "form-action 'self';"
 );
 
 // 6. تسجيل Autoloader الموحد للنظام
-spl_autoload_register(function (string $class) {
-    $prefix = 'App\\';
+spl_autoload_register(function (string $class): void {
+    $prefix  = 'App\\';
     $baseDir = __DIR__ . '/../src/';
 
     if (strncmp($prefix, $class, strlen($prefix)) === 0) {
         $relativeClass = substr($class, strlen($prefix));
         $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
 
-        if (file_exists($file)) {
+        if (is_file($file)) {
             require_once $file;
         }
     }
 });
 
-// 7. تضمين ملف الدوال المساعدة الأساسية والراوتر
-require_once __DIR__ . '/../src/Core/helpers.php';
+// 7. تضمين ملف الدوال المساعدة (بحرف H كبير للتوافق مع خوادم Linux) والراوتر
+require_once __DIR__ . '/../src/Core/Helpers.php';
 require_once __DIR__ . '/../src/Core/Router.php';
 
 use App\Core\Router;
@@ -169,48 +177,32 @@ $router->add('POST', 'admin/verify-2fa', [\App\Controllers\Admin\AuthController:
 $router->add('POST', 'admin/announcement/save', [\App\Controllers\Admin\AnnouncementController::class, 'save']);
 $router->add('POST', 'admin/settings/save', [\App\Controllers\Admin\SettingsController::class, 'save']);
 
-// 9. معالجة الـ URI واللغات وتوجيه الطلب بأمان مع الحفاظ على لغة الجلسة
+// 9. استخراج الـ URI النظيف وتمريره للراوتر المركزي
 try {
     if (isset($_GET['url']) && is_string($_GET['url'])) {
         $uri = '/' . trim($_GET['url'], '/');
     } else {
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        if (false !== $pos = strpos($uri, '?')) {
-            $uri = substr($uri, 0, $pos);
-        }
-        $uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '', '/');
+        $rawUri = $_SERVER['REQUEST_URI'] ?? '/';
+        $uri = '/' . trim((string)(parse_url($rawUri, PHP_URL_PATH) ?? ''), '/');
 
-        $scriptName = dirname($_SERVER['SCRIPT_NAME']);
-        if ($scriptName !== '/' && $scriptName !== '\\' && strpos($uri, $scriptName) === 0) {
-            $uri = substr($uri, strlen($scriptName));
+        $scriptName = dirname($_SERVER['SCRIPT_NAME'] ?? '');
+        if ($scriptName !== '/' && $scriptName !== '\\' && $scriptName !== '.' && str_starts_with($uri, $scriptName)) {
+            $uri = '/' . ltrim(substr($uri, strlen($scriptName)), '/');
         }
     }
 
-    $uriSegments = explode('/', trim($uri, '/'));
-    $supportedLangs = ['ar', 'en', 'de'];
-
-    if (!empty($uriSegments[0]) && in_array($uriSegments[0], $supportedLangs, true)) {
-        $currentLang = $uriSegments[0];
-        array_shift($uriSegments);
-        $uri = '/' . implode('/', $uriSegments);
-        $_SESSION['site_lang'] = $currentLang;
-    } else {
-        $currentLang = (isset($_SESSION['site_lang']) && in_array($_SESSION['site_lang'], $supportedLangs, true))
-            ? $_SESSION['site_lang']
-            : 'de';
-        $_SESSION['site_lang'] = $currentLang;
-    }
-
+    // إزالة بادئة /public إن وجدت في الرابط
+    $uri = preg_replace('#^/public(/|$)#i', '/', $uri);
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     $router->dispatch($uri, $method);
 
 } catch (\Throwable $e) {
-    error_log("Router Dispatch Error: " . $e->getMessage());
+    error_log('Router Dispatch Error: ' . $e->getMessage());
     http_response_code(500);
     if ($appEnv !== 'production') {
-        echo "خطأ في معالجة المسار: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+        echo 'خطأ في معالجة المسار: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     } else {
-        echo "عذراً، حدث خطأ في النظام.";
+        echo 'عذراً، حدث خطأ في النظام.';
     }
 }

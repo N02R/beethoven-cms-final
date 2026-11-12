@@ -6,8 +6,13 @@ declare(strict_types=1);
  * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، شريط الكوكيز المتوافق مع تسلسل اللغة، ومودالات الإدارة.
  */
 
+if (!defined('ALLOWED_ACCESS')) {
+    http_response_code(403);
+    exit('Access Denied');
+}
+
 // 1. تأكيد تهيئة المسار إذا لم يكن معرفاً
-$path_prefix = $path_prefix ?? '';
+$path_prefix = $path_prefix ?? '/';
 
 // 2. استخدام دالة جلب النصوص متعددة اللغات العامة إن وجدت، أو تعريف النسخة الآمنة الموحدة
 if (!function_exists('get_multilang_text')) {
@@ -58,7 +63,7 @@ if (!isset($lang) || !is_array($lang)) {
     }
 }
 
-// 4. مصفوفة ترجمة افتراضية كاملة للغات الثلاث (تُستخدم كمرجع إذا غاب المفتاح عن ملف اللغة)
+// 4. مصفوفة ترجمة افتراضية كاملة للغات الثلاث
 $fallback_translations = [
     'de' => [
         'consult_title'          => 'Kostenlose Beratung anfordern',
@@ -133,7 +138,7 @@ if (is_string($footerRaw)) {
     $footerRaw = json_decode($footerRaw, true) ?? [];
 }
 
-$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['ar'] ?? []));
+$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['en'] ?? ($footerRaw['ar'] ?? [])));
 
 $consultTitle = $currentLangData['consult_title'] ?? ($lang['consult_title'] ?? $fb['consult_title']);
 $consultDesc  = $currentLangData['consult_desc'] ?? '';
@@ -163,13 +168,14 @@ $t = [
 ];
 
 // روابط الصفحات القانونية بتسلسل اللغة الموحد
-$privacyUrl   = '/' . $current_lang_code . '/datenschutz';
-$impressumUrl = '/' . $current_lang_code . '/impressum';
+$privacyUrl     = '/' . $current_lang_code . '/datenschutz';
+$impressumUrl   = '/' . $current_lang_code . '/impressum';
 $consultPostUrl = '/' . $current_lang_code . '/send-consult';
 
-$modal_dir = ($current_lang === 'ar') ? 'text-end' : 'text-start';
+$modal_dir         = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
-$is_admin = !empty($is_admin) && $is_admin === true;
+$is_admin          = !empty($is_admin) && $is_admin === true;
+$footerLogoPath    = $site_logo_path ?? ($data['site_logo_path'] ?? 'assets/img/logo.png');
 ?>
 
 <!-- تنسيق خاص لعكس اتجاه الأسهم تلقائياً في حالة اللغة العربية (RTL) -->
@@ -185,7 +191,7 @@ $is_admin = !empty($is_admin) && $is_admin === true;
 <!-- footer start -->
 <section class="consult-banner-section editable-wrapper" style="position: relative;">
     <?php if ($is_admin): ?>
-        <button class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="تعديل الفوتر">
+        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars($lang['manage_footer'] ?? 'Edit Footer', ENT_QUOTES, 'UTF-8'); ?>">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -200,7 +206,7 @@ $is_admin = !empty($is_admin) && $is_admin === true;
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
                     <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
-                    <button type="button" id="openConsentModalBtn">
+                    <button type="button" id="openConsentModalBtn" aria-label="Send Consultation Request">
                         <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
                     </button>
                 </form>
@@ -220,7 +226,7 @@ $is_admin = !empty($is_admin) && $is_admin === true;
             <div class="modal-body p-4">
                 <p class="text-muted mb-3" style="font-size: 0.95rem; line-height: 1.6;">
                     <?php echo htmlspecialchars($t['privacy_modal_desc'], ENT_QUOTES, 'UTF-8'); ?> 
-                    <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="text-primary text-decoration-underline"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
+                    <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-underline"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
                 </p>
                 <div class="form-check bg-light p-3 rounded border">
                     <input class="form-check-input <?php echo htmlspecialchars($modal_align_class, ENT_QUOTES, 'UTF-8'); ?>" type="checkbox" id="modalPrivacyCheckbox">
@@ -245,11 +251,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const openBtn = document.getElementById('openConsentModalBtn');
     
     const consentModalElement = document.getElementById('privacyConsentModal');
-    const consentModal = new bootstrap.Modal(consentModalElement);
+    const consentModal = (consentModalElement && typeof bootstrap !== 'undefined') ? new bootstrap.Modal(consentModalElement) : null;
     const confirmBtn = document.getElementById('confirmAndSendBtn');
     const modalCheckbox = document.getElementById('modalPrivacyCheckbox');
 
-    if (openBtn) {
+    if (openBtn && consentModal) {
         openBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (!emailInput.value || !emailInput.checkValidity()) {
@@ -267,7 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(<?php echo json_encode($t['alert_checkbox'], JSON_UNESCAPED_UNICODE); ?>);
                 return;
             }
-            consentModal.hide();
+            if (consentModal) {
+                consentModal.hide();
+            }
 
             const formData = new FormData();
             formData.append('email', emailInput.value);
@@ -283,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -309,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="container-fluid custom-container">
         <div class="row gy-5">
             <div class="col-12 col-lg-5">
-                <img src="<?php echo htmlspecialchars(get_image_url($data['site_logo_path'] ?? null, 'assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="BCS Logo" class="mb-4">
+                <img src="<?php echo htmlspecialchars(get_image_url($footerLogoPath, 'assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="BCS Logo" class="mb-4">
                 <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
@@ -325,9 +334,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (is_array($menu_links)) {
                         foreach ($menu_links as $link) {
-                            $link_url = ltrim(is_array($link['url'] ?? null) ? reset($link['url']) : ($link['url'] ?? ''), '/');
+                            if (!is_array($link)) continue;
+                            $raw_link_url = ltrim(is_array($link['url'] ?? null) ? (string)reset($link['url']) : (string)($link['url'] ?? ''), '/');
+                            $link_url     = preg_replace('/^(ar|en|de)\//i', '', $raw_link_url);
                             
-                            $link_title = $link[$current_lang]['title'] ?? ($link['de']['title'] ?? ($link['ar']['title'] ?? ($link['title'] ?? '')));
+                            $link_title = $link[$current_lang]['title'] ?? ($link['de']['title'] ?? ($link['en']['title'] ?? ($link['ar']['title'] ?? ($link['title'] ?? ''))));
                             if (is_array($link_title)) {
                                 $link_title = get_multilang_text($link_title, $current_lang);
                             }
@@ -348,11 +359,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="contact-link">
                     <?php 
                     foreach((is_array($col3Items) ? $col3Items : []) as $link): 
-                        $icon_img = get_image_url($link['img'] ?? null);
-                        $col3_title = $link['title'] ?? '';
-                        $col3_url = $link['url'] ?? '#';
+                        if (!is_array($link)) continue;
+                        $icon_img   = get_image_url($link['img'] ?? null);
+                        $col3_title = (string)($link['title'] ?? '');
+                        $col3_url   = trim((string)($link['url'] ?? '#'));
+                        if (preg_match('/^(javascript|data|vbscript):/i', $col3_url)) {
+                            $col3_url = '#';
+                        }
                     ?>
-                        <a href="<?php echo htmlspecialchars((string)$col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
+                        <a href="<?php echo htmlspecialchars($col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
                             <?php if(!empty($icon_img)): ?>
                                 <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px;" alt="">
                             <?php endif; ?>
@@ -392,8 +407,8 @@ document.addEventListener('DOMContentLoaded', function() {
 if (isset($page_js) && is_array($page_js)) {
     echo "<!-- Dynamic JS Injector -->" . PHP_EOL;
     foreach ($page_js as $js_file) {
-        $clean_js = ltrim($js_file, '/');
-        echo '<script src="' . htmlspecialchars($path_prefix . $clean_js, ENT_QUOTES, 'UTF-8') . '"></script>' . PHP_EOL;
+        $clean_js = ltrim((string)$js_file, '/');
+        echo '<script src="' . htmlspecialchars('/' . $clean_js, ENT_QUOTES, 'UTF-8') . '"></script>' . PHP_EOL;
     }
 }
 ?>
@@ -403,7 +418,7 @@ if (isset($page_js) && is_array($page_js)) {
     <div class="cookie-content">
         <p>
             <?php echo htmlspecialchars($t['cookie_text'], ENT_QUOTES, 'UTF-8'); ?> 
-            <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" style="color: #fff; text-decoration: underline;"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
+            <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>.
         </p>
         <div class="cookie-buttons">
             <button id="accept-cookies" class="btn-accept"><?php echo htmlspecialchars($t['cookie_accept'], ENT_QUOTES, 'UTF-8'); ?></button>
@@ -412,8 +427,8 @@ if (isset($page_js) && is_array($page_js)) {
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?php echo htmlspecialchars($path_prefix . 'assets/js/main.js', ENT_QUOTES, 'UTF-8'); ?>"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/main.js"></script>
 
 <?php if (isset($custom_script)) { echo $custom_script; } ?>
 </body>

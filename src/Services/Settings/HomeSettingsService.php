@@ -10,11 +10,65 @@ class HomeSettingsService
 {
     private string $rootPath;
     private ImageUploader $imageUploader;
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 
     public function __construct(string $rootPath, ImageUploader $imageUploader)
     {
         $this->rootPath = $rootPath;
         $this->imageUploader = $imageUploader;
+    }
+
+    /**
+     * تحديد اللغة المستهدفة بأمان وفق القائمة البيضاء المعتمدة
+     */
+    private function resolveTargetLang(string ...$candidates): string
+    {
+        foreach ($candidates as $lang) {
+            if ($lang !== '' && in_array($lang, self::SUPPORTED_LANGS, true)) {
+                return $lang;
+            }
+        }
+        return 'de';
+    }
+
+    /**
+     * تنقية الروابط لمنع ثغرات XSS (javascript: / data:)
+     */
+    private function sanitizeUrl(mixed $rawUrl, string $default = '#'): string
+    {
+        $url = trim((string)($rawUrl ?? ''));
+        if ($url === '' || $url === '#') {
+            return $default;
+        }
+        if (preg_match('/^(javascript|data|vbscript):/i', $url)) {
+            return $default;
+        }
+        return $url;
+    }
+
+    /**
+     * تحويل رابط يوتيوب إلى صيغة Embed المحمية للخصوصية الألمانية (DSGVO / youtube-nocookie)
+     */
+    private function convertToSafeYoutubeEmbed(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return '';
+        }
+
+        $parsed = parse_url($url);
+        $host   = strtolower($parsed['host'] ?? '');
+        $allowedHosts = ['www.youtube.com', 'youtube.com', 'youtu.be', 'www.youtube-nocookie.com', 'youtube-nocookie.com'];
+
+        if (!in_array($host, $allowedHosts, true)) {
+            return '';
+        }
+
+        if (preg_match('/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            return 'https://www.youtube-nocookie.com/embed/' . $matches[1];
+        }
+
+        return '';
     }
 
     public function handleAction(string $action, PDO $pdo, array $currentSettings): bool
@@ -32,32 +86,39 @@ class HomeSettingsService
             return false;
         }
 
-        // تم تصحيح اسم الجدول هنا ليطابق global_settings بدلاً من site_settings
-        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
+        $stmt = $pdo->prepare("
+            INSERT INTO global_settings (setting_key, setting_value) 
+            VALUES (:k, :v) 
+            ON DUPLICATE KEY UPDATE setting_value = :v_update
+        ");
 
         // 1. تحديث قسم الهيرو (Hero)
         if ($action === 'update_hero') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['hero_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['hero_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
             $rawHeroSetting = $currentSettings['hero'] ?? '';
             $heroAllLangs = is_string($rawHeroSetting) ? json_decode($rawHeroSetting, true) : (is_array($rawHeroSetting) ? $rawHeroSetting : []);
-            
             if (!is_array($heroAllLangs)) {
                 $heroAllLangs = [];
             }
 
-            if (isset($heroAllLangs['title']) && !isset($heroAllLangs['ar'])) {
+            if (isset($heroAllLangs['title']) && !isset($heroAllLangs['de']) && !isset($heroAllLangs['ar'])) {
                 $oldData = $heroAllLangs;
-                $heroAllLangs = ['ar' => $oldData];
+                $heroAllLangs = [$targetLang => $oldData];
             }
 
-            $oldHeroImg = $_POST['old_hero_img'] 
+            $oldHeroImg = (string)($_POST['old_hero_img'] 
                         ?? $heroAllLangs[$targetLang]['img'] 
                         ?? $heroAllLangs['img'] 
-                        ?? 'assets/img/hero-bg.jpg';
+                        ?? 'assets/img/hero-bg.jpg');
             
             if (isset($_FILES['hero_img']) && $_FILES['hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/hero-bg.jpg' && $oldHeroImg !== 'assets/img/home/home1.png') {
+                if (str_starts_with($oldHeroImg, 'assets/uploads/')) {
                     $this->deleteOldImageFile($oldHeroImg);
                 }
                 $filename = $this->imageUploader->processAndUploadFile($_FILES['hero_img']['tmp_name']);
@@ -69,39 +130,38 @@ class HomeSettingsService
             $postedHero = $_POST['hero'][$targetLang] ?? $_POST['hero'] ?? [];
 
             $heroAllLangs[$targetLang] = [
-                'title'    => $postedHero['title'] ?? ($_POST['hero_title'] ?? ''),
-                'desc'     => $postedHero['desc'] ?? ($_POST['hero_desc'] ?? ''),
-                'btn_text' => $postedHero['btn_text'] ?? ($_POST['hero_btn_text'] ?? ''),
-                'btn_url'  => $postedHero['btn_url'] ?? ($_POST['hero_btn_url'] ?? '#'),
+                'title'    => trim((string)($postedHero['title'] ?? ($_POST['hero_title'] ?? ''))),
+                'desc'     => trim((string)($postedHero['desc'] ?? ($_POST['hero_desc'] ?? ''))),
+                'btn_text' => trim((string)($postedHero['btn_text'] ?? ($_POST['hero_btn_text'] ?? ''))),
+                'btn_url'  => $this->sanitizeUrl($postedHero['btn_url'] ?? ($_POST['hero_btn_url'] ?? '#')),
                 'img'      => $heroImg
             ];
 
             $heroAllLangs['img'] = $heroImg;
 
             $jsonVal = json_encode($heroAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            return $stmt->execute(['k' => 'hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         // 2. تحديث قسم الخدمات (Services)
         elseif ($action === 'update_services') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['services_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['services_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
             $rawServicesSetting = $currentSettings['services'] ?? '';
             $servicesAllLangs = is_string($rawServicesSetting) ? json_decode($rawServicesSetting, true) : (is_array($rawServicesSetting) ? $rawServicesSetting : []);
-            
             if (!is_array($servicesAllLangs)) {
                 $servicesAllLangs = [];
             }
 
-            if (isset($servicesAllLangs['title']) && !isset($servicesAllLangs['ar'])) {
-                $oldData = $servicesAllLangs;
-                $servicesAllLangs = ['ar' => $oldData];
-            }
-
             $postedServices = $_POST['services'][$targetLang] ?? $_POST['services'] ?? [];
 
-            $secTitle = $postedServices['section_title'] ?? ($postedServices['title'] ?? ($_POST['services_section_title'] ?? $_POST['services_title'] ?? 'خدماتنا المميزة'));
-            $secDesc  = $postedServices['section_subtitle'] ?? ($postedServices['desc'] ?? ($_POST['services_section_subtitle'] ?? $_POST['services_desc'] ?? ''));
+            $secTitle = trim((string)($postedServices['section_title'] ?? ($postedServices['title'] ?? ($_POST['services_section_title'] ?? ''))));
+            $secDesc  = trim((string)($postedServices['section_subtitle'] ?? ($postedServices['desc'] ?? ($_POST['services_section_subtitle'] ?? ''))));
 
             $servicesAllLangs[$targetLang] = [
                 'title'            => $secTitle,
@@ -114,7 +174,8 @@ class HomeSettingsService
             $items = $postedServices['items'] ?? $_POST['service_items'] ?? $_POST['services_items'] ?? [];
             if (is_array($items)) {
                 foreach ($items as $index => $item) {
-                    $oldImg = $item['old_img'] ?? ($servicesAllLangs[$targetLang]['items'][$index]['img'] ?? '');
+                    if (!is_array($item)) continue;
+                    $oldImg = (string)($item['old_img'] ?? ($servicesAllLangs[$targetLang]['items'][$index]['img'] ?? ''));
                     $img = $oldImg;
 
                     $fileTmp = null;
@@ -132,65 +193,66 @@ class HomeSettingsService
                     }
 
                     if ($fileTmp && $fileErr === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default')) {
+                        if (str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
                         $filename = $this->imageUploader->processAndUploadFile($fileTmp);
                         $img = 'assets/uploads/' . $filename;
                     }
 
+                    $title = trim((string)($item['title'] ?? ''));
+                    if ($title === '' && $img === '') {
+                        continue;
+                    }
+
                     $servicesAllLangs[$targetLang]['items'][] = [
-                        'title' => $item['title'] ?? 'عنوان الخدمة',
-                        'desc'  => $item['desc'] ?? '',
-                        'icon'  => $item['icon'] ?? 'bi bi-concierge-bell',
+                        'title' => $title,
+                        'desc'  => trim((string)($item['desc'] ?? '')),
+                        'icon'  => trim((string)($item['icon'] ?? 'bi bi-concierge-bell')),
                         'img'   => $img,
-                        'url'   => $item['url'] ?? '#'
+                        'url'   => $this->sanitizeUrl($item['url'] ?? '#')
                     ];
                 }
             }
 
             $jsonVal = json_encode($servicesAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            return $stmt->execute(['k' => 'services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 3. تحديث الأسئلة الشائعة (FAQ) - الهيكل الموحد المحمي
+        // 3. تحديث الأسئلة الشائعة (FAQ)
         elseif ($action === 'update_faq') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['faq_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['faq_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
-            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات لضمان عدم ضياع أي شيء
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'faq'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
 
-            $faqAllLangs = [];
-            if ($dbRaw && is_string($dbRaw)) {
-                $decodedDb = json_decode($dbRaw, true);
-                if (is_array($decodedDb)) {
-                    $faqAllLangs = $decodedDb;
-                }
+            $faqAllLangs = ($dbRaw && is_string($dbRaw)) ? (json_decode($dbRaw, true) ?? []) : [];
+            if (!is_array($faqAllLangs)) {
+                $faqAllLangs = [];
             }
 
-            // الاحتفاظ بالبيانات القديمة للغة الحالية لحمايتها من الضياع
             $currentLangData = $faqAllLangs[$targetLang] ?? [];
-            $existingTitle   = $currentLangData['title'] ?? 'الأسئلة الشائعة';
+            $existingTitle   = $currentLangData['title'] ?? '';
             $existingDesc    = $currentLangData['desc'] ?? '';
-            $existingItems   = $currentLangData['items'] ?? [];
 
             $postedFaq = $_POST['faq'][$targetLang] ?? [];
 
-            // 1. حماية العنوان: إن أرسل عنوان جديد نأخذه، وإلا نحتفظ بالقديم
             $faqTitle = trim((string)($postedFaq['title'] ?? ($_POST['faq_title'][$targetLang] ?? ($_POST['faq_title'] ?? ''))));
             if ($faqTitle === '') {
                 $faqTitle = $existingTitle;
             }
 
-            // 2. حماية الوصف (إن وجد)
             $faqDesc = isset($postedFaq['desc']) ? trim((string)$postedFaq['desc']) : $existingDesc;
 
-            // 3. حماية الأسئلة والأجوبة (items): إذا تم إرسال items في الـ POST نعالجها، وإلا فنحتفظ بالقديمة تماماً!
-            $rawItems = $postedFaq['items'] ?? ($_POST['faq_items'] ?? null);
+            $rawItems = $postedFaq['items'] ?? ($_POST['faq_items'] ?? []);
+            $processedItems = [];
             if (is_array($rawItems)) {
-                $processedItems = [];
                 foreach ($rawItems as $item) {
                     if (!is_array($item)) continue;
                     $q = trim((string)($item['question'] ?? ($item['title'] ?? '')));
@@ -203,11 +265,8 @@ class HomeSettingsService
                         ];
                     }
                 }
-            } else {
-                $processedItems = $existingItems;
             }
 
-            // حفظ البيانات المحدثة للغة المستهدفة بأمان تام
             $faqAllLangs[$targetLang] = [
                 'title' => $faqTitle,
                 'desc'  => $faqDesc,
@@ -215,147 +274,109 @@ class HomeSettingsService
             ];
 
             $jsonVal = json_encode($faqAllLangs, JSON_UNESCAPED_UNICODE);
-            
-            // الحفظ الآمن في جدول global_settings تحت المفتاح الموحد 'faq'
-            $stmt->execute(['k' => 'faq', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            return $stmt->execute(['k' => 'faq', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-// 4. تحديث التقييمات وفيديوهات العملاء (Reviews)
-elseif ($action === 'update_reviews') {
-    $targetLang = $_POST['targetLang'] ?? $_POST['reviews_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+        // 4. تحديث التقييمات وفيديوهات العملاء (Reviews - DSGVO No-Cookie)
+        elseif ($action === 'update_reviews') {
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['reviews_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
-    $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
-    $reviewsAllLangs = is_string($rawReviewsSetting) ? json_decode($rawReviewsSetting, true) : (is_array($rawReviewsSetting) ? $rawReviewsSetting : []);
-    if (!is_array($reviewsAllLangs)) {
-        $reviewsAllLangs = [];
-    }
-
-    // قراءة بيانات اللغة الحالية لحمايتها من التصفير
-    $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
-
-    // استخراج ما تم إرساله من الفورم
-    $postedReviews = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
-
-    // قراءة العنوان (نص نقي)
-    $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? 'شاهد ماذا يقول عملاؤنا عنا'))));
-
-    // 🌟 دالة ذكية لتحويل أي رابط يوتيوب إلى رابط Embed رسمي وآمن
-    $convertToEmbed = function(string $url): string {
-        $url = trim($url);
-        if (empty($url)) return '';
-
-        // إذا كان الرابط هو Embed مسبقاً
-        if (str_contains($url, 'youtube.com/embed/')) {
-            return $url;
-        }
-
-        $videoId = '';
-        
-        // فحص الرابط المختصر (https://youtu.be/VIDEO_ID)
-        if (preg_match('/youtu\.be\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
-            $videoId = $matches[1];
-        }
-        // فحص الرابط العادي (https://www.youtube.com/watch?v=VIDEO_ID)
-        elseif (preg_match('/youtube\.com\/(?:watch\?v=|v\/|embed\/)([a-zA-Z0-9_-]+)/', $url, $matches)) {
-            $videoId = $matches[1];
-        }
-
-        // إن تم استخراج الـ ID بنجاح، نُرجع رابط الـ Embed النظامي
-        if (!empty($videoId)) {
-            return 'https://www.youtube.com/embed/' . $videoId;
-        }
-
-        // إذا لم يكن رابط يوتيوب أصلاً، يُعاد كما هو أو فارغاً
-        return $url;
-    };
-
-    // قراءة وتصفية وتحويل الفيديوهات
-    $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
-    $finalItems = [];
-
-    if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
-        foreach ($postedReviews['items'] as $item) {
-            if (!is_array($item)) continue;
-            $rawUrl = trim((string)($item['url'] ?? ''));
-            
-            // تطبيق التحويل الذكي على الرابط المدخل
-            $embedUrl = $convertToEmbed($rawUrl);
-            
-            if (!empty($embedUrl)) {
-                $finalItems[] = ['url' => $embedUrl];
+            $rawReviewsSetting = $currentSettings['reviews_items'] ?? '';
+            $reviewsAllLangs = is_string($rawReviewsSetting) ? json_decode($rawReviewsSetting, true) : (is_array($rawReviewsSetting) ? $rawReviewsSetting : []);
+            if (!is_array($reviewsAllLangs)) {
+                $reviewsAllLangs = [];
             }
+
+            $currentLangData = $reviewsAllLangs[$targetLang] ?? [];
+            $postedReviews   = $_POST['reviews'][$targetLang] ?? $_POST['reviews'] ?? [];
+
+            $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? ''))));
+
+            $finalItems = [];
+            if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
+                foreach ($postedReviews['items'] as $item) {
+                    if (!is_array($item)) continue;
+                    $rawUrl   = trim((string)($item['url'] ?? ''));
+                    $embedUrl = $this->convertToSafeYoutubeEmbed($rawUrl);
+                    
+                    if ($embedUrl !== '') {
+                        $finalItems[] = ['url' => $embedUrl];
+                    }
+                }
+            }
+
+            $reviewsAllLangs[$targetLang] = [
+                'title' => $reviewsTitle,
+                'items' => $finalItems
+            ];
+
+            $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
+            return $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
-    } else {
-        $finalItems = $existingItems;
-    }
 
-    // بناء كائن اللغة الحالية وحفظه
-    $reviewsAllLangs[$targetLang] = [
-        'title' => $reviewsTitle,
-        'items' => $finalItems
-    ];
-
-    $jsonVal = json_encode($reviewsAllLangs, JSON_UNESCAPED_UNICODE);
-    $stmt->execute(['k' => 'reviews_items', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-}
-
-        // 5. تحديث قسم المميزات (Choose Us) مع حماية ضد فقدان البيانات
+        // 5. تحديث قسم المميزات (Choose Us)
         elseif ($action === 'update_choose') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['choose_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['choose_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
             $rawChooseSetting = $currentSettings['choose'] ?? '';
             $chooseAllLangs = is_string($rawChooseSetting) ? json_decode($rawChooseSetting, true) : (is_array($rawChooseSetting) ? $rawChooseSetting : []);
-            
             if (!is_array($chooseAllLangs)) {
                 $chooseAllLangs = [];
             }
 
-            // الاحتفاظ بالبيانات القديمة للغة الحالية لعدم تصفيرها بالخطأ
             $currentLangData = $chooseAllLangs[$targetLang] ?? [];
+            $postedChoose    = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
 
-            $postedChoose = $_POST['choose'][$targetLang] ?? $_POST['choose'] ?? [];
-
-            // العنوان: إن وصل جديد نأخذه، وإلا نحتفظ بالقديم
-            $secTitle = $postedChoose['section_title'] 
+            $secTitle = trim((string)($postedChoose['section_title'] 
                      ?? ($_POST['choose_section_title'] 
-                     ?? ($currentLangData['section_title'] ?? ($currentLangData['title'] ?? 'ما الذي يميز بيتهوفن سيتي')));
+                     ?? ($currentLangData['section_title'] ?? ($currentLangData['title'] ?? '')))));
                      
-            $secDesc  = $postedChoose['section_subtitle'] 
+            $secDesc  = trim((string)($postedChoose['section_subtitle'] 
                      ?? ($_POST['choose_section_subtitle'] 
-                     ?? ($currentLangData['section_subtitle'] ?? ($currentLangData['desc'] ?? '')));
+                     ?? ($currentLangData['section_subtitle'] ?? ($currentLangData['desc'] ?? '')))));
 
             $existingItems = $currentLangData['items'] ?? [];
-
-            // تجهيز عناصر القائمة
             $finalItems = [];
 
-            // إذا تم إرسال items في الـ POST نعالجها
             if (isset($postedChoose['items']) && is_array($postedChoose['items'])) {
                 foreach ($postedChoose['items'] as $index => $item) {
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    if (!is_array($item)) continue;
+                    $oldImg = (string)($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $img = $oldImg;
 
                     if (isset($_FILES['choose_img_' . $index]) && $_FILES['choose_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                        if (str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
                         $filename = $this->imageUploader->processAndUploadFile($_FILES['choose_img_' . $index]['tmp_name']);
                         $img = 'assets/uploads/' . $filename;
                     }
 
+                    $title = trim((string)($item['title'] ?? ''));
+                    $desc  = trim((string)($item['desc'] ?? ''));
+                    if ($title === '' && $desc === '') {
+                        continue;
+                    }
+
                     $finalItems[] = [
-                        'title' => trim($item['title'] ?? ''),
-                        'desc'  => trim($item['desc'] ?? ''),
+                        'title' => $title,
+                        'desc'  => $desc,
                         'img'   => $img,
-                        'url'   => $item['url'] ?? '#'
+                        'url'   => $this->sanitizeUrl($item['url'] ?? '#')
                     ];
                 }
-            } else {
-                // إذا لم يتم إرسال items مطلقاً في الـ POST (مثل عند تعديل العنوان فقط)، لا نمسح البطاقات القديمة!
-                $finalItems = $existingItems;
             }
 
-            // حفظ المصفوفة المدمجة للغة
             $chooseAllLangs[$targetLang] = [
                 'section_title'    => $secTitle,
                 'section_subtitle' => $secDesc,
@@ -365,85 +386,77 @@ elseif ($action === 'update_reviews') {
             ];
 
             $jsonVal = json_encode($chooseAllLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            return $stmt->execute(['k' => 'choose', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
-        // 6. تحديث الدليل الشامل (Guide) - الهيكل الموحد المحمي مع دعم زر "قراءة المزيد" لكل لغة
+        // 6. تحديث الدليل الشامل (Guide)
         elseif ($action === 'update_guide') {
-            $targetLang = $_POST['targetLang'] ?? $_POST['guide_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
+            $targetLang = $this->resolveTargetLang(
+                (string)($_POST['targetLang'] ?? ''),
+                (string)($_POST['guide_lang'] ?? ''),
+                (string)($_POST['lang'] ?? ''),
+                (string)($_SESSION['site_lang'] ?? 'de')
+            );
 
-            // جلب أحدث بيانات JSON مباشرة من قاعدة البيانات لضمان عدم ضياع أي شيء
             $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'guide'");
             $stmtFetch->execute();
             $dbRaw = $stmtFetch->fetchColumn();
 
-            $guideAllLangs = [];
-            if ($dbRaw && is_string($dbRaw)) {
-                $decodedDb = json_decode($dbRaw, true);
-                if (is_array($decodedDb)) {
-                    $guideAllLangs = $decodedDb;
-                }
+            $guideAllLangs = ($dbRaw && is_string($dbRaw)) ? (json_decode($dbRaw, true) ?? []) : [];
+            if (!is_array($guideAllLangs)) {
+                $guideAllLangs = [];
             }
 
-            // الاحتفاظ بالبيانات القديمة للغة الحالية لحمايتها من الضياع
             $currentLangData = $guideAllLangs[$targetLang] ?? [];
-            $existingTitle   = $currentLangData['title'] ?? 'دليل بيتهوفن الشامل';
+            $existingTitle   = $currentLangData['title'] ?? '';
             $existingDesc    = $currentLangData['desc'] ?? '';
-            $existingBtn     = $currentLangData['read_more_btn'] ?? 'قراءة المزيد';
+            $existingBtn     = $currentLangData['read_more_btn'] ?? '';
             $existingItems   = $currentLangData['items'] ?? [];
 
             $postedGuide = $_POST['guide'][$targetLang] ?? [];
 
-            // 1. حماية العنوان: إن أرسل عنوان جديد نأخذه، وإلا نحتفظ بالقديم
             $guideTitle = trim((string)($postedGuide['title'] ?? ''));
             if ($guideTitle === '') {
                 $guideTitle = $existingTitle;
             }
 
-            // 2. حماية الوصف: إن أرسل وصف نأخذه، وإلا نحتفظ بالقديم
             $guideDesc = isset($postedGuide['desc']) ? trim((string)$postedGuide['desc']) : $existingDesc;
 
-            // 3. حماية وتحديث نص زر "قراءة المزيد" الخاص بهذه اللغة
             $readMoreBtn = trim((string)($postedGuide['read_more_btn'] ?? ($postedGuide['read_more'] ?? '')));
             if ($readMoreBtn === '') {
                 $readMoreBtn = $existingBtn;
             }
 
-            // 4. حماية البطاقات: إذا تم إرسال items في الـ POST نعالجها، وإلا فنحتفظ بالبطاقات القديمة تماماً!
+            $processedItems = [];
             if (isset($postedGuide['items']) && is_array($postedGuide['items'])) {
-                $processedItems = [];
                 foreach ($postedGuide['items'] as $index => $item) {
                     if (!is_array($item)) continue;
 
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
+                    $oldImg   = (string)($item['old_img'] ?? ($existingItems[$index]['img'] ?? ''));
                     $finalImg = $oldImg;
 
-                    $fileTmp = null;
                     if (isset($_FILES['guide_img_' . $index]) && $_FILES['guide_img_' . $index]['error'] === UPLOAD_ERR_OK) {
-                        $fileTmp = $_FILES['guide_img_' . $index]['tmp_name'];
-                    }
-
-                    if ($fileTmp) {
-                        if (!empty($oldImg) && !str_contains($oldImg, 'default') && !str_starts_with($oldImg, 'assets/img/')) {
+                        if (str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
                         }
-                        $filename = $this->imageUploader->processAndUploadFile($fileTmp);
+                        $filename = $this->imageUploader->processAndUploadFile($_FILES['guide_img_' . $index]['tmp_name']);
                         $finalImg = 'assets/uploads/' . $filename;
                     }
 
+                    $title = trim((string)($item['title'] ?? ''));
+                    if ($title === '' && $finalImg === '') {
+                        continue;
+                    }
+
                     $processedItems[] = [
-                        'title' => trim($item['title'] ?? ''),
-                        'desc'  => trim($item['desc'] ?? ''),
-                        'url'   => trim($item['url'] ?? '#'),
+                        'title' => $title,
+                        'desc'  => trim((string)($item['desc'] ?? '')),
+                        'url'   => $this->sanitizeUrl($item['url'] ?? '#'),
                         'img'   => $finalImg
                     ];
                 }
-            } else {
-                // لم يتم إرسال items في الـ POST، إذن نحافظ على البطاقات القديمة لكي لا تُحذف بالخطأ!
-                $processedItems = $existingItems;
             }
 
-            // حفظ البيانات المحدثة للغة المستهدفة متضمنة العنوان، الوصف، زر "قراءة المزيد"، والبطاقات بأمان تام
             $guideAllLangs[$targetLang] = [
                 'title'         => $guideTitle,
                 'desc'          => $guideDesc,
@@ -452,21 +465,26 @@ elseif ($action === 'update_reviews') {
             ];
 
             $jsonVal = json_encode($guideAllLangs, JSON_UNESCAPED_UNICODE);
-            
-            // الحفظ الآمن في جدول global_settings
-            $stmt->execute(['k' => 'guide', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+            return $stmt->execute(['k' => 'guide', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         return true;
     }
 
+    /**
+     * حذف آمن للملفات المرفوعة داخل مجلد uploads فقط (مع منع Path Traversal)
+     */
     private function deleteOldImageFile(string $imagePath): void
     {
-        if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
-            $fullPath = $this->rootPath . '/public/' . $imagePath;
-            if (file_exists($fullPath) && is_file($fullPath)) {
-                @unlink($fullPath);
-            }
+        if ($imagePath === '' || !str_starts_with($imagePath, 'assets/uploads/')) {
+            return;
+        }
+
+        $uploadsBase = realpath($this->rootPath . '/public/assets/uploads');
+        $targetFile  = realpath($this->rootPath . '/public/' . $imagePath);
+
+        if ($uploadsBase !== false && $targetFile !== false && str_starts_with($targetFile, $uploadsBase . DIRECTORY_SEPARATOR) && is_file($targetFile)) {
+            @unlink($targetFile);
         }
     }
 }

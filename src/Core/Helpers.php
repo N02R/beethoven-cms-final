@@ -2,21 +2,25 @@
 declare(strict_types=1);
 
 use App\Config\Database;
+use App\Models\SiteModel;
 
 if (!function_exists('get_current_lang')) {
     /**
-     * جلب اللغة الحالية للنظام مباشرة من الجلسة (الاعتماد على المعالجة المركزية للراوتر)
+     * جلب اللغة الحالية للنظام بأمان وفق القائمة البيضاء المعتمدة
      */
-    function get_current_lang(): string {
-        return $_SESSION['site_lang'] ?? 'de';
+    function get_current_lang(): string
+    {
+        $lang = $_SESSION['site_lang'] ?? 'de';
+        return in_array($lang, ['de', 'en', 'ar'], true) ? $lang : 'de';
     }
 }
 
 if (!function_exists('get_setting')) {
     /**
-     * جلب قيمة إعداد معين مع دعم التخزين المؤقت (Request-Level Caching) لمنع تكرار استعلامات قاعدة البيانات
+     * جلب قيمة إعداد معين بالاعتماد على الكاش المركزي في SiteModel لمنع تكرار استعلامات SQL
      */
-    function get_setting(string $key, mixed $default = ''): mixed {
+    function get_setting(string $key, mixed $default = ''): mixed
+    {
         static $settingsCache = [];
         $currentLang = get_current_lang();
         $cacheKey = $key . '_' . $currentLang;
@@ -26,126 +30,150 @@ if (!function_exists('get_setting')) {
         }
 
         try {
-            $db = Database::getConnection();
-            
-            // 1. محاولة البحث عن المفتاح مضافاً إليه اللغة
-            $langKey = $key . '_' . $currentLang;
-            $stmt = $db->prepare("SELECT setting_value FROM global_settings WHERE setting_key = ? LIMIT 1");
-            $stmt->execute([$langKey]);
-            $result = $stmt->fetch();
-
-            $value = null;
-
-            if ($result && isset($result['setting_value']) && $result['setting_value'] !== '') {
-                $value = $result['setting_value'];
+            // قراءة الإعدادات من الكاش المركزي (استعلام واحد فقط لكل الطلب)
+            if (class_exists(SiteModel::class)) {
+                $allSettings = SiteModel::getSettings();
             } else {
-                // 2. جلب المفتاح الأساسي الافتراضي
-                $stmt->execute([$key]);
-                $result = $stmt->fetch();
-                
-                if ($result && isset($result['setting_value'])) {
-                    $value = $result['setting_value'];
-                } else {
-                    return $settingsCache[$cacheKey] = $default;
-                }
+                $db = Database::getConnection();
+                $stmt = $db->query("SELECT setting_key, setting_value FROM global_settings");
+                $allSettings = $stmt->fetchAll(\PDO::FETCH_KEY_PAIR) ?: [];
             }
-            
-            // 🌟 فك الـ JSON بأمان تام مع التأكد أنه نص (String) لمنع أي خطأ نوع بيانات
-            if (is_string($value)) {
-                $decoded = json_decode($value, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    if (isset($decoded['ar']) || isset($decoded['en']) || isset($decoded['de'])) {
-                        return $settingsCache[$cacheKey] = ($decoded[$currentLang] ?? ($decoded['ar'] ?? $decoded));
-                    }
-                    return $settingsCache[$cacheKey] = $decoded;
-                }
-            }
-            
-            return $settingsCache[$cacheKey] = $value;
 
+            $langKey = $key . '_' . $currentLang;
+            if (isset($allSettings[$langKey]) && $allSettings[$langKey] !== '') {
+                $value = $allSettings[$langKey];
+            } elseif (array_key_exists($key, $allSettings)) {
+                $value = $allSettings[$key];
+            } else {
+                return $settingsCache[$cacheKey] = $default;
+            }
+
+            // فك الـ JSON بأمان تام واستخراج اللغة المطلوبة
+            if (is_string($value)) {
+                $trimmed = trim($value);
+                if (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '[')) {
+                    $decoded = json_decode($trimmed, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        if (isset($decoded['de']) || isset($decoded['en']) || isset($decoded['ar'])) {
+                            return $settingsCache[$cacheKey] = ($decoded[$currentLang] ?? ($decoded['de'] ?? ($decoded['en'] ?? ($decoded['ar'] ?? $default))));
+                        }
+                        return $settingsCache[$cacheKey] = $decoded;
+                    }
+                }
+            }
+
+            return $settingsCache[$cacheKey] = $value;
         } catch (\Throwable $e) {
-            error_log("Get Setting Error: " . $e->getMessage());
+            error_log('Get Setting Error: ' . $e->getMessage());
         }
-        
+
         return $settingsCache[$cacheKey] = $default;
     }
 }
 
 if (!function_exists('get_image_url')) {
     /**
-     * تحويل مسار الصورة مع تطبيق التخزين المؤقت (Static Caching) وفحص القرص الصلب أو الروابط الخارجية
+     * تحويل مسار الصورة مع التخزين المؤقت وفحص الوجود الفعلي على القرص وحماية الروابط
      */
     function get_image_url(?string $path, string $default = '/assets/img/logo.png'): string
     {
-        if (empty($path)) {
+        if ($path === null || trim($path) === '') {
             return $default;
         }
 
-        // دعم الروابط الخارجية مباشرة دون فحص محلي
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
+        $cleanPath = trim($path);
+
+        // حظر البروتوكولات الخطرة ومحاولات اجتياز المسارات
+        if (preg_match('/^(javascript|data|vbscript):/i', $cleanPath) || str_contains($cleanPath, '..')) {
+            return $default;
+        }
+
+        // دعم الروابط الخارجية الموثوقة (http/https)
+        if (str_starts_with($cleanPath, 'http://') || str_starts_with($cleanPath, 'https://')) {
+            return filter_var($cleanPath, FILTER_VALIDATE_URL) ? $cleanPath : $default;
         }
 
         static $imageCache = [];
-        if (isset($imageCache[$path])) {
-            return $imageCache[$path];
+        if (isset($imageCache[$cleanPath])) {
+            return $imageCache[$cleanPath];
         }
 
-        $filename = basename($path);
-        $uploadFilePath = __DIR__ . '/../../public/assets/uploads/' . $filename;
-
-        if (file_exists($uploadFilePath)) {
-            return $imageCache[$path] = '/assets/uploads/' . $filename;
+        $publicRoot = realpath(__DIR__ . '/../../public');
+        if ($publicRoot === false) {
+            return $default;
         }
 
-        $staticFilePath = __DIR__ . '/../../public/' . ltrim($path, '/');
-        if (file_exists($staticFilePath)) {
-            return $imageCache[$path] = '/' . ltrim($path, '/');
+        // 1. الفحص داخل مجلد uploads
+        $filename = basename($cleanPath);
+        $uploadFilePath = $publicRoot . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $filename;
+        if ($filename !== '' && is_file($uploadFilePath)) {
+            return $imageCache[$cleanPath] = '/assets/uploads/' . $filename;
         }
 
-        return $imageCache[$path] = $default;
+        // 2. الفحص داخل المسار الثابت في public
+        $relativePath = ltrim($cleanPath, '/\\');
+        $staticFilePath = $publicRoot . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
+        if (is_file($staticFilePath)) {
+            return $imageCache[$cleanPath] = '/' . str_replace('\\', '/', $relativePath);
+        }
+
+        return $imageCache[$cleanPath] = $default;
     }
 }
 
 if (!function_exists('__')) {
     /**
-     * دالة ترجمة النصوص الثابتة بناءً على لغة الجلسة الحالية
+     * دالة ترجمة النصوص الثابتة بناءً على لغة الجلسة الحالية مع حماية الأنواع
      */
-    function __(string $key, string $default = ''): string {
+    function __(string $key, string $default = ''): string
+    {
         static $langData = [];
         $currentLang = get_current_lang();
 
         if (!isset($langData[$currentLang])) {
             $langFile = __DIR__ . '/../Lang/' . $currentLang . '.php';
-            if (file_exists($langFile)) {
-                $langData[$currentLang] = require $langFile;
-            } else {
-                $langData[$currentLang] = [];
+            if (!is_file($langFile)) {
+                $langFile = __DIR__ . '/../lang/' . $currentLang . '.php';
             }
+            $loaded = is_file($langFile) ? require $langFile : [];
+            $langData[$currentLang] = is_array($loaded) ? $loaded : [];
         }
 
-        return $langData[$currentLang][$key] ?? ($default !== '' ? $default : $key);
+        $translated = $langData[$currentLang][$key] ?? null;
+        if (is_string($translated) && $translated !== '') {
+            return $translated;
+        }
+
+        return $default !== '' ? $default : $key;
     }
 }
 
 if (!function_exists('safe_admin_string')) {
     /**
-     * معالجة وحماية النصوص والمصفوفات داخل حقول لوحة التحكم لمنع أخطاء تحويل البيانات (Array to string)
+     * معالجة وحماية النصوص والمصفوفات داخل حقول لوحة التحكم لمنع أخطاء تحويل البيانات
      */
-    function safe_admin_string(mixed $val, ?string $current_lang = null): string {
-        $lang = $current_lang ?? get_current_lang();
+    function safe_admin_string(mixed $val, ?string $current_lang = null): string
+    {
+        $lang = ($current_lang !== null && in_array($current_lang, ['de', 'en', 'ar'], true))
+            ? $current_lang
+            : get_current_lang();
 
         if (is_array($val)) {
-            return (string)($val[$lang] ?? ($val['ar'] ?? ($val['de'] ?? ($val['en'] ?? reset($val) ?? ''))));
+            $picked = $val[$lang] ?? ($val['de'] ?? ($val['en'] ?? ($val['ar'] ?? reset($val))));
+            return is_scalar($picked) ? (string)$picked : '';
         }
 
         if (is_string($val)) {
-            $decoded = json_decode($val, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return (string)($decoded[$lang] ?? ($decoded['ar'] ?? ($decoded['de'] ?? ($decoded['en'] ?? reset($decoded) ?? ''))));
+            $trimmed = trim($val);
+            if (str_starts_with($trimmed, '{') || str_starts_with($trimmed, '[')) {
+                $decoded = json_decode($trimmed, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $picked = $decoded[$lang] ?? ($decoded['de'] ?? ($decoded['en'] ?? ($decoded['ar'] ?? reset($decoded))));
+                    return is_scalar($picked) ? (string)$picked : '';
+                }
             }
         }
 
-        return (string)($val ?? '');
+        return is_scalar($val) ? (string)$val : '';
     }
 }

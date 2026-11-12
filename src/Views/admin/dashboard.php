@@ -1,18 +1,23 @@
 <?php
+declare(strict_types=1);
+
 if (!defined('ALLOWED_ACCESS')) {
-    header("HTTP/1.1 403 Forbidden");
+    http_response_code(403);
     exit('Access Denied');
 }
 
-$site_logo = $data['site_logo'] ?? $data['current_logo'] ?? 'assets/img/logo.png';
+$site_logo  = $data['site_logo'] ?? $data['current_logo'] ?? 'assets/img/logo.png';
 $admin_name = $_SESSION['admin_name'] ?? 'المشرف';
 $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
+$csrf_token = $data['csrf_token'] ?? ($_SESSION['csrf_token'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars((string)$csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
     <title>لوحة التحكم - بيتهوفن سيتي للخدمات الطلابية</title>
     <!-- Bootstrap 5 RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
@@ -246,9 +251,9 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
                     <?php endif; ?>
                 </a>
 
-                <h1 class="welcome-title">مرحباً بك <?php echo htmlspecialchars($admin_name, ENT_QUOTES, 'UTF-8'); ?> 👋</h1>
+                <h1 class="welcome-title">مرحباً بك <?php echo htmlspecialchars((string)$admin_name, ENT_QUOTES, 'UTF-8'); ?> 👋</h1>
                 <div class="role-badge">
-                    <i class="fa-solid fa-shield-halved me-1"></i> <?php echo htmlspecialchars($role_badge, ENT_QUOTES, 'UTF-8'); ?>
+                    <i class="fa-solid fa-shield-halved me-1"></i> <?php echo htmlspecialchars((string)$role_badge, ENT_QUOTES, 'UTF-8'); ?>
                 </div>
 
                 <p class="welcome-desc">
@@ -292,7 +297,7 @@ $role_badge = $data['role_badge_text'] ?? 'مسؤول النظام (Admin)';
                         <h6>حالة النظام</h6>
                         <span><i class="fa-solid fa-circle-check text-success ms-1"></i> بيتهوفن CMS - نشط</span>
                         <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">
-                            <i class="fa-regular fa-clock"></i> متصل بصلاحية: <?php echo htmlspecialchars($_SESSION['role'] ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>
+                            <i class="fa-regular fa-clock"></i> متصل بصلاحية: <?php echo htmlspecialchars((string)($_SESSION['role'] ?? 'admin'), ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
                     <div class="info-item text-start border-start border-2 ps-4">

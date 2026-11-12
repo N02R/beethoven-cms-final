@@ -102,7 +102,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []): mixed {
         <div class="contact-info-icon">
           <img src="<?php echo get_image_url($address_icon, 'assets/img/Location.svg'); ?>" alt="Location" />
         </div>
-        <img src="<?php echo get_image_url('assets/img/contact us/Line 16.png'); ?>" alt="" />
+        <img src="<?php echo get_image_url('assets/img/Line.png'); ?>" alt="" />
         <span style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($address, ENT_QUOTES, 'UTF-8'); ?></span>
       </div>
       

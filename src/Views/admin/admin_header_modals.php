@@ -143,438 +143,15 @@ if (!in_array($current_lang, $supported_langs, true)) {
     $current_lang = 'de';
 }
 
-// قاموس ترجمة شامل للمودلات باللغات الثلاث (DE / EN / AR)
-$modalBaseTranslations = [
-    'de' => [
-        // General
-        'save_changes'            => 'Änderungen speichern',
-        'cancel'                  => 'Abbrechen',
-        'delete'                  => 'Löschen',
-        'title'                   => 'Titel',
-        'url'                     => 'Link (URL)',
-        'description'             => 'Beschreibung',
-        'image'                   => 'Bild',
-        'current_image'           => 'Aktuelles Bild:',
-        'section_main_title'      => 'Haupttitel des Abschnitts',
-        'section_subtitle'        => 'Untertitel / Beschreibung',
-        'section_desc'            => 'Abschnittsbeschreibung',
-        'added_items'             => 'Hinzugefügte Elemente',
-        'item_title'              => 'Elementtitel',
-        'icon_or_image'           => 'Symbol / Bild',
-        'delete_item'             => 'Element löschen',
-        'add_new_item'            => 'Neues Element hinzufügen',
-
-        // 1. Social Links
-        'manage_social_platforms' => 'Social-Media-Plattformen verwalten',
-        'platform_name'           => 'Plattformname',
-        'name_placeholder'        => 'Name (z. B. Instagram)',
-        'platform_url'            => 'Plattform-Link (URL)',
-        'url_placeholder'         => 'https://...',
-        'platform_icon_image'     => 'Plattform-Symbol / Bild',
-        'delete_platform'         => 'Plattform löschen',
-        'add_new_platform'        => 'Neue Plattform hinzufügen',
-
-        // 2. Logo
-        'manage_site_logo'        => 'Website-Logo ändern',
-        'choose_logo_image'       => 'Logo-Bild auswählen:',
-
-        // 3. Announcement
-        'announcement_settings'   => 'Ankündigungsleiste Einstellungen',
-        'ad_status_timing'        => 'Anzeigenstatus & Zeitplan',
-        'display_status'          => 'Anzeigestatus',
-        'status_draft'            => 'Ausgeblendet (Entwurf)',
-        'status_published'        => 'Aktiv (Sichtbar für Besucher)',
-        'start_date'              => 'Startdatum',
-        'end_date'                => 'Enddatum',
-        'announcement_content'    => 'Anzeigeninhalt',
-        'ad_type'                 => 'Anzeigentyp:',
-        'ad_type_text'            => 'Lauftext',
-        'ad_type_image'           => 'Bild (Werbebanner)',
-        'announcement_text_label' => 'Anzeigentext:',
-        'bg_color'                => 'Hintergrundfarbe',
-        'text_color'              => 'Textfarbe',
-        'font_size'               => 'Schriftgröße',
-        'upload_ad_image'         => 'Anzeigenbild hochladen:',
-        'redirect_link'           => 'Weiterleitungslink (optional)',
-
-        // 4. Menu
-        'manage_main_menu'        => 'Hauptmenü verwalten',
-        'link_title'              => 'Link-Titel',
-        'add_new_link'            => 'Neuen Link hinzufügen',
-
-        // 5. Languages
-        'manage_languages'        => 'Sprachen verwalten',
-        'lang_code'               => 'Sprachcode (z. B. fr)',
-        'lang_name'               => 'Sprachname',
-        'status'                  => 'Status',
-        'delete_lang'             => 'Sprache löschen',
-        'add_new_language'        => 'Neue Sprache hinzufügen',
-
-        // 6. Hero
-        'edit_hero_section'       => 'Hero-Bereich bearbeiten',
-        'hero_title'              => 'Hero-Titel',
-        'hero_desc'               => 'Beschreibungstext',
-        'hero_btn_text'           => 'Schaltflächentext',
-        'hero_btn_url'            => 'Schaltflächen-Link',
-        'hero_bg_image'           => 'Hintergrundbild',
-
-        // 7. Services
-        'edit_services_section'   => 'Dienstleistungsbereich bearbeiten',
-        'services_section_title'  => 'Haupttitel des Bereichs',
-        'services_section_desc'   => 'Untertitel / Beschreibung',
-        'added_services'          => 'Hinzugefügte Dienstleistungen',
-        'service_title'           => 'Dienstleistungstitel',
-        'service_url'             => 'Dienstleistungs-Link',
-        'image_or_icon'           => 'Bild / Symbol',
-        'delete_service'          => 'Dienstleistung löschen',
-        'add_new_service'         => 'Neue Dienstleistung hinzufügen',
-
-        // 8. Choose
-        'manage_choose'           => 'Warum wir / Vorteile bearbeiten',
-
-        // 9. Reviews
-        'manage_customer_videos'  => 'Kundenvideos verwalten',
-        'added_videos'            => 'Hinzugefügte Videos',
-        'review_video_url'        => 'Video-Link (YouTube Embed URL)',
-        'delete_video'            => 'Video löschen',
-        'add_new_video'           => 'Neues Video hinzufügen',
-
-        // 10. Guide
-        'manage_guide'            => 'Studienführer verwalten',
-        'main_section_title'      => 'Haupttitel des Abschnitts',
-        'read_more'               => 'Text der Schaltfläche „Mehr lesen“',
-        'article_title'           => 'Artikeltitel',
-        'page_url'                => 'Seiten-Link',
-        'delete_article'          => 'Artikel löschen',
-        'add_new_article'         => 'Neuen Artikel hinzufügen',
-
-        // 11. FAQ
-        'manage_faq'              => 'Häufig gestellte Fragen (FAQ) verwalten',
-        'faq_question'            => 'Frage',
-        'faq_answer'              => 'Antwort',
-        'delete_faq'              => 'Frage löschen',
-        'add_new_faq'             => 'Neue Frage hinzufügen',
-
-        // 12. Footer
-        'manage_footer'           => 'Footer vollständig verwalten',
-        'consult_section_title'   => 'Beratungsbereich Einstellungen',
-        'consult_title_label'     => 'Beratungstitel',
-        'consult_desc_label'      => 'Beratungsbeschreibung',
-        'column_one'              => 'Erste Spalte',
-        'footer_desc_label'       => 'Footer-Beschreibung:',
-        'column_two'              => 'Zweite Spalte',
-        'column_two_title'        => 'Spaltentitel',
-        'menu_auto_notice'        => 'Links werden automatisch aus dem Hauptmenü (Menu) geladen.',
-        'column_three'            => 'Dritte Spalte (Kontakt)',
-        'column_three_title'      => 'Spaltentitel',
-        'contact_name'            => 'Kontaktbezeichnung',
-        'contact_name_placeholder'=> 'z. B. E-Mail oder Telefon',
-        'contact_url'             => 'Link / Wert',
-        'contact_icon_image'      => 'Symbol / Bild',
-        'delete_contact'          => 'Kontakt löschen',
-        'add_new_contact'         => 'Neuen Kontakt hinzufügen',
-
-        // Notifications
-        'notif_success_title'     => 'Erfolgreich!',
-        'notif_error_title'       => 'Fehler aufgetreten!',
-        'notif_warning_title'     => 'Wichtiger Hinweis',
-        'notif_saved_reloading'   => 'Änderungen erfolgreich gespeichert. Seite wird aktualisiert...',
-        'notif_save_failed'       => 'Speichern fehlgeschlagen: ',
-        'notif_check_inputs'      => 'Bitte überprüfen Sie Ihre Eingaben.',
-        'notif_server_error'      => 'Serverfehler: ',
-        'notif_network_error'     => 'Netzwerkfehler. Bitte versuchen Sie es später erneut.'
-    ],
-    'en' => [
-        // General
-        'save_changes'            => 'Save Changes',
-        'cancel'                  => 'Cancel',
-        'delete'                  => 'Delete',
-        'title'                   => 'Title',
-        'url'                     => 'Link (URL)',
-        'description'             => 'Description',
-        'image'                   => 'Image',
-        'current_image'           => 'Current Image:',
-        'section_main_title'      => 'Main Section Title',
-        'section_subtitle'        => 'Subtitle / Description',
-        'section_desc'            => 'Section Description',
-        'added_items'             => 'Added Items',
-        'item_title'              => 'Item Title',
-        'icon_or_image'           => 'Icon / Image',
-        'delete_item'             => 'Delete Item',
-        'add_new_item'            => 'Add New Item',
-
-        // 1. Social Links
-        'manage_social_platforms' => 'Manage Social Media Platforms',
-        'platform_name'           => 'Platform Name',
-        'name_placeholder'        => 'Name (e.g., Instagram)',
-        'platform_url'            => 'Platform Link (URL)',
-        'url_placeholder'         => 'https://...',
-        'platform_icon_image'     => 'Platform Icon / Image',
-        'delete_platform'         => 'Delete Platform',
-        'add_new_platform'        => 'Add New Platform',
-
-        // 2. Logo
-        'manage_site_logo'        => 'Change Website Logo',
-        'choose_logo_image'       => 'Choose Logo Image:',
-
-        // 3. Announcement
-        'announcement_settings'   => 'Announcement Bar Settings',
-        'ad_status_timing'        => 'Status & Schedule',
-        'display_status'          => 'Display Status',
-        'status_draft'            => 'Hidden (Draft)',
-        'status_published'        => 'Active (Visible to Visitors)',
-        'start_date'              => 'Start Date',
-        'end_date'                => 'End Date',
-        'announcement_content'    => 'Announcement Content',
-        'ad_type'                 => 'Announcement Type:',
-        'ad_type_text'            => 'Scrolling Text',
-        'ad_type_image'           => 'Image (Banner)',
-        'announcement_text_label' => 'Announcement Text:',
-        'bg_color'                => 'Background Color',
-        'text_color'              => 'Text Color',
-        'font_size'               => 'Font Size',
-        'upload_ad_image'         => 'Upload Announcement Image:',
-        'redirect_link'           => 'Redirect Link (Optional)',
-
-        // 4. Menu
-        'manage_main_menu'        => 'Manage Main Menu',
-        'link_title'              => 'Link Title',
-        'add_new_link'            => 'Add New Link',
-
-        // 5. Languages
-        'manage_languages'        => 'Manage Languages',
-        'lang_code'               => 'Language Code (e.g., fr)',
-        'lang_name'               => 'Language Name',
-        'status'                  => 'Status',
-        'delete_lang'             => 'Delete Language',
-        'add_new_language'        => 'Add New Language',
-
-        // 6. Hero
-        'edit_hero_section'       => 'Edit Hero Section',
-        'hero_title'              => 'Hero Title',
-        'hero_desc'               => 'Description Text',
-        'hero_btn_text'           => 'Button Text',
-        'hero_btn_url'            => 'Button Link',
-        'hero_bg_image'           => 'Background Image',
-
-        // 7. Services
-        'edit_services_section'   => 'Edit Services Section',
-        'services_section_title'  => 'Main Section Title',
-        'services_section_desc'   => 'Subtitle / Description',
-        'added_services'          => 'Added Services',
-        'service_title'           => 'Service Title',
-        'service_url'             => 'Service Link',
-        'image_or_icon'           => 'Image / Icon',
-        'delete_service'          => 'Delete Service',
-        'add_new_service'         => 'Add New Service',
-
-        // 8. Choose
-        'manage_choose'           => 'Edit Why Choose Us Section',
-
-        // 9. Reviews
-        'manage_customer_videos'  => 'Manage Customer Review Videos',
-        'added_videos'            => 'Added Videos',
-        'review_video_url'        => 'Video Link (YouTube Embed URL)',
-        'delete_video'            => 'Delete Video',
-        'add_new_video'           => 'Add New Video',
-
-        // 10. Guide
-        'manage_guide'            => 'Manage Comprehensive Guide',
-        'main_section_title'      => 'Main Section Title',
-        'read_more'               => 'Read More Button Text',
-        'article_title'           => 'Article Title',
-        'page_url'                => 'Page URL',
-        'delete_article'          => 'Delete Article',
-        'add_new_article'         => 'Add New Article',
-
-        // 11. FAQ
-        'manage_faq'              => 'Manage Frequently Asked Questions (FAQ)',
-        'faq_question'            => 'Question',
-        'faq_answer'              => 'Answer',
-        'delete_faq'              => 'Delete Question',
-        'add_new_faq'             => 'Add New Question',
-
-        // 12. Footer
-        'manage_footer'           => 'Manage Full Footer',
-        'consult_section_title'   => 'Consultation Banner Settings',
-        'consult_title_label'     => 'Consultation Title',
-        'consult_desc_label'      => 'Consultation Description',
-        'column_one'              => 'First Column',
-        'footer_desc_label'       => 'Footer Description:',
-        'column_two'              => 'Second Column',
-        'column_two_title'        => 'Column Title',
-        'menu_auto_notice'        => 'Links are automatically fetched from the Main Menu.',
-        'column_three'            => 'Third Column (Contact)',
-        'column_three_title'      => 'Column Title',
-        'contact_name'            => 'Contact Label',
-        'contact_name_placeholder'=> 'e.g., Email or Phone',
-        'contact_url'             => 'Link / Value',
-        'contact_icon_image'      => 'Icon / Image',
-        'delete_contact'          => 'Delete Contact',
-        'add_new_contact'         => 'Add New Contact',
-
-        // Notifications
-        'notif_success_title'     => 'Success!',
-        'notif_error_title'       => 'An Error Occurred!',
-        'notif_warning_title'     => 'Important Notice',
-        'notif_saved_reloading'   => 'Changes saved successfully, reloading page...',
-        'notif_save_failed'       => 'Could not save changes: ',
-        'notif_check_inputs'      => 'Please verify your inputs.',
-        'notif_server_error'      => 'Server error: ',
-        'notif_network_error'     => 'Network connection error, please try again later.'
-    ],
-    'ar' => [
-        // General
-        'save_changes'            => 'حفظ التغييرات',
-        'cancel'                  => 'إلغاء',
-        'delete'                  => 'حذف',
-        'title'                   => 'العنوان',
-        'url'                     => 'الرابط (URL)',
-        'description'             => 'الوصف',
-        'image'                   => 'الصورة',
-        'current_image'           => 'الصورة الحالية:',
-        'section_main_title'      => 'عنوان القسم الرئيسي',
-        'section_subtitle'        => 'الوصف الفرعي',
-        'section_desc'            => 'وصف القسم',
-        'added_items'             => 'العناصر المضافة',
-        'item_title'              => 'عنوان العنصر',
-        'icon_or_image'           => 'الأيقونة / الصورة',
-        'delete_item'             => 'حذف العنصر',
-        'add_new_item'            => 'إضافة عنصر جديد',
-
-        // 1. Social Links
-        'manage_social_platforms' => 'إدارة منصات التواصل',
-        'platform_name'           => 'اسم المنصة',
-        'name_placeholder'        => 'الاسم',
-        'platform_url'            => 'رابط المنصة',
-        'url_placeholder'         => 'الرابط',
-        'platform_icon_image'     => 'أيقونة / صورة المنصة',
-        'delete_platform'         => 'حذف المنصة',
-        'add_new_platform'        => 'إضافة منصة جديدة',
-
-        // 2. Logo
-        'manage_site_logo'        => 'تغيير شعار الموقع',
-        'choose_logo_image'       => 'اختر صورة الشعار:',
-
-        // 3. Announcement
-        'announcement_settings'   => 'إعدادات لوحة الإعلانات',
-        'ad_status_timing'        => 'حالة الإعلان والتوقيت',
-        'display_status'          => 'حالة العرض',
-        'status_draft'            => 'مخفي (مسودة)',
-        'status_published'        => 'نشط (يظهر للزوار)',
-        'start_date'              => 'تاريخ البدء',
-        'end_date'                => 'تاريخ الانتهاء',
-        'announcement_content'    => 'محتوى الإعلان',
-        'ad_type'                 => 'نوع الإعلان:',
-        'ad_type_text'            => 'نص متحرك',
-        'ad_type_image'           => 'صورة (بانر دعائي)',
-        'announcement_text_label' => 'نص الإعلان:',
-        'bg_color'                => 'لون الخلفية',
-        'text_color'              => 'لون الخط',
-        'font_size'               => 'حجم الخط',
-        'upload_ad_image'         => 'ارفع صورة الإعلان:',
-        'redirect_link'           => 'رابط التوجيه (اختياري)',
-
-        // 4. Menu
-        'manage_main_menu'        => 'إدارة القائمة الرئيسية',
-        'link_title'              => 'عنوان الرابط',
-        'add_new_link'            => 'إضافة رابط جديد',
-
-        // 5. Languages
-        'manage_languages'        => 'إدارة اللغات',
-        'lang_code'               => 'رمز اللغة (Code)',
-        'lang_name'               => 'اسم اللغة',
-        'status'                  => 'الحالة',
-        'delete_lang'             => 'حذف اللغة',
-        'add_new_language'        => 'إضافة لغة جديدة',
-
-        // 6. Hero
-        'edit_hero_section'       => 'تعديل قسم البداية (Hero)',
-        'hero_title'              => 'عنوان البداية',
-        'hero_desc'               => 'النص الوصفي',
-        'hero_btn_text'           => 'نص الزر',
-        'hero_btn_url'            => 'رابط الزر',
-        'hero_bg_image'           => 'صورة الخلفية',
-
-        // 7. Services
-        'edit_services_section'   => 'تعديل قسم الخدمات',
-        'services_section_title'  => 'عنوان القسم الرئيسي',
-        'services_section_desc'   => 'العنوان الفرعي / الوصف',
-        'added_services'          => 'الخدمات المضافة',
-        'service_title'           => 'عنوان الخدمة',
-        'service_url'             => 'رابط الخدمة',
-        'image_or_icon'           => 'الصورة / الأيقونة',
-        'delete_service'          => 'حذف الخدمة',
-        'add_new_service'         => 'إضافة خدمة جديدة',
-
-        // 8. Choose
-        'manage_choose'           => 'إدارة قسم لماذا نحن / المميزات',
-
-        // 9. Reviews
-        'manage_customer_videos'  => 'إدارة فيديوهات العملاء',
-        'added_videos'            => 'الفيديوهات المضافة',
-        'review_video_url'        => 'رابط الفيديو (Embed URL)',
-        'delete_video'            => 'حذف الفيديو',
-        'add_new_video'           => 'إضافة فيديو جديد',
-
-        // 10. Guide
-        'manage_guide'            => 'إدارة الدليل الشامل',
-        'main_section_title'      => 'عنوان القسم الرئيسي',
-        'read_more'               => 'نص زر قراءة المزيد',
-        'article_title'           => 'عنوان المقال',
-        'page_url'                => 'رابط الصفحة',
-        'delete_article'          => 'حذف المقال',
-        'add_new_article'         => 'إضافة مقال جديد',
-
-        // 11. FAQ
-        'manage_faq'              => 'إدارة الأسئلة الشائعة',
-        'faq_question'            => 'السؤال',
-        'faq_answer'              => 'الإجابة',
-        'delete_faq'              => 'حذف السؤال',
-        'add_new_faq'             => 'إضافة سؤال جديد',
-
-        // 12. Footer
-        'manage_footer'           => 'إدارة الفوتر بالكامل',
-        'consult_section_title'   => 'إعدادات قسم الاستشارة',
-        'consult_title_label'     => 'عنوان الاستشارة',
-        'consult_desc_label'      => 'وصف الاستشارة',
-        'column_one'              => 'العمود الأول',
-        'footer_desc_label'       => 'وصف الفوتر:',
-        'column_two'              => 'العمود الثاني',
-        'column_two_title'        => 'عنوان العمود',
-        'menu_auto_notice'        => 'يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).',
-        'column_three'            => 'العمود الثالث (التواصل)',
-        'column_three_title'      => 'عنوان العمود',
-        'contact_name'            => 'اسم الوسيلة',
-        'contact_name_placeholder'=> 'اسم الوسيلة',
-        'contact_url'             => 'الرابط',
-        'contact_icon_image'      => 'الأيقونة / الصورة',
-        'delete_contact'          => 'حذف الوسيلة',
-        'add_new_contact'         => 'إضافة وسيلة تواصل',
-
-        // Notifications
-        'notif_success_title'     => 'تم بنجاح!',
-        'notif_error_title'       => 'عذراً، حدث خطأ!',
-        'notif_warning_title'     => 'تنبيه هام',
-        'notif_saved_reloading'   => 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...',
-        'notif_save_failed'       => 'عذراً، لم يتم الحفظ: ',
-        'notif_check_inputs'      => 'يرجى التأكد من البيانات المدخلة',
-        'notif_server_error'      => 'الخطأ الحقيقي من السيرفر: ',
-        'notif_network_error'     => 'حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.'
-    ]
-];
-
+// جلب مصفوفة الترجمة مباشرة من ملفات /src/Lang/ (Single Source of Truth)
 $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
 if (!file_exists($lang_file)) {
     $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
 }
-$externalLang = file_exists($lang_file) ? require $lang_file : [];
-if (!is_array($externalLang)) {
-    $externalLang = [];
+$ml = file_exists($lang_file) ? require $lang_file : [];
+if (!is_array($ml)) {
+    $ml = [];
 }
-
-// دمج الترجمات الخارجية مع القاموس المدمج بحيث تعطى الأولوية لملفات Lang وتغطى أي مفاتيح ناقصة تلقائياً
-$ml = array_merge($modalBaseTranslations[$current_lang], $externalLang);
 
 $is_rtl = ($current_lang === 'ar');
 $modal_dir = $is_rtl ? 'rtl' : 'ltr';
@@ -588,7 +165,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-share-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_social_platforms'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_social_platforms'] ?? 'إدارة منصات التواصل', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -607,15 +184,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <div class="p-3 shadow-sm social-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-4 <?php echo $modal_align; ?>">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_name'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['name_placeholder'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_name'] ?? 'اسم المنصة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <input type="text" class="form-control social-name" name="social[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($link['name'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['name_placeholder'] ?? 'الاسم', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 <div class="col-md-8 <?php echo $modal_align; ?>">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_url'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['url_placeholder'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_url'] ?? 'رابط المنصة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <input type="url" class="form-control social-url" name="social[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['url_placeholder'] ?? 'https://...', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 <div class="col-md-11 <?php echo $modal_align; ?>">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_icon_image'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['platform_icon_image'] ?? 'أيقونة / صورة المنصة', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <div class="d-flex align-items-center gap-2">
                                         <?php if (!empty($link['img'])): ?>
                                             <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -627,7 +204,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 </div>
                                 <input type="hidden" class="social-old-img" name="social[<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="col-md-1 text-center pt-3">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="<?php echo htmlspecialchars($ml['delete_platform'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow(this)" title="<?php echo htmlspecialchars($ml['delete_platform'] ?? 'حذف المنصة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -635,13 +212,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addSocialRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_platform'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_platform'] ?? 'إضافة منصة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="socialLinksForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="socialLinksForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -654,7 +231,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-image text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_site_logo'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_site_logo'] ?? 'تغيير شعار الموقع', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -689,7 +266,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div class="mb-3" dir="<?php echo $modal_dir; ?>">
                         <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>">
-                            <?php echo htmlspecialchars($ml['choose_logo_image'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars($ml['choose_logo_image'] ?? 'اختر صورة الشعار:', ENT_QUOTES, 'UTF-8'); ?>
                         </label>
                         <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
                     </div>
@@ -698,8 +275,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -712,7 +289,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-megaphone-fill text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['announcement_settings'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['announcement_settings'] ?? 'إعدادات لوحة الإعلانات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -736,22 +313,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-3 mb-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-3 text-secondary <?php echo $modal_align; ?>" style="font-size: 0.95rem;">
                             <i class="bi bi-gear text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> 
-                            <?php echo htmlspecialchars($ml['ad_status_timing'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars($ml['ad_status_timing'] ?? 'حالة الإعلان والتوقيت', ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-4 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['display_status'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['display_status'] ?? 'حالة العرض', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <select class="form-select" name="status">
-                                    <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['status_draft'], ENT_QUOTES, 'UTF-8'); ?></option>
-                                    <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['status_published'], ENT_QUOTES, 'UTF-8'); ?></option>
+                                    <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Draft' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['status_draft'] ?? 'مخفي (مسودة)', ENT_QUOTES, 'UTF-8'); ?></option>
+                                    <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) == 'Published' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['status_published'] ?? 'نشط (يظهر للزوار)', ENT_QUOTES, 'UTF-8'); ?></option>
                                 </select>
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['start_date'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['start_date'] ?? 'تاريخ البدء', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['start_date'] ?? '', $current_lang)); ?>">
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['end_date'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['end_date'] ?? 'تاريخ الانتهاء', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['end_date'] ?? '', $current_lang)); ?>">
                             </div>
                         </div>
@@ -760,36 +337,36 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-3 mb-4 shadow-sm <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-3 text-secondary" style="font-size: 0.95rem;">
                             <i class="bi bi-pencil-square text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> 
-                            <?php echo htmlspecialchars($ml['announcement_content'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                            <?php echo htmlspecialchars($ml['announcement_content'] ?? 'محتوى الإعلان', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                         </div>
-                        <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['ad_type'], ENT_QUOTES, 'UTF-8'); ?></label>
+                        <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['ad_type'] ?? 'نوع الإعلان:', ENT_QUOTES, 'UTF-8'); ?></label>
                         <select class="form-select mb-3" name="type" id="adTypeSelect" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['ad_type_text'], ENT_QUOTES, 'UTF-8'); ?></option>
-                            <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['ad_type_image'], ENT_QUOTES, 'UTF-8'); ?></option>
+                            <option value="text" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'text' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['ad_type_text'] ?? 'نص متحرك', ENT_QUOTES, 'UTF-8'); ?></option>
+                            <option value="image" <?php echo ((safe_admin_string($currentAd['type'] ?? 'text', $current_lang)) == 'image' ? 'selected' : ''); ?>><?php echo htmlspecialchars($ml['ad_type_image'] ?? 'صورة (بانر دعائي)', ENT_QUOTES, 'UTF-8'); ?></option>
                         </select>
 
                         <?php $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang); ?>
                         <div id="textEditor" class="<?php echo ($adTypeVal === 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['announcement_text_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['announcement_text_label'] ?? 'نص الإعلان:', ENT_QUOTES, 'UTF-8'); ?></label>
                             <textarea class="form-control mb-3" name="announcement_text" rows="2" style="height: auto;"><?php echo htmlspecialchars(safe_admin_string($currentAd['announcement_text'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             <div class="row g-2">
                                 <div class="col-4">
-                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['bg_color'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['bg_color'] ?? 'لون الخلفية', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="color" class="form-control form-control-color w-100" name="bg_color" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['bg_color'] ?? '#f1f5f9', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
-                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['text_color'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['text_color'] ?? 'لون الخط', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="color" class="form-control form-control-color w-100" name="text_color" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['text_color'] ?? '#1e293b', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" style="height: 46px;">
                                 </div>
                                 <div class="col-4">
-                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['font_size'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['font_size'] ?? 'حجم الخط', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="number" class="form-control" name="font_size" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['font_size'] ?? '16', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                         </div>
 
                         <div id="imageEditor" class="<?php echo ($adTypeVal === 'image' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
-                            <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['upload_ad_image'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <label class="small fw-bold mb-1"><?php echo htmlspecialchars($ml['upload_ad_image'] ?? 'ارفع صورة الإعلان:', ENT_QUOTES, 'UTF-8'); ?></label>
                             <?php if (!empty($currentAd['image_path']) && $currentAd['image_path'] !== 'assets/img/default-ad.png'): ?>
                                 <div class="mb-2 p-2 bg-light rounded border d-inline-block">
                                     <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($currentAd['image_path']) : $currentAd['image_path'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Ad Preview" class="img-thumbnail border-0 bg-transparent" style="max-height: 80px; object-fit: contain;">
@@ -802,15 +379,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-3 shadow-sm <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="section-label fw-bold mb-2 text-secondary" style="font-size: 0.95rem;">
                             <i class="bi bi-link-45deg text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> 
-                            <?php echo htmlspecialchars($ml['redirect_link'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars($ml['redirect_link'] ?? 'رابط التوجيه (اختياري)', ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                         <input type="url" class="form-control" name="link" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['link'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="announcementEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="announcementEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -823,7 +400,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-list-nested text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_main_menu'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_main_menu'] ?? 'إدارة القائمة الرئيسية', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -853,16 +430,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <div class="p-3 shadow-sm menu-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="menu_row_<?php echo $index; ?>">
                             <div class="row g-3 align-items-center">
                                 <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['link_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
-                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars((string)$title_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['link_title'] ?? 'عنوان الرابط', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                    <input type="text" class="form-control" name="menu[<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars((string)$title_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 <div class="col-md-5 <?php echo $modal_align; ?>">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['url'] ?? 'الرابط (URL)', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="text" class="form-control" name="menu[<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars((string)$url_val, ENT_QUOTES, 'UTF-8'); ?>" placeholder="home">
                                 </div>
                                 <div class="col-md-1 text-center pt-3">
                                     <input type="hidden" name="menu[<?php echo $index; ?>][order]" value="<?php echo $order_val; ?>">
-                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('menu_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete'] ?? 'حذف', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -870,14 +447,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
                     
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addMenuRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_link'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_link'] ?? 'إضافة رابط جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="menuLinksForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="menuLinksForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -890,7 +467,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-translate text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_languages'], ENT_QUOTES, 'UTF-8'); ?>
+                    <?php echo htmlspecialchars($ml['manage_languages'] ?? 'إدارة اللغات', ENT_QUOTES, 'UTF-8'); ?>
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -917,22 +494,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm lang-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="lang_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-4 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['lang_code'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['lang_code'] ?? 'رمز اللغة (Code)', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control lang-code" name="lang[<?php echo $index; ?>][code]" value="<?php echo htmlspecialchars(safe_admin_string($code_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="fr">
                                         </div>
                                         <div class="col-md-5 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['lang_name'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['lang_name'] ?? 'اسم اللغة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control lang-name" name="lang[<?php echo $index; ?>][name]" value="<?php echo htmlspecialchars(safe_admin_string($name_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="Français">
                                         </div>
                                         <div class="col-md-2 text-center pt-3">
-                                            <label class="small fw-bold mb-1 text-secondary d-block"><?php echo htmlspecialchars($ml['status'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary d-block"><?php echo htmlspecialchars($ml['status'] ?? 'الحالة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="hidden" name="lang[<?php echo $index; ?>][active]" value="0">
                                             <div class="form-check form-switch d-inline-block">
                                                 <input class="form-check-input lang-active" type="checkbox" name="lang[<?php echo $index; ?>][active]" value="1" <?php echo $active_val ? 'checked' : ''; ?>>
                                             </div>
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_lang'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('lang_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_lang'] ?? 'حذف اللغة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -942,14 +519,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addLangRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_language'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_language'] ?? 'إضافة لغة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" form="langEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="langEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -962,7 +539,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-gear text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['edit_hero_section'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['edit_hero_section'] ?? 'تعديل قسم البداية (Hero)', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -996,40 +573,40 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($ml['hero_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($ml['hero_title'] ?? 'عنوان البداية', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars(safe_admin_string($val_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($ml['hero_desc'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($ml['hero_desc'] ?? 'النص الوصفي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <textarea class="form-control" name="hero[<?php echo $current_lang; ?>][desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($val_desc, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                             
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($ml['hero_btn_text'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($ml['hero_btn_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_txt, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <div class="col-md-6 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($ml['hero_btn_url'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <?php echo htmlspecialchars($ml['hero_btn_url'] ?? 'رابط الزر', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </label>
                                 <input type="text" class="form-control" name="hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars(safe_admin_string($val_btn_url, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <div class="col-12 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1 text-secondary">
-                                    <?php echo htmlspecialchars($ml['hero_bg_image'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo htmlspecialchars($ml['hero_bg_image'] ?? 'صورة الخلفية', ENT_QUOTES, 'UTF-8'); ?>
                                 </label>
                                 
                                 <?php if (!empty($current_img_val) && $current_img_val !== 'assets/img/hero-bg.jpg'): ?>
                                     <div class="mb-3 p-3 bg-light rounded-3 border text-center" style="border-color: #e2e8f0 !important;">
-                                        <span class="d-block small text-muted mb-2"><?php echo htmlspecialchars($ml['current_image'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="d-block small text-muted mb-2"><?php echo htmlspecialchars($ml['current_image'] ?? 'الصورة الحالية:', ENT_QUOTES, 'UTF-8'); ?></span>
                                         <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($current_img_val) : $current_img_val, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                              alt="Current Hero Image" 
                                              class="img-thumbnail rounded-3 border-0 bg-transparent" 
@@ -1044,8 +621,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="heroEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="heroEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1058,7 +635,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-briefcase text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['edit_services_section'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['edit_services_section'] ?? 'تعديل قسم الخدمات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
@@ -1083,34 +660,34 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['services_section_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['services_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                 <input type="text" class="form-control" name="services[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars(safe_admin_string($sec_title, $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['services_section_desc'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['services_section_desc'] ?? 'العنوان الفرعي / الوصف', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                 <textarea class="form-control" name="services[<?php echo $current_lang; ?>][section_subtitle]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(safe_admin_string($sec_subtitle, $current_lang), ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($ml['added_services'], ENT_QUOTES, 'UTF-8'); ?></h6>
+                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($ml['added_services'] ?? 'الخدمات المضافة', ENT_QUOTES, 'UTF-8'); ?></h6>
                     <div id="servicesRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($service_items as $index => $item): ?>
                             <div class="p-3 shadow-sm service-row-item" id="service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['service_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['service_title'] ?? 'عنوان الخدمة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control service-title" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
 
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['service_url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['service_url'] ?? 'رابط الخدمة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control service-url" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
 
                                     <div class="col-md-11 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['image_or_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['image_or_icon'] ?? 'الصورة / الأيقونة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <input type="file" class="form-control service-file" name="service_img_<?php echo $index; ?>" accept="image/*">
                                             <?php if (!empty($item['img'])): ?>
@@ -1122,7 +699,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                     <input type="hidden" class="service-old-img" name="services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? $item['old_img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_service'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('service_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_service'] ?? 'حذف الخدمة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -1130,13 +707,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_service'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_service'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="servicesEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="servicesEditForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1149,7 +726,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-star text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_choose'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_choose'] ?? 'إدارة قسم لماذا نحن / المميزات', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -1184,18 +761,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['section_main_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                 <input type="text" class="form-control" name="choose[<?php echo $current_lang; ?>][section_title]" value="<?php echo htmlspecialchars((string)$choose_sec_title, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['section_subtitle'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['section_subtitle'] ?? 'الوصف الفرعي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)</label>
                                 <textarea class="form-control" name="choose[<?php echo $current_lang; ?>][section_subtitle]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$choose_sec_subtitle, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
                     </div>
 
                     <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">
-                        <?php echo htmlspecialchars($ml['added_items'], ENT_QUOTES, 'UTF-8'); ?>
+                        <?php echo htmlspecialchars($ml['added_items'] ?? 'العناصر المضافة', ENT_QUOTES, 'UTF-8'); ?>
                     </h6>
                     <div id="chooseRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($choose_itemsList as $index => $item): 
@@ -1207,19 +784,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['item_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['item_title'] ?? 'عنوان العنصر', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control choose-title" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($itTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control choose-url" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($itUrl, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-12 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['description'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control choose-desc" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($itDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-11 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['icon_or_image'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['icon_or_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
                                             <?php if (!empty($itImg)): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 42px; height: 42px;">
@@ -1231,7 +808,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         <input type="hidden" class="choose-old-img" name="choose[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($itImg, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('choose_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_item'] ?? 'حذف العنصر', ENT_QUOTES, 'UTF-8'); ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -1241,13 +818,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addChooseRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_item'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_item'] ?? 'إضافة عنصر جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="chooseForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="chooseForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1260,7 +837,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-play-btn text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_customer_videos'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_customer_videos'] ?? 'إدارة فيديوهات العملاء', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -1283,14 +860,14 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="<?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1 text-secondary">
-                                <?php echo htmlspecialchars($ml['section_main_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                <?php echo htmlspecialchars($ml['section_main_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                             </label>
                             <input type="text" class="form-control" name="reviews[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$curTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                     </div>
 
                     <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">
-                        <?php echo htmlspecialchars($ml['added_videos'], ENT_QUOTES, 'UTF-8'); ?>
+                        <?php echo htmlspecialchars($ml['added_videos'] ?? 'الفيديوهات المضافة', ENT_QUOTES, 'UTF-8'); ?>
                     </h6>
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($curVideos as $index => $item): 
@@ -1299,11 +876,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                             <div class="p-3 shadow-sm review-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="rev_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-11 <?php echo $modal_align; ?>">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['review_video_url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['review_video_url'] ?? 'رابط الفيديو (Embed URL)', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control review-url" name="reviews[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($videoUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://www.youtube.com/embed/...">
                                     </div>
                                     <div class="col-md-1 text-center pt-3">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_video'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('rev_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_video'] ?? 'حذف الفيديو', ENT_QUOTES, 'UTF-8'); ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -1313,13 +890,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addReviewRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_video'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_video'] ?? 'إضافة فيديو جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="reviewsForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="reviewsForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1332,7 +909,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-book text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_guide'], ENT_QUOTES, 'UTF-8'); ?> 
+                    <?php echo htmlspecialchars($ml['manage_guide'] ?? 'إدارة الدليل الشامل', ENT_QUOTES, 'UTF-8'); ?> 
                     (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
@@ -1376,21 +953,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="p-4 shadow-sm mb-4 <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">
-                                <?php echo htmlspecialchars($ml['main_section_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                <?php echo htmlspecialchars($ml['main_section_title'] ?? 'عنوان القسم الرئيسي', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                             </label>
                             <input type="text" class="form-control" name="guide[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalGuideTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         
                         <div class="mb-3">
                             <label class="small fw-bold mb-1 text-secondary">
-                                <?php echo htmlspecialchars($ml['section_desc'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                <?php echo htmlspecialchars($ml['section_desc'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                             </label>
                             <textarea class="form-control" name="guide[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalGuideDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
 
                         <div>
                             <label class="small fw-bold mb-1 text-secondary">
-                                <?php echo htmlspecialchars($ml['read_more'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                <?php echo htmlspecialchars($ml['read_more'] ?? 'نص زر قراءة المزيد', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                             </label>
                             <input type="text" class="form-control" name="guide[<?php echo $current_lang; ?>][read_more_btn]" value="<?php echo htmlspecialchars((string)$modalGuideBtn, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
@@ -1402,21 +979,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm guide-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="guide_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['article_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['article_title'] ?? 'عنوان المقال', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control guide-title" name="guide[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['page_url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['page_url'] ?? 'رابط الصفحة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control guide-url" name="guide[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         
                                         <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['description'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['description'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control guide-desc" name="guide[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
 
                                         <div class="col-md-5 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['image'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['image'] ?? 'الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <div class="d-flex align-items-center gap-2">
                                                 <?php if (!empty($item['img'])): ?>
                                                     <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 42px; height: 42px;">
@@ -1432,7 +1009,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                         </div>
                                         
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_article'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('guide_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_article'] ?? 'حذف المقال', ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -1443,13 +1020,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addGuideRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_article'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_article'] ?? 'إضافة مقال جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="guideForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="guideForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1462,7 +1039,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-question-circle text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_faq'], ENT_QUOTES, 'UTF-8'); ?> 
+                    <?php echo htmlspecialchars($ml['manage_faq'] ?? 'إدارة الأسئلة الشائعة', ENT_QUOTES, 'UTF-8'); ?> 
                     (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
@@ -1503,7 +1080,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     
                     <div class="p-4 shadow-sm mb-4 <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <label class="small fw-bold mb-1 text-secondary">
-                            <?php echo htmlspecialchars($ml['main_section_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                            <?php echo htmlspecialchars($ml['main_section_title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                         </label>
                         <input type="text" class="form-control" name="faq[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars((string)$modalFaqTitle, ENT_QUOTES, 'UTF-8'); ?>">
                     </div>
@@ -1514,15 +1091,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 <div class="p-3 shadow-sm faq-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="faq_row_<?php echo $index; ?>">
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-6 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['faq_question'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['faq_question'] ?? 'السؤال', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control faq-question" name="faq[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][question]" value="<?php echo htmlspecialchars($item['question'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-5 <?php echo $modal_align; ?>">
-                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['faq_answer'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                            <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['faq_answer'] ?? 'الإجابة', ENT_QUOTES, 'UTF-8'); ?></label>
                                             <input type="text" class="form-control faq-answer" name="faq[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][answer]" value="<?php echo htmlspecialchars($item['answer'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                         <div class="col-md-1 text-center pt-3">
-                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_faq'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('faq_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($ml['delete_faq'] ?? 'حذف السؤال', ENT_QUOTES, 'UTF-8'); ?>">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -1533,13 +1110,13 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     </div>
 
                     <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addFaqRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_faq'], ENT_QUOTES, 'UTF-8'); ?>
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_faq'] ?? 'إضافة سؤال جديد', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="faqForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="faqForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1552,7 +1129,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-layout-wtf text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_footer'], ENT_QUOTES, 'UTF-8'); ?> 
+                    <?php echo htmlspecialchars($ml['manage_footer'] ?? 'إدارة الفوتر بالكامل', ENT_QUOTES, 'UTF-8'); ?> 
                     (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
@@ -1595,15 +1172,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                         <div class="col-12">
                             <div class="p-4 shadow-sm <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="text-primary mb-3 fw-bold">
-                                    <i class="bi bi-chat-dots <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['consult_section_title'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                                    <i class="bi bi-chat-dots <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['consult_section_title'] ?? 'إعدادات قسم الاستشارة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                                 </h6>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['consult_title_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['consult_title_label'] ?? 'عنوان الاستشارة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control" name="footer[<?php echo $current_lang; ?>][consult_title]" value="<?php echo htmlspecialchars((string)$modalConsultTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-8">
-                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['consult_desc_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['consult_desc_label'] ?? 'وصف الاستشارة', ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control" name="footer[<?php echo $current_lang; ?>][consult_desc]" value="<?php echo htmlspecialchars((string)$modalConsultDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
@@ -1614,19 +1191,19 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="p-4 shadow-sm h-100 <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_one'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['footer_desc_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_one'] ?? 'العمود الأول', ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['footer_desc_label'] ?? 'وصف الفوتر:', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <textarea class="form-control" name="footer[<?php echo $current_lang; ?>][footer_desc]" rows="6" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars((string)$modalFooterDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="p-4 shadow-sm h-100 <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_two'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['column_two_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_two'] ?? 'العمود الثاني', ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['column_two_title'] ?? 'عنوان العمود', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <input type="text" class="form-control mb-3" name="footer[<?php echo $current_lang; ?>][col2_title]" value="<?php echo htmlspecialchars((string)$modalCol2Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 <div class="p-3 bg-light rounded-3 text-muted small border" style="border-color: #e2e8f0 !important;">
-                                    <i class="bi bi-info-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['menu_auto_notice'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <i class="bi bi-info-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['menu_auto_notice'] ?? 'يتم جلب الروابط تلقائياً من القائمة الرئيسية (Menu).', ENT_QUOTES, 'UTF-8'); ?>
                                 </div>
                             </div>
                         </div>
@@ -1635,9 +1212,9 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <div class="row">
                         <div class="col-12">
                             <div class="p-4 shadow-sm <?php echo $modal_align; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_three'], ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <h6 class="text-primary mb-3 fw-bold"><?php echo htmlspecialchars($ml['column_three'] ?? 'العمود الثالث (التواصل)', ENT_QUOTES, 'UTF-8'); ?></h6>
                                 <div class="mb-3" style="max-width: 400px;">
-                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['column_three_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['column_three_title'] ?? 'عنوان العمود', ENT_QUOTES, 'UTF-8'); ?></label>
                                     <input type="text" class="form-control" name="footer[<?php echo $current_lang; ?>][col3_title]" value="<?php echo htmlspecialchars((string)$modalCol3Title, ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 
@@ -1650,17 +1227,17 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                             <div class="row g-3 align-items-center">
                                                 
                                                 <div class="col-md-4 <?php echo $modal_align; ?>">
-                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_name'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['contact_name_placeholder'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_name'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][title]" class="form-control form-control-sm bg-white footer-col3-title-input" value="<?php echo htmlspecialchars(safe_admin_string($link['title'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['contact_name_placeholder'] ?? 'اسم الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
                                                 </div>
 
                                                 <div class="col-md-4 <?php echo $modal_align; ?>">
-                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_url'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['url'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?></label>
+                                                    <input type="text" name="col3[<?php echo $i; ?>][url]" class="form-control form-control-sm bg-white footer-col3-url-input" value="<?php echo htmlspecialchars(safe_admin_string($link['url'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($ml['url'] ?? 'الرابط', ENT_QUOTES, 'UTF-8'); ?>">
                                                 </div>
 
                                                 <div class="col-md-3 <?php echo $modal_align; ?>">
-                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_icon_image'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                                    <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($ml['contact_icon_image'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
                                                     <div class="d-flex align-items-center gap-2">
                                                         <?php if (!empty($link['img'])): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
@@ -1675,7 +1252,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                                 </div>
 
                                                 <div class="col-md-1 text-center pt-3">
-                                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" title="<?php echo htmlspecialchars($ml['delete_contact'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('col3_<?php echo $i; ?>')" title="<?php echo htmlspecialchars($ml['delete_contact'] ?? 'حذف الوسيلة', ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -1686,7 +1263,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                                 </div>
 
                                 <button type="button" class="btn w-100 mt-3 py-2" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addCol3Link()">
-                                    <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_contact'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($ml['add_new_contact'] ?? 'إضافة وسيلة تواصل', ENT_QUOTES, 'UTF-8'); ?>
                                 </button>
                             </div>
                         </div>
@@ -1694,8 +1271,8 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="footerForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'], ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'], ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="footerForm" class="btn-premium"><?php echo htmlspecialchars($ml['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($ml['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -1705,6 +1282,21 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     const ML = <?php echo json_encode($ml, JSON_UNESCAPED_UNICODE); ?>;
     const CURRENT_MODAL_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;
     const MODAL_ALIGN = <?php echo json_encode($modal_align, JSON_UNESCAPED_UNICODE); ?>;
+
+    // 0. دالة التبديل الفوري بين محرر النص ومحرر الصورة في مودال الإعلانات
+    function toggleAdContent(type) {
+        const textEditor = document.getElementById('textEditor');
+        const imageEditor = document.getElementById('imageEditor');
+        if (!textEditor || !imageEditor) return;
+
+        if (type === 'image') {
+            textEditor.classList.add('d-none');
+            imageEditor.classList.remove('d-none');
+        } else {
+            imageEditor.classList.add('d-none');
+            textEditor.classList.remove('d-none');
+        }
+    }
 
     // 1. دالة عامة لحذف أي صف بناءً على الـ ID أو العنصر
     function removeRow(target) {
@@ -1724,16 +1316,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
         let bgClass = 'alert-success';
         let icon = 'bi-check-circle-fill';
-        let title = ML.notif_success_title;
+        let title = ML.notif_success_title || 'تم بنجاح!';
 
         if (type === 'danger') {
             bgClass = 'alert-danger';
             icon = 'bi-x-circle-fill';
-            title = ML.notif_error_title;
+            title = ML.notif_error_title || 'عذراً، حدث خطأ!';
         } else if (type === 'warning') {
             bgClass = 'alert-warning';
             icon = 'bi-exclamation-triangle-fill';
-            title = ML.notif_warning_title;
+            title = ML.notif_warning_title || 'تنبيه هام';
         }
 
         const alertDiv = document.createElement('div');
@@ -1775,22 +1367,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_name}</label>
-                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${ML.name_placeholder}">
+                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_name || 'اسم المنصة'}</label>
+                    <input type="text" class="form-control social-name" name="social[${count}][name]" placeholder="${ML.name_placeholder || 'الاسم'}">
                 </div>
                 <div class="col-md-8 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_url}</label>
-                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${ML.url_placeholder}">
+                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_url || 'رابط المنصة'}</label>
+                    <input type="url" class="form-control social-url" name="social[${count}][url]" placeholder="${ML.url_placeholder || 'https://...'}">
                 </div>
                 <div class="col-md-11 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_icon_image}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.platform_icon_image || 'أيقونة / صورة المنصة'}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control social-file" name="social_img_${count}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="social-old-img" name="social[${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_platform}"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_platform || 'حذف المنصة'}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1809,16 +1401,16 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.link_title}</label>
-                    <input type="text" class="form-control" name="menu[${count}][title]" placeholder="${ML.title}">
+                    <label class="small fw-bold mb-1 text-secondary">${ML.link_title || 'عنوان الرابط'}</label>
+                    <input type="text" class="form-control" name="menu[${count}][title]" placeholder="${ML.title || 'العنوان'}">
                 </div>
                 <div class="col-md-5 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.url}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.url || 'الرابط (URL)'}</label>
                     <input type="text" class="form-control" name="menu[${count}][url]" placeholder="home">
                 </div>
                 <div class="col-md-1 text-center pt-3">
                     <input type="hidden" name="menu[${count}][order]" value="${count}">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete}"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete || 'حذف'}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1837,22 +1429,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.lang_code}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.lang_code || 'رمز اللغة (Code)'}</label>
                     <input type="text" class="form-control lang-code" name="lang[${count}][code]" placeholder="fr">
                 </div>
                 <div class="col-md-5 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.lang_name}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.lang_name || 'اسم اللغة'}</label>
                     <input type="text" class="form-control lang-name" name="lang[${count}][name]" placeholder="Français">
                 </div>
                 <div class="col-md-2 text-center pt-3">
-                    <label class="small fw-bold mb-1 text-secondary d-block">${ML.status}</label>
+                    <label class="small fw-bold mb-1 text-secondary d-block">${ML.status || 'الحالة'}</label>
                     <input type="hidden" name="lang[${count}][active]" value="0">
                     <div class="form-check form-switch d-inline-block">
                         <input class="form-check-input lang-active" type="checkbox" name="lang[${count}][active]" value="1" checked>
                     </div>
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_lang}"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_lang || 'حذف اللغة'}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1871,22 +1463,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.service_title}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.service_title || 'عنوان الخدمة'}</label>
                     <input type="text" class="form-control service-title" name="services[${CURRENT_MODAL_LANG}][items][${count}][title]">
                 </div>
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.service_url}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.service_url || 'رابط الخدمة'}</label>
                     <input type="text" class="form-control service-url" name="services[${CURRENT_MODAL_LANG}][items][${count}][url]" value="#">
                 </div>
                 <div class="col-md-11 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.image_or_icon}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.image_or_icon || 'الصورة / الأيقونة'}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control service-file" name="service_img_${count}" accept="image/*">
                     </div>
                 </div>
                 <input type="hidden" class="service-old-img" name="services[${CURRENT_MODAL_LANG}][items][${count}][old_img]" value="">
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_service}"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_service || 'حذف الخدمة'}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -1905,26 +1497,26 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.item_title}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.item_title || 'عنوان العنصر'}</label>
                     <input type="text" class="form-control choose-title" name="choose[${CURRENT_MODAL_LANG}][items][${count}][title]">
                 </div>
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.url}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.url || 'الرابط'}</label>
                     <input type="text" class="form-control choose-url" name="choose[${CURRENT_MODAL_LANG}][items][${count}][url]" value="#">
                 </div>
                 <div class="col-12 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.description}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.description || 'الوصف'}</label>
                     <input type="text" class="form-control choose-desc" name="choose[${CURRENT_MODAL_LANG}][items][${count}][desc]">
                 </div>
                 <div class="col-md-11 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.icon_or_image}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.icon_or_image || 'الأيقونة / الصورة'}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control choose-file w-100" name="choose_img_${count}" accept="image/*">
                     </div>
                     <input type="hidden" class="choose-old-img" name="choose[${CURRENT_MODAL_LANG}][items][${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_item}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_item || 'حذف العنصر'}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1945,11 +1537,11 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-11 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.review_video_url}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.review_video_url || 'رابط الفيديو (Embed URL)'}</label>
                     <input type="text" class="form-control review-url" name="reviews[${CURRENT_MODAL_LANG}][items][${count}][url]" placeholder="https://www.youtube.com/embed/...">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_video}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_video || 'حذف الفيديو'}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -1970,26 +1562,26 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.article_title}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.article_title || 'عنوان المقال'}</label>
                     <input type="text" class="form-control guide-title" name="guide[${CURRENT_MODAL_LANG}][items][${count}][title]">
                 </div>
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.page_url}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.page_url || 'رابط الصفحة'}</label>
                     <input type="text" class="form-control guide-url" name="guide[${CURRENT_MODAL_LANG}][items][${count}][url]">
                 </div>
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.description}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.description || 'الوصف'}</label>
                     <input type="text" class="form-control guide-desc" name="guide[${CURRENT_MODAL_LANG}][items][${count}][desc]">
                 </div>
                 <div class="col-md-5 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.image}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.image || 'الصورة'}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" class="form-control guide-file w-100" name="guide_img_${count}" accept="image/*">
                     </div>
                     <input type="hidden" class="guide-old-img" name="guide[${CURRENT_MODAL_LANG}][items][${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_article}"><i class="bi bi-trash"></i></button>
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_article || 'حذف المقال'}"><i class="bi bi-trash"></i></button>
                 </div>
             </div>
         `;
@@ -2008,15 +1600,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-6 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.faq_question}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.faq_question || 'السؤال'}</label>
                     <input type="text" class="form-control faq-question" name="faq[${CURRENT_MODAL_LANG}][items][${count}][question]">
                 </div>
                 <div class="col-md-5 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.faq_answer}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.faq_answer || 'الإجابة'}</label>
                     <input type="text" class="form-control faq-answer" name="faq[${CURRENT_MODAL_LANG}][items][${count}][answer]">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_faq}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ML.delete_faq || 'حذف السؤال'}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -2037,22 +1629,22 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         div.innerHTML = `
             <div class="row g-3 align-items-center">
                 <div class="col-md-4 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_name}</label>
-                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="${ML.contact_name_placeholder}">
+                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_name || 'اسم الوسيلة'}</label>
+                    <input type="text" name="col3[${count}][title]" class="form-control form-control-sm bg-white footer-col3-title-input" placeholder="${ML.contact_name_placeholder || 'اسم الوسيلة'}">
                 </div>
                 <div class="col-md-4 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_url}</label>
-                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="${ML.url}">
+                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_url || 'الرابط'}</label>
+                    <input type="text" name="col3[${count}][url]" class="form-control form-control-sm bg-white footer-col3-url-input" placeholder="${ML.url || 'الرابط'}">
                 </div>
                 <div class="col-md-3 ${MODAL_ALIGN}">
-                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_icon_image}</label>
+                    <label class="small fw-bold mb-1 text-secondary">${ML.contact_icon_image || 'الأيقونة / الصورة'}</label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="file" name="col3_img_${count}" class="form-control form-control-sm bg-white footer-col3-file" accept="image/*">
                     </div>
                     <input type="hidden" class="footer-col3-old-img" name="col3[${count}][old_img]" value="">
                 </div>
                 <div class="col-md-1 text-center pt-3">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" style="border-radius: 8px;" title="${ML.delete_contact}">
+                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" style="border-radius: 8px;" title="${ML.delete_contact || 'حذف الوسيلة'}">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -2063,6 +1655,12 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
     // 12. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
     document.addEventListener('DOMContentLoaded', function() {
+        // مزامنة حالة محرر الإعلان (نص / صورة) عند تحميل الصفحة
+        const adTypeSelect = document.getElementById('adTypeSelect');
+        if (adTypeSelect) {
+            toggleAdContent(adTypeSelect.value);
+        }
+
         document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -2198,18 +1796,18 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     try {
                         const data = JSON.parse(text);
                         if (data.success || data.status === 'success') {
-                            showNotification(ML.notif_saved_reloading, 'success');
+                            showNotification(ML.notif_saved_reloading || 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
                             setTimeout(() => location.reload(), 1000);
                         } else {
-                            showNotification(ML.notif_save_failed + (data.message || ML.notif_check_inputs), 'danger');
+                            showNotification((ML.notif_save_failed || 'عذراً، لم يتم الحفظ: ') + (data.message || ML.notif_check_inputs || 'يرجى التأكد من البيانات المدخلة'), 'danger');
                         }
                     } catch (e) {
-                        showNotification(ML.notif_server_error + text, 'danger');
+                        showNotification((ML.notif_server_error || 'خطأ من السيرفر: ') + text, 'danger');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
-                    showNotification(ML.notif_network_error, 'danger');
+                    showNotification(ML.notif_network_error || 'حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
                 });
             });
         });

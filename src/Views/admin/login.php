@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Multilingual Admin Login View (DE / EN / AR)
- * متوافقة تماماً مع معايير الأمان الألمانية وتدعم تبديل اللغات الفوري
+ * تصميم زجاجي عائم لاختيار اللغة مع التوافق الكامل مع معايير الأمان الألمانية
  */
 
 $supportedLangs = ['de', 'en', 'ar'];
@@ -21,51 +21,58 @@ if (!in_array($currentLang, $supportedLangs, true)) {
 $isRtl = ($currentLang === 'ar');
 $dir   = $isRtl ? 'rtl' : 'ltr';
 
+// الرمز المختصر الذي يظهر داخل المربع الزجاجي
+$langBadges = [
+    'de' => 'DE',
+    'en' => 'EN',
+    'ar' => 'ع'
+];
+
 $translations = [
     'de' => [
-        'page_title'       => 'Admin-Anmeldung - Beethoven City Services',
-        'back_home'        => 'Zurück zur Hauptseite',
-        'heading'          => 'Admin-Anmeldung',
-        'subheading'       => 'Willkommen zurück! Bitte geben Sie Ihre Zugangsdaten ein.',
-        'email_label'      => 'E-Mail-Adresse',
-        'email_placeholder'=> 'name@beethoven-services.de',
-        'pass_label'       => 'Passwort',
-        'captcha_label'    => 'Sicherheitsüberprüfung',
-        'captcha_ph'       => 'Ergebnis',
-        'submit_btn'       => 'Anmelden',
-        'verifying'        => 'Wird überprüft...',
-        'network_error'    => 'Verbindungsfehler zum Server. Bitte versuchen Sie es später erneut.',
-        'lang_label'       => 'Sprache'
+        'page_title'        => 'Admin-Anmeldung - Beethoven City Services',
+        'back_home'         => 'Zurück zur Hauptseite',
+        'heading'           => 'Admin-Anmeldung',
+        'subheading'        => 'Willkommen zurück! Bitte geben Sie Ihre Zugangsdaten ein.',
+        'email_label'       => 'E-Mail-Adresse',
+        'email_placeholder' => 'name@beethoven-services.de',
+        'pass_label'        => 'Passwort',
+        'captcha_label'     => 'Sicherheitsüberprüfung',
+        'captcha_ph'        => 'Ergebnis',
+        'submit_btn'        => 'Anmelden',
+        'verifying'         => 'Wird überprüft...',
+        'network_error'     => 'Verbindungsfehler zum Server. Bitte versuchen Sie es später erneut.',
+        'lang_label'        => 'Sprache wählen'
     ],
     'en' => [
-        'page_title'       => 'Admin Login - Beethoven City Services',
-        'back_home'        => 'Back to Main Website',
-        'heading'          => 'Admin Login',
-        'subheading'       => 'Welcome back, please enter your credentials to continue.',
-        'email_label'      => 'Email Address',
-        'email_placeholder'=> 'name@beethoven-services.de',
-        'pass_label'       => 'Password',
-        'captcha_label'    => 'Security Verification',
-        'captcha_ph'       => 'Result',
-        'submit_btn'       => 'Sign In',
-        'verifying'        => 'Verifying...',
-        'network_error'    => 'Server connection error, please try again later.',
-        'lang_label'       => 'Language'
+        'page_title'        => 'Admin Login - Beethoven City Services',
+        'back_home'         => 'Back to Main Website',
+        'heading'           => 'Admin Login',
+        'subheading'        => 'Welcome back, please enter your credentials to continue.',
+        'email_label'       => 'Email Address',
+        'email_placeholder' => 'name@beethoven-services.de',
+        'pass_label'        => 'Password',
+        'captcha_label'     => 'Security Verification',
+        'captcha_ph'        => 'Result',
+        'submit_btn'        => 'Sign In',
+        'verifying'         => 'Verifying...',
+        'network_error'     => 'Server connection error, please try again later.',
+        'lang_label'        => 'Select Language'
     ],
     'ar' => [
-        'page_title'       => 'تسجيل دخول المشرفين - Beethoven City Services',
-        'back_home'        => 'العودة للموقع الرئيسي',
-        'heading'          => 'تسجيل دخول المشرف',
-        'subheading'       => 'أهلاً بك مجدداً، يرجى إدخال بياناتك للمتابعة',
-        'email_label'      => 'البريد الإلكتروني',
-        'email_placeholder'=> 'name@beethoven-services.de',
-        'pass_label'       => 'كلمة المرور',
-        'captcha_label'    => 'التحقق الأمني',
-        'captcha_ph'       => 'الناتج',
-        'submit_btn'       => 'دخول اللوحة',
-        'verifying'        => 'جاري التحقق...',
-        'network_error'    => 'حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.',
-        'lang_label'       => 'اللغة'
+        'page_title'        => 'تسجيل دخول المشرفين - Beethoven City Services',
+        'back_home'         => 'العودة للموقع الرئيسي',
+        'heading'           => 'تسجيل دخول المشرف',
+        'subheading'        => 'أهلاً بك مجدداً، يرجى إدخال بياناتك للمتابعة',
+        'email_label'       => 'البريد الإلكتروني',
+        'email_placeholder' => 'name@beethoven-services.de',
+        'pass_label'        => 'كلمة المرور',
+        'captcha_label'     => 'التحقق الأمني',
+        'captcha_ph'        => 'الناتج',
+        'submit_btn'        => 'دخول اللوحة',
+        'verifying'         => 'جاري التحقق...',
+        'network_error'     => 'حدث خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً.',
+        'lang_label'        => 'اختر اللغة'
     ]
 ];
 
@@ -100,8 +107,117 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
             justify-content: center;
             margin: 0;
             padding: 20px;
+            position: relative;
         }
 
+        /* زر اللغة الزجاجي العائم على الخلفية */
+        .floating-lang-wrapper {
+            position: fixed;
+            top: 24px;
+            <?php echo $isRtl ? 'left: 24px;' : 'right: 24px;'; ?>
+            z-index: 1050;
+        }
+
+        .lang-glass-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+
+        .floating-lang-wrapper:hover .lang-glass-box,
+        .lang-glass-box:focus {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+        }
+
+        .lang-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            <?php echo $isRtl ? 'left: 0;' : 'right: 0;'; ?>
+            min-width: 155px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 6px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* جسر غير مرئي لمنع اختفاء القائمة أثناء تحريك الماوس بين المربع والقائمة */
+        .floating-lang-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 46px;
+            left: 0;
+            right: 0;
+            height: 12px;
+        }
+
+        .floating-lang-wrapper:hover .lang-dropdown-menu,
+        .floating-lang-wrapper:focus-within .lang-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 12px;
+            border-radius: 10px;
+            color: #1e293b;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: background 0.18s ease, color 0.18s ease;
+        }
+
+        .lang-option:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .lang-option.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .lang-option .code-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            opacity: 0.75;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .lang-option.active .code-tag {
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 1;
+        }
+
+        /* بطاقة تسجيل الدخول */
         .login-card-wrapper {
             width: 100%;
             max-width: 480px;
@@ -110,16 +226,8 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
-            padding: 36px 40px;
+            padding: 40px;
             position: relative;
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            gap: 10px;
         }
 
         .back-home-btn {
@@ -128,42 +236,14 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
             gap: 8px;
             color: #64748b;
             text-decoration: none;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             font-weight: 600;
+            margin-bottom: 24px;
             transition: color 0.2s ease;
         }
 
         .back-home-btn:hover {
             color: #2563eb;
-        }
-
-        .lang-switcher {
-            display: inline-flex;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            gap: 2px;
-        }
-
-        .lang-btn {
-            padding: 4px 10px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            border-radius: 7px;
-            text-decoration: none;
-            color: #64748b;
-            transition: all 0.2s ease;
-        }
-
-        .lang-btn:hover {
-            color: #1e293b;
-        }
-
-        .lang-btn.active {
-            background: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
         }
 
         .form-control {
@@ -211,20 +291,33 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
 </head>
 <body>
 
-<div class="login-card-wrapper">
-    <!-- الشريط العلوي: العودة للموقع + زر تبديل اللغة -->
-    <div class="top-bar">
-        <a href="/<?php echo htmlspecialchars($currentLang, ENT_QUOTES, 'UTF-8'); ?>/home" class="back-home-btn">
-            <i class="fa-solid <?php echo $isRtl ? 'fa-arrow-right' : 'fa-arrow-left'; ?>"></i>
-            <span><?php echo htmlspecialchars($t['back_home'], ENT_QUOTES, 'UTF-8'); ?></span>
-        </a>
-
-        <div class="lang-switcher" role="group" aria-label="<?php echo htmlspecialchars($t['lang_label'], ENT_QUOTES, 'UTF-8'); ?>">
-            <a href="/admin/login?lang=de" class="lang-btn <?php echo $currentLang === 'de' ? 'active' : ''; ?>">DE</a>
-            <a href="/admin/login?lang=en" class="lang-btn <?php echo $currentLang === 'en' ? 'active' : ''; ?>">EN</a>
-            <a href="/admin/login?lang=ar" class="lang-btn <?php echo $currentLang === 'ar' ? 'active' : ''; ?>">AR</a>
-        </div>
+<!-- مربع اللغة الزجاجي العائم في زاوية الخلفية -->
+<div class="floating-lang-wrapper">
+    <div class="lang-glass-box" tabindex="0" role="button" aria-label="<?php echo htmlspecialchars($t['lang_label'], ENT_QUOTES, 'UTF-8'); ?>">
+        <?php echo htmlspecialchars($langBadges[$currentLang], ENT_QUOTES, 'UTF-8'); ?>
     </div>
+    <div class="lang-dropdown-menu">
+        <a href="/admin/login?lang=de" class="lang-option <?php echo $currentLang === 'de' ? 'active' : ''; ?>">
+            <span>Deutsch</span>
+            <span class="code-tag">DE</span>
+        </a>
+        <a href="/admin/login?lang=en" class="lang-option <?php echo $currentLang === 'en' ? 'active' : ''; ?>">
+            <span>English</span>
+            <span class="code-tag">EN</span>
+        </a>
+        <a href="/admin/login?lang=ar" class="lang-option <?php echo $currentLang === 'ar' ? 'active' : ''; ?>">
+            <span>العربية</span>
+            <span class="code-tag">AR</span>
+        </a>
+    </div>
+</div>
+
+<!-- بطاقة تسجيل الدخول -->
+<div class="login-card-wrapper">
+    <a href="/<?php echo htmlspecialchars($currentLang, ENT_QUOTES, 'UTF-8'); ?>/home" class="back-home-btn">
+        <i class="fa-solid <?php echo $isRtl ? 'fa-arrow-right' : 'fa-arrow-left'; ?>"></i>
+        <span><?php echo htmlspecialchars($t['back_home'], ENT_QUOTES, 'UTF-8'); ?></span>
+    </a>
 
     <h3 class="fw-bold mb-1"><?php echo htmlspecialchars($t['heading'], ENT_QUOTES, 'UTF-8'); ?></h3>
     <p class="text-muted mb-4 small"><?php echo htmlspecialchars($t['subheading'], ENT_QUOTES, 'UTF-8'); ?></p>

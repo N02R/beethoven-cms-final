@@ -167,7 +167,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
         <div class="contact-info-icon">
           <img src="<?php echo htmlspecialchars(get_image_url($email_icon, '/assets/img/Mail.svg'), ENT_QUOTES, 'UTF-8'); ?>" alt="Mail" />
         </div>
-        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/contact us/Line 16.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" />
+        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/Line.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" />
         <a href="mailto:<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" style="color: inherit; text-decoration: none !important;">
           <?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>
         </a>

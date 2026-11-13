@@ -8,7 +8,7 @@ class ContactModel
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 
     /**
-     * جلب وتجهيز بيانات صفحة "تواصل معنا" والأقسام التابعة لها مترجمة ومجهزة بالكامل وفق المعيار الهندسي المعتمد
+     * جلب وتجهيز بيانات صفحة "تواصل معنا" مع دعم مصفوفة بطاقات التواصل الديناميكية والتوافق مع البيانات القديمة
      */
     public static function getContactData(?string $lang = null): array
     {
@@ -36,7 +36,6 @@ class ContactModel
 
         $settings = SiteModel::getSettings();
 
-        // دالة موحدة لاستخراج القسم باللغة المطلوبة من الكاش المركزي مع تراجع آمن (de -> en -> ar)
         $getLangData = static function (string $key, array $default = []) use ($settings, $activeLang): array {
             if (!isset($settings[$key])) {
                 return $default;
@@ -72,17 +71,14 @@ class ContactModel
             'img' => $contact_hero_img,
         ];
 
-        // 2. معلومات التواصل والأيقونات (Contact Info)
+        // 2. معلومات التواصل الديناميكية (Contact Info Items)
         $contact_info_raw = $getLangData('contact_info', []);
+        $contact_items = self::normalizeContactItems($contact_info_raw);
+
         $contact_info = [
-            'title'        => (string)($contact_info_raw['title'] ?? $fallbackLabels['info_title']),
-            'desc'         => (string)($contact_info_raw['desc'] ?? ''),
-            'address'      => (string)($contact_info_raw['address'] ?? 'Rheinweg 140, 53129 Bonn, Germany'),
-            'email'        => (string)($contact_info_raw['email'] ?? 'info@beethoven-services.de'),
-            'phone'        => (string)($contact_info_raw['phone'] ?? '+49 123 456789'),
-            'address_icon' => (string)($contact_info_raw['address_icon'] ?? 'assets/img/Location.svg'),
-            'email_icon'   => (string)($contact_info_raw['email_icon'] ?? 'assets/img/Mail.svg'),
-            'phone_icon'   => (string)($contact_info_raw['phone_icon'] ?? 'assets/img/Call.svg'),
+            'title' => (string)($contact_info_raw['title'] ?? $fallbackLabels['info_title']),
+            'desc'  => (string)($contact_info_raw['desc'] ?? ''),
+            'items' => $contact_items,
         ];
 
         // 3. قسم الواتساب (WhatsApp Section)
@@ -94,21 +90,105 @@ class ContactModel
         ];
 
         return [
-            'contact_hero'         => $contact_hero,
-            'contact_hero_img'     => $contact_hero['img'],
-            'contact_info'         => $contact_info,
-            'contact_info_title'   => $contact_info['title'],
-            'contact_info_desc'    => $contact_info['desc'],
-            'contact_address'      => $contact_info['address'],
-            'contact_address_icon' => $contact_info['address_icon'],
-            'contact_email'        => $contact_info['email'],
-            'contact_email_icon'   => $contact_info['email_icon'],
-            'contact_phone'        => $contact_info['phone'],
-            'contact_phone_icon'   => $contact_info['phone_icon'],
-            'whatsapp_section'     => $whatsapp_section,
-            'whatsapp_text'        => $whatsapp_section['text'],
-            'whatsapp_url'         => $whatsapp_section['url'],
-            'whatsapp_btn_txt'     => $whatsapp_section['btn_text'],
+            'contact_hero'       => $contact_hero,
+            'contact_hero_img'   => $contact_hero['img'],
+            'contact_info'       => $contact_info,
+            'contact_info_title' => $contact_info['title'],
+            'contact_info_desc'  => $contact_info['desc'],
+            'contact_info_items' => $contact_info['items'],
+            'whatsapp_section'   => $whatsapp_section,
+            'whatsapp_text'      => $whatsapp_section['text'],
+            'whatsapp_url'       => $whatsapp_section['url'],
+            'whatsapp_btn_txt'   => $whatsapp_section['btn_text'],
+        ];
+    }
+
+    /**
+     * توحيد عناصر التواصل سواء كانت مخزنة كمصفوفة items حديثة أو حقول قديمة (address/email/phone)
+     */
+    public static function normalizeContactItems(array $rawInfo): array
+    {
+        if (isset($rawInfo['items']) && is_array($rawInfo['items'])) {
+            $normalized = [];
+            foreach ($rawInfo['items'] as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+                $text = trim((string)($item['text'] ?? ($item['value'] ?? '')));
+                $url  = trim((string)($item['url'] ?? ''));
+                $icon = trim((string)($item['icon'] ?? ($item['img'] ?? 'assets/img/Location.svg')));
+                $isLtr = !empty($item['is_ltr']) && ($item['is_ltr'] === true || $item['is_ltr'] === '1' || $item['is_ltr'] === 1);
+
+                $normalized[] = [
+                    'text'   => $text,
+                    'url'    => $url,
+                    'icon'   => $icon !== '' ? $icon : 'assets/img/Location.svg',
+                    'is_ltr' => $isLtr,
+                ];
+            }
+            return $normalized;
+        }
+
+        // ترحيل تلقائي من الصيغة القديمة (address / email / phone) إن وُجدت
+        $legacyItems = [];
+
+        $addr = trim((string)($rawInfo['address'] ?? ''));
+        if ($addr !== '' || !empty($rawInfo['address_icon'])) {
+            $legacyItems[] = [
+                'text'   => $addr !== '' ? $addr : 'Rheinweg 140, 53129 Bonn, Germany',
+                'url'    => '',
+                'icon'   => (string)($rawInfo['address_icon'] ?? 'assets/img/Location.svg'),
+                'is_ltr' => false,
+            ];
+        }
+
+        $email = trim((string)($rawInfo['email'] ?? ''));
+        if ($email !== '' || !empty($rawInfo['email_icon'])) {
+            $cleanEmail = $email !== '' ? $email : 'info@beethoven-services.de';
+            $legacyItems[] = [
+                'text'   => $cleanEmail,
+                'url'    => 'mailto:' . $cleanEmail,
+                'icon'   => (string)($rawInfo['email_icon'] ?? 'assets/img/Mail.svg'),
+                'is_ltr' => true,
+            ];
+        }
+
+        $phone = trim((string)($rawInfo['phone'] ?? ''));
+        if ($phone !== '' || !empty($rawInfo['phone_icon'])) {
+            $cleanPhone = $phone !== '' ? $phone : '+49 123 456789';
+            $telDigits  = preg_replace('/[^0-9+]/', '', $cleanPhone) ?? '';
+            $legacyItems[] = [
+                'text'   => $cleanPhone,
+                'url'    => $telDigits !== '' ? ('tel:' . $telDigits) : '',
+                'icon'   => (string)($rawInfo['phone_icon'] ?? 'assets/img/Call.svg'),
+                'is_ltr' => true,
+            ];
+        }
+
+        if (!empty($legacyItems)) {
+            return $legacyItems;
+        }
+
+        // قيم افتراضية نظيفة في حال كانت قاعدة البيانات فارغة تماماً
+        return [
+            [
+                'text'   => 'Rheinweg 140, 53129 Bonn, Germany',
+                'url'    => '',
+                'icon'   => 'assets/img/Location.svg',
+                'is_ltr' => false,
+            ],
+            [
+                'text'   => 'info@beethoven-services.de',
+                'url'    => 'mailto:info@beethoven-services.de',
+                'icon'   => 'assets/img/Mail.svg',
+                'is_ltr' => true,
+            ],
+            [
+                'text'   => '+49 123 456789',
+                'url'    => 'tel:+49123456789',
+                'icon'   => 'assets/img/Call.svg',
+                'is_ltr' => true,
+            ],
         ];
     }
 }

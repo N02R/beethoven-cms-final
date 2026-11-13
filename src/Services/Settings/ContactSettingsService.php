@@ -37,7 +37,7 @@ class ContactSettingsService
         $this->filesToDelete = [];
         $targetLang = $this->resolveTargetLang(['targetLang', 'contact_lang', 'lang']);
 
-        // 1. تحديث هيرو صفحة تواصل معنا (Contact Hero) متعدد اللغات
+        // 1. تحديث هيرو صفحة تواصل معنا (Contact Hero)
         if ($action === 'update_contact_hero') {
             $allLangs = $this->fetchSetting($pdo, 'contact_hero', $currentSettings);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
@@ -58,71 +58,68 @@ class ContactSettingsService
             $this->saveSetting($pdo, 'contact_hero', $allLangs);
         }
 
-        // 2. تحديث معلومات وأيقونات التواصل (Contact Info & Icons) متعدد اللغات
+        // 2. تحديث بطاقات معلومات التواصل الديناميكية (Contact Info Items)
         elseif ($action === 'update_contact_info') {
             $allLangs = $this->fetchSetting($pdo, 'contact_info', $currentSettings);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
                 ? $allLangs[$targetLang]
                 : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
+            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+
             $postedInfo = is_array($_POST['contact_info'][$targetLang] ?? null)
                 ? $_POST['contact_info'][$targetLang]
                 : (is_array($_POST['contact_info'] ?? null) ? $_POST['contact_info'] : $_POST);
 
-            $title = trim((string)($postedInfo['title'] ?? ($postedInfo['contact_info_title'] ?? ($currentLangData['title'] ?? ''))));
-            $desc  = trim((string)($postedInfo['desc'] ?? ($postedInfo['contact_info_desc'] ?? ($currentLangData['desc'] ?? ''))));
-            $addr  = trim((string)($postedInfo['address'] ?? ($postedInfo['contact_address'] ?? ($currentLangData['address'] ?? ''))));
-            $email = trim((string)($postedInfo['email'] ?? ($postedInfo['contact_email'] ?? ($currentLangData['email'] ?? ''))));
-            $phone = trim((string)($postedInfo['phone'] ?? ($postedInfo['contact_phone'] ?? ($currentLangData['phone'] ?? ''))));
+            $title = trim((string)($postedInfo['title'] ?? ($currentLangData['title'] ?? '')));
+            $desc  = trim((string)($postedInfo['desc'] ?? ($currentLangData['desc'] ?? '')));
 
-            // معالجة أيقونة العنوان (Address Icon)
-            $dbOldAddrIcon = (string)($currentLangData['address_icon'] ?? 'assets/img/Location.svg');
-            $addrIcon = $this->handleImageField(
-                'contact_address_icon',
-                (string)($postedInfo['old_address_icon'] ?? $dbOldAddrIcon),
-                $dbOldAddrIcon
-            );
-            if ($addrIcon === '') {
-                $addrIcon = 'assets/img/Location.svg';
+            $rawItems   = $postedInfo['items'] ?? [];
+            $finalItems = [];
+
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $index => $item) {
+                    if (!is_array($item)) {
+                        continue;
+                    }
+
+                    $dbOldIcon = (string)($existingItems[$index]['icon'] ?? '');
+                    $oldIcon   = (string)($item['icon'] ?? ($item['old_icon'] ?? $dbOldIcon));
+                    $icon      = $this->handleImageField('contact_item_icon_' . $index, $oldIcon, $dbOldIcon);
+                    if ($icon === '') {
+                        $icon = 'assets/img/Location.svg';
+                    }
+
+                    $text  = trim((string)($item['text'] ?? ''));
+                    $url   = $this->sanitizeContactUrl((string)($item['url'] ?? ''));
+                    $isLtrVal = $item['is_ltr'] ?? false;
+                    $isLtr = ($isLtrVal === true || $isLtrVal === '1' || $isLtrVal === 1 || $isLtrVal === 'on');
+
+                    if ($text === '' && $url === '') {
+                        continue;
+                    }
+
+                    $finalItems[] = [
+                        'text'   => $text,
+                        'url'    => $url,
+                        'icon'   => $icon,
+                        'is_ltr' => $isLtr,
+                    ];
+                }
             }
 
-            // معالجة أيقونة البريد الإلكتروني (Email Icon)
-            $dbOldEmailIcon = (string)($currentLangData['email_icon'] ?? 'assets/img/Mail.svg');
-            $emailIcon = $this->handleImageField(
-                'contact_email_icon',
-                (string)($postedInfo['old_email_icon'] ?? $dbOldEmailIcon),
-                $dbOldEmailIcon
-            );
-            if ($emailIcon === '') {
-                $emailIcon = 'assets/img/Mail.svg';
-            }
-
-            // معالجة أيقونة الهاتف (Phone Icon)
-            $dbOldPhoneIcon = (string)($currentLangData['phone_icon'] ?? 'assets/img/Call.svg');
-            $phoneIcon = $this->handleImageField(
-                'contact_phone_icon',
-                (string)($postedInfo['old_phone_icon'] ?? $dbOldPhoneIcon),
-                $dbOldPhoneIcon
-            );
-            if ($phoneIcon === '') {
-                $phoneIcon = 'assets/img/Call.svg';
-            }
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'icon');
 
             $allLangs[$targetLang] = [
-                'title'        => $title,
-                'desc'         => $desc,
-                'address'      => $addr,
-                'email'        => $email,
-                'phone'        => $phone,
-                'address_icon' => $addrIcon,
-                'email_icon'   => $emailIcon,
-                'phone_icon'   => $phoneIcon,
+                'title' => $title,
+                'desc'  => $desc,
+                'items' => $finalItems,
             ];
 
             $this->saveSetting($pdo, 'contact_info', $allLangs);
         }
 
-        // 3. تحديث قسم الواتساب والتواصل المباشر (WhatsApp Section) متعدد اللغات
+        // 3. تحديث قسم الواتساب والتواصل المباشر (WhatsApp Section)
         elseif ($action === 'update_whatsapp_section') {
             $allLangs = $this->fetchSetting($pdo, 'whatsapp_section', $currentSettings);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
@@ -133,23 +130,42 @@ class ContactSettingsService
                 ? $_POST['whatsapp_section'][$targetLang]
                 : (is_array($_POST['whatsapp_section'] ?? null) ? $_POST['whatsapp_section'] : $_POST);
 
-            $waText   = trim((string)($postedWa['text'] ?? ($postedWa['whatsapp_text'] ?? ($currentLangData['text'] ?? ''))));
-            $waUrl    = $this->sanitizeLinkUrl((string)($postedWa['url'] ?? ($postedWa['whatsapp_url'] ?? ($currentLangData['url'] ?? '#'))));
-            $waBtnTxt = trim((string)($postedWa['btn_text'] ?? ($postedWa['whatsapp_btn_txt'] ?? ($currentLangData['btn_text'] ?? ''))));
+            $waText   = trim((string)($postedWa['text'] ?? ($currentLangData['text'] ?? '')));
+            $waUrl    = $this->sanitizeContactUrl((string)($postedWa['url'] ?? ($currentLangData['url'] ?? '#')));
+            $waBtnTxt = trim((string)($postedWa['btn_text'] ?? ($currentLangData['btn_text'] ?? '')));
 
             $allLangs[$targetLang] = [
                 'text'     => $waText,
-                'url'      => $waUrl,
+                'url'      => $waUrl !== '' ? $waUrl : '#',
                 'btn_text' => $waBtnTxt,
             ];
 
             $this->saveSetting($pdo, 'whatsapp_section', $allLangs);
         }
 
-        // تنفيذ الحذف الآمن للملفات القديمة فقط بعد نجاح التحديث في قاعدة البيانات
         $this->flushDeletedFiles();
 
         return true;
+    }
+
+    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems, string $imageKey): void
+    {
+        $retainedImages = [];
+        foreach ($finalItems as $item) {
+            if (is_array($item) && !empty($item[$imageKey])) {
+                $retainedImages[ltrim((string)$item[$imageKey], '/')] = true;
+            }
+        }
+
+        foreach ($existingItems as $oldItem) {
+            if (!is_array($oldItem) || empty($oldItem[$imageKey])) {
+                continue;
+            }
+            $oldPath = ltrim((string)$oldItem[$imageKey], '/');
+            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($retainedImages[$oldPath])) {
+                $this->filesToDelete[] = $oldPath;
+            }
+        }
     }
 
     private function resolveTargetLang(array $postKeys): string
@@ -239,15 +255,15 @@ class ContactSettingsService
         return ltrim($clean, '/');
     }
 
-    private function sanitizeLinkUrl(string $url): string
+    private function sanitizeContactUrl(string $url): string
     {
         $clean = trim($url);
-        if ($clean === '' || $clean === '#') {
-            return '#';
+        if ($clean === '') {
+            return '';
         }
 
         if (preg_match('/^(javascript|data|vbscript|file):/i', $clean)) {
-            return '#';
+            return '';
         }
 
         return $clean;

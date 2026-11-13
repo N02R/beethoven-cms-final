@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Beethoven CMS - Contact Admin Modals (Gold Standard Security, Multilingual & AJAX)
- * متطابق بالكامل مع ContactSettingsService.php ونظام الحماية المركزي.
+ * Beethoven CMS - Contact Admin Modals (Dynamic Contact Items, Multilingual & Security Hardened)
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -32,7 +31,6 @@ if (!is_array($lang)) {
 
 $activeCsrfToken = \App\Core\Security::generateCsrfToken();
 
-// نصوص الواجهة للمودلات باللغات الثلاث
 $modalI18n = [
     'de' => [
         'save_success'   => 'Änderungen erfolgreich gespeichert. Seite wird neu geladen...',
@@ -43,15 +41,12 @@ $modalI18n = [
         'error_title'    => 'Fehler!',
         'info_sec_title' => 'Titel des Kontaktbereichs',
         'info_sec_desc'  => 'Untertitel / Beschreibung',
-        'addr_box'       => 'Adressbereich',
-        'addr_label'     => 'Adresse',
-        'addr_icon'      => 'Adress-Symbol',
-        'email_box'      => 'E-Mail-Bereich',
-        'email_label'    => 'E-Mail-Adresse',
-        'email_icon'     => 'E-Mail-Symbol',
-        'phone_box'      => 'Telefonbereich',
-        'phone_label'    => 'Telefonnummer',
-        'phone_icon'     => 'Telefon-Symbol',
+        'item_text'      => 'Anzeigetext (z. B. Adresse, E-Mail, Telefon)',
+        'item_url'       => 'Link (optional: mailto:..., tel:..., https://...)',
+        'item_icon'      => 'Symbol / Bild',
+        'item_ltr'       => 'Links-nach-rechts (LTR) erzwingen (für Nummern & E-Mails)',
+        'delete_item'    => 'Element löschen',
+        'add_item_btn'   => 'Neues Kontaktelement hinzufügen',
         'wa_text_label'  => 'WhatsApp-Einladungstext',
         'wa_url_label'   => 'WhatsApp-Chat-URL',
         'wa_btn_label'   => 'Button-Text',
@@ -65,15 +60,12 @@ $modalI18n = [
         'error_title'    => 'Error!',
         'info_sec_title' => 'Contact Section Title',
         'info_sec_desc'  => 'Section Subtitle / Description',
-        'addr_box'       => 'Address Card',
-        'addr_label'     => 'Address Text',
-        'addr_icon'      => 'Address Icon',
-        'email_box'      => 'Email Card',
-        'email_label'    => 'Email Address',
-        'email_icon'     => 'Email Icon',
-        'phone_box'      => 'Phone Card',
-        'phone_label'    => 'Phone Number',
-        'phone_icon'     => 'Phone Icon',
+        'item_text'      => 'Display Text (e.g., Address, Email, Phone)',
+        'item_url'       => 'Link (Optional: mailto:..., tel:..., https://...)',
+        'item_icon'      => 'Icon / Image',
+        'item_ltr'       => 'Force Left-to-Right (LTR) direction (for numbers & emails)',
+        'delete_item'    => 'Delete Item',
+        'add_item_btn'   => 'Add New Contact Item',
         'wa_text_label'  => 'WhatsApp Promotional Text',
         'wa_url_label'   => 'WhatsApp Chat URL',
         'wa_btn_label'   => 'WhatsApp Button Text',
@@ -87,15 +79,12 @@ $modalI18n = [
         'error_title'    => 'عذراً، حدث خطأ!',
         'info_sec_title' => 'عنوان قسم التواصل',
         'info_sec_desc'  => 'الوصف الفرعي لقسم التواصل',
-        'addr_box'       => 'خانة العنوان',
-        'addr_label'     => 'نص العنوان',
-        'addr_icon'      => 'أيقونة العنوان',
-        'email_box'      => 'خانة البريد الإلكتروني',
-        'email_label'    => 'البريد الإلكتروني',
-        'email_icon'     => 'أيقونة البريد',
-        'phone_box'      => 'خانة الهاتف',
-        'phone_label'    => 'رقم الهاتف',
-        'phone_icon'     => 'أيقونة الهاتف',
+        'item_text'      => 'النص المعروض (العنوان، البريد، رقم الهاتف...)',
+        'item_url'       => 'الرابط (اختياري: mailto:... أو tel:... أو https://...)',
+        'item_icon'      => 'الأيقونة / الصورة',
+        'item_ltr'       => 'عرض النص من اليسار لليمين (LTR) للأرقام والبريد',
+        'delete_item'    => 'حذف العنصر',
+        'add_item_btn'   => 'إضافة وسيلة تواصل جديدة',
         'wa_text_label'  => 'النص الترويجي للواتساب',
         'wa_url_label'   => 'رابط المحادثة (URL)',
         'wa_btn_label'   => 'نص زر الواتساب',
@@ -103,7 +92,6 @@ $modalI18n = [
 ];
 $mTxt = $modalI18n[$current_lang];
 
-// دالة مساعدة لجلب البيانات الخام لكل قسم متعدد اللغات
 $fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
     $raw = get_setting($key, '{}');
     $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
@@ -129,16 +117,12 @@ $curContactHero     = $fetchRawMultilingualSetting('contact_hero');
 $curContactInfo     = $fetchRawMultilingualSetting('contact_info');
 $curWhatsappSection = $fetchRawMultilingualSetting('whatsapp_section');
 
-$modalHeroImg = (string)($curContactHero['img'] ?? ($contact_hero_img ?? 'assets/img/contacthero.png'));
-
-$modalInfoTitle   = (string)($curContactInfo['title'] ?? ($contact_info_title ?? ''));
-$modalInfoDesc    = (string)($curContactInfo['desc'] ?? ($contact_info_desc ?? ''));
-$modalAddress     = (string)($curContactInfo['address'] ?? ($contact_address ?? ''));
-$modalEmail       = (string)($curContactInfo['email'] ?? ($contact_email ?? ''));
-$modalPhone       = (string)($curContactInfo['phone'] ?? ($contact_phone ?? ''));
-$modalAddressIcon = (string)($curContactInfo['address_icon'] ?? ($contact_address_icon ?? 'assets/img/Location.svg'));
-$modalEmailIcon   = (string)($curContactInfo['email_icon'] ?? ($contact_email_icon ?? 'assets/img/Mail.svg'));
-$modalPhoneIcon   = (string)($curContactInfo['phone_icon'] ?? ($contact_phone_icon ?? 'assets/img/Call.svg'));
+$modalHeroImg   = (string)($curContactHero['img'] ?? ($contact_hero_img ?? 'assets/img/contacthero.png'));
+$modalInfoTitle = (string)($curContactInfo['title'] ?? ($contact_info_title ?? ''));
+$modalInfoDesc  = (string)($curContactInfo['desc'] ?? ($contact_info_desc ?? ''));
+$modalInfoItems = class_exists(\App\Models\ContactModel::class)
+    ? \App\Models\ContactModel::normalizeContactItems($curContactInfo)
+    : (is_array($curContactInfo['items'] ?? null) ? $curContactInfo['items'] : []);
 
 $modalWaText   = (string)($curWhatsappSection['text'] ?? ($whatsapp_text ?? ''));
 $modalWaUrl    = (string)($curWhatsappSection['url'] ?? ($whatsapp_url ?? '#'));
@@ -193,7 +177,7 @@ $modalWaBtnTxt = (string)($curWhatsappSection['btn_text'] ?? ($whatsapp_btn_txt 
     </div>
 </div>
 
-<!-- 2. Contact Info Modal (معلومات والأيقونات الثلاث) -->
+<!-- 2. Contact Info Modal (Dynamic Repeater Items) -->
 <div class="modal fade custom-modal" id="contactInfoModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -223,76 +207,61 @@ $modalWaBtnTxt = (string)($curWhatsappSection['btn_text'] ?? ($whatsapp_btn_txt 
                         </div>
                     </div>
 
-                    <div class="d-flex flex-column gap-3">
-                        <!-- 1. العنوان -->
-                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <h6 class="fw-bold text-dark mb-3 <?php echo $modal_align; ?>"><i class="bi bi-geo-alt text-danger <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['addr_box'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['addr_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <input type="text" class="form-control" name="contact_info[<?php echo $current_lang; ?>][address]" value="<?php echo htmlspecialchars($modalAddress, ENT_QUOTES, 'UTF-8'); ?>">
-                                </div>
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['addr_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <?php if ($modalAddressIcon !== ''): ?>
-                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($modalAddressIcon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="contact_address_icon" accept="image/*">
+                    <div id="contactInfoContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ($modalInfoItems as $index => $item): 
+                            if (!is_array($item)) continue;
+                            $cText = (string)($item['text'] ?? '');
+                            $cUrl  = (string)($item['url'] ?? '');
+                            $cIcon = (string)($item['icon'] ?? '');
+                            $cLtr  = !empty($item['is_ltr']);
+                        ?>
+                            <div class="p-3 shadow-sm contact-info-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="contact_item_row_<?php echo $index; ?>">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['item_text'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control contact-item-text" name="contact_info[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][text]" value="<?php echo htmlspecialchars($cText, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <input type="hidden" name="contact_info[<?php echo $current_lang; ?>][old_address_icon]" value="<?php echo htmlspecialchars($modalAddressIcon, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-6 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['item_url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control contact-item-url" name="contact_info[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($cUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="mailto:info@example.com / tel:+49...">
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- 2. البريد الإلكتروني -->
-                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <h6 class="fw-bold text-dark mb-3 <?php echo $modal_align; ?>"><i class="bi bi-envelope text-primary <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['email_box'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['email_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <input type="email" class="form-control" name="contact_info[<?php echo $current_lang; ?>][email]" value="<?php echo htmlspecialchars($modalEmail, ENT_QUOTES, 'UTF-8'); ?>">
-                                </div>
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['email_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <?php if ($modalEmailIcon !== ''): ?>
-                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($modalEmailIcon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="contact_email_icon" accept="image/*">
+                                <div class="row g-2 align-items-end mb-2">
+                                    <div class="col-11 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['item_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <?php if ($cIcon !== ''): ?>
+                                                <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($cIcon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                </div>
+                                            <?php endif; ?>
+                                            <input type="file" class="form-control contact-item-file" name="contact_item_icon_<?php echo $index; ?>" accept="image/*">
+                                        </div>
                                     </div>
-                                    <input type="hidden" name="contact_info[<?php echo $current_lang; ?>][old_email_icon]" value="<?php echo htmlspecialchars($modalEmailIcon, ENT_QUOTES, 'UTF-8'); ?>">
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- 3. الهاتف -->
-                        <div class="p-4 shadow-sm" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <h6 class="fw-bold text-dark mb-3 <?php echo $modal_align; ?>"><i class="bi bi-telephone text-success <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['phone_box'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['phone_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <input type="text" class="form-control" name="contact_info[<?php echo $current_lang; ?>][phone]" value="<?php echo htmlspecialchars($modalPhone, ENT_QUOTES, 'UTF-8'); ?>">
-                                </div>
-                                <div class="col-md-6 <?php echo $modal_align; ?>">
-                                    <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['phone_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <?php if ($modalPhoneIcon !== ''): ?>
-                                            <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                <img src="<?php echo htmlspecialchars(get_image_url($modalPhoneIcon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
-                                            </div>
-                                        <?php endif; ?>
-                                        <input type="file" class="form-control" name="contact_phone_icon" accept="image/*">
+                                    <input type="hidden" class="contact-item-old-icon" name="contact_info[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($cIcon, ENT_QUOTES, 'UTF-8'); ?>">
+
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeContactItemRow('contact_item_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
-                                    <input type="hidden" name="contact_info[<?php echo $current_lang; ?>][old_phone_icon]" value="<?php echo htmlspecialchars($modalPhoneIcon, ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
+                                            <input class="form-check-input contact-item-ltr ms-0 me-2" type="checkbox" name="contact_info[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][is_ltr]" value="1" <?php echo $cLtr ? 'checked' : ''; ?>>
+                                            <label class="form-check-label small text-secondary fw-semibold cursor-pointer"><?php echo htmlspecialchars($mTxt['item_ltr'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addContactItemBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['add_item_btn'], ENT_QUOTES, 'UTF-8'); ?>
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -348,7 +317,56 @@ $modalWaBtnTxt = (string)($curWhatsappSection['btn_text'] ?? ($whatsapp_btn_txt 
 
 <script>
 const CONTACT_MODAL_TXT = <?php echo json_encode($mTxt, JSON_UNESCAPED_UNICODE); ?>;
+const CONTACT_ACTIVE_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;
 const CONTACT_CSRF_TOKEN = <?php echo json_encode($activeCsrfToken, JSON_UNESCAPED_UNICODE); ?>;
+
+function removeContactItemRow(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function addContactItemRow() {
+    const container = document.getElementById('contactInfoContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.contact-info-row-item').length;
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm contact-info-row-item';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'contact_item_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${CONTACT_MODAL_TXT.item_text}</label>
+                <input type="text" class="form-control contact-item-text" name="contact_info[${CONTACT_ACTIVE_LANG}][items][0][text]">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${CONTACT_MODAL_TXT.item_url}</label>
+                <input type="text" class="form-control contact-item-url" name="contact_info[${CONTACT_ACTIVE_LANG}][items][0][url]" placeholder="mailto:info@example.com / tel:+49...">
+            </div>
+        </div>
+        <div class="row g-2 align-items-end mb-2">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${CONTACT_MODAL_TXT.item_icon}</label>
+                <input type="file" class="form-control contact-item-file" name="contact_item_icon_0" accept="image/*">
+            </div>
+            <input type="hidden" class="contact-item-old-icon" name="contact_info[${CONTACT_ACTIVE_LANG}][items][0][old_icon]" value="">
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeContactItemRow('${div.id}')" title="${CONTACT_MODAL_TXT.delete_item}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-12">
+                <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
+                    <input class="form-check-input contact-item-ltr ms-0 me-2" type="checkbox" name="contact_info[${CONTACT_ACTIVE_LANG}][items][0][is_ltr]" value="1">
+                    <label class="form-check-label small text-secondary fw-semibold cursor-pointer">${CONTACT_MODAL_TXT.item_ltr}</label>
+                </div>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
 
 function showContactNotification(message, type = 'success') {
     if (typeof window.showNotification === 'function') {
@@ -388,6 +406,8 @@ function showContactNotification(message, type = 'success') {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addContactItemBtn')?.addEventListener('click', addContactItemRow);
+
     const contactFormIds = new Set(['contactHeroForm', 'contactInfoForm', 'whatsappForm']);
 
     document.addEventListener('submit', async function(e) {
@@ -405,6 +425,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.querySelector(`button[form="${form.id}"][type="submit"]`)
             || form.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.disabled = true;
+
+        const targetLang = form.querySelector('input[name="targetLang"]')?.value || CONTACT_ACTIVE_LANG;
+
+        // إعادة ترقيم بطاقات معلومات التواصل قبل الإرسال
+        form.querySelectorAll('.contact-info-row-item').forEach((row, index) => {
+            const textInput    = row.querySelector('.contact-item-text');
+            const urlInput     = row.querySelector('.contact-item-url');
+            const fileInput    = row.querySelector('.contact-item-file');
+            const oldIconInput = row.querySelector('.contact-item-old-icon');
+            const ltrInput     = row.querySelector('.contact-item-ltr');
+
+            if (textInput)    textInput.name    = `contact_info[${targetLang}][items][${index}][text]`;
+            if (urlInput)     urlInput.name     = `contact_info[${targetLang}][items][${index}][url]`;
+            if (fileInput)    fileInput.name    = `contact_item_icon_${index}`;
+            if (oldIconInput) oldIconInput.name = `contact_info[${targetLang}][items][${index}][old_icon]`;
+            if (ltrInput)     ltrInput.name     = `contact_info[${targetLang}][items][${index}][is_ltr]`;
+        });
 
         const formData = new FormData(form);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')

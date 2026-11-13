@@ -2,8 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Beethoven CMS - Contact Page View (Gold Standard MVC, Multilingual & Security Hardened)
- * متطابق بالكامل مع المعيار الهندسي المعتمد في صفحات النظام.
+ * Beethoven CMS - Contact Page View (Gold Standard MVC, Dynamic Items Loop & Security Hardened)
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -18,11 +17,11 @@ if (!in_array($current_lang, $supported_langs, true)) {
 }
 $current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// نصوص احتياطية مترجمة للغات الثلاث في حال خلو الحقول أو الأقسام
 $i18nDefaults = [
     'de' => [
         'hero_alt'      => 'Kontaktieren Sie uns',
         'info_title'    => 'Kontaktinformationen',
+        'no_items'      => 'Derzeit sind keine Kontaktinformationen hinterlegt.',
         'whatsapp_btn'  => 'Über WhatsApp kontaktieren',
         'edit_hero'     => 'Hero-Bild bearbeiten',
         'edit_info'     => 'Kontaktinformationen bearbeiten',
@@ -31,6 +30,7 @@ $i18nDefaults = [
     'en' => [
         'hero_alt'      => 'Contact Us',
         'info_title'    => 'Contact Information',
+        'no_items'      => 'No contact information items are currently available.',
         'whatsapp_btn'  => 'Contact via WhatsApp',
         'edit_hero'     => 'Edit Hero Image',
         'edit_info'     => 'Edit Contact Information',
@@ -39,6 +39,7 @@ $i18nDefaults = [
     'ar' => [
         'hero_alt'      => 'تواصل معنا',
         'info_title'    => 'معلومات التواصل',
+        'no_items'      => 'لا توجد بيانات تواصل مضافة حالياً.',
         'whatsapp_btn'  => 'تواصل عبر الواتساب',
         'edit_hero'     => 'تعديل صورة الهيرو',
         'edit_info'     => 'تعديل معلومات التواصل',
@@ -47,11 +48,9 @@ $i18nDefaults = [
 ];
 $txt = $i18nDefaults[$current_lang];
 
-// تهيئة متغيرات البيانات والإعدادات بأمان تام
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
 $getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
     $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
 
@@ -82,14 +81,13 @@ $getLocalizedData = static function (string $settingKey, mixed $default = []) us
     return $parsed;
 };
 
-// 2. دالة تنقية الروابط الخارجية/الداخلية لمنع حقن javascript:
 $sanitizeUrl = static function (?string $rawUrl): string {
-    $url = trim((string)($rawUrl ?? '#'));
+    $url = trim((string)($rawUrl ?? ''));
     if ($url === '' || $url === '#') {
-        return '#';
+        return '';
     }
     if (preg_match('/^(javascript|data|vbscript|file):/i', $url)) {
-        return '#';
+        return '';
     }
     return $url;
 };
@@ -120,7 +118,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 </section>
 <!-- ================= CONTACT HERO IMAGE END ================= -->
 
-<!-- ================= 2. CONTACT INFO BAR START ================= -->
+<!-- ================= 2. CONTACT INFO BAR (DYNAMIC LOOP) START ================= -->
 <section class="contact-info-section py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
   <?php if ($is_admin_active): ?>
     <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#contactInfoModal" title="<?php echo htmlspecialchars($txt['edit_info'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -130,18 +128,13 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
   <div class="custom-container">
     <?php
-    $contact_info = $getLocalizedData('contact_info', []);
-    
-    $info_title   = (string)($contact_info['title'] ?? $txt['info_title']);
-    $info_desc    = (string)($contact_info['desc'] ?? '');
-    $address      = (string)($contact_info['address'] ?? '');
-    $email        = (string)($contact_info['email'] ?? '');
-    $phone        = (string)($contact_info['phone'] ?? '');
-    $clean_phone  = preg_replace('/[^0-9+]/', '', $phone) ?? '';
-    
-    $address_icon = (string)($contact_info['address_icon'] ?? 'assets/img/Location.svg');
-    $email_icon   = (string)($contact_info['email_icon'] ?? 'assets/img/Mail.svg');
-    $phone_icon   = (string)($contact_info['phone_icon'] ?? 'assets/img/Call.svg');
+    $contact_info_raw = $getLocalizedData('contact_info', []);
+    $info_title    = (string)($contact_info_raw['title'] ?? $txt['info_title']);
+    $info_desc     = (string)($contact_info_raw['desc'] ?? '');
+    $contact_items = class_exists(\App\Models\ContactModel::class)
+        ? \App\Models\ContactModel::normalizeContactItems($contact_info_raw)
+        : (is_array($contact_info_raw['items'] ?? null) ? $contact_info_raw['items'] : []);
+    $divider_img = get_image_url('assets/img/Line.png');
     ?>
 
     <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -151,39 +144,41 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       <?php endif; ?>
     </div>
 
-    <!-- شريط معلومات التواصل متكيف مع الاتجاهين -->
-    <div class="contact-info-bar" style="color: inherit;">
-      <!-- 1. العنوان -->
-      <div class="contact-info-item">
-        <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars(get_image_url($address_icon, '/assets/img/Location.svg'), ENT_QUOTES, 'UTF-8'); ?>" alt="Location" />
-        </div>
-        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/Line.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" />
-        <span style="color: inherit; text-decoration: none !important;"><?php echo htmlspecialchars($address, ENT_QUOTES, 'UTF-8'); ?></span>
+    <?php if (!empty($contact_items)): ?>
+      <div class="contact-info-bar" style="color: inherit;">
+        <?php foreach ($contact_items as $item): 
+            if (!is_array($item)) continue;
+            $item_text = (string)($item['text'] ?? '');
+            $item_url  = $sanitizeUrl($item['url'] ?? '');
+            $item_icon = get_image_url($item['icon'] ?? null, '/assets/img/Location.svg');
+            $is_ltr    = !empty($item['is_ltr']);
+            $is_ext    = ($item_url !== '' && (str_starts_with($item_url, 'http://') || str_starts_with($item_url, 'https://')));
+        ?>
+          <div class="contact-info-item">
+            <div class="contact-info-icon">
+              <img src="<?php echo htmlspecialchars($item_icon, ENT_QUOTES, 'UTF-8'); ?>" alt="Contact Icon" />
+            </div>
+            <img src="<?php echo htmlspecialchars($divider_img, ENT_QUOTES, 'UTF-8'); ?>" alt="" />
+            <?php if ($item_url !== ''): ?>
+              <a href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>"
+                 <?php echo $is_ltr ? 'dir="ltr"' : ''; ?>
+                 <?php echo $is_ext ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+                 style="color: inherit; text-decoration: none !important;">
+                <?php echo htmlspecialchars($item_text, ENT_QUOTES, 'UTF-8'); ?>
+              </a>
+            <?php else: ?>
+              <span <?php echo $is_ltr ? 'dir="ltr"' : ''; ?> style="color: inherit; text-decoration: none !important;">
+                <?php echo htmlspecialchars($item_text, ENT_QUOTES, 'UTF-8'); ?>
+              </span>
+            <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
       </div>
-      
-      <!-- 2. البريد الإلكتروني -->
-      <div class="contact-info-item">
-        <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars(get_image_url($email_icon, '/assets/img/Mail.svg'), ENT_QUOTES, 'UTF-8'); ?>" alt="Mail" />
-        </div>
-        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/Line.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" />
-        <a href="mailto:<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" style="color: inherit; text-decoration: none !important;">
-          <?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>
-        </a>
+    <?php else: ?>
+      <div class="text-center text-muted py-4">
+        <p><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
       </div>
-      
-      <!-- 3. الهاتف -->
-      <div class="contact-info-item">
-        <div class="contact-info-icon">
-          <img src="<?php echo htmlspecialchars(get_image_url($phone_icon, '/assets/img/Call.svg'), ENT_QUOTES, 'UTF-8'); ?>" alt="Call" />
-        </div>
-        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/Line.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="" />
-        <a href="tel:<?php echo htmlspecialchars($clean_phone, ENT_QUOTES, 'UTF-8'); ?>" dir="ltr" style="color: inherit; text-decoration: none !important;">
-          <?php echo htmlspecialchars($phone, ENT_QUOTES, 'UTF-8'); ?>
-        </a>
-      </div>
-    </div>
+    <?php endif; ?>
   </div>
 </section>
 <!-- ================= CONTACT INFO BAR END ================= -->
@@ -198,10 +193,9 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
   <div class="custom-container">
     <?php
-    $whatsapp_data = $getLocalizedData('whatsapp_section', []);
-    
+    $whatsapp_data    = $getLocalizedData('whatsapp_section', []);
     $whatsapp_text    = (string)($whatsapp_data['text'] ?? '');
-    $whatsapp_url     = $sanitizeUrl($whatsapp_data['url'] ?? '#');
+    $whatsapp_url     = $sanitizeUrl($whatsapp_data['url'] ?? '#') ?: '#';
     $whatsapp_btn_txt = (string)($whatsapp_data['btn_text'] ?? $txt['whatsapp_btn']);
     ?>
     <div class="whatsapp-box text-center">
@@ -221,7 +215,6 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= WHATSAPP SECTION END ================= -->
 
 <?php 
-// تضمين موديلات التعديل الخاصة بصفحة التواصل للمشرف فقط
 $contact_modals_file = __DIR__ . '/admin/admin_contact_modals.php';
 if ($is_admin_active && is_file($contact_modals_file)) { 
     include_once $contact_modals_file; 

@@ -5,100 +5,189 @@ namespace App\Controllers;
 
 use App\Models\SiteModel;
 
-class GuideController {
-    public function index(string $lang = 'de'): void {
-        // حماية مخرجات اللغة المعروضة
-        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+class GuideController
+{
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const SESSION_TIMEOUT = 1800; // 30 دقيقة
 
-        // إدارة الجلسات بأمان تام
-        if (session_status() === PHP_SESSION_NONE) {
-            ini_set('session.cookie_httponly', '1');
-            ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                ini_set('session.cookie_secure', '1');
-            }
-            session_start();
+    public function index(string $langCode = 'de'): void
+    {
+        $this->initSecureSession();
+
+        // 1. حصر اللغة في القائمة البيضاء المعتمدة (de | en | ar)
+        $cleanLang = strtolower(trim($langCode));
+        if (!in_array($cleanLang, self::SUPPORTED_LANGS, true)) {
+            $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+            $cleanLang = in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
         }
 
-        // ==========================================
-        // 🌟 توحيد اللغة في كل الموقع والمودلات
-        // ==========================================
-        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
-        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+        $_SESSION['site_lang'] = $cleanLang;
+        $current_lang = $cleanLang;
+        $current_dir  = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
-        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
-        $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
-        
-        // إتاحة مصفوفة الترجمة باسم $lang لصفحة الـ View
-        $lang = $lang_data;
-        // ==========================================
+        // 2. تحميل ملف الترجمة مع التراجع الآمن إلى الألمانية (de) ثم الإنجليزية (en)
+        $lang = $this->loadLanguageArray($current_lang);
 
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../');
-
-        // جلب بيانات الموقع العامة والدليل الشامل عبر SiteModel
+        // 3. جلب بيانات الموقع العامة والدليل الشامل
         $data = SiteModel::getGlobalData();
+        $currentSettings = $data;
 
-        // فحص حالة تسجيل الدخول كـ Admin
-        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
-        $user_role = $_SESSION['role'] ?? '';
-        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+        // 4. التحقق الصارم من صلاحية المشرف وحماية الجلسة
+        $is_admin     = $this->verifyAdminSession();
+        $is_logged_in = $is_admin;
 
-        // إتاحة حالة المشرف داخل مصفوفة البيانات والمحيط
-        $data['is_admin'] = $is_admin;
+        $data['is_admin']     = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
+        $data['current_lang'] = $current_lang;
+        $data['current_dir']  = $current_dir;
 
-        // متغيرات إضافية للـ View
+        // 5. استخراج بيانات قسم الدليل للغة الحالية مع تراجع قياسي (de -> en -> ar)
+        $guideRaw = $data['guide'] ?? [];
+        $guideAll = is_string($guideRaw) ? (json_decode($guideRaw, true) ?? []) : (is_array($guideRaw) ? $guideRaw : []);
+        $langGuide = is_array($guideAll[$current_lang] ?? null)
+            ? $guideAll[$current_lang]
+            : (is_array($guideAll['de'] ?? null)
+                ? $guideAll['de']
+                : (is_array($guideAll['en'] ?? null)
+                    ? $guideAll['en']
+                    : (is_array($guideAll['ar'] ?? null) ? $guideAll['ar'] : $guideAll)));
+
+        $defaultGuideTitles = [
+            'de' => 'Beethoven Gesamtführer',
+            'en' => 'Beethoven Comprehensive Guide',
+            'ar' => 'دليل بيتهوفن الشامل',
+        ];
+        $defaultReadMore = [
+            'de' => 'Mehr lesen',
+            'en' => 'Read More',
+            'ar' => 'قراءة المزيد',
+        ];
+
+        $guide_title    = (string)($langGuide['title'] ?? ($data['guide_title'] ?? $defaultGuideTitles[$current_lang]));
+        $guide_desc     = (string)($langGuide['desc'] ?? ($data['guide_desc'] ?? ''));
+        $read_more_text = (string)($langGuide['read_more_btn'] ?? ($lang['read_more'] ?? $defaultReadMore[$current_lang]));
+        $guide_items    = is_array($langGuide['items'] ?? null) ? $langGuide['items'] : (is_array($data['guide_items'] ?? null) ? $data['guide_items'] : []);
+
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css'];
+        $page_css    = ['/assets/css/style.css', '/assets/css/guide.css'];
 
-        // 🌟 النهج الآمن والقياسي: تعريف متغيرات صفحة الدليل بوضوح
-        $guide_title    = $data['guide_title'] ?? 'الدليل الشامل';
-        $guide_desc     = $data['guide_desc'] ?? '';
-        
-        // ربط نص زر قراءة المزيد بملف الترجمة النشطة حصرياً
-        $read_more_text = $lang_data['read_more'] ?? ('قراءة المزيد');
-        
-        $guide_items    = $data['guide_items'] ?? [];
+        // 6. عرض الهيدر، صفحة الدليل، والفوتر بالترتيب القياسي
+        $viewsRoot = __DIR__ . '/../Views';
 
-        // 1. استدعاء الهيدر المشترك
-        $header_file = __DIR__ . '/../Views/partials/header.php';
-        if (file_exists($header_file)) {
+        $header_file = $viewsRoot . '/partials/header.php';
+        if (is_file($header_file)) {
             include_once $header_file;
-        } else {
-            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الرئيسي (guide.php)
-        $view_file = __DIR__ . '/../Views/guide.php';
-        if (file_exists($view_file)) {
+        $view_file = $viewsRoot . '/guide.php';
+        if (is_file($view_file)) {
             require_once $view_file;
-        } else {
-            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك (الذي يحقن مودلات لوحة التحكم مركزياً)
-        $footer_file = $root_path . '/src/Views/partials/footer.php';
-        if (file_exists($footer_file)) {
+        $footer_file = $viewsRoot . '/partials/footer.php';
+        if (is_file($footer_file)) {
             include_once $footer_file;
-        } else {
-            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
     }
 
-    public function switchLang(): void {
-        if (session_status() === PHP_SESSION_NONE) {
+    public function switchLang(): void
+    {
+        $this->initSecureSession();
+
+        $requestedLang = strtolower(trim((string)($_GET['lang'] ?? '')));
+        if (in_array($requestedLang, self::SUPPORTED_LANGS, true)) {
+            $_SESSION['site_lang'] = $requestedLang;
+        }
+
+        // حماية ضد Open Redirect عبر التحقق من أن HTTP_REFERER ينتمي لنفس النطاق فقط
+        $targetLang  = $_SESSION['site_lang'] ?? 'de';
+        $safeRedirect = '/' . $targetLang . '/guide';
+        $referer      = (string)($_SERVER['HTTP_REFERER'] ?? '');
+
+        if ($referer !== '') {
+            $parsed = parse_url($referer);
+            $currentHost = (string)($_SERVER['HTTP_HOST'] ?? '');
+            if (is_array($parsed) && (empty($parsed['host']) || ($currentHost !== '' && strcasecmp($parsed['host'], $currentHost) === 0))) {
+                $path  = (string)($parsed['path'] ?? '/');
+                $query = !empty($parsed['query']) ? ('?' . $parsed['query']) : '';
+                if (str_starts_with($path, '/') && !str_starts_with($path, '//')) {
+                    $safeRedirect = $path . $query;
+                }
+            }
+        }
+
+        header('Location: ' . $safeRedirect);
+        exit;
+    }
+
+    private function initSecureSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'domain'   => '',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => 'Strict',
+            ]);
+
             session_start();
         }
-        
-        if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en', 'de'], true)) {
-            $_SESSION['site_lang'] = $_GET['lang'];
+    }
+
+    private function loadLanguageArray(string $langCode): array
+    {
+        $langDir    = __DIR__ . '/../Lang/';
+        $candidates = [$langCode, 'de', 'en', 'ar'];
+
+        foreach (array_unique($candidates) as $code) {
+            $file = $langDir . $code . '.php';
+            if (is_file($file)) {
+                $loaded = require $file;
+                if (is_array($loaded)) {
+                    return $loaded;
+                }
+            }
         }
-        
-        $redirect_url = $_SERVER['HTTP_REFERER'] ?? '/';
-        header('Location: ' . $redirect_url);
-        exit;
+
+        return [];
+    }
+
+    private function verifyAdminSession(): bool
+    {
+        if (empty($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+            return false;
+        }
+
+        $role = (string)($_SESSION['role'] ?? '');
+        if (!in_array($role, ['admin', 'super_admin'], true)) {
+            return false;
+        }
+
+        $lastActivity = (int)($_SESSION['LAST_ACTIVITY'] ?? 0);
+        if ($lastActivity > 0 && (time() - $lastActivity) > self::SESSION_TIMEOUT) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
+        if (!empty($_SESSION['user_agent_hash']) && !hash_equals((string)$_SESSION['user_agent_hash'], $currentAgentHash)) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $_SESSION['LAST_ACTIVITY'] = time();
+        return true;
     }
 }

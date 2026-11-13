@@ -24,7 +24,6 @@ class Database
     public static function getConnection(): PDO
     {
         if (self::$instance === null) {
-            // جلب إعدادات الاتصال حصرياً من متغيرات البيئة
             $host    = $_ENV['DB_HOST'] ?? null;
             $port    = $_ENV['DB_PORT'] ?? '3306';
             $db      = $_ENV['DB_NAME'] ?? null;
@@ -40,12 +39,17 @@ class Database
             $options = [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false, // حماية صارمة ضد SQL Injection
+                PDO::ATTR_EMULATE_PREPARES   => false,
                 PDO::ATTR_STRINGIFY_FETCHES  => false,
             ];
 
-            if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
-                $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci";
+            // دعم PHP 8.5+ (Pdo\Mysql::ATTR_INIT_COMMAND) مع التوافق الكامل مع الإصدارات الأقدم
+            $initAttr = defined('Pdo\Mysql::ATTR_INIT_COMMAND')
+                ? constant('Pdo\Mysql::ATTR_INIT_COMMAND')
+                : (defined('PDO::MYSQL_ATTR_INIT_COMMAND') ? constant('PDO::MYSQL_ATTR_INIT_COMMAND') : null);
+
+            if ($initAttr !== null) {
+                $options[$initAttr] = "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci";
             }
 
             try {

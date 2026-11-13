@@ -47,6 +47,10 @@ $emptyStateTexts = [
 ];
 $emptyTxt = $emptyStateTexts[$current_lang];
 
+// تهيئة متغيرات البيانات والإعدادات بأمان تام لمنع أي تحذير Undefined variable
+$data = is_array($data ?? null) ? $data : [];
+$currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
+
 // 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
 $getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
     $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));

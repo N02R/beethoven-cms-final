@@ -8,12 +8,17 @@ use PDO;
 
 class JobSettingsService
 {
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+
     private string $rootPath;
     private ImageUploader $imageUploader;
 
+    /** @var string[] قائمة الملفات القديمة المراد حذفها بعد نجاح الحفظ في قاعدة البيانات */
+    private array $filesToDelete = [];
+
     public function __construct(string $rootPath, ImageUploader $imageUploader)
     {
-        $this->rootPath = $rootPath;
+        $this->rootPath = rtrim($rootPath, '/\\');
         $this->imageUploader = $imageUploader;
     }
 
@@ -24,299 +29,401 @@ class JobSettingsService
             'update_job_why',
             'update_job_programs',
             'update_job_timeline',
-            'update_job_services'
+            'update_job_services',
         ];
 
         if (!in_array($action, $allowedActions, true)) {
             return false;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO global_settings (setting_key, setting_value) VALUES (:k, :v) ON DUPLICATE KEY UPDATE setting_value = :v_update");
-        $targetLang = $_POST['targetLang'] ?? $_POST['job_lang'] ?? $_POST['lang'] ?? $_SESSION['site_lang'] ?? 'ar';
-
-        // دالة مساعدة ذكية لجلب وتحليل بيانات الـ JSON لضمان تعدد اللغات من قاعدة البيانات مباشرة
-        $getSettingAllLangs = function(string $key) use ($pdo): array {
-            $stmtFetch = $pdo->prepare("SELECT setting_value FROM global_settings WHERE setting_key = :k");
-            $stmtFetch->execute(['k' => $key]);
-            $dbRaw = $stmtFetch->fetchColumn();
-            if ($dbRaw && is_string($dbRaw)) {
-                $decoded = json_decode($dbRaw, true);
-                if (is_array($decoded)) return $decoded;
-            }
-            return [];
-        };
+        $this->filesToDelete = [];
+        $targetLang = $this->resolveTargetLang(['targetLang', 'job_lang', 'lang']);
 
         // 1. تحديث هيرو الوظائف والمهن (Job Hero) متعدد اللغات
         if ($action === 'update_job_hero') {
-            $allLangs = $getSettingAllLangs('job_hero');
-            $currentLangData = $allLangs[$targetLang] ?? [];
+            $allLangs = $this->fetchSetting($pdo, 'job_hero', $currentSettings);
+            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+                ? $allLangs[$targetLang]
+                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $oldHeroImg = $_POST['old_job_hero_img'] ?? ($currentLangData['img'] ?? 'assets/img/job/jobhero.png');
-            
-            if (isset($_FILES['job_hero_img']) && $_FILES['job_hero_img']['error'] === UPLOAD_ERR_OK) {
-                if (!empty($oldHeroImg) && !str_contains($oldHeroImg, 'default') && $oldHeroImg !== 'assets/img/job/jobhero.png') {
-                    $this->deleteOldImageFile($oldHeroImg);
-                }
-                $filename = $this->imageUploader->processAndUploadFile($_FILES['job_hero_img']['tmp_name']);
-                $heroImg = 'assets/uploads/' . $filename;
-            } else {
-                $heroImg = $oldHeroImg;
+            $postedHero = is_array($_POST['job_hero'][$targetLang] ?? null)
+                ? $_POST['job_hero'][$targetLang]
+                : (is_array($_POST['job_hero'] ?? null) ? $_POST['job_hero'] : $_POST);
+
+            $dbOldImg = (string)($currentLangData['img'] ?? 'assets/img/job/jobhero.png');
+            $submittedOldImg = (string)($postedHero['old_img'] ?? ($_POST['old_job_hero_img'] ?? $dbOldImg));
+            $heroImg = $this->handleImageField('job_hero_img', $submittedOldImg, $dbOldImg);
+            if ($heroImg === '') {
+                $heroImg = 'assets/img/job/jobhero.png';
             }
-
-            $postedHero = $_POST['job_hero'][$targetLang] ?? $_POST;
 
             $allLangs[$targetLang] = [
                 'title'    => trim((string)($postedHero['title'] ?? ($postedHero['job_hero_title'] ?? ($currentLangData['title'] ?? '')))),
                 'desc'     => trim((string)($postedHero['desc'] ?? ($postedHero['job_hero_desc'] ?? ($currentLangData['desc'] ?? '')))),
-                'btn_text' => trim((string)($postedHero['btn_text'] ?? ($postedHero['job_hero_btn_text'] ?? ($currentLangData['btn_text'] ?? 'تواصل معنا')))),
-                'btn_url'  => trim((string)($postedHero['btn_url'] ?? ($postedHero['job_hero_btn_url'] ?? ($currentLangData['btn_url'] ?? 'contact')))),
-                'img'      => $heroImg
+                'btn_text' => trim((string)($postedHero['btn_text'] ?? ($postedHero['job_hero_btn_text'] ?? ($currentLangData['btn_text'] ?? '')))),
+                'btn_url'  => $this->sanitizeLinkUrl((string)($postedHero['btn_url'] ?? ($postedHero['job_hero_btn_url'] ?? ($currentLangData['btn_url'] ?? 'contact')))),
+                'img'      => $heroImg,
             ];
 
-            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'job_hero', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        } 
+            $this->saveSetting($pdo, 'job_hero', $allLangs);
+        }
 
-        // 2. تحديث لماذا التدريب والتوظيف (Job Why) متعدد اللغات مع الحماية الكاملة
+        // 2. تحديث لماذا التدريب والتوظيف (Job Why) متعدد اللغات
         elseif ($action === 'update_job_why') {
-            $allLangs = $getSettingAllLangs('job_why');
-            $currentLangData = $allLangs[$targetLang] ?? [];
-            
-            $existingTitle = $currentLangData['title'] ?? 'لماذا التدريب والتوظيف في ألمانيا؟';
-            $existingDesc  = $currentLangData['desc'] ?? '';
-            $existingItems = $currentLangData['items'] ?? [];
+            $allLangs = $this->fetchSetting($pdo, 'job_why', $currentSettings);
+            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+                ? $allLangs[$targetLang]
+                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $postedWhy = $_POST['job_why'][$targetLang] ?? $_POST;
+            $existingTitle = (string)($currentLangData['title'] ?? '');
+            $existingDesc  = (string)($currentLangData['desc'] ?? '');
+            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
-            $jobWhyTitle = trim((string)($postedWhy['title'] ?? ($postedWhy['job_why_title'] ?? '')));
-            if ($jobWhyTitle === '') $jobWhyTitle = $existingTitle;
+            $postedWhy = is_array($_POST['job_why'][$targetLang] ?? null)
+                ? $_POST['job_why'][$targetLang]
+                : (is_array($_POST['job_why'] ?? null) ? $_POST['job_why'] : $_POST);
 
-            $jobWhyDesc = isset($postedWhy['desc']) ? trim((string)$postedWhy['desc']) : ($postedWhy['job_why_desc'] ?? $existingDesc);
-            
-            $rawItems = $postedWhy['items'] ?? $_POST['job_why'] ?? null;
+            $jobWhyTitle = trim((string)($postedWhy['title'] ?? ($postedWhy['job_why_title'] ?? $existingTitle)));
+            $jobWhyDesc  = isset($postedWhy['desc'])
+                ? trim((string)$postedWhy['desc'])
+                : trim((string)($postedWhy['job_why_desc'] ?? $existingDesc));
+
+            $rawItems = $postedWhy['items'] ?? [];
             $finalItems = [];
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    if (!is_array($item)) continue;
-                    
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                    $img = $oldImg;
-
-                    $fileToCheck = $_FILES['job_why_img_' . $index] ?? null;
-                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                        $img = 'assets/uploads/' . $filename;
+                    if (!is_array($item)) {
+                        continue;
                     }
+                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
+                    $img      = $this->handleImageField('job_why_img_' . $index, $oldImg, $dbOldImg);
 
                     $finalItems[] = [
-                        'title' => trim($item['title'] ?? ''),
-                        'desc'  => trim($item['desc'] ?? ''),
-                        'img'   => $img
+                        'title' => trim((string)($item['title'] ?? '')),
+                        'desc'  => trim((string)($item['desc'] ?? '')),
+                        'img'   => $img,
                     ];
                 }
-            } else {
-                $finalItems = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'img');
 
             $allLangs[$targetLang] = [
                 'title' => $jobWhyTitle,
                 'desc'  => $jobWhyDesc,
-                'items' => $finalItems
+                'items' => $finalItems,
             ];
-            
-            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'job_why', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        } 
+
+            $this->saveSetting($pdo, 'job_why', $allLangs);
+        }
 
         // 3. تحديث برامج وأنواع التدريب المهني (Job Programs) متعدد اللغات
         elseif ($action === 'update_job_programs') {
-            $allLangs = $getSettingAllLangs('job_programs');
-            $currentLangData = $allLangs[$targetLang] ?? [];
+            $allLangs = $this->fetchSetting($pdo, 'job_programs', $currentSettings);
+            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+                ? $allLangs[$targetLang]
+                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $existingTitle = $currentLangData['title'] ?? 'برامج التدريب المهني والتوظيف';
-            $existingDesc  = $currentLangData['desc'] ?? '';
-            $existingItems = $currentLangData['items'] ?? [];
+            $existingTitle = (string)($currentLangData['title'] ?? '');
+            $existingDesc  = (string)($currentLangData['desc'] ?? '');
+            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
-            $postedPrograms = $_POST['job_programs'][$targetLang] ?? $_POST;
+            $postedPrograms = is_array($_POST['job_programs'][$targetLang] ?? null)
+                ? $_POST['job_programs'][$targetLang]
+                : (is_array($_POST['job_programs'] ?? null) ? $_POST['job_programs'] : $_POST);
 
-            $jobProgTitle = trim((string)($postedPrograms['title'] ?? ($postedPrograms['job_program_title'] ?? '')));
-            if ($jobProgTitle === '') $jobProgTitle = $existingTitle;
+            $jobProgTitle = trim((string)($postedPrograms['title'] ?? ($postedPrograms['job_program_title'] ?? $existingTitle)));
+            $jobProgDesc  = isset($postedPrograms['desc'])
+                ? trim((string)$postedPrograms['desc'])
+                : trim((string)($postedPrograms['job_program_desc'] ?? $existingDesc));
 
-            $jobProgDesc = isset($postedPrograms['desc']) ? trim((string)$postedPrograms['desc']) : ($postedPrograms['job_program_desc'] ?? $existingDesc);
-            
-            $rawPrograms = $postedPrograms['items'] ?? ($postedPrograms['programs'] ?? $_POST['job_programs'] ?? null);
+            $rawPrograms = $postedPrograms['items'] ?? ($postedPrograms['programs'] ?? []);
             $finalPrograms = [];
 
             if (is_array($rawPrograms)) {
                 foreach ($rawPrograms as $index => $item) {
-                    if (!is_array($item)) continue;
-
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                    $img = $oldImg;
-
-                    $fileToCheck = $_FILES['prog_img_' . $index] ?? null;
-                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                        $img = 'assets/uploads/' . $filename;
+                    if (!is_array($item)) {
+                        continue;
                     }
+                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
+                    $img      = $this->handleImageField('prog_img_' . $index, $oldImg, $dbOldImg);
+
+                    $isDarkVal = $item['is_dark'] ?? false;
+                    $isDark = ($isDarkVal === true || $isDarkVal === '1' || $isDarkVal === 1 || $isDarkVal === 'on');
 
                     $finalPrograms[] = [
-                        'title'    => trim($item['title'] ?? ''),
-                        'desc'     => trim($item['desc'] ?? ''),
-                        'btn_text' => trim($item['btn_text'] ?? 'اطلب الآن'),
-                        'btn_url'  => trim($item['btn_url'] ?? '#'),
-                        'is_dark'  => isset($item['is_dark']) ? true : false,
-                        'img'      => $img
+                        'title'    => trim((string)($item['title'] ?? '')),
+                        'desc'     => trim((string)($item['desc'] ?? '')),
+                        'btn_text' => trim((string)($item['btn_text'] ?? '')),
+                        'btn_url'  => $this->sanitizeLinkUrl((string)($item['btn_url'] ?? '#')),
+                        'is_dark'  => $isDark,
+                        'img'      => $img,
                     ];
                 }
-            } else {
-                $finalPrograms = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalPrograms, 'img');
 
             $allLangs[$targetLang] = [
                 'title' => $jobProgTitle,
                 'desc'  => $jobProgDesc,
-                'items' => $finalPrograms
+                'items' => $finalPrograms,
             ];
-            
-            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'job_programs', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        } 
+
+            $this->saveSetting($pdo, 'job_programs', $allLangs);
+        }
 
         // 4. تحديث خطوات ومسار التدريب والتوظيف (Job Timeline) متعدد اللغات
         elseif ($action === 'update_job_timeline') {
-            $allLangs = $getSettingAllLangs('job_timeline');
-            $currentLangData = $allLangs[$targetLang] ?? [];
+            $allLangs = $this->fetchSetting($pdo, 'job_timeline', $currentSettings);
+            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+                ? $allLangs[$targetLang]
+                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $existingTitle = $currentLangData['title'] ?? 'خطوات التوظيف والتدريب في ألمانيا';
-            $existingDesc  = $currentLangData['desc'] ?? '';
-            $existingItems = $currentLangData['steps'] ?? ($currentLangData['items'] ?? []);
+            $existingTitle = (string)($currentLangData['title'] ?? '');
+            $existingDesc  = (string)($currentLangData['desc'] ?? '');
+            $existingItems = is_array($currentLangData['steps'] ?? null)
+                ? $currentLangData['steps']
+                : (is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : []);
 
-            $postedTimeline = $_POST['job_timeline'][$targetLang] ?? $_POST;
+            $postedTimeline = is_array($_POST['job_timeline'][$targetLang] ?? null)
+                ? $_POST['job_timeline'][$targetLang]
+                : (is_array($_POST['job_timeline'] ?? null) ? $_POST['job_timeline'] : $_POST);
 
-            $jobTimelineTitle = trim((string)($postedTimeline['title'] ?? ($postedTimeline['job_timeline_title'] ?? '')));
-            if ($jobTimelineTitle === '') $jobTimelineTitle = $existingTitle;
+            $jobTimelineTitle = trim((string)($postedTimeline['title'] ?? ($postedTimeline['job_timeline_title'] ?? $existingTitle)));
+            $jobTimelineDesc  = isset($postedTimeline['desc'])
+                ? trim((string)$postedTimeline['desc'])
+                : trim((string)($postedTimeline['job_timeline_desc'] ?? $existingDesc));
 
-            $jobTimelineDesc = isset($postedTimeline['desc']) ? trim((string)$postedTimeline['desc']) : ($postedTimeline['job_timeline_desc'] ?? $existingDesc);
-            
-            $rawSteps = $postedTimeline['steps'] ?? ($postedTimeline['items'] ?? $_POST['job_timeline'] ?? null);
+            $rawSteps = $postedTimeline['steps'] ?? ($postedTimeline['items'] ?? []);
             $finalSteps = [];
 
             if (is_array($rawSteps)) {
-                usort($rawSteps, function($a, $b) {
-                    return ($a['order'] ?? 0) <=> ($b['order'] ?? 0);
-                });
-
                 foreach ($rawSteps as $index => $item) {
-                    if (!is_array($item)) continue;
-
-                    $oldIcon = $item['old_icon'] ?? ($existingItems[$index]['icon'] ?? '');
-                    $icon = $oldIcon;
-
-                    $fileToCheck = $_FILES['steps_icon_' . $index] ?? null;
-                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldIcon) && str_starts_with($oldIcon, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($oldIcon);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                        $icon = 'assets/uploads/' . $filename;
+                    if (!is_array($item)) {
+                        continue;
                     }
+                    $dbOldIcon = (string)($existingItems[$index]['icon'] ?? '');
+                    $oldIcon   = (string)($item['icon'] ?? ($item['old_icon'] ?? $dbOldIcon));
+                    $icon      = $this->handleImageField('steps_icon_' . $index, $oldIcon, $dbOldIcon);
 
                     $finalSteps[] = [
-                        'title'    => trim($item['title'] ?? ''),
-                        'subtitle' => trim($item['subtitle'] ?? ''),
-                        'desc'     => trim($item['desc'] ?? ''),
-                        'icon'     => $icon
+                        'title'    => trim((string)($item['title'] ?? '')),
+                        'subtitle' => trim((string)($item['subtitle'] ?? '')),
+                        'desc'     => trim((string)($item['desc'] ?? '')),
+                        'order'    => (int)($item['order'] ?? $index),
+                        'icon'     => $icon,
                     ];
                 }
-            } else {
-                $finalSteps = $existingItems;
+
+                // فرز الخطوات تصاعدياً بعد ربط الملفات المرفوعة بفهارسها الصحيحة
+                usort($finalSteps, static fn(array $a, array $b): int => $a['order'] <=> $b['order']);
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalSteps, 'icon');
 
             $allLangs[$targetLang] = [
                 'title' => $jobTimelineTitle,
                 'desc'  => $jobTimelineDesc,
-                'steps' => $finalSteps
+                'steps' => $finalSteps,
             ];
-            
-            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'job_timeline', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-        } 
+
+            $this->saveSetting($pdo, 'job_timeline', $allLangs);
+        }
 
         // 5. تحديث كروت الخدمات المهتمة (Job Services) متعدد اللغات
         elseif ($action === 'update_job_services') {
-            $allLangs = $getSettingAllLangs('job_services');
-            $currentLangData = $allLangs[$targetLang] ?? [];
+            $allLangs = $this->fetchSetting($pdo, 'job_services', $currentSettings);
+            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+                ? $allLangs[$targetLang]
+                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $existingTitle = $currentLangData['title'] ?? ($currentLangData['section_title'] ?? 'خدمات التوظيف');
-            $existingDesc  = $currentLangData['desc'] ?? ($currentLangData['section_subtitle'] ?? '');
-            $existingItems = $currentLangData['items'] ?? [];
+            $existingTitle = (string)($currentLangData['title'] ?? ($currentLangData['section_title'] ?? ''));
+            $existingDesc  = (string)($currentLangData['desc'] ?? ($currentLangData['section_subtitle'] ?? ''));
+            $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
-            $postedServices = $_POST['job_services'][$targetLang] ?? $_POST;
+            $postedServices = is_array($_POST['job_services'][$targetLang] ?? null)
+                ? $_POST['job_services'][$targetLang]
+                : (is_array($_POST['job_services'] ?? null) ? $_POST['job_services'] : $_POST);
 
-            $jobServicesTitle = trim((string)($postedServices['title'] ?? ($postedServices['section_title'] ?? ($postedServices['job_services_title'] ?? ''))));
-            if ($jobServicesTitle === '') $jobServicesTitle = $existingTitle;
+            $jobServicesTitle = trim((string)($postedServices['title'] ?? ($postedServices['section_title'] ?? ($postedServices['job_services_title'] ?? $existingTitle))));
+            $jobServicesDesc  = isset($postedServices['desc'])
+                ? trim((string)$postedServices['desc'])
+                : (isset($postedServices['section_subtitle'])
+                    ? trim((string)$postedServices['section_subtitle'])
+                    : trim((string)($postedServices['job_services_desc'] ?? $existingDesc)));
 
-            $jobServicesDesc = isset($postedServices['desc']) ? trim((string)$postedServices['desc']) : (isset($postedServices['section_subtitle']) ? trim((string)$postedServices['section_subtitle']) : ($postedServices['job_services_desc'] ?? $existingDesc));
-            
-            $rawItems = $postedServices['items'] ?? $_POST['job_services'] ?? null;
+            $rawItems = $postedServices['items'] ?? [];
             $finalItems = [];
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
-                    if (!is_array($item)) continue;
-
-                    $oldImg = $item['old_img'] ?? ($existingItems[$index]['img'] ?? '');
-                    $img = $oldImg;
-
-                    $fileToCheck = $_FILES['srv_img_' . $index] ?? null;
-                    if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
-                        if (!empty($oldImg) && str_starts_with($oldImg, 'assets/uploads/')) {
-                            $this->deleteOldImageFile($oldImg);
-                        }
-                        $filename = $this->imageUploader->processAndUploadFile($fileToCheck['tmp_name']);
-                        $img = 'assets/uploads/' . $filename;
+                    if (!is_array($item)) {
+                        continue;
                     }
+                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
+                    $img      = $this->handleImageField('srv_img_' . $index, $oldImg, $dbOldImg);
 
                     $finalItems[] = [
-                        'title' => trim($item['title'] ?? ''),
-                        'url'   => trim($item['url'] ?? '#'),
-                        'img'   => $img
+                        'title' => trim((string)($item['title'] ?? '')),
+                        'url'   => $this->sanitizeLinkUrl((string)($item['url'] ?? '#')),
+                        'img'   => $img,
                     ];
                 }
-            } else {
-                $finalItems = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'img');
 
             $allLangs[$targetLang] = [
                 'title'            => $jobServicesTitle,
                 'desc'             => $jobServicesDesc,
                 'section_title'    => $jobServicesTitle,
                 'section_subtitle' => $jobServicesDesc,
-                'items'            => $finalItems
+                'items'            => $finalItems,
             ];
-            
-            $jsonVal = json_encode($allLangs, JSON_UNESCAPED_UNICODE);
-            $stmt->execute(['k' => 'job_services', 'v' => $jsonVal, 'v_update' => $jsonVal]);
+
+            $this->saveSetting($pdo, 'job_services', $allLangs);
         }
+
+        // تنفيذ الحذف الآمن للملفات القديمة فقط بعد نجاح التحديث في قاعدة البيانات
+        $this->flushDeletedFiles();
 
         return true;
     }
 
-    private function deleteOldImageFile(string $imagePath): void
+    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems, string $imageKey): void
     {
-        if (!empty($imagePath) && str_starts_with($imagePath, 'assets/uploads/')) {
-            $fullPath = $this->rootPath . '/public/' . $imagePath;
-            if (file_exists($fullPath) && is_file($fullPath)) {
-                @unlink($fullPath);
+        $retainedImages = [];
+        foreach ($finalItems as $item) {
+            if (is_array($item) && !empty($item[$imageKey])) {
+                $retainedImages[ltrim((string)$item[$imageKey], '/')] = true;
             }
         }
+
+        foreach ($existingItems as $oldItem) {
+            if (!is_array($oldItem) || empty($oldItem[$imageKey])) {
+                continue;
+            }
+            $oldPath = ltrim((string)$oldItem[$imageKey], '/');
+            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($retainedImages[$oldPath])) {
+                $this->filesToDelete[] = $oldPath;
+            }
+        }
+    }
+
+    private function resolveTargetLang(array $postKeys): string
+    {
+        foreach ($postKeys as $key) {
+            if (!empty($_POST[$key]) && is_string($_POST[$key])) {
+                $candidate = strtolower(trim($_POST[$key]));
+                if (in_array($candidate, self::SUPPORTED_LANGS, true)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+        return in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
+    }
+
+    private function fetchSetting(PDO $pdo, string $key, array $currentSettings): array
+    {
+        $stmtFetch = $pdo->prepare('SELECT setting_value FROM global_settings WHERE setting_key = :k LIMIT 1');
+        $stmtFetch->execute(['k' => $key]);
+        $dbRaw = $stmtFetch->fetchColumn();
+
+        if (is_string($dbRaw) && $dbRaw !== '') {
+            $decoded = json_decode($dbRaw, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        if (isset($currentSettings[$key])) {
+            if (is_array($currentSettings[$key])) {
+                return $currentSettings[$key];
+            }
+            if (is_string($currentSettings[$key])) {
+                $decoded = json_decode($currentSettings[$key], true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+        }
+
+        return [];
+    }
+
+    private function saveSetting(PDO $pdo, string $key, array $data): void
+    {
+        $jsonVal = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        $stmt = $pdo->prepare(
+            'INSERT INTO global_settings (setting_key, setting_value)
+             VALUES (:k, :v)
+             ON DUPLICATE KEY UPDATE setting_value = :v_update'
+        );
+        $stmt->execute([
+            'k'        => $key,
+            'v'        => $jsonVal,
+            'v_update' => $jsonVal,
+        ]);
+    }
+
+    private function handleImageField(string $fileInputKey, string $submittedOldPath, string $dbOldPath): string
+    {
+        $safeOld = $this->sanitizeImagePath($submittedOldPath !== '' ? $submittedOldPath : $dbOldPath);
+
+        if (isset($_FILES[$fileInputKey]) && is_array($_FILES[$fileInputKey]) && ($_FILES[$fileInputKey]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $filename = $this->imageUploader->processAndUploadFile((string)$_FILES[$fileInputKey]['tmp_name']);
+            if ($dbOldPath !== '' && str_starts_with(ltrim($dbOldPath, '/'), 'assets/uploads/')) {
+                $this->filesToDelete[] = ltrim($dbOldPath, '/');
+            }
+            return 'assets/uploads/' . $filename;
+        }
+
+        return $safeOld;
+    }
+
+    private function sanitizeImagePath(string $path): string
+    {
+        $clean = trim($path);
+        if ($clean === '' || str_contains($clean, '..') || preg_match('/^(javascript|data|vbscript|file):/i', $clean)) {
+            return '';
+        }
+
+        if (str_starts_with($clean, 'http://') || str_starts_with($clean, 'https://')) {
+            return filter_var($clean, FILTER_VALIDATE_URL) ? $clean : '';
+        }
+
+        return ltrim($clean, '/');
+    }
+
+    private function sanitizeLinkUrl(string $url): string
+    {
+        $clean = trim($url);
+        if ($clean === '' || $clean === '#') {
+            return '#';
+        }
+
+        if (preg_match('/^(javascript|data|vbscript|file):/i', $clean)) {
+            return '#';
+        }
+
+        return $clean;
+    }
+
+    private function flushDeletedFiles(): void
+    {
+        foreach (array_unique($this->filesToDelete) as $relativePath) {
+            if (!str_starts_with($relativePath, 'assets/uploads/')) {
+                continue;
+            }
+            $this->imageUploader->deleteOldImage(basename($relativePath));
+        }
+        $this->filesToDelete = [];
     }
 }

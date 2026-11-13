@@ -4,22 +4,26 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Config\Database;
+use App\Core\Security;
 use PDO;
+use Throwable;
 
-class AuthController {
-
+class AuthController
+{
     private const MAX_LOGIN_ATTEMPTS = 5;
-    private const LOCKOUT_SECONDS    = 900;
-    private const OTP_EXPIRY_SECONDS = 300;
+    private const LOCKOUT_SECONDS    = 900; // 15 دقيقة
+    private const OTP_EXPIRY_SECONDS = 300; // 5 دقائق
     private const MAX_OTP_ATTEMPTS   = 3;
 
-    private function ensureSession(): void {
+    private function ensureSession(): void
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    private function getCurrentLang(): string {
+    private function getCurrentLang(): string
+    {
         $supported = ['de', 'en', 'ar'];
         if (isset($_POST['ui_lang']) && in_array($_POST['ui_lang'], $supported, true)) {
             $_SESSION['admin_login_lang'] = $_POST['ui_lang'];
@@ -29,7 +33,18 @@ class AuthController {
         return in_array($lang, $supported, true) ? $lang : 'de';
     }
 
-    private function msg(string $key, array $replace = []): string {
+    private function generateCaptcha(): string
+    {
+        $num1 = random_int(1, 9);
+        $num2 = random_int(1, 9);
+        $_SESSION['captcha_num1']   = $num1;
+        $_SESSION['captcha_num2']   = $num2;
+        $_SESSION['captcha_result'] = (string)($num1 + $num2);
+        return "{$num1} + {$num2} = ?";
+    }
+
+    private function msg(string $key, array $replace = []): string
+    {
         $lang = $this->getCurrentLang();
         $messages = [
             'de' => [
@@ -89,112 +104,126 @@ class AuthController {
         return $text;
     }
 
-    private function respond(bool $isAjax, bool $success, string $message, string $redirectUrl = '/admin/login', int $statusCode = 200): void {
+    private function respond(
+        bool $isAjax,
+        bool $success,
+        string $message,
+        string $redirectUrl = '/admin/login',
+        int $statusCode = 200,
+        ?string $newCaptcha = null
+    ): void {
         if ($isAjax) {
             http_response_code($statusCode);
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
+            $payload = [
                 'success'  => $success,
                 'message'  => $message,
                 'redirect' => $redirectUrl
-            ], JSON_UNESCAPED_UNICODE);
+            ];
+            if ($newCaptcha !== null) {
+                $payload['new_captcha'] = $newCaptcha;
+            }
+            echo json_encode($payload, JSON_UNESCAPED_UNICODE);
             exit;
         }
 
         if (!$success) {
             $_SESSION['login_error'] = $message;
         }
-        header("Location: " . $redirectUrl);
+        header('Location: ' . $redirectUrl);
         exit;
     }
 
-    public function login(): void {
+    public function login(): void
+    {
         $this->ensureSession();
 
         if (!empty($_SESSION['is_logged_in']) && in_array($_SESSION['role'] ?? '', ['admin', 'super_admin'], true)) {
-            header("Location: /admin/dashboard");
+            header('Location: /admin/dashboard');
             exit;
         }
 
         $error_msg = $_SESSION['login_error'] ?? '';
         unset($_SESSION['login_error']);
 
-        if (empty($_SESSION['login_csrf'])) {
-            $_SESSION['login_csrf'] = bin2hex(random_bytes(32));
-        }
-
-        $num1 = random_int(1, 9);
-        $num2 = random_int(1, 9);
-        $_SESSION['captcha_num1']   = $num1;
-        $_SESSION['captcha_num2']   = $num2;
-        $_SESSION['captcha_result'] = $num1 + $num2;
+        // توليد رمز CSRF موحد وتجهيز الكابتشا
+        $csrf_token = Security::generateCsrfToken();
+        $this->generateCaptcha();
 
         $viewFile = __DIR__ . '/../../Views/admin/login.php';
-        if (file_exists($viewFile)) {
+        if (is_file($viewFile)) {
             require_once $viewFile;
         } else {
             http_response_code(404);
-            echo "Login View file not found.";
+            echo 'Login View file not found.';
         }
     }
 
-    public function authenticate(): void {
+    public function authenticate(): void
+    {
         $this->ensureSession();
         $this->getCurrentLang();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
-        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-                  || (isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'));
+        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower((string)$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+                  || (isset($_SERVER['HTTP_ACCEPT']) && str_contains((string)$_SERVER['HTTP_ACCEPT'], 'application/json'));
 
+        // 1. التحقق من الحظر المؤقت
         $lockUntil = (int)($_SESSION['login_lock_until'] ?? 0);
         if ($lockUntil > time()) {
             $remainingMinutes = (int)ceil(($lockUntil - time()) / 60);
             $this->respond($isAjax, false, $this->msg('lockout', ['min' => $remainingMinutes]), '/admin/login', 429);
         }
 
-        $token        = (string)($_POST['csrf_token'] ?? '');
-        $sessionToken = (string)($_SESSION['login_csrf'] ?? '');
+        // 2. التحقق من رمز CSRF الموحد
+        $headers = function_exists('getallheaders') ? array_change_key_case(getallheaders(), CASE_LOWER) : [];
+        $token   = (string)($headers['x-csrf-token'] ?? $_POST['csrf_token'] ?? '');
 
-        if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
+        if (!Security::verifyCsrfToken($token)) {
             $this->respond($isAjax, false, $this->msg('csrf_expired'), '/admin/login', 403);
         }
 
+        // 3. التحقق من الكابتشا الحسابية وتجديدها عند الخطأ
         if (isset($_POST['captcha'])) {
             $userCaptcha     = trim((string)$_POST['captcha']);
             $expectedCaptcha = (string)($_SESSION['captcha_result'] ?? '');
             if ($expectedCaptcha === '' || !hash_equals($expectedCaptcha, $userCaptcha)) {
                 $this->recordFailedAttempt();
-                $this->respond($isAjax, false, $this->msg('captcha_wrong'), '/admin/login', 400);
+                $nextCaptcha = $this->generateCaptcha();
+                $this->respond($isAjax, false, $this->msg('captcha_wrong'), '/admin/login', 400, $nextCaptcha);
             }
         }
 
+        // 4. التحقق من صيغة البريد وكلمة المرور
         $email    = trim((string)($_POST['email'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
 
         if ($email === '' || $password === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190 || mb_strlen($password) > 255) {
-            $this->respond($isAjax, false, $this->msg('invalid_format'), '/admin/login', 400);
+            $nextCaptcha = $this->generateCaptcha();
+            $this->respond($isAjax, false, $this->msg('invalid_format'), '/admin/login', 400, $nextCaptcha);
         }
 
+        // 5. التحقق من قاعدة البيانات بزمن ثابت (Timing-Safe)
         $adminData = null;
         $dummyHash = '$2y$12$eImiTXuWVxfM37uY4JANjQ.5k0Z6F6W8V2B7N9M1L3K5J7H9G2F4D';
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("SELECT id, name, email, password, role FROM admins WHERE email = :email LIMIT 1");
+            $stmt = $pdo->prepare('SELECT id, name, email, password, role FROM admins WHERE email = :email LIMIT 1');
             $stmt->execute(['email' => $email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $storedHash = $admin['password'] ?? $dummyHash;
+            $storedHash = is_array($admin) && !empty($admin['password']) ? (string)$admin['password'] : $dummyHash;
             $isPasswordValid = password_verify($password, $storedHash);
 
             if ($admin && $isPasswordValid) {
                 if (password_needs_rehash($storedHash, PASSWORD_DEFAULT)) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $updateStmt = $pdo->prepare("UPDATE admins SET password = :pwd WHERE id = :id");
+                    $updateStmt = $pdo->prepare('UPDATE admins SET password = :pwd WHERE id = :id');
                     $updateStmt->execute(['pwd' => $newHash, 'id' => $admin['id']]);
                 }
 
@@ -205,16 +234,19 @@ class AuthController {
                     'id'    => (int)$admin['id']
                 ];
             }
-        } catch (\Throwable $e) {
-            error_log("Critical Auth Database Error: " . $e->getMessage());
+        } catch (Throwable $e) {
+            error_log('Critical Auth Database Error: ' . $e->getMessage());
             $this->respond($isAjax, false, $this->msg('server_error'), '/admin/login', 500);
         }
 
+        // 6. نجاح التحقق الأولي والانتقال إلى المصادقة الثنائية (2FA)
         if ($adminData !== null) {
             $savedLang = $this->getCurrentLang();
-            unset($_SESSION['login_attempts'], $_SESSION['login_lock_until'], $_SESSION['login_csrf'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result']);
+            unset($_SESSION['login_attempts'], $_SESSION['login_lock_until'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result']);
 
             session_regenerate_id(true);
+            Security::rotateCsrfToken();
+
             $_SESSION['admin_login_lang'] = $savedLang;
             $_SESSION['site_lang']        = $savedLang;
 
@@ -237,27 +269,30 @@ class AuthController {
             $this->respond($isAjax, true, $this->msg('2fa_redirect'), '/admin/verify-2fa', 200);
         }
 
+        // 7. فشل تسجيل الدخول
         $this->recordFailedAttempt();
-        $this->respond($isAjax, false, $this->msg('bad_creds'), '/admin/login', 401);
+        $nextCaptcha = $this->generateCaptcha();
+        $this->respond($isAjax, false, $this->msg('bad_creds'), '/admin/login', 401, $nextCaptcha);
     }
 
-    public function show2fa(): void {
+    public function show2fa(): void
+    {
         $this->ensureSession();
 
         if (!empty($_SESSION['is_logged_in'])) {
-            header("Location: /admin/dashboard");
+            header('Location: /admin/dashboard');
             exit;
         }
 
         if (empty($_SESSION['pending_2fa_admin']) || empty($_SESSION['2fa_code_hash'])) {
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
         if (time() > (int)($_SESSION['2fa_expires_at'] ?? 0)) {
             $this->clear2faSession();
             $_SESSION['login_error'] = $this->msg('2fa_expired');
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
@@ -269,24 +304,25 @@ class AuthController {
         unset($_SESSION['2fa_error']);
 
         $viewFile = __DIR__ . '/../../Views/admin/verify_2fa.php';
-        if (file_exists($viewFile)) {
+        if (is_file($viewFile)) {
             require_once $viewFile;
         } else {
             http_response_code(404);
-            echo "2FA View file not found.";
+            echo '2FA View file not found.';
         }
     }
 
-    public function verify2fa(): void {
+    public function verify2fa(): void
+    {
         $this->ensureSession();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /admin/verify-2fa");
+            header('Location: /admin/verify-2fa');
             exit;
         }
 
         if (empty($_SESSION['pending_2fa_admin']) || empty($_SESSION['2fa_code_hash'])) {
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
@@ -294,28 +330,28 @@ class AuthController {
         $sessionToken = (string)($_SESSION['2fa_csrf'] ?? '');
         if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
             $_SESSION['2fa_error'] = $this->msg('csrf_expired');
-            header("Location: /admin/verify-2fa");
+            header('Location: /admin/verify-2fa');
             exit;
         }
 
         if (time() > (int)($_SESSION['2fa_expires_at'] ?? 0)) {
             $this->clear2faSession();
             $_SESSION['login_error'] = $this->msg('2fa_expired');
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
         $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
         if (!empty($_SESSION['user_agent_hash']) && !hash_equals($_SESSION['user_agent_hash'], $currentAgentHash)) {
             $this->clear2faSession();
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
         $inputCode = trim((string)($_POST['verification_code'] ?? ''));
         if (!preg_match('/^[0-9]{6}$/', $inputCode)) {
             $_SESSION['2fa_error'] = $this->msg('2fa_invalid');
-            header("Location: /admin/verify-2fa");
+            header('Location: /admin/verify-2fa');
             exit;
         }
 
@@ -326,6 +362,8 @@ class AuthController {
             $this->clear2faSession();
 
             session_regenerate_id(true);
+            Security::rotateCsrfToken();
+
             $_SESSION['is_logged_in']     = true;
             $_SESSION['role']             = $adminData['role'];
             $_SESSION['admin_name']       = $adminData['name'];
@@ -335,7 +373,7 @@ class AuthController {
             $_SESSION['user_agent_hash']  = $currentAgentHash;
             $_SESSION['LAST_ACTIVITY']    = time();
 
-            header("Location: /admin/dashboard");
+            header('Location: /admin/dashboard');
             exit;
         }
 
@@ -345,16 +383,17 @@ class AuthController {
         if ($attempts >= self::MAX_OTP_ATTEMPTS) {
             $this->clear2faSession();
             $_SESSION['login_error'] = $this->msg('2fa_max');
-            header("Location: /admin/login");
+            header('Location: /admin/login');
             exit;
         }
 
         $_SESSION['2fa_error'] = $this->msg('2fa_wrong', ['left' => (self::MAX_OTP_ATTEMPTS - $attempts)]);
-        header("Location: /admin/verify-2fa");
+        header('Location: /admin/verify-2fa');
         exit;
     }
 
-    private function clear2faSession(): void {
+    private function clear2faSession(): void
+    {
         unset(
             $_SESSION['pending_2fa_admin'],
             $_SESSION['2fa_code_hash'],
@@ -366,7 +405,8 @@ class AuthController {
         );
     }
 
-    private function send2faEmail(string $toEmail, string $adminName, string $otpCode): void {
+    private function send2faEmail(string $toEmail, string $adminName, string $otpCode): void
+    {
         $fromEmail = $_ENV['MAIL_FROM_ADDRESS'] ?? ('no-reply@' . ($_SERVER['HTTP_HOST'] ?? 'beethoven-services.de'));
         $subject   = $this->msg('mail_subject');
         $body      = $this->msg('mail_body', ['name' => $adminName, 'code' => $otpCode]);
@@ -381,7 +421,8 @@ class AuthController {
         @mail($toEmail, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers));
     }
 
-    private function recordFailedAttempt(): void {
+    private function recordFailedAttempt(): void
+    {
         $attempts = (int)($_SESSION['login_attempts'] ?? 0) + 1;
         $_SESSION['login_attempts'] = $attempts;
 
@@ -391,26 +432,27 @@ class AuthController {
         }
     }
 
-    public function logout(): void {
+    public function logout(): void
+    {
         $this->ensureSession();
         $logoutText = $this->msg('logout_success');
 
         $_SESSION = [];
-        if (ini_get("session.use_cookies")) {
+        if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
             setcookie(
                 session_name(),
                 '',
                 time() - 42000,
-                $params["path"],
-                $params["domain"],
-                $params["secure"],
-                $params["httponly"]
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
             );
         }
         session_destroy();
 
-        header("Location: /admin/login?message=" . urlencode($logoutText));
+        header('Location: /admin/login?message=' . urlencode($logoutText));
         exit;
     }
 }

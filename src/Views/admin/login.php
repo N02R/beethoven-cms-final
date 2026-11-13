@@ -3,8 +3,13 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Multilingual Admin Login View (DE / EN / AR)
- * تصميم زجاجي عائم لاختيار اللغة مع التوافق الكامل مع معايير الأمان الألمانية
+ * متوافق بالكامل مع نظام الحماية المركزي (Security::generateCsrfToken) وتحديث الكابتشا الفوري.
  */
+
+if (!defined('ALLOWED_ACCESS')) {
+    http_response_code(403);
+    exit('Access Denied');
+}
 
 $supportedLangs = ['de', 'en', 'ar'];
 
@@ -21,7 +26,6 @@ if (!in_array($currentLang, $supportedLangs, true)) {
 $isRtl = ($currentLang === 'ar');
 $dir   = $isRtl ? 'rtl' : 'ltr';
 
-// الرمز المختصر الذي يظهر داخل المربع الزجاجي
 $langBadges = [
     'de' => 'DE',
     'en' => 'EN',
@@ -78,6 +82,7 @@ $translations = [
 
 $t = $translations[$currentLang];
 $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
+$activeCsrfToken = $csrf_token ?? \App\Core\Security::generateCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo htmlspecialchars($currentLang, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo $dir; ?>">
@@ -85,21 +90,20 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
     <title><?php echo htmlspecialchars($t['page_title'], ENT_QUOTES, 'UTF-8'); ?></title>
     
     <?php if ($isRtl): ?>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <?php else: ?>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <?php endif; ?>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
         body {
-            font-family: <?php echo $isRtl ? "'Cairo', sans-serif" : "'Plus Jakarta Sans', system-ui, sans-serif"; ?>;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             min-height: 100vh;
             display: flex;
@@ -163,7 +167,6 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
             transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* جسر غير مرئي لمنع اختفاء القائمة أثناء تحريك الماوس بين المربع والقائمة */
         .floating-lang-wrapper::after {
             content: '';
             position: absolute;
@@ -333,7 +336,7 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
     </div>
 
     <form id="loginForm" method="POST" action="/admin/login/process" novalidate>
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['login_csrf'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+        <input type="hidden" name="csrf_token" id="csrfTokenInput" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
         <input type="hidden" name="ui_lang" value="<?php echo htmlspecialchars($currentLang, ENT_QUOTES, 'UTF-8'); ?>">
         
         <div class="mb-3">
@@ -350,7 +353,7 @@ $logout_msg = isset($_GET['message']) ? trim((string)$_GET['message']) : '';
         <div class="mb-4">
             <label for="captchaInput" class="form-label small fw-bold"><?php echo htmlspecialchars($t['captcha_label'], ENT_QUOTES, 'UTF-8'); ?></label>
             <div class="d-flex gap-2 align-items-center">
-                <div class="captcha-badge" dir="ltr">
+                <div class="captcha-badge" id="captchaQuestion" dir="ltr">
                     <?php echo (int)$_SESSION['captcha_num1']; ?> + <?php echo (int)$_SESSION['captcha_num2']; ?> = ?
                 </div>
                 <input type="number" id="captchaInput" class="form-control" name="captcha" required autocomplete="off" placeholder="<?php echo htmlspecialchars($t['captcha_ph'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -379,18 +382,27 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     alertBox.classList.add('d-none');
 
     const formData = new FormData(this);
+    const csrfToken = document.getElementById('csrfTokenInput')?.value || '';
 
     try {
         const response = await fetch('/admin/login/process', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken,
                 'Accept': 'application/json'
             },
             body: formData
         });
 
-        const result = await response.json();
+        const rawText = await response.text();
+        let result;
+        try {
+            result = JSON.parse(rawText);
+        } catch (parseErr) {
+            console.error('Server raw response:', rawText);
+            throw new Error('Invalid JSON response from server');
+        }
 
         alertBox.classList.remove('d-none');
         if (result.success) {
@@ -405,8 +417,15 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             btn.disabled = false;
             btn.textContent = UI_TEXT.submitBtn;
 
+            if (result.new_captcha) {
+                const capEl = document.getElementById('captchaQuestion');
+                const capInput = document.getElementById('captchaInput');
+                if (capEl) capEl.textContent = result.new_captcha;
+                if (capInput) capInput.value = '';
+            }
+
             if (response.status === 403) {
-                setTimeout(() => window.location.reload(), 1500);
+                setTimeout(() => window.location.reload(), 1200);
             }
         }
     } catch (error) {

@@ -113,7 +113,7 @@ class AboutSettingsService
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
             $finalItems = [];
-            $rawItems = $postedServices['items'] ?? null;
+            $rawItems = $postedServices['items'] ?? [];
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
@@ -130,9 +130,9 @@ class AboutSettingsService
                         'img'   => $img,
                     ];
                 }
-            } else {
-                $finalItems = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'section_title'    => $secTitle,
@@ -152,7 +152,7 @@ class AboutSettingsService
             $existingItems   = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
             $postedItems = $_POST['about_counts'][$targetLang]['items']
-                ?? ($_POST['about_counts']['items'] ?? null);
+                ?? ($_POST['about_counts']['items'] ?? []);
 
             $finalItems = [];
             if (is_array($postedItems)) {
@@ -171,6 +171,8 @@ class AboutSettingsService
                     ];
                 }
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'items' => $finalItems,
@@ -196,7 +198,7 @@ class AboutSettingsService
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
             $finalItems = [];
-            $rawItems = $postedPartners['items'] ?? ($_POST['partner_items'] ?? null);
+            $rawItems = $postedPartners['items'] ?? ($_POST['partner_items'] ?? []);
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
@@ -211,9 +213,9 @@ class AboutSettingsService
                         $finalItems[] = ['img' => $img];
                     }
                 }
-            } else {
-                $finalItems = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'title' => $partnersTitle,
@@ -241,7 +243,7 @@ class AboutSettingsService
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
 
             $finalItems = [];
-            $rawItems = $postedTeam['items'] ?? null;
+            $rawItems = $postedTeam['items'] ?? [];
 
             if (is_array($rawItems)) {
                 foreach ($rawItems as $index => $item) {
@@ -258,9 +260,9 @@ class AboutSettingsService
                         'img'  => $img,
                     ];
                 }
-            } else {
-                $finalItems = $existingItems;
             }
+
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'title' => $teamTitle,
@@ -275,6 +277,29 @@ class AboutSettingsService
         $this->flushDeletedFiles();
 
         return true;
+    }
+
+    /**
+     * جدولة صور العناصر التي تم حذفها من القائمة لحذفها بأمان بعد حفظ قاعدة البيانات
+     */
+    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems): void
+    {
+        $retainedImages = [];
+        foreach ($finalItems as $item) {
+            if (is_array($item) && !empty($item['img'])) {
+                $retainedImages[ltrim((string)$item['img'], '/')] = true;
+            }
+        }
+
+        foreach ($existingItems as $oldItem) {
+            if (!is_array($oldItem) || empty($oldItem['img'])) {
+                continue;
+            }
+            $oldPath = ltrim((string)$oldItem['img'], '/');
+            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($retainedImages[$oldPath])) {
+                $this->filesToDelete[] = $oldPath;
+            }
+        }
     }
 
     /**
@@ -397,23 +422,15 @@ class AboutSettingsService
     }
 
     /**
-     * حذف الصور القديمة المستبدلة فعلياً من مجلد uploads بعد نجاح الحفظ
+     * حذف الصور القديمة المستبدلة فعلياً من مجلد uploads وسجل قاعدة البيانات بعد نجاح الحفظ
      */
     private function flushDeletedFiles(): void
     {
-        $uploadsRoot = realpath($this->rootPath . '/public/assets/uploads');
-        if ($uploadsRoot === false) {
-            return;
-        }
-
         foreach (array_unique($this->filesToDelete) as $relativePath) {
             if (!str_starts_with($relativePath, 'assets/uploads/')) {
                 continue;
             }
-            $targetFile = realpath($this->rootPath . '/public/' . $relativePath);
-            if ($targetFile !== false && str_starts_with($targetFile, $uploadsRoot . DIRECTORY_SEPARATOR) && is_file($targetFile)) {
-                @unlink($targetFile);
-            }
+            $this->imageUploader->deleteOldImage(basename($relativePath));
         }
         $this->filesToDelete = [];
     }

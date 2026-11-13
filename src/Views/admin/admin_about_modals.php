@@ -638,7 +638,9 @@ const ABOUT_CSRF_TOKEN = <?php echo json_encode($activeCsrfToken, JSON_UNESCAPED
 
 function removeRow(id) {
     const el = document.getElementById(id);
-    if (el) el.remove();
+    if (el) {
+        el.remove();
+    }
 }
 
 function showNotification(message, type = 'success') {
@@ -688,7 +690,7 @@ function showNotification(message, type = 'success') {
 function addAboutServiceRow() {
     const container = document.getElementById('aboutServicesContainer');
     if (!container) return;
-    const itemCount = container.querySelectorAll('.service-item-row').length;
+    const itemCount = Date.now();
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm service-item-row mb-3';
@@ -698,17 +700,17 @@ function addAboutServiceRow() {
         <div class="row g-3 align-items-center">
             <div class="col-md-6">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.service_title}</label>
-                <input type="text" class="form-control about-service-title" name="about_services[${ABOUT_ACTIVE_LANG}][items][${itemCount}][title]" value="">
+                <input type="text" class="form-control about-service-title" name="about_services[${ABOUT_ACTIVE_LANG}][items][0][title]" value="">
             </div>
             <div class="col-md-6">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.service_url}</label>
-                <input type="text" class="form-control about-service-url" name="about_services[${ABOUT_ACTIVE_LANG}][items][${itemCount}][url]" value="">
+                <input type="text" class="form-control about-service-url" name="about_services[${ABOUT_ACTIVE_LANG}][items][0][url]" value="">
             </div>
             <div class="col-md-11">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.image_icon}</label>
-                <input type="file" class="form-control about-service-file w-100" name="about_services_img_${itemCount}" accept="image/*">
+                <input type="file" class="form-control about-service-file w-100" name="about_services_img_0" accept="image/*">
             </div>
-            <input type="hidden" class="about-service-old-img" name="about_services[${ABOUT_ACTIVE_LANG}][items][${itemCount}][img]" value="">
+            <input type="hidden" class="about-service-old-img" name="about_services[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ABOUT_MODAL_TXT.delete_service}"><i class="bi bi-trash"></i></button>
             </div>
@@ -719,7 +721,7 @@ function addAboutServiceRow() {
 function addTeamRow() {
     const container = document.getElementById('teamRowsContainer');
     if (!container) return;
-    const teamCount = container.querySelectorAll('.team-row-item').length;
+    const teamCount = Date.now();
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm team-row-item mb-3';
@@ -729,17 +731,17 @@ function addTeamRow() {
         <div class="row g-3 align-items-center">
             <div class="col-md-3">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.member_name}</label>
-                <input type="text" class="form-control team-name" name="team[${ABOUT_ACTIVE_LANG}][items][${teamCount}][name]" value="">
+                <input type="text" class="form-control team-name" name="team[${ABOUT_ACTIVE_LANG}][items][0][name]" value="">
             </div>
             <div class="col-md-3">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.member_role}</label>
-                <input type="text" class="form-control team-role" name="team[${ABOUT_ACTIVE_LANG}][items][${teamCount}][role]" value="">
+                <input type="text" class="form-control team-role" name="team[${ABOUT_ACTIVE_LANG}][items][0][role]" value="">
             </div>
             <div class="col-md-5">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.member_image}</label>
-                <input type="file" class="form-control team-file w-100" name="team_img_${teamCount}" accept="image/*">
+                <input type="file" class="form-control team-file w-100" name="team_img_0" accept="image/*">
             </div>
-            <input type="hidden" class="team-old-img" name="team[${ABOUT_ACTIVE_LANG}][items][${teamCount}][img]" value="">
+            <input type="hidden" class="team-old-img" name="team[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ABOUT_MODAL_TXT.delete_member}"><i class="bi bi-trash"></i></button>
             </div>
@@ -750,7 +752,7 @@ function addTeamRow() {
 function addCountRow() {
     const container = document.getElementById('countsRowsContainer');
     if (!container) return;
-    const countsCount = container.querySelectorAll('.count-row-item').length;
+    const countsCount = Date.now();
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm count-row-item mb-3';
@@ -760,17 +762,17 @@ function addCountRow() {
         <div class="row g-3 align-items-center">
             <div class="col-md-3">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.count_number}</label>
-                <input type="text" class="form-control count-number" name="about_counts[${ABOUT_ACTIVE_LANG}][items][${countsCount}][number]" value="" placeholder="+500">
+                <input type="text" class="form-control count-number" name="about_counts[${ABOUT_ACTIVE_LANG}][items][0][number]" value="" placeholder="+500">
             </div>
             <div class="col-md-4">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.count_title}</label>
-                <input type="text" class="form-control count-title" name="about_counts[${ABOUT_ACTIVE_LANG}][items][${countsCount}][title]" value="">
+                <input type="text" class="form-control count-title" name="about_counts[${ABOUT_ACTIVE_LANG}][items][0][title]" value="">
             </div>
             <div class="col-md-4">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.count_image}</label>
-                <input type="file" class="form-control count-file w-100" name="count_img_${countsCount}" accept="image/*">
+                <input type="file" class="form-control count-file w-100" name="count_img_0" accept="image/*">
             </div>
-            <input type="hidden" class="count-old-img" name="about_counts[${ABOUT_ACTIVE_LANG}][items][${countsCount}][img]" value="">
+            <input type="hidden" class="count-old-img" name="about_counts[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ABOUT_MODAL_TXT.delete_count}"><i class="bi bi-trash"></i></button>
             </div>
@@ -781,7 +783,7 @@ function addCountRow() {
 function addPartnerRow() {
     const container = document.getElementById('partnersRowsContainer');
     if (!container) return;
-    const partnerCount = container.querySelectorAll('.partner-row-item').length;
+    const partnerCount = Date.now();
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm partner-row-item mb-3';
@@ -791,9 +793,9 @@ function addPartnerRow() {
         <div class="row g-3 align-items-center">
             <div class="col-md-11">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.partner_image}</label>
-                <input type="file" class="form-control partner-file w-100" name="partner_img_${partnerCount}" accept="image/*">
+                <input type="file" class="form-control partner-file w-100" name="partner_img_0" accept="image/*">
             </div>
-            <input type="hidden" class="partner-old-img" name="partners[${ABOUT_ACTIVE_LANG}][items][${partnerCount}][img]" value="">
+            <input type="hidden" class="partner-old-img" name="partners[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ABOUT_MODAL_TXT.delete_partner}"><i class="bi bi-trash"></i></button>
             </div>
@@ -807,100 +809,120 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addCountRowBtn')?.addEventListener('click', addCountRow);
     document.getElementById('addPartnerRowBtn')?.addEventListener('click', addPartnerRow);
 
-    document.querySelectorAll('.admin-settings-form').forEach(form => {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    const aboutFormIds = new Set(['aboutSectionForm', 'aboutServicesForm', 'teamForm', 'countsForm', 'partnersForm']);
 
-            const targetLang = this.querySelector('input[name="targetLang"]')?.value || ABOUT_ACTIVE_LANG;
+    // استخدام مرحلة الالتقاط (true) لضمان تنفيذ إعادة الترقيم ومنع أي مستمع مكرر في footer.php
+    document.addEventListener('submit', async function(e) {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || !aboutFormIds.has(form.id)) {
+            return;
+        }
 
-            // إعادة ترقيم صفوف خدمات صفحة من نحن
-            this.querySelectorAll('.service-item-row').forEach((row, index) => {
-                const titleInput  = row.querySelector('.about-service-title');
-                const urlInput    = row.querySelector('.about-service-url');
-                const fileInput   = row.querySelector('.about-service-file');
-                const oldImgInput = row.querySelector('.about-service-old-img');
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-                if (titleInput)  titleInput.name  = `about_services[${targetLang}][items][${index}][title]`;
-                if (urlInput)    urlInput.name    = `about_services[${targetLang}][items][${index}][url]`;
-                if (fileInput)   fileInput.name   = `about_services_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `about_services[${targetLang}][items][${index}][img]`;
-            });
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
 
-            // إعادة ترقيم صفوف فريق العمل
-            this.querySelectorAll('.team-row-item').forEach((row, index) => {
-                const nameInput   = row.querySelector('.team-name');
-                const roleInput   = row.querySelector('.team-role');
-                const fileInput   = row.querySelector('.team-file');
-                const oldImgInput = row.querySelector('.team-old-img');
+        const submitBtn = document.querySelector(`button[form="${form.id}"][type="submit"]`)
+            || form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
 
-                if (nameInput)   nameInput.name   = `team[${targetLang}][items][${index}][name]`;
-                if (roleInput)   roleInput.name   = `team[${targetLang}][items][${index}][role]`;
-                if (fileInput)   fileInput.name   = `team_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `team[${targetLang}][items][${index}][img]`;
-            });
+        const targetLang = form.querySelector('input[name="targetLang"]')?.value || ABOUT_ACTIVE_LANG;
 
-            // إعادة ترقيم صفوف الإحصائيات
-            this.querySelectorAll('.count-row-item').forEach((row, index) => {
-                const numInput    = row.querySelector('.count-number');
-                const titleInput  = row.querySelector('.count-title');
-                const fileInput   = row.querySelector('.count-file');
-                const oldImgInput = row.querySelector('.count-old-img');
+        // 1. إعادة ترقيم صفوف خدمات صفحة من نحن
+        form.querySelectorAll('.service-item-row').forEach((row, index) => {
+            const titleInput  = row.querySelector('.about-service-title');
+            const urlInput    = row.querySelector('.about-service-url');
+            const fileInput   = row.querySelector('.about-service-file');
+            const oldImgInput = row.querySelector('.about-service-old-img');
 
-                if (numInput)    numInput.name    = `about_counts[${targetLang}][items][${index}][number]`;
-                if (titleInput)  titleInput.name  = `about_counts[${targetLang}][items][${index}][title]`;
-                if (fileInput)   fileInput.name   = `count_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `about_counts[${targetLang}][items][${index}][img]`;
-            });
-
-            // إعادة ترقيم صفوف الشركاء
-            this.querySelectorAll('.partner-row-item').forEach((row, index) => {
-                const fileInput   = row.querySelector('.partner-file');
-                const oldImgInput = row.querySelector('.partner-old-img');
-
-                if (fileInput)   fileInput.name   = `partner_img_${index}`;
-                if (oldImgInput) oldImgInput.name = `partners[${targetLang}][items][${index}][img]`;
-            });
-
-            const formData = new FormData(this);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-                || formData.get('csrf_token')
-                || ABOUT_CSRF_TOKEN;
-
-            formData.set('csrf_token', csrfToken);
-
-            try {
-                const response = await fetch('/admin/settings/save', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-
-                const rawText = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(rawText);
-                } catch (parseErr) {
-                    console.error('Raw Server Response:', rawText);
-                    showNotification(ABOUT_MODAL_TXT.invalid_resp, 'danger');
-                    return;
-                }
-
-                if (data.success || data.status === 'success') {
-                    showNotification(ABOUT_MODAL_TXT.save_success, 'success');
-                    setTimeout(() => window.location.reload(), 900);
-                } else {
-                    showNotification(ABOUT_MODAL_TXT.save_error + (data.message || ''), 'danger');
-                }
-            } catch (err) {
-                console.error('Fetch Error:', err);
-                showNotification(ABOUT_MODAL_TXT.network_error, 'danger');
-            }
+            if (titleInput)  titleInput.name  = `about_services[${targetLang}][items][${index}][title]`;
+            if (urlInput)    urlInput.name    = `about_services[${targetLang}][items][${index}][url]`;
+            if (fileInput)   fileInput.name   = `about_services_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `about_services[${targetLang}][items][${index}][img]`;
         });
-    });
+
+        // 2. إعادة ترقيم صفوف فريق العمل
+        form.querySelectorAll('.team-row-item').forEach((row, index) => {
+            const nameInput   = row.querySelector('.team-name');
+            const roleInput   = row.querySelector('.team-role');
+            const fileInput   = row.querySelector('.team-file');
+            const oldImgInput = row.querySelector('.team-old-img');
+
+            if (nameInput)   nameInput.name   = `team[${targetLang}][items][${index}][name]`;
+            if (roleInput)   roleInput.name   = `team[${targetLang}][items][${index}][role]`;
+            if (fileInput)   fileInput.name   = `team_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `team[${targetLang}][items][${index}][img]`;
+        });
+
+        // 3. إعادة ترقيم صفوف الإحصائيات
+        form.querySelectorAll('.count-row-item').forEach((row, index) => {
+            const numInput    = row.querySelector('.count-number');
+            const titleInput  = row.querySelector('.count-title');
+            const fileInput   = row.querySelector('.count-file');
+            const oldImgInput = row.querySelector('.count-old-img');
+
+            if (numInput)    numInput.name    = `about_counts[${targetLang}][items][${index}][number]`;
+            if (titleInput)  titleInput.name  = `about_counts[${targetLang}][items][${index}][title]`;
+            if (fileInput)   fileInput.name   = `count_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `about_counts[${targetLang}][items][${index}][img]`;
+        });
+
+        // 4. إعادة ترقيم صفوف الشركاء
+        form.querySelectorAll('.partner-row-item').forEach((row, index) => {
+            const fileInput   = row.querySelector('.partner-file');
+            const oldImgInput = row.querySelector('.partner-old-img');
+
+            if (fileInput)   fileInput.name   = `partner_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `partners[${targetLang}][items][${index}][img]`;
+        });
+
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || formData.get('csrf_token')
+            || ABOUT_CSRF_TOKEN;
+
+        formData.set('csrf_token', csrfToken);
+
+        try {
+            const response = await fetch('/admin/settings/save', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const rawText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (parseErr) {
+                console.error('Raw Server Response:', rawText);
+                showNotification(ABOUT_MODAL_TXT.invalid_resp, 'danger');
+                form.dataset.submitting = 'false';
+                if (submitBtn) submitBtn.disabled = false;
+                return;
+            }
+
+            if (data.success || data.status === 'success') {
+                showNotification(ABOUT_MODAL_TXT.save_success, 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showNotification(ABOUT_MODAL_TXT.save_error + (data.message || ''), 'danger');
+                form.dataset.submitting = 'false';
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        } catch (err) {
+            console.error('Fetch Error:', err);
+            showNotification(ABOUT_MODAL_TXT.network_error, 'danger');
+            form.dataset.submitting = 'false';
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    }, true);
 });
 </script>

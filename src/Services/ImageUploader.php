@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Config\Database;
 use Throwable;
-use PDO;
 use RuntimeException;
 use InvalidArgumentException;
 
@@ -247,7 +246,7 @@ class ImageUploader
 
             $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
             if (!$resizedImage) {
-                imagedestroy($image);
+                unset($image);
                 throw new RuntimeException('فشل في تخصيص الذاكرة لتغيير أبعاد الصورة.');
             }
             
@@ -259,12 +258,12 @@ class ImageUploader
             }
 
             imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-            imagedestroy($image);
+            unset($image);
             $image = $resizedImage;
         }
 
         $saved = imagewebp($image, $destinationPath, $this->webpQuality);
-        imagedestroy($image);
+        unset($image);
 
         if (!$saved) {
             throw new RuntimeException('فشل في حفظ صورة WebP.');

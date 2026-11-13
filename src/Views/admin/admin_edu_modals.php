@@ -1,73 +1,160 @@
 <?php
+declare(strict_types=1);
+
 /**
- * Beethoven CMS - Education Admin Modals (Fully Localized & AJAX Enabled)
- * النمط القياسي الذهبي لنوافذ التحكم الخاصة بصفحة التعليم (مطابق تماماً لمعيار admin_about_modals.php)
+ * Beethoven CMS - Education Admin Modals (Gold Standard Security, Multilingual & AJAX)
+ * متطابق بالكامل مع EduSettingsService.php ونظام الحماية المركزي.
  */
 
-// 🌟 التحصين الأقوى: جلب اللغة حصراً من الجلسة أو الـ URL لضمان عدم ثباتها على لغة واحدة
-$current_lang = $_SESSION['site_lang'] ?? (isset($_GET['lang']) ? htmlspecialchars($_GET['lang'], ENT_QUOTES, 'UTF-8') : 'de');
-$is_rtl = ($current_lang === 'ar');
-$modal_dir = $is_rtl ? 'rtl' : 'ltr';
+if (!defined('ALLOWED_ACCESS')) {
+    http_response_code(403);
+    exit('Access Denied');
+}
+
+$supported_langs = ['de', 'en', 'ar'];
+$rawLang = (string)($_SESSION['site_lang'] ?? ($_GET['lang'] ?? 'de'));
+$current_lang = in_array(strtolower(trim($rawLang)), $supported_langs, true)
+    ? strtolower(trim($rawLang))
+    : 'de';
+
+$is_rtl      = ($current_lang === 'ar');
+$modal_dir   = $is_rtl ? 'rtl' : 'ltr';
 $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
-// تحميل ملف اللغة النشطة بدقة مطلقة
 $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
-if (!file_exists($lang_file)) {
+if (!is_file($lang_file)) {
     $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
 }
-$lang = file_exists($lang_file) ? require $lang_file : [];
-if (!is_array($lang)) $lang = [];
-
-// 🌟 جلب بيانات أقسام التعليم مباشرة من قاعدة البيانات إن لم تكن متوفرة في النطاق (Scope) لضمان عدم حدوث أي خطأ
-if (!isset($edu_hero) || empty($edu_hero)) {
-    try {
-        $pdoConn = \App\Config\Database::getConnection();
-        
-        $fetchSetting = function(string $key) use ($pdoConn, $current_lang) {
-            $stmt = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = :k");
-            $stmt->execute(['k' => $key]);
-            $raw = $stmt->fetchColumn();
-            if ($raw && is_string($raw)) {
-                $decoded = json_decode($raw, true);
-                if (is_array($decoded)) {
-                    if (isset($decoded[$current_lang])) return $decoded[$current_lang];
-                    if (isset($decoded['ar'])) return $decoded['ar'];
-                    return $decoded;
-                }
-            }
-            return [];
-        };
-
-        $edu_hero = $fetchSetting('edu_hero');
-        $edu_why_data = $fetchSetting('edu_why');
-        $edu_why_title = $edu_why_data['title'] ?? 'لماذا الدراسة في ألمانيا؟';
-        $edu_why_desc  = $edu_why_data['desc'] ?? '';
-        $edu_why_items = $edu_why_data['items'] ?? [];
-
-        $edu_timeline_data = $fetchSetting('edu_timeline');
-        $edu_timeline_title = $edu_timeline_data['title'] ?? 'خطوات الدراسة في ألمانيا';
-        $edu_timeline_desc  = $edu_timeline_data['desc'] ?? '';
-        $edu_timeline_steps = $edu_timeline_data['steps'] ?? ($edu_timeline_data['items'] ?? []);
-
-        $edu_services_data = $fetchSetting('edu_services');
-        $edu_services_title = $edu_services_data['title'] ?? ($edu_services_data['section_title'] ?? 'خدمات التعليم');
-        $edu_services_desc  = $edu_services_data['desc'] ?? ($edu_services_data['section_subtitle'] ?? '');
-        $edu_services_items = $edu_services_data['items'] ?? [];
-
-    } catch (\Exception $e) {
-        // قيم احتياطية عند حدوث أي استثناء
-        $edu_hero = [];
-        $edu_why_title = 'لماذا الدراسة في ألمانيا؟';
-        $edu_why_desc = '';
-        $edu_why_items = [];
-        $edu_timeline_title = 'خطوات الدراسة في ألمانيا';
-        $edu_timeline_desc = '';
-        $edu_timeline_steps = [];
-        $edu_services_title = 'خدمات التعليم';
-        $edu_services_desc = '';
-        $edu_services_items = [];
-    }
+$lang = is_file($lang_file) ? require $lang_file : [];
+if (!is_array($lang)) {
+    $lang = [];
 }
+
+$activeCsrfToken = \App\Core\Security::generateCsrfToken();
+
+// نصوص الواجهة للمودلات باللغات الثلاث
+$modalI18n = [
+    'de' => [
+        'save_success'       => 'Änderungen erfolgreich gespeichert. Seite wird neu geladen...',
+        'save_error'         => 'Speichern fehlgeschlagen: ',
+        'invalid_resp'       => 'Unerwartete Serverantwort.',
+        'network_error'      => 'Netzwerkfehler. Bitte versuchen Sie es später erneut.',
+        'success_title'      => 'Erfolgreich!',
+        'error_title'        => 'Fehler!',
+        'warning_title'      => 'Hinweis',
+        'max_steps_warn'     => 'Es können maximal 6 Schritte in der Zeitleiste hinzugefügt werden.',
+        'edu_why_title'      => 'Titel',
+        'edu_why_desc'       => 'Kurzbeschreibung',
+        'edu_why_image'      => 'Symbol / Bild',
+        'delete_item'        => 'Löschen',
+        'step_title'         => 'Schrittname',
+        'step_subtitle'      => 'Untertitel',
+        'step_desc'          => 'Details',
+        'step_order'         => 'Reihenfolge',
+        'step_icon'          => 'Symbol',
+        'delete_step'        => 'Schritt löschen',
+        'edu_srv_title'      => 'Dienstleistungsname',
+        'edu_srv_url'        => 'Dienstleistungs-URL',
+        'edu_srv_img'        => 'Hintergrundbild',
+        'delete_edu_service' => 'Dienstleistung löschen',
+    ],
+    'en' => [
+        'save_success'       => 'Changes saved successfully. Reloading page...',
+        'save_error'         => 'Failed to save changes: ',
+        'invalid_resp'       => 'Unexpected server response.',
+        'network_error'      => 'Network connection error. Please try again later.',
+        'success_title'      => 'Success!',
+        'error_title'        => 'Error!',
+        'warning_title'      => 'Notice',
+        'max_steps_warn'     => 'You cannot add more than 6 steps to the timeline.',
+        'edu_why_title'      => 'Title',
+        'edu_why_desc'       => 'Short Description',
+        'edu_why_image'      => 'Icon / Image',
+        'delete_item'        => 'Delete',
+        'step_title'         => 'Step Title',
+        'step_subtitle'      => 'Subtitle',
+        'step_desc'          => 'Details',
+        'step_order'         => 'Order',
+        'step_icon'          => 'Icon',
+        'delete_step'        => 'Delete Step',
+        'edu_srv_title'      => 'Service Title',
+        'edu_srv_url'        => 'Service URL',
+        'edu_srv_img'        => 'Background Image',
+        'delete_edu_service' => 'Delete Service',
+    ],
+    'ar' => [
+        'save_success'       => 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...',
+        'save_error'         => 'عذراً، لم يتم الحفظ: ',
+        'invalid_resp'       => 'استجابة غير متوقعة من الخادم.',
+        'network_error'      => 'حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.',
+        'success_title'      => 'تم بنجاح!',
+        'error_title'        => 'عذراً، حدث خطأ!',
+        'warning_title'      => 'تنبيه هام',
+        'max_steps_warn'     => 'عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).',
+        'edu_why_title'      => 'العنوان',
+        'edu_why_desc'       => 'الوصف المختصر',
+        'edu_why_image'      => 'الأيقونة / الصورة',
+        'delete_item'        => 'حذف',
+        'step_title'         => 'اسم الخطوة',
+        'step_subtitle'      => 'العنوان الفرعي',
+        'step_desc'          => 'التفاصيل',
+        'step_order'         => 'الترتيب',
+        'step_icon'          => 'الأيقونة',
+        'delete_step'        => 'حذف الخطوة',
+        'edu_srv_title'      => 'اسم الخدمة',
+        'edu_srv_url'        => 'رابط الخدمة',
+        'edu_srv_img'        => 'صورة الخلفية',
+        'delete_edu_service' => 'حذف الخدمة',
+    ],
+];
+$mTxt = $modalI18n[$current_lang];
+
+// دالة مساعدة لجلب البيانات الخام لكل قسم متعدد اللغات
+$fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
+    $raw = get_setting($key, '{}');
+    $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
+    if (!is_array($decoded)) {
+        return [];
+    }
+    if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
+        return $decoded[$current_lang];
+    }
+    if (isset($decoded['de']) && is_array($decoded['de'])) {
+        return $decoded['de'];
+    }
+    if (isset($decoded['en']) && is_array($decoded['en'])) {
+        return $decoded['en'];
+    }
+    if (isset($decoded['ar']) && is_array($decoded['ar'])) {
+        return $decoded['ar'];
+    }
+    return $decoded;
+};
+
+$curEduHero     = $fetchRawMultilingualSetting('edu_hero');
+$curEduWhy      = $fetchRawMultilingualSetting('edu_why');
+$curEduTimeline = $fetchRawMultilingualSetting('edu_timeline');
+$curEduServices = $fetchRawMultilingualSetting('edu_services');
+
+$modalHeroTitle   = (string)($curEduHero['title'] ?? ($edu_hero['title'] ?? ''));
+$modalHeroDesc    = (string)($curEduHero['desc'] ?? ($edu_hero['desc'] ?? ''));
+$modalHeroBtnText = (string)($curEduHero['btn_text'] ?? ($edu_hero['btn_text'] ?? ''));
+$modalHeroBtnUrl  = (string)($curEduHero['btn_url'] ?? ($edu_hero['btn_url'] ?? '#'));
+$modalHeroImg     = (string)($curEduHero['img'] ?? ($edu_hero['img'] ?? ''));
+
+$modalWhyTitle = (string)($curEduWhy['title'] ?? ($edu_why_title ?? ''));
+$modalWhyDesc  = (string)($curEduWhy['desc'] ?? ($edu_why_desc ?? ''));
+$modalWhyItems = is_array($curEduWhy['items'] ?? null) ? $curEduWhy['items'] : [];
+
+$modalTimelineTitle = (string)($curEduTimeline['title'] ?? ($edu_timeline_title ?? ''));
+$modalTimelineDesc  = (string)($curEduTimeline['desc'] ?? ($edu_timeline_desc ?? ''));
+$modalTimelineSteps = is_array($curEduTimeline['steps'] ?? null)
+    ? $curEduTimeline['steps']
+    : (is_array($curEduTimeline['items'] ?? null) ? $curEduTimeline['items'] : []);
+
+$modalServicesTitle = (string)($curEduServices['title'] ?? ($curEduServices['section_title'] ?? ($edu_services_title ?? '')));
+$modalServicesDesc  = (string)($curEduServices['desc'] ?? ($curEduServices['section_subtitle'] ?? ($edu_services_desc ?? '')));
+$modalServicesItems = is_array($curEduServices['items'] ?? null) ? $curEduServices['items'] : [];
 ?>
 
 <!-- 1. Edu Hero Modal (قسم الهيرو) -->
@@ -77,7 +164,7 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-mortarboard text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_edu_hero'] ?? 'تعديل هيرو التعليم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['manage_edu_hero'] ?? 'Edit Education Hero', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -85,47 +172,47 @@ if (!isset($edu_hero) || empty($edu_hero)) {
                 <form id="eduHeroForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_hero">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="row g-3">
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_title'] ?? 'العنوان الرئيسي', ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_hero['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_title'] ?? 'Title', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($modalHeroTitle, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_desc'] ?? 'الوصف', ENT_QUOTES, 'UTF-8'); ?></label>
-                                <textarea class="form-control" name="edu_hero[<?php echo $current_lang; ?>][desc]" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_hero['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_desc'] ?? 'Description', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <textarea class="form-control" name="edu_hero[<?php echo $current_lang; ?>][desc]" rows="4" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($modalHeroDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
 
                             <div class="col-md-6 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_btn_text'] ?? 'نص الزر', ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars($edu_hero['btn_text'] ?? 'ابدأ الآن', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_btn_text'] ?? 'Button Text', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_text]" value="<?php echo htmlspecialchars($modalHeroBtnText, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="col-md-6 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_url'] ?? 'رابط الزر', ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars($edu_hero['btn_url'] ?? '#', ENT_QUOTES, 'UTF-8'); ?>">
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_url'] ?? 'Button URL', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input type="text" class="form-control" name="edu_hero[<?php echo $current_lang; ?>][btn_url]" value="<?php echo htmlspecialchars($modalHeroBtnUrl, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
 
                             <div class="col-12 <?php echo $modal_align; ?>">
-                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_image'] ?? 'الصورة الرئيسية', ENT_QUOTES, 'UTF-8'); ?></label>
+                                <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_hero_image'] ?? 'Hero Image', ENT_QUOTES, 'UTF-8'); ?></label>
                                 <div class="d-flex align-items-center gap-2">
-                                    <?php if (!empty($edu_hero['img'])): ?>
+                                    <?php if ($modalHeroImg !== ''): ?>
                                         <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                            <img src="<?php echo htmlspecialchars(get_image_url($edu_hero['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            <img src="<?php echo htmlspecialchars(get_image_url($modalHeroImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Hero Image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
                                         </div>
                                     <?php endif; ?>
                                     <input type="file" class="form-control" name="edu_hero_img" accept="image/*">
                                 </div>
-                                <input type="hidden" name="old_edu_hero_img" value="<?php echo htmlspecialchars($edu_hero['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="old_edu_hero_img" value="<?php echo htmlspecialchars($modalHeroImg, ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="eduHeroForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="eduHeroForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'Save Changes', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'Cancel', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -138,82 +225,77 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-patch-question text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['edu_why_section_title'] ?? 'إدارة لماذا الدراسة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['edu_why_section_title'] ?? 'Manage Why Study', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <script>
-                    window.CMS_LANG = window.CMS_LANG || {};
-                    window.CMS_LANG.edu_why_title = '<?php echo addslashes($lang['edu_why_item_title'] ?? 'العنوان'); ?>';
-                    window.CMS_LANG.edu_why_desc = '<?php echo addslashes($lang['edu_why_item_desc'] ?? 'الوصف المختصر'); ?>';
-                    window.CMS_LANG.edu_why_image = '<?php echo addslashes($lang['edu_why_item_icon'] ?? 'الأيقونة / الصورة'); ?>';
-                    window.CMS_LANG.delete_item = '<?php echo addslashes($lang['edu_why_delete_title'] ?? 'حذف'); ?>';
-                </script>
-
                 <form id="eduWhyForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_why">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_title_label'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input type="text" class="form-control" name="edu_why[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_why_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_title_label'] ?? 'Section Title', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input type="text" class="form-control" name="edu_why[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($modalWhyTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_desc_label'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="edu_why[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_why_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_why_desc_label'] ?? 'Section Description', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea class="form-control" name="edu_why[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($modalWhyDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
-                    <!-- قائمة الأسباب -->
                     <div id="eduWhyContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($edu_why_items ?? []) as $index => $item): ?>
+                        <?php foreach ($modalWhyItems as $index => $item): 
+                            if (!is_array($item)) continue;
+                            $wTitle = (string)($item['title'] ?? '');
+                            $wDesc  = (string)($item['desc'] ?? '');
+                            $wImg   = (string)($item['img'] ?? '');
+                        ?>
                             <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="why_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_title'] ?? 'العنوان', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-why-title" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: جودة التعليم">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_why_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-why-title" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($wTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_desc'] ?? 'الوصف المختصر', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-why-desc" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($item['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="شرح بسيط للسبب">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_why_desc'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-why-desc" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($wDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_why_item_icon'] ?? 'الأيقونة / الصورة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_why_image'], ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
+                                            <?php if ($wImg !== ''): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($wImg), ENT_QUOTES, 'UTF-8'); ?>" alt="Icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control edu-why-file" name="edu_why_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
 
-                                    <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="edu-why-old-img" name="edu_why[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($wImg, ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['edu_why_delete_title'] ?? 'حذف', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('why_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduWhyRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_why_add_btn'] ?? 'إضافة سبب جديد', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addEduWhyBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_why_add_btn'] ?? 'Add Item', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="eduWhyForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="eduWhyForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'Save Changes', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'Cancel', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -226,95 +308,90 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-diagram-3 text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_edu_timeline'] ?? 'إدارة خطوات الرحلة', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['manage_edu_timeline'] ?? 'Manage Timeline', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <script>
-                    window.CMS_LANG = window.CMS_LANG || {};
-                    window.CMS_LANG.step_title = '<?php echo addslashes($lang['step_title_lbl'] ?? 'اسم الخطوة'); ?>';
-                    window.CMS_LANG.step_subtitle = '<?php echo addslashes($lang['step_subtitle_lbl'] ?? 'العنوان الفرعي'); ?>';
-                    window.CMS_LANG.step_desc = '<?php echo addslashes($lang['step_desc_lbl'] ?? 'التفاصيل'); ?>';
-                    window.CMS_LANG.step_order = '<?php echo addslashes($lang['step_order_lbl'] ?? 'الترتيب'); ?>';
-                    window.CMS_LANG.step_icon = '<?php echo addslashes($lang['step_icon_lbl'] ?? 'الأيقونة الحالية / الجديدة'); ?>';
-                    window.CMS_LANG.delete_step = '<?php echo addslashes($lang['delete_step'] ?? 'حذف الخطوة'); ?>';
-                </script>
-
                 <form id="eduTimelineForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_timeline">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_title_lbl'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input type="text" class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_timeline_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_title_lbl'] ?? 'Section Title', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input type="text" class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($modalTimelineTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_desc_lbl'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_timeline_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['edu_timeline_desc_lbl'] ?? 'Section Description', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea class="form-control" name="edu_timeline[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($modalTimelineDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
-                    <!-- قائمة خطوات الرحلة -->
                     <div id="eduTimelineContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($edu_timeline_steps ?? []) as $index => $step): ?>
+                        <?php foreach ($modalTimelineSteps as $index => $step): 
+                            if (!is_array($step)) continue;
+                            $sTitle    = (string)($step['title'] ?? '');
+                            $sSubtitle = (string)($step['subtitle'] ?? '');
+                            $sDesc     = (string)($step['desc'] ?? '');
+                            $sOrder    = (string)($step['order'] ?? $index);
+                            $sIcon     = (string)($step['icon'] ?? '');
+                        ?>
                             <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_title_lbl'] ?? 'اسم الخطوة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-step-title" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($step['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخطوة">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['step_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-step-title" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($sTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_subtitle_lbl'] ?? 'العنوان الفرعي', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($step['subtitle'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="العنوان الفرعي">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['step_subtitle'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][subtitle]" value="<?php echo htmlspecialchars($sSubtitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-9 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_desc_lbl'] ?? 'التفاصيل', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-step-desc" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($step['desc'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="التفاصيل">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['step_desc'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-step-desc" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][desc]" value="<?php echo htmlspecialchars($sDesc, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_order_lbl'] ?? 'الترتيب', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="number" class="form-control edu-step-order" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($step['order'] ?? $index, ENT_QUOTES, 'UTF-8'); ?>" placeholder="الترتيب">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['step_order'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="number" class="form-control edu-step-order" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][order]" value="<?php echo htmlspecialchars($sOrder, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['step_icon_lbl'] ?? 'الأيقونة الحالية / الجديدة', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['step_icon'], ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($step['icon'])): ?>
+                                            <?php if ($sIcon !== ''): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($step['icon']), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($sIcon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="rounded-2" style="width: 40px; height: 40px; object-fit: contain;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control edu-step-file" name="edu_timeline_icon_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
 
-                                    <input type="hidden" class="edu-step-old-icon" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($step['icon'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="edu-step-old-icon" name="edu_timeline[<?php echo $current_lang; ?>][steps][<?php echo $index; ?>][old_icon]" value="<?php echo htmlspecialchars($sIcon, ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('step_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_step'] ?? 'حذف الخطوة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('step_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_step'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduStepRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_timeline_add_btn'] ?? 'إضافة خطوة جديدة', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addEduStepBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_timeline_add_btn'] ?? 'Add Step', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="eduTimelineForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="eduTimelineForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'Save Changes', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'Cancel', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
@@ -327,387 +404,379 @@ if (!isset($edu_hero) || empty($edu_hero)) {
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-grid text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($lang['manage_edu_services'] ?? 'إدارة خدمات التعليم', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($lang['manage_edu_services'] ?? 'Manage Education Services', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <script>
-                    window.CMS_LANG = window.CMS_LANG || {};
-                    window.CMS_LANG.edu_srv_title = '<?php echo addslashes($lang['edu_srv_title_lbl'] ?? 'اسم الخدمة'); ?>';
-                    window.CMS_LANG.edu_srv_url = '<?php echo addslashes($lang['edu_srv_url_lbl'] ?? 'رابط الخدمة'); ?>';
-                    window.CMS_LANG.edu_srv_img = '<?php echo addslashes($lang['edu_srv_img_lbl'] ?? 'صورة الخلفية'); ?>';
-                    window.CMS_LANG.delete_edu_service = '<?php echo addslashes($lang['delete_edu_service'] ?? 'حذف الخدمة'); ?>';
-                </script>
-
                 <form id="eduServicesForm" class="admin-settings-form" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="update_edu_services">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <!-- عنوان ووصف القسم الرئيسي -->
                     <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'عنوان القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input type="text" class="form-control" name="edu_services[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($edu_services_title ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['title'] ?? 'Section Title', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input type="text" class="form-control" name="edu_services[<?php echo $current_lang; ?>][title]" value="<?php echo htmlspecialchars($modalServicesTitle, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>
                         <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'وصف القسم', ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="edu_services[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($edu_services_desc ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            <label class="form-label small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars($lang['description'] ?? 'Section Description', ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea class="form-control" name="edu_services[<?php echo $current_lang; ?>][desc]" rows="2" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($modalServicesDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
                     </div>
 
-                    <!-- قائمة خدمات التعليم -->
                     <div id="eduServicesContainer" class="d-flex flex-column gap-3">
-                        <?php foreach (($edu_services_items ?? []) as $index => $item): ?>
+                        <?php foreach ($modalServicesItems as $index => $item): 
+                            if (!is_array($item)) continue;
+                            $srvTitle = (string)($item['title'] ?? '');
+                            $srvUrl   = (string)($item['url'] ?? '');
+                            $srvImg   = (string)($item['img'] ?? '');
+                        ?>
                             <div class="p-3 shadow-sm edu-service-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="edu_srv_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_srv_title_lbl'] ?? 'اسم الخدمة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-srv-title" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($item['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="اسم الخدمة">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_srv_title'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-srv-title" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars($srvTitle, ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                     <div class="col-md-6 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_srv_url_lbl'] ?? 'رابط الخدمة', ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control edu-srv-url" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($item['url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="مثال: bachelor-package">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_srv_url'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control edu-srv-url" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][url]" value="<?php echo htmlspecialchars($srvUrl, ENT_QUOTES, 'UTF-8'); ?>" placeholder="bachelor-package">
                                     </div>
                                 </div>
 
                                 <div class="row g-2 align-items-end">
                                     <div class="col-11 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($lang['edu_srv_img_lbl'] ?? 'صورة الخلفية', ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['edu_srv_img'], ENT_QUOTES, 'UTF-8'); ?></label>
                                         <div class="d-flex align-items-center gap-2">
-                                            <?php if (!empty($item['img'])): ?>
+                                            <?php if ($srvImg !== ''): ?>
                                                 <div class="p-1 bg-light rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                    <img src="<?php echo htmlspecialchars(get_image_url($item['img']), ENT_QUOTES, 'UTF-8'); ?>" alt="service image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(get_image_url($srvImg), ENT_QUOTES, 'UTF-8'); ?>" alt="service image" class="rounded-2" style="width: 40px; height: 40px; object-fit: cover;">
                                                 </div>
                                             <?php endif; ?>
                                             <input type="file" class="form-control edu-srv-file" name="edu_service_img_<?php echo $index; ?>" accept="image/*">
                                         </div>
                                     </div>
 
-                                    <input type="hidden" class="edu-srv-old-img" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($item['img'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" class="edu-srv-old-img" name="edu_services[<?php echo $current_lang; ?>][items][<?php echo $index; ?>][old_img]" value="<?php echo htmlspecialchars($srvImg, ENT_QUOTES, 'UTF-8'); ?>">
 
                                     <div class="col-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($lang['delete_edu_service'] ?? 'حذف الخدمة', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('edu_srv_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_edu_service'], ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;" onclick="addEduServiceRow()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
-                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_services_add_btn'] ?? 'إضافة خدمة جديدة', ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addEduServiceBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($lang['edu_services_add_btn'] ?? 'Add Service', ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="eduServicesForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'حفظ التغييرات', ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'إلغاء', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="eduServicesForm" class="btn-premium"><?php echo htmlspecialchars($lang['save_changes'] ?? 'Save Changes', ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars($lang['cancel'] ?? 'Cancel', ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. دالة عامة لحذف أي صف بناءً على الـ ID
-    function removeRow(id) {
-        const el = document.getElementById(id);
-        if (el) el.remove();
+const EDU_MODAL_TXT = <?php echo json_encode($mTxt, JSON_UNESCAPED_UNICODE); ?>;
+const EDU_ACTIVE_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;
+const EDU_CSRF_TOKEN = <?php echo json_encode($activeCsrfToken, JSON_UNESCAPED_UNICODE); ?>;
+
+function removeRow(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function showNotification(message, type = 'success') {
+    const existingAlert = document.getElementById('customNotificationAlert');
+    if (existingAlert) existingAlert.remove();
+
+    let bgClass = 'alert-success';
+    let icon = 'bi-check-circle-fill';
+    let title = EDU_MODAL_TXT.success_title;
+
+    if (type === 'danger') {
+        bgClass = 'alert-danger';
+        icon = 'bi-x-circle-fill';
+        title = EDU_MODAL_TXT.error_title;
+    } else if (type === 'warning') {
+        bgClass = 'alert-warning';
+        icon = 'bi-exclamation-triangle-fill';
+        title = EDU_MODAL_TXT.warning_title;
     }
 
-    // 2. دالة إظهار التنبيهات الاحترافية فوق المودال
-    function showNotification(message, type = 'success') {
-        const existingAlert = document.getElementById('customNotificationAlert');
-        if (existingAlert) existingAlert.remove();
+    const alertDiv = document.createElement('div');
+    alertDiv.id = 'customNotificationAlert';
+    alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+    alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
+    
+    alertDiv.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi ${icon} fs-4"></i>
+            <div>
+                <strong>${title}</strong>
+                <div class="small">${message}</div>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 
-        let bgClass = 'alert-success';
-        let icon = 'bi-check-circle-fill';
-        let title = 'تم بنجاح!';
+    document.body.appendChild(alertDiv);
 
-        if (type === 'danger') {
-            bgClass = 'alert-danger';
-            icon = 'bi-x-circle-fill';
-            title = 'عذراً، حدث خطأ!';
-        } else if (type === 'warning') {
-            bgClass = 'alert-warning';
-            icon = 'bi-exclamation-triangle-fill';
-            title = 'تنبيه هام';
+    setTimeout(() => {
+        if (alertDiv) {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
         }
+    }, 4000);
+}
 
-        const alertDiv = document.createElement('div');
-        alertDiv.id = 'customNotificationAlert';
-        alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
-        alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
-        
-        alertDiv.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi ${icon} fs-4"></i>
-                <div>
-                    <strong>${title}</strong>
-                    <div class="small">${message}</div>
-                </div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+function addEduWhyRow() {
+    const container = document.getElementById('eduWhyContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.edu-why-row-item').length;
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm edu-why-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'why_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_why_title}</label>
+                <input type="text" class="form-control edu-why-title" name="edu_why[${EDU_ACTIVE_LANG}][items][0][title]">
             </div>
-        `;
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_why_desc}</label>
+                <input type="text" class="form-control edu-why-desc" name="edu_why[${EDU_ACTIVE_LANG}][items][0][desc]">
+            </div>
+        </div>
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_why_image}</label>
+                <input type="file" class="form-control edu-why-file" name="edu_why_img_0" accept="image/*">
+            </div>
+            <input type="hidden" class="edu-why-old-img" name="edu_why[${EDU_ACTIVE_LANG}][items][0][old_img]" value="">
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${EDU_MODAL_TXT.delete_item}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
 
-        document.body.appendChild(alertDiv);
+function addEduStepRow() {
+    const container = document.getElementById('eduTimelineContainer');
+    if (!container) return;
 
-        setTimeout(() => {
-            if (alertDiv) {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 300);
-            }
-        }, 4000);
+    const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
+    if (currentRows >= 6) {
+        showNotification(EDU_MODAL_TXT.max_steps_warn, 'warning');
+        return;
     }
 
-    // 3. دالة إضافة صف جديد لـ "لماذا الدراسة" (مترجمة ديناميكياً)
-    function addEduWhyRow() {
-        const container = document.getElementById('eduWhyContainer');
-        if (!container) return;
-        const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
-        const eduWhyCount = container.querySelectorAll('.edu-why-row-item').length;
-
-        const t = window.CMS_LANG || {};
-        const tTitle = t.edu_why_title || 'العنوان';
-        const tDesc = t.edu_why_desc || 'الوصف المختصر';
-        const tImg = t.edu_why_image || 'الأيقونة / الصورة';
-        const tDelete = t.delete_item || 'حذف';
-
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm edu-why-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'why_row_' + Date.now() + '_' + eduWhyCount;
-        div.innerHTML = `
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tTitle}</label>
-                    <input type="text" class="form-control edu-why-title" name="edu_why[${currentLang}][items][${eduWhyCount}][title]" placeholder="مثال: جودة التعليم">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tDesc}</label>
-                    <input type="text" class="form-control edu-why-desc" name="edu_why[${currentLang}][items][${eduWhyCount}][desc]" placeholder="شرح بسيط للسبب">
-                </div>
+    const rowUid = Date.now() + '_' + currentRows;
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm edu-timeline-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'step_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.step_title}</label>
+                <input type="text" class="form-control edu-step-title" name="edu_timeline[${EDU_ACTIVE_LANG}][steps][0][title]">
             </div>
-            <div class="row g-2 align-items-end">
-                <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">${tImg}</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control edu-why-file" name="edu_why_img_${eduWhyCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="edu-why-old-img" name="edu_why[${currentLang}][items][${eduWhyCount}][old_img]" value="">
-                <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.step_subtitle}</label>
+                <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[${EDU_ACTIVE_LANG}][steps][0][subtitle]">
+            </div>
+        </div>
+        <div class="row g-2 mb-3">
+            <div class="col-md-9">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.step_desc}</label>
+                <input type="text" class="form-control edu-step-desc" name="edu_timeline[${EDU_ACTIVE_LANG}][steps][0][desc]">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.step_order}</label>
+                <input type="number" class="form-control edu-step-order" name="edu_timeline[${EDU_ACTIVE_LANG}][steps][0][order]" value="${currentRows}">
+            </div>
+        </div>
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.step_icon}</label>
+                <input type="file" class="form-control edu-step-file" name="edu_timeline_icon_0" accept="image/*">
+            </div>
+            <input type="hidden" class="edu-step-old-icon" name="edu_timeline[${EDU_ACTIVE_LANG}][steps][0][old_icon]" value="">
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${EDU_MODAL_TXT.delete_step}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
 
-    // دالة إضافة صف جديد لـ "خطوات الرحلة التعليمية" مع قيد الـ 6 عناصر والترجمة الديناميكية
-    function addEduStepRow() {
-        const container = document.getElementById('eduTimelineContainer');
-        if (!container) return;
-        const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
-        
-        const currentRows = container.querySelectorAll('.edu-timeline-row-item').length;
-        if (currentRows >= 6) {
-            showNotification('عذراً، لا يمكن إضافة أكثر من 6 عناصر في خط الزمن (Timeline).', 'warning');
+function addEduServiceRow() {
+    const container = document.getElementById('eduServicesContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.edu-service-row-item').length;
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm edu-service-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'edu_srv_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_srv_title}</label>
+                <input type="text" class="form-control edu-srv-title" name="edu_services[${EDU_ACTIVE_LANG}][items][0][title]">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_srv_url}</label>
+                <input type="text" class="form-control edu-srv-url" name="edu_services[${EDU_ACTIVE_LANG}][items][0][url]" placeholder="bachelor-package">
+            </div>
+        </div>
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${EDU_MODAL_TXT.edu_srv_img}</label>
+                <input type="file" class="form-control edu-srv-file" name="edu_service_img_0" accept="image/*">
+            </div>
+            <input type="hidden" class="edu-srv-old-img" name="edu_services[${EDU_ACTIVE_LANG}][items][0][old_img]" value="">
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${EDU_MODAL_TXT.delete_edu_service}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addEduWhyBtn')?.addEventListener('click', addEduWhyRow);
+    document.getElementById('addEduStepBtn')?.addEventListener('click', addEduStepRow);
+    document.getElementById('addEduServiceBtn')?.addEventListener('click', addEduServiceRow);
+
+    const eduFormIds = new Set(['eduHeroForm', 'eduWhyForm', 'eduTimelineForm', 'eduServicesForm']);
+
+    document.addEventListener('submit', async function(e) {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || !eduFormIds.has(form.id)) {
             return;
         }
 
-        const t = window.CMS_LANG || {};
-        const tTitle = t.step_title || 'اسم الخطوة';
-        const tSubtitle = t.step_subtitle || 'العنوان الفرعي';
-        const tDesc = t.step_desc || 'التفاصيل';
-        const tOrder = t.step_order || 'الترتيب';
-        const tIcon = t.step_icon || 'الأيقونة الحالية / الجديدة';
-        const tDelete = t.delete_step || 'حذف الخطوة';
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-        const eduStepCount = currentRows;
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm edu-timeline-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'step_row_' + Date.now() + '_' + eduStepCount;
-        div.innerHTML = `
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tTitle}</label>
-                    <input type="text" class="form-control edu-step-title" name="edu_timeline[${currentLang}][steps][${eduStepCount}][title]" placeholder="${tTitle}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tSubtitle}</label>
-                    <input type="text" class="form-control edu-step-subtitle" name="edu_timeline[${currentLang}][steps][${eduStepCount}][subtitle]" placeholder="${tSubtitle}">
-                </div>
-            </div>
-            <div class="row g-2 mb-3">
-                <div class="col-md-9">
-                    <label class="form-label fw-semibold small text-secondary">${tDesc}</label>
-                    <input type="text" class="form-control edu-step-desc" name="edu_timeline[${currentLang}][steps][${eduStepCount}][desc]" placeholder="${tDesc}">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold small text-secondary">${tOrder}</label>
-                    <input type="number" class="form-control edu-step-order" name="edu_timeline[${currentLang}][steps][${eduStepCount}][order]" value="${eduStepCount}" placeholder="${tOrder}">
-                </div>
-            </div>
-            <div class="row g-2 align-items-end">
-                <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">${tIcon}</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control edu-step-file" name="edu_timeline_icon_${eduStepCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="edu-step-old-icon" name="edu_timeline[${currentLang}][steps][${eduStepCount}][old_icon]" value="">
-                <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
 
-    // دالة إضافة صف جديد لـ "خدمات التعليم" (مترجمة ديناميكياً)
-    function addEduServiceRow() {
-        const container = document.getElementById('eduServicesContainer');
-        if (!container) return;
-        const currentLang = document.querySelector('input[name="targetLang"]')?.value || 'ar';
-        const eduSrvCount = container.querySelectorAll('.edu-service-row-item').length;
+        const submitBtn = document.querySelector(`button[form="${form.id}"][type="submit"]`)
+            || form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
 
-        const t = window.CMS_LANG || {};
-        const tTitle = t.edu_srv_title || 'اسم الخدمة';
-        const tUrl = t.edu_srv_url || 'رابط الخدمة';
-        const tImg = t.edu_srv_img || 'صورة الخلفية الحالية / الجديدة';
-        const tDelete = t.delete_edu_service || 'حذف الخدمة';
+        const targetLang = form.querySelector('input[name="targetLang"]')?.value || EDU_ACTIVE_LANG;
 
-        const div = document.createElement('div');
-        div.className = 'p-3 shadow-sm edu-service-row-item mb-3';
-        div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
-        div.id = 'edu_srv_row_' + Date.now() + '_' + eduSrvCount;
-        div.innerHTML = `
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tTitle}</label>
-                    <input type="text" class="form-control edu-srv-title" name="edu_services[${currentLang}][items][${eduSrvCount}][title]" placeholder="${tTitle}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold small text-secondary">${tUrl}</label>
-                    <input type="text" class="form-control edu-srv-url" name="edu_services[${currentLang}][items][${eduSrvCount}][url]" placeholder="مثال: bachelor-package">
-                </div>
-            </div>
-            <div class="row g-2 align-items-end">
-                <div class="col-11">
-                    <label class="form-label fw-semibold small text-secondary">${tImg}</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="file" class="form-control edu-srv-file" name="edu_service_img_${eduSrvCount}" accept="image/*">
-                    </div>
-                </div>
-                <input type="hidden" class="edu-srv-old-img" name="edu_services[${currentLang}][items][${eduSrvCount}][old_img]" value="">
-                <div class="col-1 text-center pb-1">
-                    <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${tDelete}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            </div>`;
-        container.appendChild(div);
-    }
+        // 1. إعادة ترقيم "لماذا الدراسة"
+        form.querySelectorAll('.edu-why-row-item').forEach((row, index) => {
+            const titleInput  = row.querySelector('.edu-why-title');
+            const descInput   = row.querySelector('.edu-why-desc');
+            const fileInput   = row.querySelector('.edu-why-file');
+            const oldImgInput = row.querySelector('.edu-why-old-img');
 
-    // 6. معالج الحفظ وإعادة الترقيم التلقائي لجميع الأقسام عند الحفظ عبر AJAX
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.custom-modal form, .admin-settings-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const currentLang = this.querySelector('input[name="targetLang"]')?.value || 'ar';
-
-                // إعادة ترقيم "لماذا الدراسة"
-                form.querySelectorAll('.edu-why-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.edu-why-title');
-                    const descInput = row.querySelector('.edu-why-desc');
-                    const fileInput = row.querySelector('.edu-why-file');
-                    const oldImgInput = row.querySelector('.edu-why-old-img');
-
-                    if (titleInput) titleInput.name = `edu_why[${currentLang}][items][${index}][title]`;
-                    if (descInput) descInput.name = `edu_why[${currentLang}][items][${index}][desc]`;
-                    if (fileInput) fileInput.name = `edu_why_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `edu_why[${currentLang}][items][${index}][old_img]`;
-                });
-
-                // إعادة ترقيم "خطوات الرحلة التعليمية"
-                form.querySelectorAll('.edu-timeline-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.edu-step-title');
-                    const subtitleInput = row.querySelector('.edu-step-subtitle');
-                    const orderInput = row.querySelector('.edu-step-order');
-                    const descInput = row.querySelector('.edu-step-desc');
-                    const fileInput = row.querySelector('.edu-step-file');
-                    const oldIconInput = row.querySelector('.edu-step-old-icon');
-
-                    if (titleInput) titleInput.name = `edu_timeline[${currentLang}][steps][${index}][title]`;
-                    if (subtitleInput) subtitleInput.name = `edu_timeline[${currentLang}][steps][${index}][subtitle]`;
-                    if (orderInput) orderInput.name = `edu_timeline[${currentLang}][steps][${index}][order]`;
-                    if (descInput) descInput.name = `edu_timeline[${currentLang}][steps][${index}][desc]`;
-                    if (fileInput) fileInput.name = `edu_timeline_icon_${index}`;
-                    if (oldIconInput) oldIconInput.name = `edu_timeline[${currentLang}][steps][${index}][old_icon]`;
-                });
-
-                // إعادة ترقيم "خدمات التعليم" وتعديل الرابط تلقائياً ليتوافق مع الـ Router
-                form.querySelectorAll('.edu-service-row-item').forEach((row, index) => {
-                    const titleInput = row.querySelector('.edu-srv-title');
-                    const urlInput = row.querySelector('.edu-srv-url');
-                    const fileInput = row.querySelector('.edu-srv-file');
-                    const oldImgInput = row.querySelector('.edu-srv-old-img');
-
-                    if (titleInput) titleInput.name = `edu_services[${currentLang}][items][${index}][title]`;
-                    
-                    if (urlInput) {
-                        let val = urlInput.value.trim();
-                        if (val && !val.startsWith('http') && !val.includes('edu-services/') && !val.includes('job-services/')) {
-                            val = 'edu-services/' + val;
-                        }
-                        urlInput.value = val;
-                        urlInput.name = `edu_services[${currentLang}][items][${index}][url]`;
-                    }
-
-                    if (fileInput) fileInput.name = `edu_service_img_${index}`;
-                    if (oldImgInput) oldImgInput.name = `edu_services[${currentLang}][items][${index}][old_img]`;
-                });
-
-                const formData = new FormData(this);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                if (csrfToken && !formData.has('csrf_token')) {
-                    formData.append('csrf_token', csrfToken);
-                }
-
-                fetch('index.php?url=admin/settings/save', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(text => {
-                    console.log("Raw Server Response:", text);
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success || data.status === 'success') {
-                            showNotification('تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...', 'success');
-                            setTimeout(() => location.reload(), 1000);
-                        } else {
-                            showNotification('عذراً، لم يتم الحفظ: ' + (data.message || 'يرجى التأكد من البيانات المدخلة'), 'danger');
-                        }
-                    } catch (e) {
-                        showNotification('الخطأ الحقيقي من السيرفر: ' + text, 'danger');
-                    }
-                })
-                .catch(err => {
-                    console.error('Fetch Error:', err);
-                    showNotification('حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.', 'danger');
-                });
-            });
+            if (titleInput)  titleInput.name  = `edu_why[${targetLang}][items][${index}][title]`;
+            if (descInput)   descInput.name   = `edu_why[${targetLang}][items][${index}][desc]`;
+            if (fileInput)   fileInput.name   = `edu_why_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `edu_why[${targetLang}][items][${index}][old_img]`;
         });
-    });
-</script>
 
+        // 2. إعادة ترقيم "خطوات الرحلة التعليمية"
+        form.querySelectorAll('.edu-timeline-row-item').forEach((row, index) => {
+            const titleInput    = row.querySelector('.edu-step-title');
+            const subtitleInput = row.querySelector('.edu-step-subtitle');
+            const orderInput    = row.querySelector('.edu-step-order');
+            const descInput     = row.querySelector('.edu-step-desc');
+            const fileInput     = row.querySelector('.edu-step-file');
+            const oldIconInput  = row.querySelector('.edu-step-old-icon');
+
+            if (titleInput)    titleInput.name    = `edu_timeline[${targetLang}][steps][${index}][title]`;
+            if (subtitleInput) subtitleInput.name = `edu_timeline[${targetLang}][steps][${index}][subtitle]`;
+            if (orderInput)    orderInput.name    = `edu_timeline[${targetLang}][steps][${index}][order]`;
+            if (descInput)     descInput.name     = `edu_timeline[${targetLang}][steps][${index}][desc]`;
+            if (fileInput)     fileInput.name     = `edu_timeline_icon_${index}`;
+            if (oldIconInput)  oldIconInput.name  = `edu_timeline[${targetLang}][steps][${index}][old_icon]`;
+        });
+
+        // 3. إعادة ترقيم "خدمات التعليم"
+        form.querySelectorAll('.edu-service-row-item').forEach((row, index) => {
+            const titleInput  = row.querySelector('.edu-srv-title');
+            const urlInput    = row.querySelector('.edu-srv-url');
+            const fileInput   = row.querySelector('.edu-srv-file');
+            const oldImgInput = row.querySelector('.edu-srv-old-img');
+
+            if (titleInput) titleInput.name = `edu_services[${targetLang}][items][${index}][title]`;
+
+            if (urlInput) {
+                let val = urlInput.value.trim();
+                if (val && val !== '#' && !val.startsWith('http') && !val.startsWith('/') && !val.startsWith('edu-services/') && !val.startsWith('job-services/')) {
+                    val = 'edu-services/' + val;
+                }
+                urlInput.value = val;
+                urlInput.name  = `edu_services[${targetLang}][items][${index}][url]`;
+            }
+
+            if (fileInput)   fileInput.name   = `edu_service_img_${index}`;
+            if (oldImgInput) oldImgInput.name = `edu_services[${targetLang}][items][${index}][old_img]`;
+        });
+
+        const formData = new FormData(form);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || formData.get('csrf_token')
+            || EDU_CSRF_TOKEN;
+
+        formData.set('csrf_token', csrfToken);
+
+        try {
+            const response = await fetch('/admin/settings/save', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const rawText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (parseErr) {
+                console.error('Raw Server Response:', rawText);
+                showNotification(EDU_MODAL_TXT.invalid_resp, 'danger');
+                form.dataset.submitting = 'false';
+                if (submitBtn) submitBtn.disabled = false;
+                return;
+            }
+
+            if (data.success || data.status === 'success') {
+                showNotification(EDU_MODAL_TXT.save_success, 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showNotification(EDU_MODAL_TXT.save_error + (data.message || ''), 'danger');
+                form.dataset.submitting = 'false';
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        } catch (err) {
+            console.error('Fetch Error:', err);
+            showNotification(EDU_MODAL_TXT.network_error, 'danger');
+            form.dataset.submitting = 'false';
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    }, true);
+});
+</script>

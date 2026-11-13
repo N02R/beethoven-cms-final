@@ -3,86 +3,137 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\SiteModel;
 use App\Models\EducationModel;
+use App\Models\SiteModel;
 
-class EducationController {
-    public function index(string $lang = 'de'): void {
-        // حماية مخرجات اللغة المعروضة
-        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+class EducationController
+{
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const SESSION_TIMEOUT = 1800; // 30 دقيقة
 
-        // إدارة الجلسات بأمان تام
-        if (session_status() === PHP_SESSION_NONE) {
-            ini_set('session.cookie_httponly', '1');
+    public function index(string $langCode = 'de'): void
+    {
+        $this->initSecureSession();
+
+        // 1. حصر اللغة في القائمة البيضاء المعتمدة (de | en | ar)
+        $cleanLang = strtolower(trim($langCode));
+        if (!in_array($cleanLang, self::SUPPORTED_LANGS, true)) {
+            $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+            $cleanLang = in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
+        }
+
+        $_SESSION['site_lang'] = $cleanLang;
+        $current_lang = $cleanLang;
+        $current_dir  = ($current_lang === 'ar') ? 'rtl' : 'ltr';
+
+        // 2. تحميل ملف الترجمة مع التراجع الآمن إلى الألمانية (de) ثم الإنجليزية (en)
+        $lang = $this->loadLanguageArray($current_lang);
+
+        // 3. جلب بيانات الهيدر والفوتر ودمجها مع بيانات قسم التعليم
+        $globalData = SiteModel::getGlobalData();
+        $eduData    = class_exists(EducationModel::class) ? EducationModel::getEducationData($current_lang) : [];
+        $data       = array_merge($globalData, is_array($eduData) ? $eduData : []);
+        $currentSettings = $data;
+
+        // 4. التحقق الصارم من صلاحية المشرف وحماية الجلسة
+        $is_admin     = $this->verifyAdminSession();
+        $is_logged_in = $is_admin;
+
+        $data['is_admin']     = $is_admin;
+        $data['is_logged_in'] = $is_logged_in;
+        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
+        $data['current_lang'] = $current_lang;
+        $data['current_dir']  = $current_dir;
+
+        $path_prefix = '/';
+        $page_css    = ['/assets/css/style.css', '/assets/css/education.css'];
+
+        // 5. عرض الهيدر، صفحة التعليم، والفوتر بالترتيب القياسي
+        $viewsRoot = __DIR__ . '/../Views';
+
+        $header_file = $viewsRoot . '/partials/header.php';
+        if (is_file($header_file)) {
+            include_once $header_file;
+        }
+
+        $view_file = $viewsRoot . '/education.php';
+        if (is_file($view_file)) {
+            require_once $view_file;
+        }
+
+        $footer_file = $viewsRoot . '/partials/footer.php';
+        if (is_file($footer_file)) {
+            include_once $footer_file;
+        }
+    }
+
+    private function initSecureSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
             ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                ini_set('session.cookie_secure', '1');
-            }
+            ini_set('session.use_only_cookies', '1');
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'domain'   => '',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => 'Strict',
+            ]);
+
             session_start();
         }
+    }
 
-        // ==========================================
-        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات (مطابق لـ HomeController)
-        // ==========================================
-        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
-        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
-        $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
+    private function loadLanguageArray(string $langCode): array
+    {
+        $langDir    = __DIR__ . '/../Lang/';
+        $candidates = [$langCode, 'de', 'en', 'ar'];
 
-        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
-        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
-        $lang_data = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
-        $lang = $lang_data; // توافقاً تاماً مع المتغير المعتمد في الهيدر والفوتر والصفحة
-        // ==========================================
-
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../');
-
-        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
-        $data = SiteModel::getGlobalData();
-
-        // 2. جلب بيانات قسم التعليم الخاصة باستخدام EducationModel
-        $eduData = EducationModel::getEducationData(); 
-        $data = array_merge($data, $eduData);
-
-        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
-        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
-        $user_role = $_SESSION['role'] ?? '';
-        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
-
-        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
-        $data['is_admin'] = $is_admin;
-        $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
-
-        // متغيرات إضافية قد تحتاجها الـ View
-        $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/education.css'];
-
-        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
-        extract($data);
-
-        // 1. استدعاء الهيدر المشترك
-        $header_file = __DIR__ . '/../Views/partials/header.php';
-        if (file_exists($header_file)) {
-            include_once $header_file;
-        } else {
-            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
+        foreach (array_unique($candidates) as $code) {
+            $file = $langDir . $code . '.php';
+            if (is_file($file)) {
+                $loaded = require $file;
+                if (is_array($loaded)) {
+                    return $loaded;
+                }
+            }
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالتعليم (education.php)
-        $view_file = __DIR__ . '/../Views/education.php';
-        if (file_exists($view_file)) {
-            require_once $view_file;
-        } else {
-            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
+        return [];
+    }
+
+    private function verifyAdminSession(): bool
+    {
+        if (empty($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+            return false;
         }
 
-        // 3. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/src/Views/partials/footer.php';
-        if (file_exists($footer_file)) {
-            include_once $footer_file;
-        } else {
-            echo "<div class=' py-3 text-danger'>Footer file not found.</div>";
+        $role = (string)($_SESSION['role'] ?? '');
+        if (!in_array($role, ['admin', 'super_admin'], true)) {
+            return false;
         }
+
+        $lastActivity = (int)($_SESSION['LAST_ACTIVITY'] ?? 0);
+        if ($lastActivity > 0 && (time() - $lastActivity) > self::SESSION_TIMEOUT) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
+        if (!empty($_SESSION['user_agent_hash']) && !hash_equals((string)$_SESSION['user_agent_hash'], $currentAgentHash)) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $_SESSION['LAST_ACTIVITY'] = time();
+        return true;
     }
 }

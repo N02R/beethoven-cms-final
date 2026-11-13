@@ -5,6 +5,11 @@ declare(strict_types=1);
  * Beethoven CMS - Multilingual Two-Factor Authentication View (DE / EN / AR)
  */
 
+if (!defined('ALLOWED_ACCESS')) {
+    http_response_code(403);
+    exit('Access Denied');
+}
+
 $supportedLangs = ['de', 'en', 'ar'];
 
 if (isset($_GET['lang']) && in_array($_GET['lang'], $supportedLangs, true)) {
@@ -60,7 +65,8 @@ $translations = [
 ];
 
 $t = $translations[$currentLang];
-$isLocalDev = (($_ENV['APP_ENV'] ?? 'production') !== 'production');
+$isLocalHost = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1'], true);
+$isLocalDev  = (($_ENV['APP_ENV'] ?? 'production') !== 'production') || $isLocalHost;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo htmlspecialchars($currentLang, ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo $dir; ?>">
@@ -72,17 +78,15 @@ $isLocalDev = (($_ENV['APP_ENV'] ?? 'production') !== 'production');
     
     <?php if ($isRtl): ?>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <?php else: ?>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <?php endif; ?>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
         body {
-            font-family: <?php echo $isRtl ? "'Cairo', sans-serif" : "'Plus Jakarta Sans', system-ui, sans-serif"; ?>;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             min-height: 100vh;
             display: flex;
@@ -93,7 +97,6 @@ $isLocalDev = (($_ENV['APP_ENV'] ?? 'production') !== 'production');
             position: relative;
         }
 
-        /* مربع اللغة الزجاجي العائم */
         .floating-lang-wrapper {
             position: fixed;
             top: 24px;
@@ -257,7 +260,6 @@ $isLocalDev = (($_ENV['APP_ENV'] ?? 'production') !== 'production');
 </head>
 <body>
 
-<!-- مربع اللغة الزجاجي العائم -->
 <div class="floating-lang-wrapper">
     <div class="lang-glass-box" tabindex="0" role="button" aria-label="<?php echo htmlspecialchars($t['lang_label'], ENT_QUOTES, 'UTF-8'); ?>">
         <?php echo htmlspecialchars($langBadges[$currentLang], ENT_QUOTES, 'UTF-8'); ?>

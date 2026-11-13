@@ -113,6 +113,9 @@ class AuthController
         ?string $newCaptcha = null
     ): void {
         if ($isAjax) {
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
             http_response_code($statusCode);
             header('Content-Type: application/json; charset=utf-8');
             $payload = [
@@ -146,7 +149,6 @@ class AuthController
         $error_msg = $_SESSION['login_error'] ?? '';
         unset($_SESSION['login_error']);
 
-        // توليد رمز CSRF موحد وتجهيز الكابتشا
         $csrf_token = Security::generateCsrfToken();
         $this->generateCaptcha();
 
@@ -161,6 +163,10 @@ class AuthController
 
     public function authenticate(): void
     {
+        if (ob_get_level() === 0) {
+            ob_start();
+        }
+
         $this->ensureSession();
         $this->getCurrentLang();
 
@@ -187,7 +193,7 @@ class AuthController
             $this->respond($isAjax, false, $this->msg('csrf_expired'), '/admin/login', 403);
         }
 
-        // 3. التحقق من الكابتشا الحسابية وتجديدها عند الخطأ
+        // 3. التحقق من الكابتشا الحسابية
         if (isset($_POST['captcha'])) {
             $userCaptcha     = trim((string)$_POST['captcha']);
             $expectedCaptcha = (string)($_SESSION['captcha_result'] ?? '');
@@ -244,9 +250,6 @@ class AuthController
             $savedLang = $this->getCurrentLang();
             unset($_SESSION['login_attempts'], $_SESSION['login_lock_until'], $_SESSION['captcha_num1'], $_SESSION['captcha_num2'], $_SESSION['captcha_result']);
 
-            session_regenerate_id(true);
-            Security::rotateCsrfToken();
-
             $_SESSION['admin_login_lang'] = $savedLang;
             $_SESSION['site_lang']        = $savedLang;
 
@@ -259,7 +262,8 @@ class AuthController
             $_SESSION['2fa_csrf']          = bin2hex(random_bytes(32));
             $_SESSION['user_agent_hash']   = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
 
-            if (($_ENV['APP_ENV'] ?? 'production') !== 'production') {
+            $isLocalHost = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1'], true);
+            if (($_ENV['APP_ENV'] ?? 'production') !== 'production' || $isLocalHost) {
                 $_SESSION['2fa_code'] = $otpCode;
             } else {
                 unset($_SESSION['2fa_code']);

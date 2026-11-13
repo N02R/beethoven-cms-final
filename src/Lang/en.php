@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 return [
     'home'                      => 'Home',
     'about'                     => 'About Us',
@@ -41,7 +43,7 @@ return [
     'platform_icon_image'       => 'Platform Icon / Image',
     'delete_platform'           => 'Delete Platform',
     'add_new_platform'          => 'Add New Platform',
-    
+
     'announcement_settings'     => 'Announcement Bar Settings',
     'ad_status_timing'          => 'Status & Schedule',
     'display_status'            => 'Display Status',
@@ -90,12 +92,12 @@ return [
     'image_or_icon'             => 'Image / Icon',
     'delete_service'            => 'Delete Service',
     'add_new_service'           => 'Add New Service',
-    
+
     'manage_choose'             => 'Edit Why Choose Us Section',
     'edit_features'             => 'Edit Features',
     'delete_feature'            => 'Delete Item',
     'add_new_feature'           => 'Add New Item',
-    
+
     'edit_reviews'              => 'Edit Reviews',
     'review_video_url'          => 'Video Link (YouTube Embed URL)',
     'delete_video'              => 'Delete Video',
@@ -109,6 +111,7 @@ return [
     'page_url'                  => 'Page URL',
     'delete_article'            => 'Delete Article',
     'add_new_article'           => 'Add New Article',
+    'no_guide_articles'         => 'No articles are currently available in the guide.',
 
     'manage_faq'                => 'Manage Frequently Asked Questions (FAQ)',
     'faq_question'              => 'Question',
@@ -141,7 +144,7 @@ return [
     'main_image'                => 'Current Main Image',
     'sub_image'                 => 'Current Sub Image',
     'icon_image'                => 'Icon / Image',
-    
+
     'manage_team'               => 'Manage Team',
     'team_section_title'        => 'Section Title',
     'team_section_desc'         => 'Section Description',
@@ -150,7 +153,7 @@ return [
     'member_image'              => 'Member Image',
     'delete_member'             => 'Delete Member',
     'add_new_member'            => 'Add New Member',
-    
+
     'manage_counts'             => 'Manage Counters',
     'count_number'              => 'Number / Value',
     'count_title'               => 'Title / Description',
@@ -223,6 +226,11 @@ return [
     // Job Services Modal Translations
     'manage_job_services'       => 'Manage Employment Service Cards',
     'job_services_add_btn'      => 'Add New Service',
+
+    // Contact Page Modals Translations
+    'manage_contact_hero'       => 'Edit Contact Hero Image',
+    'manage_contact_info'       => 'Edit Contact Information & Icons',
+    'manage_whatsapp_section'   => 'Edit WhatsApp Direct Contact Section',
 
     // Notifications (AJAX Notifications)
     'notif_success_title'       => 'Success!',

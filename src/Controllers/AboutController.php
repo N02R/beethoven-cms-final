@@ -3,117 +3,176 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\SiteModel;
 use App\Models\AboutModel;
+use App\Models\SiteModel;
 
-class AboutController {
-    public function index(string $lang = 'de'): void {
-        // حماية مخرجات اللغة المعروضة
-        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+class AboutController
+{
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const SESSION_TIMEOUT = 1800; // 30 دقيقة
 
-        // إدارة الجلسات بأمان تام
-        if (session_status() === PHP_SESSION_NONE) {
-            ini_set('session.cookie_httponly', '1');
-            ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                ini_set('session.cookie_secure', '1');
-            }
-            session_start();
+    public function index(string $langCode = 'de'): void
+    {
+        $this->initSecureSession();
+
+        // 1. حصر اللغة في القائمة البيضاء المعتمدة (de | en | ar)
+        $cleanLang = strtolower(trim($langCode));
+        if (!in_array($cleanLang, self::SUPPORTED_LANGS, true)) {
+            $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+            $cleanLang = in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
         }
 
-        // ==========================================
-        // 🌟 التحديث الأساسي لتوحيد اللغة في كل الموقع والمودلات (تطابق مع HomeController)
-        // ==========================================
-        $_SESSION['site_lang'] = $lang; // حفظ اللغة الحالية في الجلسة
-        $current_lang = $lang;         // تعريف المتغير للمودلات والصفحة
+        $_SESSION['site_lang'] = $cleanLang;
+        $current_lang = $cleanLang;
+        $current_dir  = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-        // تحميل ملف الترجمة بناءً على اللغة القادمة من الـ Router
-        $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
-        $lang = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/../Lang/ar.php';
-        // ==========================================
+        // 2. تحميل ملف الترجمة الخاص باللغة مع التراجع إلى الألمانية (de) ثم الإنجليزية (en)
+        $lang = $this->loadLanguageArray($current_lang);
 
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../');
+        // 3. جلب بيانات الهيدر والفوتر العامة ودمجها مع بيانات صفحة من نحن
+        $globalData = SiteModel::getGlobalData();
+        $aboutData  = class_exists(AboutModel::class) ? AboutModel::getAboutData($current_lang) : [];
+        $data       = array_merge($globalData, is_array($aboutData) ? $aboutData : []);
+        $currentSettings = $data;
 
-        // 1. جلب بيانات الهيدر والفوتر العامة لكل الموقع عبر SiteModel
-        $data = SiteModel::getGlobalData();
+        // 4. التحقق الصارم من صلاحية المشرف وحماية الجلسة من الاختطاف أو انتهاء المهلة
+        $is_admin = $this->verifyAdminSession();
+        $is_logged_in = $is_admin;
 
-        // 2. جلب بيانات صفحة عن الشركة (About) ودمجها مع البيانات العامة مع تمرير اللغة
-        $aboutData = class_exists('App\Models\AboutModel') ? AboutModel::getAboutData($current_lang) : [];
-        $data = array_merge($data, $aboutData);
-
-        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة في النظام
-        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
-        $user_role = $_SESSION['role'] ?? '';
-        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
-
-        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
-        $data['is_admin'] = $is_admin;
+        $data['is_admin']     = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
+        $data['current_lang'] = $current_lang;
+        $data['current_dir']  = $current_dir;
 
-        // متغيرات إضافية ومسارات
         $path_prefix = '/';
 
-        // تعريف ملفات الـ CSS والـ JS الخاصة بصفحة من نحن (مع دعم Swiper)
+        // 5. تعريف ملفات التنسيق والسكربتات الخاصة بصفحة من نحن
         $page_css = [
             '/assets/css/swiper-bundle.min.css',
             '/assets/css/about.css',
-            '/assets/css/responsive-about.css'
-        ]; 
-
-        $page_js = [
-            '/assets/js/swiper-bundle.min.js'
+            '/assets/css/responsive-about.css',
         ];
 
-        // سكربت تهيئة الـ Swiper الخاص بالسلايدر
+        $page_js = [
+            '/assets/js/swiper-bundle.min.js',
+        ];
+
+        // تهيئة Swiper ديناميكياً وفق اتجاه الصفحة الحالي (RTL / LTR)
         $custom_script = '
         <script>
           document.addEventListener("DOMContentLoaded", function() {
-            var swiper = new Swiper(".mySwiper", {
-              slidesPerView: 1,
-              spaceBetween: 20,
-              rtl: true,
-              navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-              },
-              breakpoints: {
-                576: { slidesPerView: 2 },
-                992: { slidesPerView: 3 },
-                1400: { slidesPerView: 4 },
-                1800: { slidesPerView: 5 }
-              },
-              autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-              }
-            });
+            if (typeof Swiper !== "undefined") {
+              new Swiper(".mySwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                  nextEl: ".swiper-button-next",
+                  prevEl: ".swiper-button-prev"
+                },
+                breakpoints: {
+                  576: { slidesPerView: 2 },
+                  992: { slidesPerView: 3 },
+                  1400: { slidesPerView: 4 },
+                  1800: { slidesPerView: 5 }
+                },
+                autoplay: {
+                  delay: 3000,
+                  disableOnInteraction: false
+                }
+              });
+            }
           });
         </script>';
 
-        // 1. استدعاء الهيدر المشترك
-        $header_file = __DIR__ . '/../Views/partials/header.php';
-        if (file_exists($header_file)) {
+        // 6. عرض الهيدر، محتوى الصفحة، والفوتر بالترتيب القياسي
+        $viewsRoot = __DIR__ . '/../Views';
+
+        $header_file = $viewsRoot . '/partials/header.php';
+        if (is_file($header_file)) {
             include_once $header_file;
-        } else {
-            echo "<div class='container py-3 text-danger'>Header file not found.</div>";
         }
 
-        // 2. استدعاء الـ View الخاص بـ About
-        $view_file = __DIR__ . '/../Views/about.php';
-        if (file_exists($view_file)) {
+        $view_file = $viewsRoot . '/about.php';
+        if (is_file($view_file)) {
             require_once $view_file;
-        } else {
-            echo "<div class='container py-5 text-center'><h3>About View file not found.</h3></div>";
         }
 
-        // 3. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/src/Views/partials/footer.php';
-        if (file_exists($footer_file)) {
+        $footer_file = $viewsRoot . '/partials/footer.php';
+        if (is_file($footer_file)) {
             include_once $footer_file;
-        } else {
-            echo "<div class='py-3 text-danger'>Footer file not found.</div>";
         }
+    }
+
+    private function initSecureSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'domain'   => '',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => 'Strict',
+            ]);
+
+            session_start();
+        }
+    }
+
+    private function loadLanguageArray(string $langCode): array
+    {
+        $langDir = __DIR__ . '/../Lang/';
+        $candidates = [$langCode, 'de', 'en', 'ar'];
+
+        foreach (array_unique($candidates) as $code) {
+            $file = $langDir . $code . '.php';
+            if (is_file($file)) {
+                $loaded = require $file;
+                if (is_array($loaded)) {
+                    return $loaded;
+                }
+            }
+        }
+
+        return [];
+    }
+
+    private function verifyAdminSession(): bool
+    {
+        if (empty($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+            return false;
+        }
+
+        $role = (string)($_SESSION['role'] ?? '');
+        if (!in_array($role, ['admin', 'super_admin'], true)) {
+            return false;
+        }
+
+        // التحقق من مهلة الخمول
+        $lastActivity = (int)($_SESSION['LAST_ACTIVITY'] ?? 0);
+        if ($lastActivity > 0 && (time() - $lastActivity) > self::SESSION_TIMEOUT) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        // التحقق من تطابق بصمة المتصفح لمنع اختطاف الجلسة
+        $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
+        if (!empty($_SESSION['user_agent_hash']) && !hash_equals((string)$_SESSION['user_agent_hash'], $currentAgentHash)) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $_SESSION['LAST_ACTIVITY'] = time();
+        return true;
     }
 }

@@ -196,7 +196,6 @@ try {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     $router->dispatch($uri, $method);
-
 } catch (\Throwable $e) {
     error_log('Router Dispatch Error: ' . $e->getMessage());
     http_response_code(500);

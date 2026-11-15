@@ -2,7 +2,9 @@
 // /src/Views/admin/admin_header_modals.php
 ?>
 <style>
-    /* Modal Glassmorphism & Custom Styling */
+    /* ==========================================================================
+       1. التنسيق الأساسي للمودلات (Glassmorphism & Custom Styling)
+       ========================================================================== */
     .custom-modal .modal-content { 
         border-radius: 24px; 
         border: none; 
@@ -35,9 +37,11 @@
     .custom-modal .modal-body {
         background: #f8fafc;
         padding: 28px;
+        max-height: 75vh;
+        overflow-y: auto; /* السماح بالتمرير العمودي للمحتوى الطويل في الموبايل */
     }
 
-    /* Inputs */
+    /* الحقول والإدخالات (Inputs) */
     .custom-modal .form-control, .custom-modal .form-select { 
         border-radius: 12px; 
         border: 1px solid #e2e8f0; 
@@ -54,7 +58,7 @@
         background-color: #ffffff;
     }
     
-    /* File Upload */
+    /* رفع الملفات (File Upload) */
     .custom-modal input[type="file"].form-control { 
         padding: 9px 16px; 
         background: #ffffff; 
@@ -125,6 +129,76 @@
         background: #fecaca; 
         transform: translateY(-1px);
     }
+
+    /* ==========================================================================
+       2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)
+       ========================================================================== */
+
+    /* أ) الشاشات الكبيرة جداً (24 إلى 27 بوصة - 1920px فما فوق) */
+    @media (min-width: 1920px) {
+        .custom-modal .modal-lg {
+            max-width: 950px; /* توسيع الموديلات الكبيرة لتناسب الشاشات الضخمة براحة */
+        }
+        .custom-modal .modal-xl {
+            max-width: 1300px;
+        }
+        .custom-modal .modal-header {
+            padding: 28px 36px;
+        }
+        .custom-modal .modal-title {
+            font-size: 1.4rem;
+        }
+        .custom-modal .modal-body {
+            padding: 36px;
+        }
+        .custom-modal .form-control, .custom-modal .form-select {
+            height: 52px;
+            font-size: 1.05rem;
+        }
+    }
+
+    /* ب) شاشات التابلت والموبايل (عرض أقل من 768px) */
+    @media (max-width: 768px) {
+        .custom-modal .modal-dialog {
+            margin: 10px;
+            max-width: calc(100% - 20px);
+        }
+        .custom-modal .modal-header {
+            padding: 16px 20px;
+        }
+        .custom-modal .modal-title {
+            font-size: 1.05rem;
+        }
+        .custom-modal .modal-body {
+            padding: 18px;
+        }
+        .custom-modal .modal-footer {
+            padding: 15px 18px;
+            flex-direction: column-reverse; /* جعل زر الحفظ والإلغاء فوق بعضهما لسهولة الاستخدام بالموبايل */
+            gap: 10px;
+        }
+        .custom-modal .modal-footer button {
+            width: 100%;
+            height: 44px;
+        }
+        /* تصغير حواف العناصر الداخلية قليلاً لتناسب الشاشات الصغيرة */
+        .social-row-item, .menu-row-item, .lang-row-item, 
+        .service-row-item, .choose-row-item, .review-row-item, 
+        .guide-row-item, .faq-row-item, .footer-col3-item {
+            padding: 12px !important;
+        }
+    }
+
+    /* ج) الهواتف الصغيرة جداً (أقل من 480px) */
+    @media (max-width: 480px) {
+        .custom-modal .modal-content {
+            border-radius: 16px;
+        }
+        .custom-modal .form-control, .custom-modal .form-select {
+            height: 42px;
+            font-size: 0.9rem;
+        }
+    }
 </style>
 
 <?php
@@ -157,6 +231,7 @@ $is_rtl = ($current_lang === 'ar');
 $modal_dir = $is_rtl ? 'rtl' : 'ltr';
 $modal_align = $is_rtl ? 'text-end' : 'text-start';
 ?>
+
 
 <!-- 1. Social Links Modal -->
 <div class="modal fade custom-modal" id="socialLinksEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">

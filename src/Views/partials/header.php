@@ -179,15 +179,15 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     <?php endif; ?>
 
     <?php 
-    // جلب النص الديناميكي المخزن لكل لغة من قاعدة البيانات
-    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
-    $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
-    if (!is_array($logoTextsDecoded)) {
-        $logoTextsDecoded = [];
+    // جلب النص الديناميكي المخزن لكل لغة مباشرة من المودل أو قاعدة البيانات مع فحص آمن
+    $activeLogoText = $site_logo_text ?? '';
+    if (empty($activeLogoText)) {
+        $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
+        $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
+        if (!is_array($logoTextsDecoded)) $logoTextsDecoded = [];
+        $defaultLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
+        $activeLogoText = $logoTextsDecoded[$current_lang_code] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
     }
-    // النص الافتراضي حسب اللغة النشطة
-    $defaultLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
-    $activeLogoText = $logoTextsDecoded[$current_lang_code] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
     ?>
 
     <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">

@@ -176,7 +176,7 @@ $modal_dir         = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
 $is_admin          = !empty($is_admin) && $is_admin === true;
 
-// استعلام مباشر ولحظي لجلب نص الشعار في الفوتر تماماً مثل الهيدر
+// استعلام مباشر ولحظي لجلب نص الشعار في الفوتر لكل لغة بدقة تامة
 $activeFooterLogoText = '';
 try {
     $pdoFooter = \App\Config\Database::getConnection();
@@ -187,7 +187,7 @@ try {
     if ($rawFooterVal) {
         $decodedFooter = json_decode($rawFooterVal, true);
         if (is_array($decodedFooter)) {
-            $activeFooterLogoText = $decodedFooter[$current_lang_code] ?? ($decodedFooter['de'] ?? ($decodedFooter['ar'] ?? ''));
+            $activeFooterLogoText = $decodedFooter[$current_lang_code] ?? ($decodedFooter[$current_lang] ?? ($decodedFooter['de'] ?? ($decodedFooter['ar'] ?? '')));
         } else {
             $activeFooterLogoText = $rawFooterVal;
         }
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-lg-5">
                 <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
                     <img src="/assets/img/icon.png" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-                    <span class="logo-text-stacked" style="display: inline-block; max-width: 140px; font-weight: 800; font-size: 1rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
+                    <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 1rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
                         <?php echo htmlspecialchars($activeFooterLogoText, ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </a>

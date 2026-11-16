@@ -169,7 +169,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-<!-- اللوجو الذكي: أيقونة ثابتة + نص ديناميكي ملتف (CSS Stacking) -->
+<!-- اللوجو الذكي: أيقونة ثابتة + نص ديناميكي ملتف (CSS Stacking) مع استعلام مباشر ولحظي -->
 <div class="navbar-brand-wrapper">
   <div class="editable-wrapper d-inline-block position-relative">
     <?php if ($is_admin): ?>
@@ -179,14 +179,29 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     <?php endif; ?>
 
     <?php 
-    // جلب النص الديناميكي المخزن لكل لغة مباشرة من المودل أو قاعدة البيانات مع فحص آمن
-    $activeLogoText = $site_logo_text ?? '';
+    // استعلام مباشر ولحظي من قاعدة البيانات لجلب نص الشعار وتجاوز أي كاش
+    $activeLogoText = '';
+    try {
+        $pdoLive = \App\Config\Database::getConnection();
+        $stmtLive = $pdoLive->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
+        $stmtLive->execute();
+        $rawLiveVal = $stmtLive->fetchColumn();
+        
+        if ($rawLiveVal) {
+            $decodedLive = json_decode($rawLiveVal, true);
+            if (is_array($decodedLive)) {
+                $activeLogoText = $decodedLive[$current_lang_code] ?? ($decodedLive['de'] ?? ($decodedLive['ar'] ?? ''));
+            } else {
+                $activeLogoText = $rawLiveVal;
+            }
+        }
+    } catch (\Exception $e) {
+        // Fallback آمن في حال حدوث أي استثناء
+    }
+
+    // القيمة الافتراضية إذا لم يتم العثور على نص مسجل مسبقاً
     if (empty($activeLogoText)) {
-        $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
-        $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
-        if (!is_array($logoTextsDecoded)) $logoTextsDecoded = [];
-        $defaultLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
-        $activeLogoText = $logoTextsDecoded[$current_lang_code] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
+        $activeLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
     }
     ?>
 

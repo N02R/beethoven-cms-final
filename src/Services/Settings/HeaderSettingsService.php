@@ -167,7 +167,7 @@ class HeaderSettingsService
             $langItems = [];
 
             if (is_array($incomingLang)) {
-                foreach ($incomingLang, $item) {
+                foreach ($incomingLang as $item) {
                     if (!is_array($item)) continue;
                     $codeVal   = strtolower(preg_replace('/[^a-zA-Z_-]/', '', trim((string)($item['code'] ?? ''))));
                     $nameVal   = trim((string)($item['name'] ?? ''));

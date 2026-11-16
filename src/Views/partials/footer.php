@@ -175,7 +175,28 @@ $consultPostUrl = '/' . $current_lang_code . '/send-consult';
 $modal_dir         = ($current_lang === 'ar') ? 'text-end' : 'text-start';
 $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start me-2';
 $is_admin          = !empty($is_admin) && $is_admin === true;
-$footerLogoPath    = $site_logo_path ?? ($data['site_logo_path'] ?? 'assets/img/logo.png');
+
+// استعلام مباشر ولحظي لجلب نص الشعار في الفوتر تماماً مثل الهيدر
+$activeFooterLogoText = '';
+try {
+    $pdoFooter = \App\Config\Database::getConnection();
+    $stmtFooter = $pdoFooter->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
+    $stmtFooter->execute();
+    $rawFooterVal = $stmtFooter->fetchColumn();
+    
+    if ($rawFooterVal) {
+        $decodedFooter = json_decode($rawFooterVal, true);
+        if (is_array($decodedFooter)) {
+            $activeFooterLogoText = $decodedFooter[$current_lang_code] ?? ($decodedFooter['de'] ?? ($decodedFooter['ar'] ?? ''));
+        } else {
+            $activeFooterLogoText = $rawFooterVal;
+        }
+    }
+} catch (\Exception $e) {}
+
+if (empty($activeFooterLogoText)) {
+    $activeFooterLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
+}
 ?>
 
 <!-- تنسيق خاص لعكس اتجاه الأسهم تلقائياً في حالة اللغة العربية (RTL) -->
@@ -317,8 +338,14 @@ document.addEventListener('DOMContentLoaded', function() {
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">
         <div class="row gy-5">
+            <!-- العمود الأول: الأيقونة الثابتة + النص الديناميكي المحدث تماماً مثل الهيدر -->
             <div class="col-12 col-lg-5">
-                <img src="<?php echo htmlspecialchars(get_image_url($footerLogoPath, 'assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="BCS Logo" class="mb-4">
+                <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
+                    <img src="/assets/img/icon.png" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+                    <span class="logo-text-stacked" style="display: inline-block; max-width: 140px; font-weight: 800; font-size: 1rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
+                        <?php echo htmlspecialchars($activeFooterLogoText, ENT_QUOTES, 'UTF-8'); ?>
+                    </span>
+                </a>
                 <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 

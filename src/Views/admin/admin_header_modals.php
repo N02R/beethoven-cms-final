@@ -1742,6 +1742,15 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
+                // التأكد من تمرير الأكشن الصحيح لنموذج الشعار إن لم يكن موجوداً
+                if (form.id === 'logoEditForm' && !form.querySelector('input[name="action"]')) {
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = 'update_logo';
+                    form.appendChild(actionInput);
+                }
+
                 // إعادة ترقيم Social Links
                 form.querySelectorAll('.social-row-item').forEach((row, index) => {
                     const nameInput = row.querySelector('.social-name');
@@ -1859,7 +1868,10 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     formData.append('csrf_token', csrfToken);
                 }
 
-                fetch('/admin/settings/save', {
+                // توجيه الطلب بالمسار النظيف المتوافق مع بادئة اللغة النشطة
+                const saveUrl = '/' + CURRENT_MODAL_LANG + '/admin/settings/save';
+
+                fetch(saveUrl, {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -1890,3 +1902,4 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
         });
     });
 </script>
+

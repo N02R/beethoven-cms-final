@@ -75,14 +75,8 @@ class SiteModel {
             return is_string($raw) ? $raw : $default;
         };
         
-        // استخراج الشعار مع دعم اللغات
-        $rawLogo = $settings['site_logo_path'] ?? ($settings['site_logo'] ?? '');
-        $decodedLogo = is_string($rawLogo) ? json_decode($rawLogo, true) : $rawLogo;
-        if (is_array($decodedLogo) && (isset($decodedLogo['de']) || isset($decodedLogo['en']) || isset($decodedLogo['ar']))) {
-            $site_logo_path = $decodedLogo[$lang] ?? ($decodedLogo['de'] ?? ($decodedLogo['en'] ?? ($decodedLogo['ar'] ?? '')));
-        } else {
-            $site_logo_path = is_string($rawLogo) ? $rawLogo : '';
-        }
+        // استخراج نص الشعار الديناميكي متعدد اللغات
+        $site_logo_text = $getMultiLang('site_logo_text', ($lang === 'ar' ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)'));
 
         // معالجة بيانات الدليل الشامل الموحدة (من المفتاح المركزي 'guide')
         $guideBlock    = $getLangData('guide', []);
@@ -108,8 +102,7 @@ class SiteModel {
         return [
             'site_title'             => $getMultiLang('site_title', 'Beethoven City Services'),
             'site_email'             => $settings['site_email'] ?? '',
-            'site_logo_path'         => $site_logo_path,
-            'site_logo'              => $site_logo_path,
+            'site_logo_text'         => $site_logo_text,
             'social_links'           => isset($settings['social_links']) && is_string($settings['social_links']) ? (json_decode($settings['social_links'], true) ?? []) : [],
             'menu_links'             => $getLangData('menu_links', []),
             'languages'              => isset($settings['languages']) && is_string($settings['languages']) ? (json_decode($settings['languages'], true) ?? []) : [],

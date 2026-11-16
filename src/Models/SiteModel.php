@@ -76,7 +76,8 @@ class SiteModel {
         };
         
         // استخراج نص الشعار الديناميكي متعدد اللغات
-        $site_logo_text = $getMultiLang('site_logo_text', ($lang === 'ar' ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)'));
+        $defaultLogoText = ($lang === 'ar') ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)';
+        $site_logo_text = $getMultiLang('site_logo_text', $defaultLogoText);
 
         // معالجة بيانات الدليل الشامل الموحدة (من المفتاح المركزي 'guide')
         $guideBlock    = $getLangData('guide', []);

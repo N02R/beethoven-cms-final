@@ -299,7 +299,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 2. Logo Modal (Updated for Dynamic Text + Fixed Icon) -->
+<!-- 2. Logo Modal (Updated with Direct DB Fallback & Dynamic Text) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -317,15 +317,28 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                    // جلب النصوص المخزنة للشعار لكل اللغات بصيغة JSON
-                    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
+                    // جلب النصوص المخزنة للشعار لكل اللغات بصيغة JSON مع جلب مباشر من قاعدة البيانات كاحتياط لضمان التحديث الفوري
+                    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? null);
+                    
+                    if (empty($rawLogoText) || $rawLogoText === '{}') {
+                        try {
+                            $pdoConn = \App\Config\Database::getConnection();
+                            $stmtLogo = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
+                            $stmtLogo->execute();
+                            $rawLogoText = $stmtLogo->fetchColumn() ?: '{}';
+                        } catch (\Exception $e) {
+                            $rawLogoText = '{}';
+                        }
+                    }
+
                     $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
                     if (!is_array($logoTextsDecoded)) {
                         $logoTextsDecoded = [];
                     }
 
-                    // استخراج نص اللغة الحالية
-                    $activeLogoText = $logoTextsDecoded[$current_lang] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? 'بيتهوفن سيتي للخدمات (BCS)'));
+                    // استخراج نص اللغة الحالية بدقة متناهية
+                    $defaultLogoText = ($current_lang === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
+                    $activeLogoText = $logoTextsDecoded[$current_lang] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
                     ?>
 
                     <!-- معاينة بصرية لشكل اللوجو في اللوحة -->

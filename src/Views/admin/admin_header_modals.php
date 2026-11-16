@@ -299,51 +299,53 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 2. Logo Modal -->
+<!-- 2. Logo Modal (Updated for Dynamic Text + Fixed Icon) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-image text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars($ml['manage_site_logo'] ?? 'تغيير شعار الموقع', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars($ml['manage_site_logo'] ?? 'إدارة نص الشعار', ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 text-center">
-                <form id="logoEditForm" class="admin-settings-form" enctype="multipart/form-data">
+            <div class="modal-body p-4">
+                <form id="logoEditForm" class="admin-settings-form">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(safe_admin_string($csrf_token ?? $_SESSION['csrf_token'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="update_logo">
                     <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="mb-4">
-                        <div class="p-3 shadow-sm d-inline-block" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                            <?php 
-                            $rawLogoSetting = $currentSettings['site_logo_path'] ?? ($data['site_logo_path'] ?? ($currentSettings['site_logo'] ?? ''));
-                            if (is_string($rawLogoSetting)) {
-                                $logosDecoded = json_decode($rawLogoSetting, true);
-                            } elseif (is_array($rawLogoSetting)) {
-                                $logosDecoded = $rawLogoSetting;
-                            } else {
-                                $logosDecoded = [];
-                            }
+                    <?php 
+                    // جلب النصوص المخزنة للشعار لكل اللغات بصيغة JSON
+                    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
+                    $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
+                    if (!is_array($logoTextsDecoded)) {
+                        $logoTextsDecoded = [];
+                    }
 
-                            $activeLogo = '';
-                            if (is_array($logosDecoded)) {
-                                $activeLogo = $logosDecoded[$current_lang] ?? ($logosDecoded['de'] ?? ($logosDecoded['ar'] ?? reset($logosDecoded) ?? ''));
-                            } else {
-                                $activeLogo = is_string($rawLogoSetting) ? $rawLogoSetting : '';
-                            }
-                            ?>
-                            <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($activeLogo) : $activeLogo, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" alt="Site Logo" style="max-height: 90px; object-fit: contain;">
+                    // استخراج نص اللغة الحالية
+                    $activeLogoText = $logoTextsDecoded[$current_lang] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? 'بيتهوفن سيتي للخدمات (BCS)'));
+                    ?>
+
+                    <!-- معاينة بصرية لشكل اللوجو في اللوحة -->
+                    <div class="mb-4 text-center">
+                        <div class="p-3 shadow-sm d-inline-flex align-items-center gap-2 bg-white rounded-4 border">
+                            <img src="/assets/img/icon.png" width="36" height="36" alt="Icon" style="object-fit: contain;">
+                            <div class="text-start" style="line-height: 1.15;">
+                                <span class="d-block fw-bold text-dark" style="font-size: 0.95rem;"><?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="mb-3" dir="<?php echo $modal_dir; ?>">
-                        <label class="small fw-bold mb-2 text-secondary d-block <?php echo $modal_align; ?>">
-                            <?php echo htmlspecialchars($ml['choose_logo_image'] ?? 'اختر صورة الشعار:', ENT_QUOTES, 'UTF-8'); ?>
+                    <div class="mb-3 <?php echo $modal_align; ?>" dir="<?php echo $modal_dir; ?>">
+                        <label class="small fw-bold mb-2 text-secondary d-block">
+                            <?php echo htmlspecialchars($ml['logo_text_label'] ?? 'نص الشعار (لغة ' . strtoupper($current_lang) . '):', ENT_QUOTES, 'UTF-8'); ?>
                         </label>
-                        <input type="file" class="form-control w-100" name="logo_img" accept="image/png, image/jpeg, image/webp" required>
+                        <input type="text" class="form-control w-100" name="logo_text" value="<?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Beethoven City Services (BCS)" required>
+                        <div class="form-text small text-muted mt-1">
+                            <?php echo htmlspecialchars($ml['logo_text_hint'] ?? 'سيتم عرض الأيقونة الثابتة بجانب هذا النص تلقائياً بتنسيق مرتب.', ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
                     </div>
 
                     <div id="logoAlertBox" class="alert d-none mt-2 rounded-3 border-0"></div>

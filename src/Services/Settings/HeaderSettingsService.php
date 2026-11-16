@@ -52,38 +52,29 @@ class HeaderSettingsService
             ON DUPLICATE KEY UPDATE setting_value = :v_update
         ");
 
-        // 1. تحديث الشعار مع دعم اللغات المتعددة (de, en, ar) بصيغة JSON
+        // 1. تحديث نص الشعار متعدد اللغات (de, en, ar) بصيغة JSON مع أيقونة ثابتة
         if ($action === 'update_logo') {
-            if (!isset($_FILES['logo_img']) || $_FILES['logo_img']['error'] !== UPLOAD_ERR_OK) {
-                return false;
-            }
-
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['logo_lang'] ?? ''),
                 (string)($_SESSION['site_lang'] ?? 'de')
             );
 
-            $rawLogoSetting = $currentSettings['site_logo_path'] ?? ($currentSettings['site_logo'] ?? '');
-            $logos = is_string($rawLogoSetting) ? json_decode($rawLogoSetting, true) : [];
-            if (!is_array($logos)) {
-                $logos = [];
-                if (is_string($rawLogoSetting) && trim($rawLogoSetting) !== '') {
-                    $logos['de'] = trim($rawLogoSetting);
-                }
+            $rawLogoText = $currentSettings['site_logo_text'] ?? ($currentSettings['site_logo'] ?? '{}');
+            $logoTexts = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
+            if (!is_array($logoTexts)) {
+                $logoTexts = [];
             }
 
-            if (!empty($logos[$targetLang]) && str_starts_with((string)$logos[$targetLang], 'assets/uploads/')) {
-                $this->deleteOldImageFile((string)$logos[$targetLang]);
+            // استقبال النص المدخل من لوحة التحكم للغة المستهدفة
+            $incomingText = trim((string)($_POST['logo_text'] ?? ''));
+            $logoTexts[$targetLang] = $incomingText;
+
+            $jsonVal = json_encode($logoTexts, JSON_UNESCAPED_UNICODE);
+            if ($jsonVal === false) {
+                $jsonVal = '{}';
             }
 
-            $filename = $this->imageUploader->processAndUploadFile($_FILES['logo_img']['tmp_name']);
-            $logoPath = 'assets/uploads/' . $filename;
-            $logos[$targetLang] = $logoPath;
-
-            $jsonVal = json_encode($logos, JSON_UNESCAPED_UNICODE);
-            $ok1 = $stmt->execute(['k' => 'site_logo_path', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-            $ok2 = $stmt->execute(['k' => 'site_logo', 'v' => $jsonVal, 'v_update' => $jsonVal]);
-            return $ok1 && $ok2;
+            return $stmt->execute(['k' => 'site_logo_text', 'v' => $jsonVal, 'v_update' => $jsonVal]);
         }
 
         // 2. تحديث منصات التواصل الاجتماعي
@@ -176,7 +167,7 @@ class HeaderSettingsService
             $langItems = [];
 
             if (is_array($incomingLang)) {
-                foreach ($incomingLang as $item) {
+                foreach ($incomingLang, $item) {
                     if (!is_array($item)) continue;
                     $codeVal   = strtolower(preg_replace('/[^a-zA-Z_-]/', '', trim((string)($item['code'] ?? ''))));
                     $nameVal   = trim((string)($item['name'] ?? ''));

@@ -169,20 +169,38 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- اللوجو الرئيسي المتعدد اللغات -->
-        <div class="navbar-brand-wrapper">
-          <div class="editable-wrapper d-inline-block">
-            <?php if ($is_admin): ?>
-                <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="<?php echo htmlspecialchars($lang['manage_site_logo'] ?? 'Edit Logo', ENT_QUOTES, 'UTF-8'); ?>">
-                    <i class="bi bi-pencil-fill"></i>
-                </button>
-            <?php endif; ?>
+<!-- اللوجو الذكي: أيقونة ثابتة + نص ديناميكي ملتف (CSS Stacking) -->
+<div class="navbar-brand-wrapper">
+  <div class="editable-wrapper d-inline-block position-relative">
+    <?php if ($is_admin): ?>
+        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="<?php echo htmlspecialchars($lang['manage_site_logo'] ?? 'Edit Logo', ENT_QUOTES, 'UTF-8'); ?>">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    <?php endif; ?>
 
-            <a class="navbar-brand m-0" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-              <img src="<?php echo htmlspecialchars(get_image_url($site_logo_path, '/assets/img/logo.png'), ENT_QUOTES, 'UTF-8'); ?>" width="178" height="72" loading="lazy" alt="Beethoven City Services Logo">
-            </a>
-          </div>
-        </div>
+    <?php 
+    // جلب النص الديناميكي المخزن لكل لغة من قاعدة البيانات
+    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? '{}');
+    $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
+    if (!is_array($logoTextsDecoded)) {
+        $logoTextsDecoded = [];
+    }
+    // النص الافتراضي حسب اللغة النشطة
+    $defaultLogoText = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
+    $activeLogoText = $logoTextsDecoded[$current_lang_code] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
+    ?>
+
+    <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
+      <!-- الأيقونة الفنية الثابتة -->
+      <img src="/assets/img/icon.png" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+      
+      <!-- النص الديناميكي مع ستايل الالتفاف ونزول الكلمات تحت بعضها -->
+      <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
+          <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
+      </span>
+    </a>
+  </div>
+</div>
 
         <!-- منطقة الإعلان العلوي -->
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">

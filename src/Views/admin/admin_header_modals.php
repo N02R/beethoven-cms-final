@@ -299,7 +299,7 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
     </div>
 </div>
 
-<!-- 2. Logo Modal (Updated with Direct DB Fallback & Dynamic Text) -->
+<!-- 2. Logo Modal (Fixed Dynamic Text & Real-time DB Fetch) -->
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -317,28 +317,29 @@ $modal_align = $is_rtl ? 'text-end' : 'text-start';
                     <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
                     <?php 
-                    // جلب النصوص المخزنة للشعار لكل اللغات بصيغة JSON مع جلب مباشر من قاعدة البيانات كاحتياط لضمان التحديث الفوري
-                    $rawLogoText = $currentSettings['site_logo_text'] ?? ($data['site_logo_text'] ?? null);
-                    
-                    if (empty($rawLogoText) || $rawLogoText === '{}') {
-                        try {
-                            $pdoConn = \App\Config\Database::getConnection();
-                            $stmtLogo = $pdoConn->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
-                            $stmtLogo->execute();
-                            $rawLogoText = $stmtLogo->fetchColumn() ?: '{}';
-                        } catch (\Exception $e) {
-                            $rawLogoText = '{}';
+                    // استعلام مباشر ولحظي من قاعدة البيانات لكل لغة لضمان عدم تخزين كاش قديم داخل المودل
+                    $activeLogoText = '';
+                    try {
+                        $pdoModal = \App\Config\Database::getConnection();
+                        $stmtModal = $pdoModal->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
+                        $stmtModal->execute();
+                        $rawModalVal = $stmtModal->fetchColumn();
+                        
+                        if ($rawModalVal) {
+                            $decodedModal = json_decode($rawModalVal, true);
+                            if (is_array($decodedModal)) {
+                                // جلب نص اللغة الحالية بدقة تامة
+                                $activeLogoText = $decodedModal[$current_lang] ?? '';
+                            }
                         }
+                    } catch (\Exception $e) {
+                        // Fallback آمن
                     }
 
-                    $logoTextsDecoded = is_string($rawLogoText) ? json_decode($rawLogoText, true) : [];
-                    if (!is_array($logoTextsDecoded)) {
-                        $logoTextsDecoded = [];
+                    // القيمة الافتراضية إذا لم يكن هناك نص محفوظ مسبقاً لهذه اللغة
+                    if (empty($activeLogoText)) {
+                        $activeLogoText = ($current_lang === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
                     }
-
-                    // استخراج نص اللغة الحالية بدقة متناهية
-                    $defaultLogoText = ($current_lang === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
-                    $activeLogoText = $logoTextsDecoded[$current_lang] ?? ($logoTextsDecoded['de'] ?? ($logoTextsDecoded['ar'] ?? $defaultLogoText));
                     ?>
 
                     <!-- معاينة بصرية لشكل اللوجو في اللوحة -->

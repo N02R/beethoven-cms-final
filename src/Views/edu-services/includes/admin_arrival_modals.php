@@ -54,10 +54,12 @@ $modalI18n = [
         'tips_sec_title'     => 'Tipps & Empfehlungen bearbeiten',
         'tips_title_lbl'     => 'Abschnittstitel',
         'tips_desc_lbl'      => 'Abschnittsbeschreibung',
-        'tips_list_lbl'      => 'Tipps-Liste (Ein Tipp pro Zeile)',
+        'tips_item_lbl'      => 'Tipp-Text',
+        'add_tip_btn'        => 'Tipp hinzufügen',
         'notes_sec_title'    => 'Wichtige Hinweise bearbeiten',
         'notes_title_lbl'    => 'Hinweistitel',
-        'notes_list_lbl'     => 'Hinweise-Liste (Ein Hinweis pro Zeile)',
+        'notes_item_lbl'     => 'Hinweis-Text',
+        'add_note_btn'       => 'Hinweis hinzufügen',
     ],
     'en' => [
         'save_success'       => 'Changes saved successfully. Reloading page...',
@@ -79,10 +81,12 @@ $modalI18n = [
         'tips_sec_title'     => 'Edit Tips & Recommendations',
         'tips_title_lbl'     => 'Section Title',
         'tips_desc_lbl'      => 'Section Description',
-        'tips_list_lbl'      => 'Tips List (One tip per line)',
+        'tips_item_lbl'      => 'Tip Text',
+        'add_tip_btn'        => 'Add Tip',
         'notes_sec_title'    => 'Edit Important Notes',
         'notes_title_lbl'    => 'Notes Title',
-        'notes_list_lbl'     => 'Notes List (One note per line)',
+        'notes_item_lbl'     => 'Note Text',
+        'add_note_btn'       => 'Add Note',
     ],
     'ar' => [
         'save_success'       => 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...',
@@ -104,43 +108,55 @@ $modalI18n = [
         'tips_sec_title'     => 'تعديل التوصيات والنصائح',
         'tips_title_lbl'     => 'عنوان قسم النصائح',
         'tips_desc_lbl'      => 'وصف قسم النصائح',
-        'tips_list_lbl'      => 'قائمة النصائح (كل نصيحة في سطر)',
+        'tips_item_lbl'      => 'نص النصيحة',
+        'add_tip_btn'        => 'إضافة نصيحة جديدة',
         'notes_sec_title'    => 'تعديل الملاحظات الهامة',
         'notes_title_lbl'    => 'عنوان الملاحظات',
-        'notes_list_lbl'     => 'قائمة الملاحظات (كل ملاحظة في سطر)',
+        'notes_item_lbl'     => 'نص الملاحظة',
+        'add_note_btn'       => 'إضافة ملاحظة جديدة',
     ],
 ];
 $mTxt = $modalI18n[$current_lang];
 
-// دالة لجلب البيانات الخام متعددة اللغات لصفحة arrival_data
-$fetchRawArrivalSetting = static function (string $key) use ($current_lang): array {
-    $raw = get_setting($key, '{}');
-    $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
-    if (!is_array($decoded)) {
-        return [];
+// دالة لجلب البيانات الخام متعددة اللغات لصفحة arrival_page من جدول pages
+$fetchRawArrivalSetting = static function (string $pageKey) use ($current_lang): array {
+    $pageRawData = [];
+    try {
+        $pdo = \App\Config\Database::getConnection();
+        $stmt = $pdo->prepare("SELECT page_data FROM pages WHERE page_key = :k LIMIT 1");
+        $stmt->execute(['k' => $pageKey]);
+        $dbRaw = $stmt->fetchColumn();
+
+        if (is_string($dbRaw) && $dbRaw !== '') {
+            $decoded = json_decode($dbRaw, true);
+            if (is_array($decoded)) {
+                $pageRawData = $decoded;
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    if (isset($pageRawData[$current_lang]) && is_array($pageRawData[$current_lang])) {
+        return $pageRawData[$current_lang];
     }
-    if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
-        return $decoded[$current_lang];
+    if (isset($pageRawData['de']) && is_array($pageRawData['de'])) {
+        return $pageRawData['de'];
     }
-    if (isset($decoded['de']) && is_array($decoded['de'])) {
-        return $decoded['de'];
+    if (isset($pageRawData['en']) && is_array($pageRawData['en'])) {
+        return $pageRawData['en'];
     }
-    if (isset($decoded['en']) && is_array($decoded['en'])) {
-        return $decoded['en'];
+    if (isset($pageRawData['ar']) && is_array($pageRawData['ar'])) {
+        return $pageRawData['ar'];
     }
-    if (isset($decoded['ar']) && is_array($decoded['ar'])) {
-        return $decoded['ar'];
-    }
-    return $decoded;
+    return $pageRawData;
 };
 
-$curArrivalData = $fetchRawArrivalSetting('arrival_data');
+$curArrivalData = $fetchRawArrivalSetting('arrival_page');
 
-$modalBcUrl     = (string)($curArrivalData['page_breadcrumb_url'] ?? ($arrival_data['page_breadcrumb_url'] ?? '#'));
-$modalBcText    = (string)($curArrivalData['page_breadcrumb'] ?? ($arrival_data['page_breadcrumb'] ?? ''));
-$modalHeroImg   = (string)($curArrivalData['hero_img'] ?? ($arrival_data['hero_img'] ?? ''));
-$modalMainTitle = (string)($curArrivalData['main_title'] ?? ($arrival_data['main_title'] ?? ''));
-$modalMainDesc  = (string)($curArrivalData['main_desc'] ?? ($arrival_data['main_desc'] ?? ''));
+$modalBcUrl       = (string)($curArrivalData['page_breadcrumb_url'] ?? ($arrival_data['page_breadcrumb_url'] ?? '#'));
+$modalBcText      = (string)($curArrivalData['page_breadcrumb'] ?? ($arrival_data['page_breadcrumb'] ?? ''));
+$modalHeroImg     = (string)($curArrivalData['hero_img'] ?? ($arrival_data['hero_img'] ?? ''));
+$modalMainTitle   = (string)($curArrivalData['main_title'] ?? ($arrival_data['main_title'] ?? ''));
+$modalMainDesc    = (string)($curArrivalData['main_desc'] ?? ($arrival_data['main_desc'] ?? ''));
 $modalAdviceTitle = (string)($curArrivalData['advice_title'] ?? ($arrival_data['advice_title'] ?? ''));
 $modalAdviceDesc  = (string)($curArrivalData['advice_desc'] ?? ($arrival_data['advice_desc'] ?? ''));
 $modalTipsArr     = is_array($curArrivalData['tips'] ?? null) ? $curArrivalData['tips'] : ($arrival_data['tips'] ?? []);
@@ -262,7 +278,7 @@ $modalNotesArr    = is_array($curArrivalData['notes'] ?? null) ? $curArrivalData
     </div>
 </div>
 
-<!-- 4. Tips & Advice Edit Modal -->
+<!-- 4. Tips & Advice Edit Modal (تفاعلي عبر صفوف مستقلة) -->
 <div class="modal fade custom-modal" id="arrivalTipsModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -279,20 +295,38 @@ $modalNotesArr    = is_array($curArrivalData['notes'] ?? null) ? $curArrivalData
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
                         <div class="mb-3 <?php echo $modal_align; ?>">
                             <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['tips_title_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <input type="text" class="form-control" name="arrival_data[<?php echo $current_lang; ?>][advice_title]" value="<?php echo htmlspecialchars($modalAdviceTitle, ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
-                        <div class="mb-3 <?php echo $modal_align; ?>">
+                        <div class="mb-0 <?php echo $modal_align; ?>">
                             <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['tips_desc_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <textarea class="form-control" name="arrival_data[<?php echo $current_lang; ?>][advice_desc]" rows="3" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars($modalAdviceDesc, ENT_QUOTES, 'UTF-8'); ?></textarea>
                         </div>
-                        <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['tips_list_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="arrival_data[<?php echo $current_lang; ?>][tips_raw]" rows="6" placeholder="اكتب كل نصيحة في سطر منفصل" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(implode("\n", is_array($modalTipsArr) ? $modalTipsArr : []), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
                     </div>
+
+                    <div id="arrivalTipsContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ((is_array($modalTipsArr) ? $modalTipsArr : []) as $index => $tipText): ?>
+                            <div class="p-3 shadow-sm arrival-tip-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="tip_row_<?php echo $index; ?>">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['tips_item_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control arrival-tip-input" name="arrival_data[<?php echo $current_lang; ?>][tips][<?php echo $index; ?>]" value="<?php echo htmlspecialchars((string)$tipText, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                    </div>
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('tip_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addArrivalTipBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['add_tip_btn'], ENT_QUOTES, 'UTF-8'); ?>
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -303,7 +337,7 @@ $modalNotesArr    = is_array($curArrivalData['notes'] ?? null) ? $curArrivalData
     </div>
 </div>
 
-<!-- 5. Important Notes Edit Modal -->
+<!-- 5. Important Notes Edit Modal (تفاعلي عبر صفوف مستقلة) -->
 <div class="modal fade custom-modal" id="arrivalNotesModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -320,16 +354,34 @@ $modalNotesArr    = is_array($curArrivalData['notes'] ?? null) ? $curArrivalData
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3 <?php echo $modal_align; ?>">
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-0 <?php echo $modal_align; ?>">
                             <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['notes_title_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <input type="text" class="form-control" name="arrival_data[<?php echo $current_lang; ?>][note_title]" value="<?php echo htmlspecialchars($modalNoteTitle, ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
-                        <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['notes_list_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="arrival_data[<?php echo $current_lang; ?>][notes_raw]" rows="6" placeholder="اكتب كل ملاحظة في سطر منفصل" style="height: auto; padding: 12px 16px;"><?php echo htmlspecialchars(implode("\n", is_array($modalNotesArr) ? $modalNotesArr : []), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
                     </div>
+
+                    <div id="arrivalNotesContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ((is_array($modalNotesArr) ? $modalNotesArr : []) as $index => $noteText): ?>
+                            <div class="p-3 shadow-sm arrival-note-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="note_row_<?php echo $index; ?>">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['notes_item_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control arrival-note-input" name="arrival_data[<?php echo $current_lang; ?>][notes][<?php echo $index; ?>]" value="<?php echo htmlspecialchars((string)$noteText, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                    </div>
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('note_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addArrivalNoteBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['add_note_btn'], ENT_QUOTES, 'UTF-8'); ?>
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -340,11 +392,16 @@ $modalNotesArr    = is_array($curArrivalData['notes'] ?? null) ? $curArrivalData
     </div>
 </div>
 
-<!-- Dynamic JS Engine (Gold Standard AJAX & Notifications) -->
+<!-- Dynamic JS Engine (Gold Standard AJAX & Dynamic Rows) -->
 <script>
 const ARRIVAL_MODAL_TXT = <?php echo json_encode($mTxt, JSON_UNESCAPED_UNICODE); ?>;
 const ARRIVAL_ACTIVE_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;
 const ARRIVAL_CSRF_TOKEN = <?php echo json_encode($activeCsrfToken, JSON_UNESCAPED_UNICODE); ?>;
+
+function removeRow(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+}
 
 function showNotification(message, type = 'success') {
     const existingAlert = document.getElementById('customNotificationAlert');
@@ -390,7 +447,58 @@ function showNotification(message, type = 'success') {
     }, 4000);
 }
 
+function addArrivalTipRow() {
+    const container = document.getElementById('arrivalTipsContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.arrival-tip-row-item').length;
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm arrival-tip-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'tip_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${ARRIVAL_MODAL_TXT.tips_item_lbl}</label>
+                <input type="text" class="form-control arrival-tip-input" name="arrival_data[${ARRIVAL_ACTIVE_LANG}][tips][0]" value="" required>
+            </div>
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ARRIVAL_MODAL_TXT.delete_item}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
+function addArrivalNoteRow() {
+    const container = document.getElementById('arrivalNotesContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.arrival-note-row-item').length;
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm arrival-note-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'note_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${ARRIVAL_MODAL_TXT.notes_item_lbl}</label>
+                <input type="text" class="form-control arrival-note-input" name="arrival_data[${ARRIVAL_ACTIVE_LANG}][notes][0]" value="" required>
+            </div>
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${ARRIVAL_MODAL_TXT.delete_item}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addArrivalTipBtn')?.addEventListener('click', addArrivalTipRow);
+    document.getElementById('addArrivalNoteBtn')?.addEventListener('click', addArrivalNoteRow);
+
     const arrivalFormIds = new Set([
         'arrivalBreadcrumbForm',
         'arrivalHeroForm',
@@ -414,6 +522,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.querySelector(`button[form="${form.id}"][type="submit"]`)
             || form.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.disabled = true;
+
+        const targetLang = form.querySelector('input[name="targetLang"]')?.value || ARRIVAL_ACTIVE_LANG;
+
+        // 1. إعادة ترقيم صفوف النصائح (Tips)
+        form.querySelectorAll('.arrival-tip-row-item').forEach((row, index) => {
+            const input = row.querySelector('.arrival-tip-input');
+            if (input) {
+                input.name = `arrival_data[${targetLang}][tips][${index}]`;
+            }
+        });
+
+        // 2. إعادة ترقيم صفوف الملاحظات (Notes)
+        form.querySelectorAll('.arrival-note-row-item').forEach((row, index) => {
+            const input = row.querySelector('.arrival-note-input');
+            if (input) {
+                input.name = `arrival_data[${targetLang}][notes][${index}]`;
+            }
+        });
 
         const formData = new FormData(form);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')

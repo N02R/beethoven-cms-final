@@ -2,7 +2,7 @@ li {
     list-style: none;
 }
 
-/* --- تنسيق الـ Breadcrumb --- */
+/* --- تنسيق الـ Breadcrumb الموحد لكل اللغات --- */
 .breadcrumb {
     flex-wrap: wrap;
     background: transparent;
@@ -27,7 +27,8 @@ li {
     color: #66aeee;
 }
 
-[dir="rtl"] .breadcrumb-item+.breadcrumb-item::before {
+/* الفاصل (السهم) يعمل الآن في كل الاتجاهات مع مراعاة انعكاس الاتجاه للغة العربية */
+.breadcrumb-item + .breadcrumb-item::before {
     content: "";
     display: inline-block;
     width: 14px;
@@ -38,8 +39,12 @@ li {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transform: scaleX(-1);
     vertical-align: middle;
+}
+
+/* عكس اتجاه السهم تلقائياً في حالة الـ RTL (اللغة العربية) */
+[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    transform: scaleX(-1);
 }
 
 /* --- تنسيق الـ Hero Image المتجاوب --- */

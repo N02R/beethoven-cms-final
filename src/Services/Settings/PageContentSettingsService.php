@@ -67,30 +67,37 @@ class PageContentSettingsService
                     $pageData['advice_title'] = trim((string)($postedArrival['advice_title'] ?? ($pageData['advice_title'] ?? '')));
                     $pageData['advice_desc'] = trim((string)($postedArrival['advice_desc'] ?? ($pageData['advice_desc'] ?? '')));
                     
-                    $tipsRaw = $postedArrival['tips_raw'] ?? ($postedArrival['tips'] ?? ($_POST['tips_raw'] ?? ($_POST['tips'] ?? [])));
-                    if (is_string($tipsRaw)) {
-                        $pageData['tips'] = array_values(array_filter(array_map('trim', explode("\n", $tipsRaw)), fn($val) => $val !== ''));
-                    } elseif (is_array($tipsRaw)) {
-                        $pageData['tips'] = array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== ''));
-                    } else {
-                        $pageData['tips'] = [];
-                    }
+                    $tipsRaw = $postedArrival['tips'] ?? ($_POST['tips'] ?? []);
+                    $pageData['tips'] = is_array($tipsRaw) ? array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== '')) : [];
                 } 
                 elseif (str_contains($action, '_notes')) {
                     $pageData['note_title'] = trim((string)($postedArrival['note_title'] ?? ($pageData['note_title'] ?? '')));
                     
-                    $notesRaw = $postedArrival['notes_raw'] ?? ($postedArrival['notes'] ?? ($_POST['notes_raw'] ?? ($_POST['notes'] ?? [])));
-                    if (is_string($notesRaw)) {
-                        $pageData['notes'] = array_values(array_filter(array_map('trim', explode("\n", $notesRaw)), fn($val) => $val !== ''));
-                    } elseif (is_array($notesRaw)) {
-                        $pageData['notes'] = array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== ''));
-                    } else {
-                        $pageData['notes'] = [];
-                    }
+                    $notesRaw = $postedArrival['notes'] ?? ($_POST['notes'] ?? []);
+                    $pageData['notes'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
                 }
             }
 
-            // 3. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 3. معالجة خاصة لصفحة BCS Bachelor Package
+            elseif ($dbKey === 'bachelor_package_page') {
+                $postedBachelor = is_array($_POST['bachelor_data'][$targetLang] ?? null)
+                    ? $_POST['bachelor_data'][$targetLang]
+                    : (is_array($_POST['bachelor_data'] ?? null) ? $_POST['bachelor_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedBachelor['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedBachelor['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_content')) {
+                    $pageData['main_title'] = trim((string)($postedBachelor['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedBachelor['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                    $pageData['password_label'] = trim((string)($postedBachelor['password_label'] ?? ($pageData['password_label'] ?? '')));
+                    $pageData['btn_text'] = trim((string)($postedBachelor['btn_text'] ?? ($pageData['btn_text'] ?? '')));
+                    $pageData['btn_url'] = $this->sanitizeLinkUrl((string)($postedBachelor['btn_url'] ?? ($pageData['btn_url'] ?? '#')));
+                }
+            }
+
+            // 4. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -106,6 +113,7 @@ class PageContentSettingsService
     private function resolveDbKey(string $action): ?string
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
+        if (str_starts_with($action, 'update_bachelor_')) return 'bachelor_package_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         return null;
     }

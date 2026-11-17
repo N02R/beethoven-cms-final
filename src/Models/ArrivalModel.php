@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Config\Database;
+use PDO;
+
 class ArrivalModel {
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 
     /**
-     * جلب وتجهيز بيانات صفحة الاستقبال والوصول مترجمة ومجهزة بالكامل حسب اللغة النشطة
+     * جلب وتجهيز بيانات صفحة الاستقبال والوصول من جدول pages مترجمة حسب اللغة النشطة
      */
     public static function getArrivalData(?string $lang = null): array {
         $candidateLang = strtolower(trim((string)($lang ?? ($_SESSION['site_lang'] ?? (function_exists('get_current_lang') ? get_current_lang() : 'de')))));
@@ -26,39 +29,37 @@ class ArrivalModel {
         ];
         $fallbackLabels = $defaultsByLang[$activeLang];
 
-        $settings = SiteModel::getSettings();
+        // استجابة مباشرة من جدول pages الجديد
+        $pageRawData = [];
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare("SELECT page_data FROM pages WHERE page_key = 'arrival_page' LIMIT 1");
+            $stmt->execute();
+            $dbRaw = $stmt->fetchColumn();
 
-        // دالة استخراج البيانات باللغة المطلوبة مع تراجع آمن (de -> en -> ar)
-        $getLangData = static function (string $key, array $default = []) use ($settings, $activeLang): array {
-            if (!isset($settings[$key])) {
-                return $default;
+            if (is_string($dbRaw) && $dbRaw !== '') {
+                $decoded = json_decode($dbRaw, true);
+                if (is_array($decoded)) {
+                    $pageRawData = $decoded;
+                }
             }
+        } catch (\Throwable $e) {
+            error_log('ArrivalModel Error: ' . $e->getMessage());
+        }
 
-            $raw = $settings[$key];
-            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
-
-            if (!is_array($decoded)) {
-                return $default;
-            }
-
-            if (isset($decoded[$activeLang]) && is_array($decoded[$activeLang])) {
-                return $decoded[$activeLang];
-            }
-            if (isset($decoded['de']) && is_array($decoded['de'])) {
-                return $decoded['de'];
-            }
-            if (isset($decoded['en']) && is_array($decoded['en'])) {
-                return $decoded['en'];
-            }
-            if (isset($decoded['ar']) && is_array($decoded['ar'])) {
-                return $decoded['ar'];
-            }
-
-            return $decoded;
-        };
-
-        // جلب بيانات صفحة الوصول للغة النشطة فقط
-        $arrival_raw = $getLangData('arrival_page', []);
+        // استخراج بيانات اللغة النشطة مع التراجع الآمن (de -> en -> ar)
+        $arrival_raw = [];
+        if (isset($pageRawData[$activeLang]) && is_array($pageRawData[$activeLang])) {
+            $arrival_raw = $pageRawData[$activeLang];
+        } elseif (isset($pageRawData['de']) && is_array($pageRawData['de'])) {
+            $arrival_raw = $pageRawData['de'];
+        } elseif (isset($pageRawData['en']) && is_array($pageRawData['en'])) {
+            $arrival_raw = $pageRawData['en'];
+        } elseif (isset($pageRawData['ar']) && is_array($pageRawData['ar'])) {
+            $arrival_raw = $pageRawData['ar'];
+        } else {
+            $arrival_raw = $pageRawData;
+        }
 
         $arrival_data = [
             'page_breadcrumb'     => $arrival_raw['page_breadcrumb'] ?? $fallbackLabels['page_breadcrumb'],

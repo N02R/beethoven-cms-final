@@ -32,8 +32,8 @@ class PageContentSettingsService
         $targetLang = $this->resolveTargetLang(['targetLang', 'page_lang', 'lang']);
 
         try {
-            // 1. جلب كل اللغات الحالية للمفتاح من قاعدة البيانات
-            $allLangs = $this->fetchSetting($pdo, $dbKey, $currentSettings);
+            // 1. جلب البيانات الحالية للصفحة من جدول pages الجديد
+            $allLangs = $this->fetchPageData($pdo, $dbKey);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
                 ? $allLangs[$targetLang]
                 : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
@@ -90,9 +90,9 @@ class PageContentSettingsService
                 }
             }
 
-            // 3. تحديث مصفوفة اللغة المعنية داخل الهيكل العام وإعادة الحفظ
+            // 3. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
-            $this->saveSetting($pdo, $dbKey, $allLangs);
+            $this->savePageData($pdo, $dbKey, $allLangs);
 
             $this->flushDeletedFiles();
             return true;
@@ -124,10 +124,10 @@ class PageContentSettingsService
         return in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
     }
 
-    private function fetchSetting(PDO $pdo, string $key, array $currentSettings): array
+    private function fetchPageData(PDO $pdo, string $pageKey): array
     {
-        $stmtFetch = $pdo->prepare('SELECT setting_value FROM global_settings WHERE setting_key = :k LIMIT 1');
-        $stmtFetch->execute(['k' => $key]);
+        $stmtFetch = $pdo->prepare('SELECT page_data FROM pages WHERE page_key = :k LIMIT 1');
+        $stmtFetch->execute(['k' => $pageKey]);
         $dbRaw = $stmtFetch->fetchColumn();
 
         if (is_string($dbRaw) && $dbRaw !== '') {
@@ -139,16 +139,16 @@ class PageContentSettingsService
         return [];
     }
 
-    private function saveSetting(PDO $pdo, string $key, array $data): void
+    private function savePageData(PDO $pdo, string $pageKey, array $data): void
     {
         $jsonVal = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         $stmt = $pdo->prepare(
-            'INSERT INTO global_settings (setting_key, setting_value)
+            'INSERT INTO pages (page_key, page_data)
              VALUES (:k, :v)
-             ON DUPLICATE KEY UPDATE setting_value = :v_update'
+             ON DUPLICATE KEY UPDATE page_data = :v_update'
         );
         $stmt->execute([
-            'k'        => $key,
+            'k'        => $pageKey,
             'v'        => $jsonVal,
             'v_update' => $jsonVal,
         ]);

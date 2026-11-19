@@ -109,15 +109,27 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
     <!-- استخدام المتغير المباشر لدعم وسوم الـ HTML والـ span بأمان -->
     <div class="par-text mb-4"><?php echo $bachelor_data['main_desc'] ?? ''; ?></div>
     
-    <div class="pas-info mt-5 d-flex flex-column align-items-center gap-3">
-      <div class="d-flex flex-wrap align-items-baseline justify-content-center gap-2">
-        <span class="fw-semibold"><?php echo htmlspecialchars((string)($bachelor_data['password_label'] ?? $txt['password_lbl']), ENT_QUOTES, 'UTF-8'); ?></span>
-        <span class="pas-line" aria-hidden="true"></span>
-      </div>
-      <a href="<?php echo htmlspecialchars((string)($bachelor_data['btn_url'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" class="btn pas-btn">
-        <?php echo htmlspecialchars((string)($bachelor_data['btn_text'] ?? $txt['btn_txt']), ENT_QUOTES, 'UTF-8'); ?>
-      </a>
+    <div class="pas-info mt-5 d-flex justify-content-center">
+      <form action="<?php echo htmlspecialchars((string)($bachelor_data['btn_url'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" method="POST" class="pas-form w-100" style="max-width: 460px;">
+        <label for="bachelorPackagePassword" class="form-label fw-semibold mb-2">
+          <?php echo htmlspecialchars((string)($bachelor_data['password_label'] ?? $txt['password_lbl']), ENT_QUOTES, 'UTF-8'); ?>
+        </label>
+        <div class="input-group pas-input-group shadow-sm">
+          <input
+            type="password"
+            id="bachelorPackagePassword"
+            name="package_password"
+            class="form-control pas-input"
+            placeholder="••••••••••••"
+            required
+          >
+          <button type="submit" class="btn pas-btn">
+            <?php echo htmlspecialchars((string)($bachelor_data['btn_text'] ?? $txt['btn_txt']), ENT_QUOTES, 'UTF-8'); ?>
+          </button>
+        </div>
+      </form>
     </div>
+
   </div>
 </section>
 <!-- custom-services-info end -->

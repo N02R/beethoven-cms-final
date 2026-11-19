@@ -33,10 +33,10 @@ $activeCsrfToken = \App\Core\Security::generateCsrfToken();
 
 $modalI18n = [
     'de' => [
-        'save_success'   => 'Änderungen erfolgreich gespeichert...',
+        'save_success'   => 'Änderungen erfolgreich gespeichert. Seite wird neu geladen...',
         'save_error'     => 'Speichern fehlgeschlagen: ',
         'invalid_resp'   => 'Unerwartete Serverantwort.',
-        'network_error'  => 'Netzwerkfehler.',
+        'network_error'  => 'Netzwerkfehler. Bitte versuchen Sie es später erneut.',
         'success_title'  => 'Erfolgreich!',
         'error_title'    => 'Fehler!',
         'warning_title'  => 'Hinweis',
@@ -51,10 +51,10 @@ $modalI18n = [
         'btn_url_lbl'    => 'Button-URL',
     ],
     'en' => [
-        'save_success'   => 'Changes saved successfully...',
-        'save_error'     => 'Failed to save: ',
+        'save_success'   => 'Changes saved successfully. Reloading page...',
+        'save_error'     => 'Failed to save changes: ',
         'invalid_resp'   => 'Unexpected server response.',
-        'network_error'  => 'Network error.',
+        'network_error'  => 'Network connection error. Please try again later.',
         'success_title'  => 'Success!',
         'error_title'    => 'Error!',
         'warning_title'  => 'Notice',
@@ -69,10 +69,10 @@ $modalI18n = [
         'btn_url_lbl'    => 'Button URL',
     ],
     'ar' => [
-        'save_success'   => 'تم حفظ التعديلات بنجاح...',
+        'save_success'   => 'تم حفظ التعديلات بنجاح، جاري تحديث الصفحة...',
         'save_error'     => 'عذراً، لم يتم الحفظ: ',
         'invalid_resp'   => 'استجابة غير متوقعة من الخادم.',
-        'network_error'  => 'حدث خطأ في الاتصال.',
+        'network_error'  => 'حدث خطأ في الاتصال بالشبكة، يرجى المحاولة لاحقاً.',
         'success_title'  => 'تم بنجاح!',
         'error_title'    => 'عذراً، حدث خطأ!',
         'warning_title'  => 'تنبيه هام',
@@ -220,9 +220,54 @@ $modalBtnUrl     = (string)($curBachelorData['btn_url'] ?? '#');
     </div>
 </div>
 
+<!-- Dynamic JS Engine (Gold Standard AJAX & Notifications) -->
 <script>
 const BACHELOR_MODAL_TXT = <?php echo json_encode($mTxt, JSON_UNESCAPED_UNICODE); ?>;
 const BACHELOR_CSRF_TOKEN = <?php echo json_encode($activeCsrfToken, JSON_UNESCAPED_UNICODE); ?>;
+
+function showNotification(message, type = 'success') {
+    const existingAlert = document.getElementById('customNotificationAlert');
+    if (existingAlert) existingAlert.remove();
+
+    let bgClass = 'alert-success';
+    let icon = 'bi-check-circle-fill';
+    let title = BACHELOR_MODAL_TXT.success_title;
+
+    if (type === 'danger') {
+        bgClass = 'alert-danger';
+        icon = 'bi-x-circle-fill';
+        title = BACHELOR_MODAL_TXT.error_title;
+    } else if (type === 'warning') {
+        bgClass = 'alert-warning';
+        icon = 'bi-exclamation-triangle-fill';
+        title = BACHELOR_MODAL_TXT.warning_title;
+    }
+
+    const alertDiv = document.createElement('div');
+    alertDiv.id = 'customNotificationAlert';
+    alertDiv.className = `alert ${bgClass} alert-dismissible fade show shadow-lg position-fixed`;
+    alertDiv.style.cssText = 'top: 30px; left: 50%; transform: translateX(-50%); z-index: 99999; min-width: 340px; border-radius: 12px; border: none;';
+    
+    alertDiv.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi ${icon} fs-4"></i>
+            <div>
+                <strong>${title}</strong>
+                <div class="small">${message}</div>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        if (alertDiv) {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
+        }
+    }, 4000);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const bachelorFormIds = new Set(['bachelorBreadcrumbForm', 'bachelorContentForm']);
@@ -268,23 +313,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 data = JSON.parse(rawText);
             } catch (parseErr) {
                 console.error('Raw Server Response:', rawText);
-                alert(BACHELOR_MODAL_TXT.invalid_resp);
+                showNotification(BACHELOR_MODAL_TXT.invalid_resp, 'danger');
                 form.dataset.submitting = 'false';
                 if (submitBtn) submitBtn.disabled = false;
                 return;
             }
 
             if (data.success || data.status === 'success') {
-                alert(BACHELOR_MODAL_TXT.save_success);
+                showNotification(BACHELOR_MODAL_TXT.save_success, 'success');
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                alert(BACHELOR_MODAL_TXT.save_error + (data.message || ''));
+                showNotification(BACHELOR_MODAL_TXT.save_error + (data.message || ''), 'danger');
                 form.dataset.submitting = 'false';
                 if (submitBtn) submitBtn.disabled = false;
             }
         } catch (err) {
             console.error('Fetch Error:', err);
-            alert(BACHELOR_MODAL_TXT.network_error);
+            showNotification(BACHELOR_MODAL_TXT.network_error, 'danger');
             form.dataset.submitting = 'false';
             if (submitBtn) submitBtn.disabled = false;
         }

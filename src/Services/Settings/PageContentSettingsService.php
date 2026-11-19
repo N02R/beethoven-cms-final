@@ -97,7 +97,46 @@ class PageContentSettingsService
                 }
             }
 
-            // 4. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 4. معالجة خاصة لصفحة تحقق من شهاداتك التعليمية (Check Certificate Page)
+            elseif ($dbKey === 'check_page') {
+                $postedCheck = is_array($_POST['check_data'][$targetLang] ?? null)
+                    ? $_POST['check_data'][$targetLang]
+                    : (is_array($_POST['check_data'] ?? null) ? $_POST['check_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedCheck['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedCheck['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg13.png');
+                    $submittedOldImg = (string)($postedCheck['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('check_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg13.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedCheck['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedCheck['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $pageData['note_title'] = trim((string)($postedCheck['note_title'] ?? ($pageData['note_title'] ?? '')));
+                    $notesRaw = $postedCheck['notes'] ?? ($_POST['notes'] ?? []);
+                    $pageData['notes'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_links')) {
+                    $pageData['links_intro']       = trim((string)($postedCheck['links_intro'] ?? ($pageData['links_intro'] ?? '')));
+                    $pageData['anabin_url']        = $this->sanitizeLinkUrl((string)($postedCheck['anabin_url'] ?? ($pageData['anabin_url'] ?? '')));
+                    $pageData['uniassist_url']     = $this->sanitizeLinkUrl((string)($postedCheck['uniassist_url'] ?? ($pageData['uniassist_url'] ?? '')));
+                    $pageData['uni_contact_intro'] = trim((string)($postedCheck['uni_contact_intro'] ?? ($pageData['uni_contact_intro'] ?? '')));
+                    $pageData['condition_1']       = trim((string)($postedCheck['condition_1'] ?? ($pageData['condition_1'] ?? '')));
+                    $pageData['condition_2']       = trim((string)($postedCheck['condition_2'] ?? ($pageData['condition_2'] ?? '')));
+                    $pageData['conclusion_text']   = trim((string)($postedCheck['conclusion_text'] ?? ($pageData['conclusion_text'] ?? '')));
+                }
+            }
+
+            // 5. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -114,6 +153,7 @@ class PageContentSettingsService
     {
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_bachelor_')) return 'bachelor_package_page';
+        if (str_starts_with($action, 'update_check_')) return 'check_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         return null;
     }

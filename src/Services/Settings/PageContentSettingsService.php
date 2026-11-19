@@ -528,7 +528,70 @@ class PageContentSettingsService
                 }
             }
 
-            // 12. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 12. معالجة خاصة لصفحة دورات اللغة الألمانية (German Language Page)
+            elseif ($dbKey === 'germanlang_page') {
+                $postedGerman = is_array($_POST['german_data'][$targetLang] ?? null)
+                    ? $_POST['german_data'][$targetLang]
+                    : (is_array($_POST['german_data'] ?? null) ? $_POST['german_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedGerman['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedGerman['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg4.png');
+                    $submittedOldImg = (string)($postedGerman['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('german_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg4.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedGerman['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedGerman['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedGerman['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_levels')) {
+                    $incomingSec = is_array($postedGerman['levels_section'] ?? null) ? $postedGerman['levels_section'] : [];
+                    $existingSec = is_array($pageData['levels_section'] ?? null) ? $pageData['levels_section'] : [];
+                    $listRaw = $incomingSec['levels_list'] ?? ($_POST['levels_list'] ?? []);
+
+                    $pageData['levels_section'] = [
+                        'title'       => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'levels_list' => is_array($listRaw)
+                            ? array_values(array_filter(array_map('trim', $listRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                } 
+                elseif (str_contains($action, '_features')) {
+                    $incomingSec = is_array($postedGerman['features_section'] ?? null) ? $postedGerman['features_section'] : [];
+                    $existingSec = is_array($pageData['features_section'] ?? null) ? $pageData['features_section'] : [];
+                    $listRaw = $incomingSec['features_list'] ?? ($_POST['features_list'] ?? []);
+
+                    $pageData['features_section'] = [
+                        'title'         => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'features_list' => is_array($listRaw)
+                            ? array_values(array_filter(array_map('trim', $listRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                } 
+                elseif (str_contains($action, '_tips')) {
+                    $incomingSec = is_array($postedGerman['tips_section'] ?? null) ? $postedGerman['tips_section'] : [];
+                    $existingSec = is_array($pageData['tips_section'] ?? null) ? $pageData['tips_section'] : [];
+                    $listRaw = $incomingSec['tips_list'] ?? ($_POST['tips_list'] ?? []);
+
+                    $pageData['tips_section'] = [
+                        'title'     => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'tips_list' => is_array($listRaw)
+                            ? array_values(array_filter(array_map('trim', $listRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                }
+            }
+
+            // 13. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -553,6 +616,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_financial_') || str_starts_with($action, 'update_blocked_')) return 'financial_page';
         if (str_starts_with($action, 'update_stk_') || str_starts_with($action, 'update_foundation_')) return 'foundation_page';
         if (str_starts_with($action, 'update_visa_') || str_starts_with($action, 'update_general_')) return 'general_page';
+        if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         return null;
     }
 

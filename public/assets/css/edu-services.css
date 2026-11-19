@@ -470,3 +470,37 @@ h6 {
     color: #4F4F4F;
     line-height: 1.6;
 }
+
+/* --- تخصيص سهم القوائم المنسدلة داخل المودالات (RTL & LTR) --- */
+.custom-modal .form-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-size: 14px 12px !important;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+/* اتجاه الـ LTR (الإنجليزية والألمانية): السهم يمين/يسار حسب القاعدة */
+.custom-modal .form-select {
+    background-position: right 0.95rem center !important;
+    padding-right: 2.5rem !important;
+    padding-left: 0.9rem !important;
+}
+
+/* اتجاه الـ RTL (العربية): مسافة كافية بين النص والسهم */
+.custom-modal[dir="rtl"] .form-select,
+[dir="rtl"] .custom-modal .form-select {
+    background-position: left 0.95rem center !important;
+    padding-left: 2.5rem !important;
+    padding-right: 0.9rem !important;
+}
+
+.custom-modal .form-select:focus {
+    border-color: #66aeee;
+    box-shadow: 0 0 0 0.2rem rgba(102, 174, 238, 0.2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2366aeee' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}

@@ -54,7 +54,7 @@ class BachelorPackageController
             include_once $header_file;
         }
 
-        $view_file = $viewsRoot . '/edu-services/bachelor_package.php';
+        $view_file = $viewsRoot . '/edu-services/bachelor-package.php';
         if (is_file($view_file)) {
             require_once $view_file;
         } else {

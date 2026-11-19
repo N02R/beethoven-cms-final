@@ -3,91 +3,136 @@ declare(strict_types=1);
 
 namespace App\Controllers\Services;
 
+use App\Models\FinancialModel;
 use App\Models\SiteModel;
-use App\Models\FinancialModel; 
 
-class FinancialController {
-    public function index(string $lang = 'de'): void {
-        // حماية مخرجات اللغة المعروضة
-        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+class FinancialController
+{
+    private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const SESSION_TIMEOUT = 1800;
 
-        // إدارة الجلسات بأمان تام (نفس منطق ArrivalController)
-        if (session_status() === PHP_SESSION_NONE) {
-            ini_set('session.cookie_httponly', '1');
-            ini_set('session.use_strict_mode', '1');
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-                ini_set('session.cookie_secure', '1');
-            }
-            session_start();
+    public function index(string $langCode = 'de'): void
+    {
+        $this->initSecureSession();
+
+        $cleanLang = strtolower(trim($langCode));
+        if (!in_array($cleanLang, self::SUPPORTED_LANGS, true)) {
+            $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+            $cleanLang = in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de';
         }
 
-        // تحديد مسار الجذر للمشروع
-        $root_path = realpath(__DIR__ . '/../../../');
+        $_SESSION['site_lang'] = $cleanLang;
+        $current_lang = $cleanLang;
+        $current_dir  = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-        // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
-        $data = SiteModel::getGlobalData();
+        $lang = $this->loadLanguageArray($current_lang);
 
-        // 2. جلب بيانات صفحة الضمانات المالية عبر المودل المخصص
-        $financial_data_array = FinancialModel::getFinancialData(); 
-        
-        // تمرير البيانات للـ View بجميع الأسماء المحتملة لضمان التوافق التام وعدم كسر أي عرض
-        $data['financial_page'] = $financial_data_array;
-        $data['financial_data'] = $financial_data_array; // المتغير الأساسي الذي ينتظره ملف الـ View
-        $data['blocked_data']   = $financial_data_array; 
+        $globalData    = SiteModel::getGlobalData();
+        $financialData = class_exists(FinancialModel::class) ? FinancialModel::getFinancialData($current_lang) : [];
+        $data          = array_merge($globalData, is_array($financialData) ? $financialData : []);
+        $currentSettings = $data;
 
-        // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
-        $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
-        $user_role = $_SESSION['role'] ?? '';
-        $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
+        $is_admin     = $this->verifyAdminSession();
+        $is_logged_in = $is_admin;
 
-        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
-        $data['is_admin'] = $is_admin;
+        $data['is_admin']     = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
+        $data['current_lang'] = $current_lang;
+        $data['current_dir']  = $current_dir;
 
-        // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';
-        $page_css = ['/assets/css/style.css', '/assets/css/edu-services.css'];
-        $page_js = []; // أضف ملفات JS هنا إن وجدت
+        $page_css    = ['/assets/css/style.css', '/assets/css/edu-services.css'];
+        $page_js     = [];
 
-        // تفكيك مصفوفة البيانات لتحويل مفاتيحها إلى متغيرات مستقلة داخل ملفات الـ View
         extract($data);
 
-        // 1. استدعاء الهيدر المشترك
-        $header_file = $root_path . '/src/Views/partials/header.php';
-        if (file_exists($header_file)) {
+        $viewsRoot = __DIR__ . '/../../Views';
+
+        $header_file = $viewsRoot . '/partials/header.php';
+        if (is_file($header_file)) {
             include_once $header_file;
-        } else {
-            error_log("System Error: Header file not found at " . $header_file);
-            echo "<div class='container py-3 text-danger'>System Error: Header not found.</div>";
         }
 
-        // 2. استدعاء ملف الـ View الخاص بالضمانات المالية (financial.php)
-        $view_file = $root_path . '/src/Views/edu-services/financial.php';
-        if (file_exists($view_file)) {
+        $view_file = $viewsRoot . '/edu-services/financial.php';
+        if (is_file($view_file)) {
             require_once $view_file;
         } else {
-            error_log("View Error: Financial view not found at " . $view_file);
-            echo "<div class='container py-5 text-center'><h3>System Error: View file not found.</h3></div>";
+            echo "<div class='container py-5 text-center'><h3>View file not found.</h3></div>";
         }
 
-        // 3. استدعاء مودلز لوحة التحكم الخاصة بالصفحة (admin_financial_modals.php)
-        if ($is_admin) {
-            $modals_file = $root_path . '/src/Views/edu-services/includes/admin_financial_modals.php';
-            if (file_exists($modals_file)) {
-                include_once $modals_file;
-            } else {
-                error_log("Admin Modals Error: File not found at " . $modals_file);
+        $footer_file = $viewsRoot . '/partials/footer.php';
+        if (is_file($footer_file)) {
+            include_once $footer_file;
+        }
+    }
+
+    private function initSecureSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'domain'   => '',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => 'Strict',
+            ]);
+
+            session_start();
+        }
+    }
+
+    private function loadLanguageArray(string $langCode): array
+    {
+        $langDir    = __DIR__ . '/../../Lang/';
+        $candidates = [$langCode, 'de', 'en', 'ar'];
+
+        foreach (array_unique($candidates) as $code) {
+            $file = $langDir . $code . '.php';
+            if (is_file($file)) {
+                $loaded = require $file;
+                if (is_array($loaded)) {
+                    return $loaded;
+                }
             }
         }
+        return [];
+    }
 
-        // 4. استدعاء الفوتر المشترك
-        $footer_file = $root_path . '/src/Views/partials/footer.php';
-        if (file_exists($footer_file)) {
-            include_once $footer_file;
-        } else {
-            error_log("System Error: Footer file not found at " . $footer_file);
-            echo "<div class='py-3 text-danger'>System Error: Footer not found.</div>";
+    private function verifyAdminSession(): bool
+    {
+        if (empty($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+            return false;
         }
+
+        $role = (string)($_SESSION['role'] ?? '');
+        if (!in_array($role, ['admin', 'super_admin'], true)) {
+            return false;
+        }
+
+        $lastActivity = (int)($_SESSION['LAST_ACTIVITY'] ?? 0);
+        if ($lastActivity > 0 && (time() - $lastActivity) > self::SESSION_TIMEOUT) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $currentAgentHash = hash('sha256', $_SERVER['HTTP_USER_AGENT'] ?? '');
+        if (!empty($_SESSION['user_agent_hash']) && !hash_equals((string)$_SESSION['user_agent_hash'], $currentAgentHash)) {
+            $_SESSION['is_logged_in'] = false;
+            unset($_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
+            return false;
+        }
+
+        $_SESSION['LAST_ACTIVITY'] = time();
+        return true;
     }
 }

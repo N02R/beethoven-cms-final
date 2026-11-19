@@ -339,7 +339,65 @@ class PageContentSettingsService
                 }
             }
 
-            // 9. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 9. معالجة خاصة لصفحة الضمانات المالية والحساب البنكي المغلق (Financial Page)
+            elseif ($dbKey === 'financial_page') {
+                $postedFinancial = is_array($_POST['financial_data'][$targetLang] ?? null)
+                    ? $_POST['financial_data'][$targetLang]
+                    : (is_array($_POST['financial_data'] ?? null) ? $_POST['financial_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedFinancial['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedFinancial['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg7.png');
+                    $submittedOldImg = (string)($postedFinancial['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('financial_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg7.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title']       = trim((string)($postedFinancial['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc']        = trim((string)($postedFinancial['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                    $pageData['importance_title'] = trim((string)($postedFinancial['importance_title'] ?? ($pageData['importance_title'] ?? '')));
+                    $pageData['importance_desc']  = trim((string)($postedFinancial['importance_desc'] ?? ($pageData['importance_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_options')) {
+                    $pageData['options_title'] = trim((string)($postedFinancial['options_title'] ?? ($pageData['options_title'] ?? '')));
+                    $optsRaw = $postedFinancial['options_items'] ?? ($_POST['options_items'] ?? []);
+                    $pageData['options_items'] = is_array($optsRaw) ? array_values(array_filter(array_map('trim', $optsRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_account')) {
+                    $pageData['account_title'] = trim((string)($postedFinancial['account_title'] ?? ($pageData['account_title'] ?? '')));
+                    $accRaw = $postedFinancial['account_points'] ?? ($_POST['account_points'] ?? []);
+                    $pageData['account_points'] = is_array($accRaw) ? array_values(array_filter(array_map('trim', $accRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_links')) {
+                    $linksRaw = $postedFinancial['service_links'] ?? [];
+                    $cleanLinks = [];
+                    if (is_array($linksRaw)) {
+                        foreach ($linksRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $textVal   = trim((string)($item['text'] ?? ''));
+                            $urlVal    = $this->sanitizeLinkUrl((string)($item['url'] ?? '#'));
+                            $activeVal = !empty($item['active']) ? 1 : 0;
+
+                            if ($textVal !== '') {
+                                $cleanLinks[] = [
+                                    'text'   => $textVal,
+                                    'url'    => $urlVal,
+                                    'active' => $activeVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['service_links'] = $cleanLinks;
+                }
+            }
+
+            // 10. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -361,6 +419,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_cover_')) return 'coverletter_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
+        if (str_starts_with($action, 'update_financial_') || str_starts_with($action, 'update_blocked_')) return 'financial_page';
         return null;
     }
 

@@ -397,7 +397,77 @@ class PageContentSettingsService
                 }
             }
 
-            // 10. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 10. معالجة خاصة لصفحة الدورة التأسيسية / السنة التحضيرية (Foundation / Studienkolleg Page)
+            elseif ($dbKey === 'foundation_page') {
+                $postedStk = is_array($_POST['stk_data'][$targetLang] ?? null)
+                    ? $_POST['stk_data'][$targetLang]
+                    : (is_array($_POST['stk_data'] ?? null) ? $_POST['stk_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedStk['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedStk['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/serviceimg11.png');
+                    $submittedOldImg = (string)($postedStk['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('stk_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/serviceimg11.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedStk['hero_position'] ?? ($pageData['hero_position'] ?? 'center -20rem')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center -20rem';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedStk['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedStk['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_goals')) {
+                    $pageData['goals_title'] = trim((string)($postedStk['goals_title'] ?? ($pageData['goals_title'] ?? '')));
+                    $goalsRaw = $postedStk['goals_items'] ?? ($_POST['goals_items'] ?? []);
+                    $pageData['goals_items'] = is_array($goalsRaw) ? array_values(array_filter(array_map('trim', $goalsRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_learning')) {
+                    $pageData['learning_title'] = trim((string)($postedStk['learning_title'] ?? ($pageData['learning_title'] ?? '')));
+                    $pageData['learning_intro'] = trim((string)($postedStk['learning_intro'] ?? ($pageData['learning_intro'] ?? '')));
+                    $pageData['learning_p1']    = trim((string)($postedStk['learning_p1'] ?? ($pageData['learning_p1'] ?? '')));
+                    $pageData['learning_p2']    = trim((string)($postedStk['learning_p2'] ?? ($pageData['learning_p2'] ?? '')));
+                } 
+                elseif (str_contains($action, '_courses')) {
+                    $pageData['courses_title'] = trim((string)($postedStk['courses_title'] ?? ($pageData['courses_title'] ?? '')));
+                    $coursesRaw = $postedStk['courses_items'] ?? ($_POST['courses_items'] ?? []);
+                    $pageData['courses_items'] = is_array($coursesRaw) ? array_values(array_filter(array_map('trim', $coursesRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_uni_type')) {
+                    $pageData['uni_type_title'] = trim((string)($postedStk['uni_type_title'] ?? ($pageData['uni_type_title'] ?? '')));
+                    $pageData['uni_type_intro'] = trim((string)($postedStk['uni_type_intro'] ?? ($pageData['uni_type_intro'] ?? '')));
+                    $pageData['uni_public']     = trim((string)($postedStk['uni_public'] ?? ($pageData['uni_public'] ?? '')));
+                    $pageData['uni_applied']    = trim((string)($postedStk['uni_applied'] ?? ($pageData['uni_applied'] ?? '')));
+                } 
+                elseif (str_contains($action, '_types')) {
+                    $pageData['types_title']       = trim((string)($postedStk['types_title'] ?? ($pageData['types_title'] ?? '')));
+                    $pageData['type_public_desc']  = trim((string)($postedStk['type_public_desc'] ?? ($pageData['type_public_desc'] ?? '')));
+                    $pageData['type_private_desc'] = trim((string)($postedStk['type_private_desc'] ?? ($pageData['type_private_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $pageData['notes_title'] = trim((string)($postedStk['notes_title'] ?? ($pageData['notes_title'] ?? '')));
+                    $notesRaw = $postedStk['notes_items'] ?? ($_POST['notes_items'] ?? []);
+                    $pageData['notes_items'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_exam_fsp')) {
+                    $pageData['exam_title'] = trim((string)($postedStk['exam_title'] ?? ($pageData['exam_title'] ?? '')));
+                    $pageData['exam_desc']  = trim((string)($postedStk['exam_desc'] ?? ($pageData['exam_desc'] ?? '')));
+                    $pageData['fsp_title']  = trim((string)($postedStk['fsp_title'] ?? ($pageData['fsp_title'] ?? '')));
+                    $pageData['fsp_desc']   = trim((string)($postedStk['fsp_desc'] ?? ($pageData['fsp_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_tips')) {
+                    $pageData['tips_title'] = trim((string)($postedStk['tips_title'] ?? ($pageData['tips_title'] ?? '')));
+                    $tipsRaw = $postedStk['tips_items'] ?? ($_POST['tips_items'] ?? []);
+                    $pageData['tips_items'] = is_array($tipsRaw) ? array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== '')) : [];
+                }
+            }
+
+            // 11. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -420,6 +490,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_financial_') || str_starts_with($action, 'update_blocked_')) return 'financial_page';
+        if (str_starts_with($action, 'update_stk_') || str_starts_with($action, 'update_foundation_')) return 'foundation_page';
         return null;
     }
 

@@ -109,12 +109,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
     <!-- استخدام المتغير المباشر لدعم وسوم الـ HTML والـ span بأمان -->
     <div class="par-text mb-4"><?php echo $bachelor_data['main_desc'] ?? ''; ?></div>
     
-    <div class="pas-info mt-5 d-flex justify-content-center">
-      <form action="<?php echo htmlspecialchars((string)($bachelor_data['btn_url'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" method="POST" class="pas-form w-100" style="max-width: 460px;">
-        <label for="bachelorPackagePassword" class="form-label fw-semibold mb-2">
+       <div class="pas-info mt-5 d-flex justify-content-center">
+      <form action="<?php echo htmlspecialchars((string)($bachelor_data['btn_url'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>" method="POST" class="pas-form d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-center gap-3 w-100" style="max-width: 640px;">
+        <label for="bachelorPackagePassword" class="form-label fw-semibold mb-0 text-nowrap">
           <?php echo htmlspecialchars((string)($bachelor_data['password_label'] ?? $txt['password_lbl']), ENT_QUOTES, 'UTF-8'); ?>
         </label>
-        <div class="input-group pas-input-group shadow-sm">
+        <div class="input-group pas-input-group shadow-sm flex-grow-1">
           <input
             type="password"
             id="bachelorPackagePassword"

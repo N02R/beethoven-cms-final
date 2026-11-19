@@ -245,7 +245,61 @@ class PageContentSettingsService
                 }
             }
 
-            // 7. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 7. معالجة خاصة لصفحة السيرة الذاتية (CV Page)
+            elseif ($dbKey === 'cv_page') {
+                $postedCv = is_array($_POST['cv_data'][$targetLang] ?? null)
+                    ? $_POST['cv_data'][$targetLang]
+                    : (is_array($_POST['cv_data'] ?? null) ? $_POST['cv_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedCv['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedCv['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg2.jpg');
+                    $submittedOldImg = (string)($postedCv['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('cv_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg2.jpg';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedCv['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedCv['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_advice')) {
+                    $pageData['advice_title'] = trim((string)($postedCv['advice_title'] ?? ($pageData['advice_title'] ?? '')));
+                    $adviceRaw = $postedCv['advice_points'] ?? ($_POST['advice_points'] ?? []);
+                    $pageData['advice_points'] = is_array($adviceRaw) ? array_values(array_filter(array_map('trim', $adviceRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_download')) {
+                    $dlItemsRaw = $postedCv['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $subVal   = trim((string)($item['sub'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? '#'));
+
+                            if ($titleVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'sub'   => $subVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 8. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 

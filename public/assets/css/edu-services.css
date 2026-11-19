@@ -446,3 +446,17 @@ h6 {
     color: #4F4F4F;
     line-height: 1.6;
 }
+
+.pas-info .pas-line {
+    display: inline-block;
+    width: 220px;
+    max-width: 75vw;
+    border-bottom: 2px dotted currentColor;
+    transform: translateY(-2px);
+}
+
+.pas-info .pas-btn {
+    min-width: 140px;
+    padding: 0.55rem 1.75rem;
+    border-radius: 10px;
+}

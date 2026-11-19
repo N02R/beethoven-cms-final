@@ -400,7 +400,7 @@ $modalDownloadArr  = is_array($curCoverData['download_items'] ?? null) ? $curCov
     </div>
 </div>
 
-<!-- 6. Download Items Edit Modal (صفوف ديناميكية) -->
+<!-- 6. Download Items Edit Modal (صفوف ديناميكية مريحة ومرتبة) -->
 <div class="modal fade custom-modal" id="coverDownloadModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -417,43 +417,44 @@ $modalDownloadArr  = is_array($curCoverData['download_items'] ?? null) ? $curCov
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div id="coverDownloadContainer" class="d-flex flex-column gap-3">
+                    <div id="coverDownloadContainer" class="d-flex flex-column gap-4">
                         <?php foreach ((is_array($modalDownloadArr) ? $modalDownloadArr : []) as $index => $dlItem): 
                             if (!is_array($dlItem)) continue;
                             $itemType = strtolower((string)($dlItem['type'] ?? 'pdf'));
                         ?>
-                            <div class="p-3 shadow-sm cover-dl-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cover_dl_row_<?php echo $index; ?>">
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-md-4 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['dl_title_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <div class="p-4 shadow-sm cover-dl-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="cover_dl_row_<?php echo $index; ?>">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">#<?php echo $index + 1; ?></span>
+                                    <button type="button" class="btn-icon-trash" onclick="removeRow('cover_dl_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-7 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['dl_title_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
                                         <input type="text" class="form-control cover-dl-title" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][title]" value="<?php echo htmlspecialchars((string)($dlItem['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" required>
                                     </div>
-                                    <div class="col-md-3 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['dl_sub_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control cover-dl-sub" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][sub]" value="<?php echo htmlspecialchars((string)($dlItem['sub'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                    </div>
-                                    <div class="col-md-2 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['dl_type_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <select class="form-select cover-dl-type" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][type]">
+                                    <div class="col-md-5 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['dl_type_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <select class="form-select cover-dl-type" style="padding-inline-end: 2.35rem;" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][type]">
                                             <option value="pdf" <?php echo ($itemType === 'pdf') ? 'selected' : ''; ?>>PDF</option>
                                             <option value="word" <?php echo ($itemType !== 'pdf') ? 'selected' : ''; ?>>Word</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-2 <?php echo $modal_align; ?>">
-                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['dl_file_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                        <input type="text" class="form-control cover-dl-file" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][file]" value="<?php echo htmlspecialchars((string)($dlItem['file'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="col-md-5 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['dl_sub_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control cover-dl-sub" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][sub]" value="<?php echo htmlspecialchars((string)($dlItem['sub'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
-                                    <div class="col-md-1 text-center pb-1">
-                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('cover_dl_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                    <div class="col-md-7 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary mb-1"><?php echo htmlspecialchars($mTxt['dl_file_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control cover-dl-file" name="cover_data[<?php echo $current_lang; ?>][download_items][<?php echo $index; ?>][file]" value="<?php echo htmlspecialchars((string)($dlItem['file'] ?? '#'), ENT_QUOTES, 'UTF-8'); ?>">
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-                    <button type="button" class="btn w-100 mt-3 py-3" id="addCoverDownloadBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                    <button type="button" class="btn w-100 mt-4 py-3" id="addCoverDownloadBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
                         <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['add_dl_btn'], ENT_QUOTES, 'UTF-8'); ?>
                     </button>
                 </form>
@@ -572,37 +573,39 @@ function addCoverNoteRow() {
 function addCoverDownloadRow() {
     const container = document.getElementById('coverDownloadContainer');
     if (!container) return;
-    const rowUid = Date.now() + '_' + container.querySelectorAll('.cover-dl-row-item').length;
+    const itemIndex = container.querySelectorAll('.cover-dl-row-item').length + 1;
+    const rowUid = Date.now() + '_' + itemIndex;
 
     const div = document.createElement('div');
-    div.className = 'p-3 shadow-sm cover-dl-row-item mb-3';
+    div.className = 'p-4 shadow-sm cover-dl-row-item';
     div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
     div.id = 'cover_dl_row_' + rowUid;
     div.innerHTML = `
-        <div class="row g-2 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label fw-semibold small text-secondary">${COVER_MODAL_TXT.dl_title_lbl}</label>
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <span class="badge bg-light text-primary border px-3 py-2 rounded-pill">#${itemIndex}</span>
+            <button type="button" class="btn-icon-trash" onclick="removeRow('${div.id}')" title="${COVER_MODAL_TXT.delete_item}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label class="form-label fw-semibold small text-secondary mb-1">${COVER_MODAL_TXT.dl_title_lbl}</label>
                 <input type="text" class="form-control cover-dl-title" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][title]" value="" required>
             </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold small text-secondary">${COVER_MODAL_TXT.dl_sub_lbl}</label>
-                <input type="text" class="form-control cover-dl-sub" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][sub]" value="">
-            </div>
-            <div class="col-md-2">
-                <label class="form-label fw-semibold small text-secondary">${COVER_MODAL_TXT.dl_type_lbl}</label>
-                <select class="form-select cover-dl-type" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][type]">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold small text-secondary mb-1">${COVER_MODAL_TXT.dl_type_lbl}</label>
+                <select class="form-select cover-dl-type" style="padding-inline-end: 2.35rem;" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][type]">
                     <option value="pdf" selected>PDF</option>
                     <option value="word">Word</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <label class="form-label fw-semibold small text-secondary">${COVER_MODAL_TXT.dl_file_lbl}</label>
-                <input type="text" class="form-control cover-dl-file" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][file]" value="#">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold small text-secondary mb-1">${COVER_MODAL_TXT.dl_sub_lbl}</label>
+                <input type="text" class="form-control cover-dl-sub" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][sub]" value="">
             </div>
-            <div class="col-md-1 text-center pb-1">
-                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${COVER_MODAL_TXT.delete_item}">
-                    <i class="bi bi-trash"></i>
-                </button>
+            <div class="col-md-7">
+                <label class="form-label fw-semibold small text-secondary mb-1">${COVER_MODAL_TXT.dl_file_lbl}</label>
+                <input type="text" class="form-control cover-dl-file" name="cover_data[${COVER_ACTIVE_LANG}][download_items][0][file]" value="#">
             </div>
         </div>`;
     container.appendChild(div);

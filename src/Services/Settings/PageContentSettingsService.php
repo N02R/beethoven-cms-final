@@ -40,7 +40,7 @@ class PageContentSettingsService
 
             $pageData = $currentLangData;
 
-            // 2. معالجة تحديثات صفحة الاستقبال (Arrival Page) للغة المستهدفة
+            // 2. معالجة تحديثات صفحة الاستقبال (Arrival Page)
             if ($dbKey === 'arrival_page') {
                 $postedArrival = is_array($_POST['arrival_data'][$targetLang] ?? null)
                     ? $_POST['arrival_data'][$targetLang]
@@ -66,13 +66,11 @@ class PageContentSettingsService
                 elseif (str_contains($action, '_tips')) {
                     $pageData['advice_title'] = trim((string)($postedArrival['advice_title'] ?? ($pageData['advice_title'] ?? '')));
                     $pageData['advice_desc'] = trim((string)($postedArrival['advice_desc'] ?? ($pageData['advice_desc'] ?? '')));
-                    
                     $tipsRaw = $postedArrival['tips'] ?? ($_POST['tips'] ?? []);
                     $pageData['tips'] = is_array($tipsRaw) ? array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== '')) : [];
                 } 
                 elseif (str_contains($action, '_notes')) {
                     $pageData['note_title'] = trim((string)($postedArrival['note_title'] ?? ($pageData['note_title'] ?? '')));
-                    
                     $notesRaw = $postedArrival['notes'] ?? ($_POST['notes'] ?? []);
                     $pageData['notes'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
                 }
@@ -136,7 +134,59 @@ class PageContentSettingsService
                 }
             }
 
-            // 5. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 5. معالجة خاصة لصفحة الدورة التحضيرية لشهادات اللغة الألمانية (Courses Page)
+            elseif ($dbKey === 'courses_page') {
+                $postedCourses = is_array($_POST['courses_data'][$targetLang] ?? null)
+                    ? $_POST['courses_data'][$targetLang]
+                    : (is_array($_POST['courses_data'] ?? null) ? $_POST['courses_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedCourses['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedCourses['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg12.png');
+                    $submittedOldImg = (string)($postedCourses['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('courses_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg12.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedCourses['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedCourses['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_goals')) {
+                    $pageData['goals_title'] = trim((string)($postedCourses['goals_title'] ?? ($pageData['goals_title'] ?? '')));
+                    $goalsRaw = $postedCourses['goals'] ?? ($_POST['goals'] ?? []);
+                    $pageData['goals'] = is_array($goalsRaw) ? array_values(array_filter(array_map('trim', $goalsRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_warning')) {
+                    $pageData['warning_text'] = trim((string)($postedCourses['warning_text'] ?? ($pageData['warning_text'] ?? '')));
+                } 
+                elseif (str_contains($action, '_cost')) {
+                    $pageData['cost_title'] = trim((string)($postedCourses['cost_title'] ?? ($pageData['cost_title'] ?? '')));
+                    $costItemsRaw = $postedCourses['cost_items'] ?? [];
+                    $cleanCostItems = [];
+                    if (is_array($costItemsRaw)) {
+                        foreach ($costItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $descVal  = trim((string)($item['desc'] ?? ''));
+                            if ($titleVal !== '' || $descVal !== '') {
+                                $cleanCostItems[] = [
+                                    'title' => $titleVal,
+                                    'desc'  => $descVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['cost_items'] = $cleanCostItems;
+                }
+            }
+
+            // 6. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -154,6 +204,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_arrival_')) return 'arrival_page';
         if (str_starts_with($action, 'update_bachelor_')) return 'bachelor_package_page';
         if (str_starts_with($action, 'update_check_')) return 'check_page';
+        if (str_starts_with($action, 'update_courses_') || str_starts_with($action, 'update_lang_')) return 'courses_page';
         if (str_starts_with($action, 'update_cv_')) return 'cv_page';
         return null;
     }

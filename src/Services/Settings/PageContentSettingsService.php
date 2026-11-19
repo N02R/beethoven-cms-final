@@ -467,7 +467,68 @@ class PageContentSettingsService
                 }
             }
 
-            // 11. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 11. معالجة خاصة لصفحة متطلبات التأشيرة (General Visa Page)
+            elseif ($dbKey === 'general_page') {
+                $postedVisa = is_array($_POST['visa_data'][$targetLang] ?? null)
+                    ? $_POST['visa_data'][$targetLang]
+                    : (is_array($_POST['visa_data'] ?? null) ? $_POST['visa_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedVisa['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedVisa['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg14.png');
+                    $submittedOldImg = (string)($postedVisa['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('visa_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg14.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedVisa['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedVisa['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedVisa['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $incomingSec = is_array($postedVisa['notes_section'] ?? null) ? $postedVisa['notes_section'] : [];
+                    $existingSec = is_array($pageData['notes_section'] ?? null) ? $pageData['notes_section'] : [];
+                    $notesListRaw = $incomingSec['notes_list'] ?? ($_POST['notes_list'] ?? []);
+
+                    $pageData['notes_section'] = [
+                        'title'      => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'notes_list' => is_array($notesListRaw)
+                            ? array_values(array_filter(array_map('trim', $notesListRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                } 
+                elseif (str_contains($action, '_download')) {
+                    $dlItemsRaw = $postedVisa['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? '#'));
+
+                            if ($titleVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 12. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -491,6 +552,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_english_')) return 'englishlang_page';
         if (str_starts_with($action, 'update_financial_') || str_starts_with($action, 'update_blocked_')) return 'financial_page';
         if (str_starts_with($action, 'update_stk_') || str_starts_with($action, 'update_foundation_')) return 'foundation_page';
+        if (str_starts_with($action, 'update_visa_') || str_starts_with($action, 'update_general_')) return 'general_page';
         return null;
     }
 

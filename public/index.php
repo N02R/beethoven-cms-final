@@ -143,7 +143,7 @@ $router->add('GET', 'edu-services/cv', [\App\Controllers\Services\CvController::
 $router->add('GET', 'edu-services/englishlang', [\App\Controllers\Services\EnglishLangController::class, 'index']);
 $router->add('GET', 'edu-services/financial', [\App\Controllers\Services\FinancialController::class, 'index']);
 $router->add('GET', 'edu-services/foundation', [\App\Controllers\Services\FoundationController::class, 'index']);
-$router->add('GET', 'edu-services/general', [\App\Controllers\Services\GeneralVisaController::class, 'index']);
+$router->add('GET', 'edu-services/general', [\App\Controllers\Services\GeneralController::class, 'index']);
 $router->add('GET', 'edu-services/germanlang', [\App\Controllers\Services\GermanLangController::class, 'index']);
 $router->add('GET', 'edu-services/health', [\App\Controllers\Services\HealthController::class, 'index']);
 $router->add('GET', 'edu-services/living', [\App\Controllers\Services\LivingCostController::class, 'index']);

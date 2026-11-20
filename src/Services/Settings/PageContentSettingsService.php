@@ -1053,7 +1053,58 @@ class PageContentSettingsService
                 }
             }
 
-            // 21. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 21. معالجة خاصة لصفحة التدريب المهني (Vocational / Ausbildung Page)
+            elseif ($dbKey === 'vocational_page') {
+                $postedVoc = is_array($_POST['vocational_data'][$targetLang] ?? null)
+                    ? $_POST['vocational_data'][$targetLang]
+                    : (is_array($_POST['vocational_data'] ?? null) ? $_POST['vocational_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedVoc['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedVoc['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/job/servicesimg2.png');
+                    $submittedOldImg = (string)($postedVoc['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('vocational_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/job/servicesimg2.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedVoc['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedVoc['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedVoc['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_card')) {
+                    $dlItemsRaw = $postedVoc['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $subVal   = trim((string)($item['sub'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word', 'docx'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? 'assets/files/vocational_training_list.pdf'));
+
+                            if ($titleVal !== '' || $subVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'sub'   => $subVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 22. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -1087,6 +1138,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
         if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
+        if (str_starts_with($action, 'update_vocational_')) return 'vocational_page';
         return null;
     }
 

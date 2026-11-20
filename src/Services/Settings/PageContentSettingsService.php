@@ -825,7 +825,58 @@ class PageContentSettingsService
                 }
             }
 
-            // 17. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 17. معالجة خاصة لصفحة التخصصات الطبية (Medical Specialties Page)
+            elseif ($dbKey === 'medical_specialties_page') {
+                $postedSpec = is_array($_POST['medical_spec_data'][$targetLang] ?? null)
+                    ? $_POST['medical_spec_data'][$targetLang]
+                    : (is_array($_POST['medical_spec_data'] ?? null) ? $_POST['medical_spec_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedSpec['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedSpec['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/job/servicesimg1.png');
+                    $submittedOldImg = (string)($postedSpec['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('med_spec_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/job/servicesimg1.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedSpec['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedSpec['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedSpec['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_card')) {
+                    $dlItemsRaw = $postedSpec['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $subVal   = trim((string)($item['sub'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? '#'));
+
+                            if ($titleVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'sub'   => $subVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 18. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -855,6 +906,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_living_')) return 'living_page';
         if (str_starts_with($action, 'update_medical_')) return 'medical_packages_page';
         if (str_starts_with($action, 'update_job_agr_')) return 'job_agreements_page';
+        if (str_starts_with($action, 'update_med_spec_')) return 'medical_specialties_page';
         return null;
     }
 

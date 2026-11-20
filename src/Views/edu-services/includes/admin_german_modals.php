@@ -11,7 +11,7 @@ if (!defined('ALLOWED_ACCESS')) {
 }
 
 $supported_langs = ['de', 'en', 'ar'];
-$rawLang = (string)($_SESSION['site_lang'] ?? ($_GET['lang'] ?? 'de'));
+$rawLang = (string)($current_lang ?? ($_SESSION['site_lang'] ?? ($_GET['lang'] ?? 'de')));
 $current_lang = in_array(strtolower(trim($rawLang)), $supported_langs, true)
     ? strtolower(trim($rawLang))
     : 'de';
@@ -20,10 +20,9 @@ $is_rtl      = ($current_lang === 'ar');
 $modal_dir   = $is_rtl ? 'rtl' : 'ltr';
 $modal_align = $is_rtl ? 'text-end' : 'text-start';
 
-$lang_file = __DIR__ . '/../../../Lang/' . $current_lang . '.php';
-if (!is_file($lang_file)) {
-    $lang_file = __DIR__ . '/../../../lang/' . $current_lang . '.php';
-}
+$lang_file = is_file(__DIR__ . '/../../../Lang/' . $current_lang . '.php')
+    ? __DIR__ . '/../../../Lang/' . $current_lang . '.php'
+    : __DIR__ . '/../../../lang/' . $current_lang . '.php';
 $lang = is_file($lang_file) ? require $lang_file : [];
 if (!is_array($lang)) {
     $lang = [];
@@ -144,39 +143,32 @@ $fetchRawGermanSetting = static function (string $pageKey) use ($current_lang): 
         }
     } catch (\Throwable $e) {}
 
-    if (isset($pageRawData[$current_lang]) && is_array($pageRawData[$current_lang])) {
-        return $pageRawData[$current_lang];
-    }
-    if (isset($pageRawData['de']) && is_array($pageRawData['de'])) {
-        return $pageRawData['de'];
-    }
-    if (isset($pageRawData['en']) && is_array($pageRawData['en'])) {
-        return $pageRawData['en'];
-    }
-    if (isset($pageRawData['ar']) && is_array($pageRawData['ar'])) {
-        return $pageRawData['ar'];
-    }
-    return $pageRawData;
+    return (isset($pageRawData[$current_lang]) && is_array($pageRawData[$current_lang]))
+        ? $pageRawData[$current_lang]
+        : [];
 };
 
 $curGermanData = $fetchRawGermanSetting('germanlang_page');
+if (empty($curGermanData) && is_array($german_data ?? null)) {
+    $curGermanData = $german_data;
+}
 
-$modalBcUrl      = (string)($curGermanData['page_breadcrumb_url'] ?? ($german_data['page_breadcrumb_url'] ?? '#'));
-$modalBcText     = (string)($curGermanData['page_breadcrumb'] ?? ($german_data['page_breadcrumb'] ?? ''));
-$modalHeroImg    = (string)($curGermanData['hero_img'] ?? ($german_data['hero_img'] ?? ''));
-$modalHeroPos    = (string)($curGermanData['hero_position'] ?? ($german_data['hero_position'] ?? 'center center'));
-$modalMainTitle  = (string)($curGermanData['main_title'] ?? ($german_data['main_title'] ?? ''));
-$modalMainDesc   = (string)($curGermanData['main_desc'] ?? ($german_data['main_desc'] ?? ''));
+$modalBcUrl      = (string)($curGermanData['page_breadcrumb_url'] ?? '#');
+$modalBcText     = (string)($curGermanData['page_breadcrumb'] ?? '');
+$modalHeroImg    = (string)($curGermanData['hero_img'] ?? '');
+$modalHeroPos    = (string)($curGermanData['hero_position'] ?? 'center center');
+$modalMainTitle  = (string)($curGermanData['main_title'] ?? '');
+$modalMainDesc   = (string)($curGermanData['main_desc'] ?? '');
 
-$curLevelsSec    = is_array($curGermanData['levels_section'] ?? null) ? $curGermanData['levels_section'] : ($german_data['levels_section'] ?? []);
+$curLevelsSec    = is_array($curGermanData['levels_section'] ?? null) ? $curGermanData['levels_section'] : [];
 $modalLevelsTtl  = (string)($curLevelsSec['title'] ?? '');
 $modalLevelsArr  = is_array($curLevelsSec['levels_list'] ?? null) ? $curLevelsSec['levels_list'] : [];
 
-$curFeatSec      = is_array($curGermanData['features_section'] ?? null) ? $curGermanData['features_section'] : ($german_data['features_section'] ?? []);
+$curFeatSec      = is_array($curGermanData['features_section'] ?? null) ? $curGermanData['features_section'] : [];
 $modalFeatTtl    = (string)($curFeatSec['title'] ?? '');
 $modalFeatArr    = is_array($curFeatSec['features_list'] ?? null) ? $curFeatSec['features_list'] : [];
 
-$curTipsSec      = is_array($curGermanData['tips_section'] ?? null) ? $curGermanData['tips_section'] : ($german_data['tips_section'] ?? []);
+$curTipsSec      = is_array($curGermanData['tips_section'] ?? null) ? $curGermanData['tips_section'] : [];
 $modalTipsTtl    = (string)($curTipsSec['title'] ?? '');
 $modalTipsArr    = is_array($curTipsSec['tips_list'] ?? null) ? $curTipsSec['tips_list'] : [];
 ?>

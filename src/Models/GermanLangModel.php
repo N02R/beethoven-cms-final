@@ -55,18 +55,10 @@ class GermanLangModel
             error_log('GermanLangModel Error: ' . $e->getMessage());
         }
 
-        $ger_raw = [];
-        if (isset($pageRawData[$activeLang]) && is_array($pageRawData[$activeLang])) {
-            $ger_raw = $pageRawData[$activeLang];
-        } elseif (isset($pageRawData['de']) && is_array($pageRawData['de'])) {
-            $ger_raw = $pageRawData['de'];
-        } elseif (isset($pageRawData['en']) && is_array($pageRawData['en'])) {
-            $ger_raw = $pageRawData['en'];
-        } elseif (isset($pageRawData['ar']) && is_array($pageRawData['ar'])) {
-            $ger_raw = $pageRawData['ar'];
-        } else {
-            $ger_raw = $pageRawData;
-        }
+        // عزل اللغة المطلوبة بدقة حتى لا يطغى محتوى لغة على لغة أخرى
+        $ger_raw = (isset($pageRawData[$activeLang]) && is_array($pageRawData[$activeLang]))
+            ? $pageRawData[$activeLang]
+            : [];
 
         $rawLevels = is_array($ger_raw['levels_section'] ?? null) ? $ger_raw['levels_section'] : [];
         $rawFeat   = is_array($ger_raw['features_section'] ?? null) ? $ger_raw['features_section'] : [];

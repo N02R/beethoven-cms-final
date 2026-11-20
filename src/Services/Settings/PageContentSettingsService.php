@@ -34,11 +34,9 @@ class PageContentSettingsService
         try {
             // 1. جلب البيانات الحالية للصفحة من جدول pages الجديد
             $allLangs = $this->fetchPageData($pdo, $dbKey);
-            $currentLangData = is_array($allLangs[$targetLang] ?? null)
+            $pageData = (isset($allLangs[$targetLang]) && is_array($allLangs[$targetLang]))
                 ? $allLangs[$targetLang]
-                : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
-
-            $pageData = $currentLangData;
+                : [];
 
             // 2. معالجة تحديثات صفحة الاستقبال (Arrival Page)
             if ($dbKey === 'arrival_page') {
@@ -591,7 +589,66 @@ class PageContentSettingsService
                 }
             }
 
-            // 13. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 13. معالجة خاصة لصفحة التأمين الصحي (Health Page)
+            elseif ($dbKey === 'health_page') {
+                $postedHealth = is_array($_POST['health_data'][$targetLang] ?? null)
+                    ? $_POST['health_data'][$targetLang]
+                    : (is_array($_POST['health_data'] ?? null) ? $_POST['health_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedHealth['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedHealth['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg6.png');
+                    $submittedOldImg = (string)($postedHealth['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('health_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg6.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedHealth['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedHealth['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedHealth['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_tips')) {
+                    $pageData['advice_title'] = trim((string)($postedHealth['advice_title'] ?? ($pageData['advice_title'] ?? '')));
+                    $tipsRaw = $postedHealth['tips'] ?? ($_POST['tips'] ?? []);
+                    $pageData['tips'] = is_array($tipsRaw) ? array_values(array_filter(array_map('trim', $tipsRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $pageData['note_title'] = trim((string)($postedHealth['note_title'] ?? ($pageData['note_title'] ?? '')));
+                    $notesRaw = $postedHealth['notes'] ?? ($_POST['notes'] ?? []);
+                    $pageData['notes'] = is_array($notesRaw) ? array_values(array_filter(array_map('trim', $notesRaw), fn($val) => $val !== '')) : [];
+                } 
+                elseif (str_contains($action, '_links')) {
+                    $pageData['intro_desc'] = trim((string)($postedHealth['intro_desc'] ?? ($pageData['intro_desc'] ?? '')));
+                    $linksRaw = $postedHealth['links'] ?? [];
+                    $cleanLinks = [];
+                    if (is_array($linksRaw)) {
+                        foreach ($linksRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $textVal   = trim((string)($item['text'] ?? ''));
+                            $urlVal    = $this->sanitizeLinkUrl((string)($item['url'] ?? '#'));
+                            $activeVal = !empty($item['active']) ? 1 : 0;
+
+                            if ($textVal !== '') {
+                                $cleanLinks[] = [
+                                    'text'   => $textVal,
+                                    'url'    => $urlVal,
+                                    'active' => $activeVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['links'] = $cleanLinks;
+                }
+            }
+
+            // 14. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -617,6 +674,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_stk_') || str_starts_with($action, 'update_foundation_')) return 'foundation_page';
         if (str_starts_with($action, 'update_visa_') || str_starts_with($action, 'update_general_')) return 'general_page';
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
+        if (str_starts_with($action, 'update_health_')) return 'health_page';
         return null;
     }
 

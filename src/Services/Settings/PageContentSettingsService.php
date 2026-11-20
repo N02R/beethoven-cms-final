@@ -648,7 +648,58 @@ class PageContentSettingsService
                 }
             }
 
-            // 14. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 14. معالجة خاصة لصفحة تكلفة المعيشة في ألمانيا (Living Page)
+            elseif ($dbKey === 'living_page') {
+                $postedLiving = is_array($_POST['living_data'][$targetLang] ?? null)
+                    ? $_POST['living_data'][$targetLang]
+                    : (is_array($_POST['living_data'] ?? null) ? $_POST['living_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedLiving['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedLiving['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg8.png');
+                    $submittedOldImg = (string)($postedLiving['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('living_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg8.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedLiving['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedLiving['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedLiving['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_tips')) {
+                    $incomingSec = is_array($postedLiving['tips_section'] ?? null) ? $postedLiving['tips_section'] : [];
+                    $existingSec = is_array($pageData['tips_section'] ?? null) ? $pageData['tips_section'] : [];
+                    $listRaw = $incomingSec['items'] ?? ($_POST['items'] ?? []);
+
+                    $pageData['tips_section'] = [
+                        'title' => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'items' => is_array($listRaw)
+                            ? array_values(array_filter(array_map('trim', $listRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $incomingSec = is_array($postedLiving['notes_section'] ?? null) ? $postedLiving['notes_section'] : [];
+                    $existingSec = is_array($pageData['notes_section'] ?? null) ? $pageData['notes_section'] : [];
+                    $listRaw = $incomingSec['items'] ?? ($_POST['items'] ?? []);
+
+                    $pageData['notes_section'] = [
+                        'title' => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'items' => is_array($listRaw)
+                            ? array_values(array_filter(array_map('trim', $listRaw), fn($val) => $val !== ''))
+                            : [],
+                    ];
+                }
+            }
+
+            // 15. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -675,6 +726,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_visa_') || str_starts_with($action, 'update_general_')) return 'general_page';
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_health_')) return 'health_page';
+        if (str_starts_with($action, 'update_living_')) return 'living_page';
         return null;
     }
 

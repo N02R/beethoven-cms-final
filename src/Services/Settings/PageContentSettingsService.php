@@ -1005,7 +1005,55 @@ class PageContentSettingsService
                 }
             }
 
-            // 20. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 20. معالجة خاصة لصفحة قائمة أسعار الخدمات (Price List Page)
+            elseif ($dbKey === 'pricelist_page') {
+                $postedPrice = is_array($_POST['pricelist_data'][$targetLang] ?? null)
+                    ? $_POST['pricelist_data'][$targetLang]
+                    : (is_array($_POST['pricelist_data'] ?? null) ? $_POST['pricelist_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedPrice['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedPrice['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg15.png');
+                    $submittedOldImg = (string)($postedPrice['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('pricelist_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg15.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedPrice['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedPrice['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedPrice['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_card')) {
+                    $itemRaw = is_array($postedPrice['download_item'] ?? null)
+                        ? $postedPrice['download_item']
+                        : (is_array($postedPrice['download_items'][0] ?? null) ? $postedPrice['download_items'][0] : []);
+
+                    $titleVal = trim((string)($itemRaw['title'] ?? ''));
+                    $subVal   = trim((string)($itemRaw['sub'] ?? ''));
+                    $typeVal  = strtolower(trim((string)($itemRaw['type'] ?? 'pdf')));
+                    $typeVal  = in_array($typeVal, ['pdf', 'word', 'docx'], true) ? $typeVal : 'pdf';
+                    $fileVal  = $this->sanitizeLinkUrl((string)($itemRaw['file'] ?? '#'));
+
+                    $cleanItem = [
+                        'title' => $titleVal,
+                        'sub'   => $subVal,
+                        'type'  => $typeVal,
+                        'file'  => $fileVal,
+                    ];
+
+                    $pageData['download_item']  = $cleanItem;
+                    $pageData['download_items'] = [$cleanItem];
+                }
+            }
+
+            // 21. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -1038,6 +1086,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_med_spec_')) return 'medical_specialties_page';
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
         if (str_starts_with($action, 'update_offers_')) return 'offers_page';
+        if (str_starts_with($action, 'update_pricelist_')) return 'pricelist_page';
         return null;
     }
 

@@ -18,17 +18,14 @@ class MedicalPackageModel
             'de' => [
                 'page_breadcrumb' => 'Medizinisches Praktikum-Paket',
                 'note_title'      => 'Wichtige Hinweise !!',
-                'download_lbl'    => 'Herunterladen',
             ],
             'en' => [
                 'page_breadcrumb' => 'Medical Training Package',
                 'note_title'      => 'Important Notes !!',
-                'download_lbl'    => 'Download',
             ],
             'ar' => [
                 'page_breadcrumb' => 'باقة التدريب الطبي',
                 'note_title'      => 'ملاحظات هامة !!',
-                'download_lbl'    => 'تحميل',
             ],
         ];
         $fallbackLabels = $defaultsByLang[$activeLang];
@@ -56,6 +53,15 @@ class MedicalPackageModel
             ? $pageRawData[$activeLang]
             : [];
 
+        $notesList = [];
+        if (is_array($med_raw['notes_list'] ?? null)) {
+            $notesList = array_values(array_filter(array_map(static fn($v) => trim((string)$v), $med_raw['notes_list']), static fn($v) => $v !== ''));
+        } elseif (is_array($med_raw['notes'] ?? null)) {
+            $notesList = array_values(array_filter(array_map(static fn($v) => trim((string)$v), $med_raw['notes']), static fn($v) => $v !== ''));
+        } elseif (!empty($med_raw['note_text']) && is_string($med_raw['note_text'])) {
+            $notesList = [trim($med_raw['note_text'])];
+        }
+
         $downloadItems = is_array($med_raw['download_items'] ?? null) ? $med_raw['download_items'] : [];
         if (empty($downloadItems) && is_array($med_raw['download_item'] ?? null)) {
             $downloadItems = [$med_raw['download_item']];
@@ -69,7 +75,8 @@ class MedicalPackageModel
             'main_title'          => $med_raw['main_title'] ?? '',
             'main_desc'           => $med_raw['main_desc'] ?? '',
             'note_title'          => $med_raw['note_title'] ?? $fallbackLabels['note_title'],
-            'note_text'           => $med_raw['note_text'] ?? '',
+            'notes_list'          => $notesList,
+            'note_text'           => $notesList[0] ?? (string)($med_raw['note_text'] ?? ''),
             'download_items'      => $downloadItems,
         ];
 

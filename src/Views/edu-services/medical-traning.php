@@ -148,30 +148,31 @@ $contact_url     = '/' . $current_lang . '/contact';
       <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($job_agreements_data['main_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
     </div>
 
-    <!-- ملاحظات هامة -->
+    <!-- ملاحظات هامة (قائمة متعددة ديناميكية) -->
     <div class="advice-stars pt-3 pb-4 editable-wrapper" style="position: relative;">
       <?php if ($is_admin_active): ?>
         <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
             <i class="bi bi-pencil-fill"></i>
         </button>
       <?php endif; ?>
-      <h5 class="note-text"><?php echo htmlspecialchars((string)($job_agreements_data['note_title'] ?? $txt['note_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+      <h5 class="note-text mb-3"><?php echo htmlspecialchars((string)($job_agreements_data['note_title'] ?? $txt['note_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+      <?php
+      $notesList = is_array($job_agreements_data['notes_list'] ?? null) ? $job_agreements_data['notes_list'] : [];
+      if (empty($notesList) && !empty($job_agreements_data['note_text'])) {
+          $notesList = [(string)$job_agreements_data['note_text']];
+      }
+      ?>
       <ul class="star-list list-unstyled">
-        <li>
-          <p class="mb-0 d-flex align-items-start">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 flex-shrink-0" width="25" />
-            <span>
-              <?php 
-              $note_text = (string)($job_agreements_data['note_text'] ?? '');
-              $safe_note = htmlspecialchars($note_text, ENT_QUOTES, 'UTF-8');
-              $contactAnchor = '<a href="' . htmlspecialchars($contact_url, ENT_QUOTES, 'UTF-8') . '" class="fw-bold" style="color: #66aeee; text-decoration: none;">' . htmlspecialchars($txt['contact_phrase'], ENT_QUOTES, 'UTF-8') . '</a>';
-              $phrases = ['بالتواصل معنا', 'contact us', 'Kontakt aufnehmen'];
-              $note_text_formatted = str_ireplace($phrases, $contactAnchor, $safe_note);
-              echo nl2br($note_text_formatted);
-              ?>
-            </span>
-          </p>
-        </li>
+        <?php foreach ($notesList as $noteItem):
+            if (trim((string)$noteItem) === '') continue;
+        ?>
+          <li class="mb-2">
+            <p class="mb-0 d-flex align-items-start">
+              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 mt-1 flex-shrink-0" width="25" />
+              <span><?php echo $formatNoteWithContact((string)$noteItem); ?></span>
+            </p>
+          </li>
+        <?php endforeach; ?>
       </ul>
     </div>
 

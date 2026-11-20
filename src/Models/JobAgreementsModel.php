@@ -40,18 +40,27 @@ class JobAgreementsModel
             if (is_string($dbRaw) && $dbRaw !== '') {
                 $decoded = json_decode($dbRaw, true);
                 if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
-                    error_log('JobAgreementModel JSON Decode Error: ' . json_last_error_msg());
+                    error_log('JobAgreementsModel JSON Decode Error: ' . json_last_error_msg());
                 } elseif (is_array($decoded)) {
                     $pageRawData = $decoded;
                 }
             }
         } catch (\Throwable $e) {
-            error_log('JobAgreementModel Error: ' . $e->getMessage());
+            error_log('JobAgreementsModel Error: ' . $e->getMessage());
         }
 
         $agr_raw = (isset($pageRawData[$activeLang]) && is_array($pageRawData[$activeLang]))
             ? $pageRawData[$activeLang]
             : [];
+
+        $notesList = [];
+        if (is_array($agr_raw['notes_list'] ?? null)) {
+            $notesList = array_values(array_filter(array_map(static fn($v) => trim((string)$v), $agr_raw['notes_list']), static fn($v) => $v !== ''));
+        } elseif (is_array($agr_raw['notes'] ?? null)) {
+            $notesList = array_values(array_filter(array_map(static fn($v) => trim((string)$v), $agr_raw['notes']), static fn($v) => $v !== ''));
+        } elseif (!empty($agr_raw['note_text']) && is_string($agr_raw['note_text'])) {
+            $notesList = [trim($agr_raw['note_text'])];
+        }
 
         $downloadItems = is_array($agr_raw['download_items'] ?? null) ? $agr_raw['download_items'] : [];
         if (empty($downloadItems) && is_array($agr_raw['download_item'] ?? null)) {
@@ -66,7 +75,8 @@ class JobAgreementsModel
             'main_title'          => $agr_raw['main_title'] ?? '',
             'main_desc'           => $agr_raw['main_desc'] ?? '',
             'note_title'          => $agr_raw['note_title'] ?? $fallbackLabels['note_title'],
-            'note_text'           => $agr_raw['note_text'] ?? '',
+            'notes_list'          => $notesList,
+            'note_text'           => $notesList[0] ?? (string)($agr_raw['note_text'] ?? ''),
             'download_items'      => $downloadItems,
         ];
 

@@ -273,7 +273,7 @@ $modalDlArr      = is_array($curAgrData['download_items'] ?? null) ? $curAgrData
     </div>
 </div>
 
-<!-- 4. Important Notes Edit Modal -->
+<!-- 4. Important Notes Edit Modal (صفوف ديناميكية) -->
 <div class="modal fade custom-modal" id="jobAgrNotesModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -290,16 +290,41 @@ $modalDlArr      = is_array($curAgrData['download_items'] ?? null) ? $curAgrData
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <div class="p-4 shadow-sm mb-0" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
-                        <div class="mb-3 <?php echo $modal_align; ?>">
+                    <div class="p-4 shadow-sm mb-4" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="mb-0 <?php echo $modal_align; ?>">
                             <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['notes_title_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <input type="text" class="form-control" name="job_agreements_data[<?php echo $current_lang; ?>][note_title]" value="<?php echo htmlspecialchars($modalNoteTitle, ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
-                        <div class="mb-0 <?php echo $modal_align; ?>">
-                            <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['note_text_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <textarea class="form-control" name="job_agreements_data[<?php echo $current_lang; ?>][note_text]" rows="4" style="height: auto; padding: 12px 16px;" required><?php echo htmlspecialchars($modalNoteText, ENT_QUOTES, 'UTF-8'); ?></textarea>
-                        </div>
                     </div>
+
+                    <?php
+                    $modalNotesArr = is_array($curAgrData['notes_list'] ?? null)
+                        ? $curAgrData['notes_list']
+                        : (is_array($curAgrData['notes'] ?? null)
+                            ? $curAgrData['notes']
+                            : ($modalNoteText !== '' ? [$modalNoteText] : []));
+                    ?>
+                    <div id="jobAgrNotesContainer" class="d-flex flex-column gap-3">
+                        <?php foreach ($modalNotesArr as $index => $noteItemText): ?>
+                            <div class="p-3 shadow-sm job-agr-note-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_agr_note_row_<?php echo $index; ?>">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-11 <?php echo $modal_align; ?>">
+                                        <label class="form-label fw-semibold small text-secondary"><?php echo htmlspecialchars($mTxt['note_text_lbl'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                        <input type="text" class="form-control job-agr-note-input" name="job_agreements_data[<?php echo $current_lang; ?>][notes_list][<?php echo $index; ?>]" value="<?php echo htmlspecialchars((string)$noteItemText, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                    </div>
+                                    <div class="col-1 text-center pb-1">
+                                        <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('job_agr_note_row_<?php echo $index; ?>')" title="<?php echo htmlspecialchars($mTxt['delete_item'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="button" class="btn w-100 mt-3 py-3" id="addJobAgrNoteBtn" style="background: #ffffff; border: 2px dashed #cbd5e1; color: #2563eb; font-weight: 600; border-radius: 14px; transition: 0.2s;">
+                        <i class="bi bi-plus-circle <?php echo $is_rtl ? 'ms-1' : 'me-1'; ?>"></i> <?php echo htmlspecialchars($mTxt['add_note_btn'] ?? ($current_lang === 'ar' ? 'إضافة ملاحظة جديدة' : ($current_lang === 'de' ? 'Hinweis hinzufügen' : 'Add Note')), ENT_QUOTES, 'UTF-8'); ?>
+                    </button>
                 </form>
             </div>
             <div class="modal-footer">
@@ -432,6 +457,31 @@ function showNotification(message, type = 'success') {
     }, 4000);
 }
 
+function addJobAgrNoteRow() {
+    const container = document.getElementById('jobAgrNotesContainer');
+    if (!container) return;
+    const rowUid = Date.now() + '_' + container.querySelectorAll('.job-agr-note-row-item').length;
+    const labelText = JOB_AGR_MODAL_TXT.note_text_lbl || 'Note';
+
+    const div = document.createElement('div');
+    div.className = 'p-3 shadow-sm job-agr-note-row-item mb-3';
+    div.style.cssText = 'background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;';
+    div.id = 'job_agr_note_row_' + rowUid;
+    div.innerHTML = `
+        <div class="row g-2 align-items-end">
+            <div class="col-11">
+                <label class="form-label fw-semibold small text-secondary">${labelText}</label>
+                <input type="text" class="form-control job-agr-note-input" name="job_agreements_data[${JOB_AGR_ACTIVE_LANG}][notes_list][0]" value="" required>
+            </div>
+            <div class="col-1 text-center pb-1">
+                <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${JOB_AGR_MODAL_TXT.delete_item}">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    container.appendChild(div);
+}
+
 function addJobAgrDownloadRow() {
     const container = document.getElementById('jobAgrCardContainer');
     if (!container) return;
@@ -474,6 +524,7 @@ function addJobAgrDownloadRow() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addJobAgrNoteBtn')?.addEventListener('click', addJobAgrNoteRow);
     document.getElementById('addJobAgrDownloadBtn')?.addEventListener('click', addJobAgrDownloadRow);
 
     const jobAgrFormIds = new Set([
@@ -502,6 +553,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const targetLang = form.querySelector('input[name="targetLang"]')?.value || JOB_AGR_ACTIVE_LANG;
 
+        // 1. إعادة ترقيم صفوف الملاحظات المتعددة
+        form.querySelectorAll('.job-agr-note-row-item').forEach((row, index) => {
+            const input = row.querySelector('.job-agr-note-input');
+            if (input) {
+                input.name = `job_agreements_data[${targetLang}][notes_list][${index}]`;
+            }
+        });
+
+        // 2. إعادة ترقيم صفوف بطاقات التحميل
         form.querySelectorAll('.job-agr-dl-row-item').forEach((row, index) => {
             const titleInput = row.querySelector('.job-agr-dl-title');
             const subInput   = row.querySelector('.job-agr-dl-sub');

@@ -726,7 +726,15 @@ class PageContentSettingsService
                 } 
                 elseif (str_contains($action, '_notes')) {
                     $pageData['note_title'] = trim((string)($postedMedical['note_title'] ?? ($pageData['note_title'] ?? '')));
-                    $pageData['note_text'] = trim((string)($postedMedical['note_text'] ?? ($pageData['note_text'] ?? '')));
+                    $notesRaw = $postedMedical['notes_list'] ?? ($postedMedical['notes'] ?? ($_POST['notes_list'] ?? []));
+                    $cleanNotes = is_array($notesRaw)
+                        ? array_values(array_filter(array_map('trim', $notesRaw), static fn($val) => $val !== ''))
+                        : [];
+                    if (empty($cleanNotes) && !empty($postedMedical['note_text'])) {
+                        $cleanNotes = [trim((string)$postedMedical['note_text'])];
+                    }
+                    $pageData['notes_list'] = $cleanNotes;
+                    $pageData['note_text']  = $cleanNotes[0] ?? '';
                 } 
                 elseif (str_contains($action, '_card')) {
                     $dlItemsRaw = $postedMedical['download_items'] ?? [];
@@ -781,7 +789,15 @@ class PageContentSettingsService
                 } 
                 elseif (str_contains($action, '_notes')) {
                     $pageData['note_title'] = trim((string)($postedAgr['note_title'] ?? ($pageData['note_title'] ?? '')));
-                    $pageData['note_text'] = trim((string)($postedAgr['note_text'] ?? ($pageData['note_text'] ?? '')));
+                    $notesRaw = $postedAgr['notes_list'] ?? ($postedAgr['notes'] ?? ($_POST['notes_list'] ?? []));
+                    $cleanNotes = is_array($notesRaw)
+                        ? array_values(array_filter(array_map('trim', $notesRaw), static fn($val) => $val !== ''))
+                        : [];
+                    if (empty($cleanNotes) && !empty($postedAgr['note_text'])) {
+                        $cleanNotes = [trim((string)$postedAgr['note_text'])];
+                    }
+                    $pageData['notes_list'] = $cleanNotes;
+                    $pageData['note_text']  = $cleanNotes[0] ?? '';
                 } 
                 elseif (str_contains($action, '_card')) {
                     $dlItemsRaw = $postedAgr['download_items'] ?? [];

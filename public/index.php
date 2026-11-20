@@ -149,7 +149,7 @@ $router->add('GET', 'edu-services/health', [\App\Controllers\Services\HealthCont
 $router->add('GET', 'edu-services/living', [\App\Controllers\Services\LivingController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [\App\Controllers\Services\MotivationController::class, 'index']);
 $router->add('GET', 'edu-services/pakeges', [\App\Controllers\Services\OffersController::class, 'index']);
-$router->add('GET', 'edu-services/services-cost', [\App\Controllers\Services\ServiceCostController::class, 'index']);
+$router->add('GET', 'edu-services/services-cost', [\App\Controllers\Services\PriceListController::class, 'index']);
 $router->add('GET', 'edu-services/medical-pakeges', [\App\Controllers\Services\MedicalPackageController::class, 'index']);
 $router->add('GET', 'edu-services/medical-traning', [\App\Controllers\Services\JobAgreementsController::class, 'index']);
 $router->add('GET', 'edu-services/medical', [\App\Controllers\Services\MedicalSpecialtiesController::class, 'index']);

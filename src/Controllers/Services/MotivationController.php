@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers\Services;
 
 use App\Models\SiteModel;
-use App\Models\MotivationLetterModel;
+use App\Models\MotivationModel;
 
 class MotivationController {
     public function index(string $lang = 'de'): void {
@@ -36,7 +36,7 @@ class MotivationController {
         $data = SiteModel::getGlobalData();
 
         // 4. جلب بيانات خطاب الدافع واستخراج المصفوفة الداخلية مباشرة (لحل تداخل extract)
-        $modelResult = MotivationLetterModel::getMotivationData($current_lang);
+        $modelResult = MotivationModel::getMotivationData($current_lang);
         $innerMotData = is_array($modelResult['motivation_data'] ?? null)
             ? $modelResult['motivation_data']
             : $modelResult;

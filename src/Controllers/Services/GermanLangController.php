@@ -28,24 +28,31 @@ class GermanLangController
         $lang = $this->loadLanguageArray($current_lang);
 
         $globalData = SiteModel::getGlobalData();
-        $germanData = class_exists(GermanLangModel::class) ? GermanLangModel::getGermanData($current_lang) : [];
-        $data       = array_merge($globalData, is_array($germanData) ? $germanData : []);
-        $currentSettings = $data;
+        $germanData = class_exists(GermanLangModel::class)
+            ? GermanLangModel::getGermanData($current_lang)
+            : [];
+
+        $data = array_merge(
+            is_array($globalData) ? $globalData : [],
+            is_array($germanData) ? $germanData : []
+        );
 
         $is_admin     = $this->verifyAdminSession();
         $is_logged_in = $is_admin;
 
-        $data['is_admin']     = $is_admin;
-        $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
-        $data['current_lang'] = $current_lang;
-        $data['current_dir']  = $current_dir;
+        $data['is_admin']        = $is_admin;
+        $data['is_logged_in']    = $is_logged_in;
+        $data['admin_name']      = $_SESSION['admin_name'] ?? 'Admin';
+        $data['current_lang']    = $current_lang;
+        $data['current_dir']     = $current_dir;
+        $data['lang']            = $lang;
+        $data['currentSettings'] = $data;
 
         $path_prefix = '/';
         $page_css    = ['/assets/css/style.css', '/assets/css/edu-services.css'];
         $page_js     = [];
 
-        extract($data);
+        extract($data, EXTR_SKIP);
 
         $viewsRoot = __DIR__ . '/../../Views';
 
@@ -92,7 +99,10 @@ class GermanLangController
 
     private function loadLanguageArray(string $langCode): array
     {
-        $langDir    = __DIR__ . '/../../Lang/';
+        $langDir = is_dir(__DIR__ . '/../../Lang/')
+            ? __DIR__ . '/../../Lang/'
+            : __DIR__ . '/../../lang/';
+
         $candidates = [$langCode, 'de', 'en', 'ar'];
 
         foreach (array_unique($candidates) as $code) {

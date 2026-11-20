@@ -5,7 +5,7 @@ namespace App\Models;
 
 use App\Config\Database;
 
-class JobAgreementModel
+class JobAgreementsModel
 {
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 

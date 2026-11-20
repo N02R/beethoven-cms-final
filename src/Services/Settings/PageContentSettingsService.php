@@ -940,7 +940,72 @@ class PageContentSettingsService
                 }
             }
 
-            // 19. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 19. معالجة خاصة لصفحة العروض والاتفاقيات (Offers Page)
+            elseif ($dbKey === 'offers_page') {
+                $postedOffers = is_array($_POST['offers_data'][$targetLang] ?? null)
+                    ? $_POST['offers_data'][$targetLang]
+                    : (is_array($_POST['offers_data'] ?? null) ? $_POST['offers_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedOffers['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedOffers['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg10.png');
+                    $submittedOldImg = (string)($postedOffers['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('offers_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg10.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedOffers['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedOffers['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedOffers['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $pageData['note_title'] = trim((string)($postedOffers['note_title'] ?? ($pageData['note_title'] ?? '')));
+                    $notesRaw = $postedOffers['notes_list'] ?? ($postedOffers['notes'] ?? ($_POST['notes_list'] ?? []));
+                    $cleanNotes = is_array($notesRaw)
+                        ? array_values(array_filter(array_map('trim', $notesRaw), static fn($val) => $val !== ''))
+                        : [];
+                    if (empty($cleanNotes) && !empty($postedOffers['note_text'])) {
+                        $cleanNotes = [trim((string)$postedOffers['note_text'])];
+                    }
+                    $pageData['notes_list'] = $cleanNotes;
+                    $pageData['note_text']  = $cleanNotes[0] ?? '';
+                } 
+                elseif (str_contains($action, '_cards')) {
+                    $cardsRaw = $postedOffers['download_cards'] ?? [];
+                    $cleanCards = [];
+                    if (is_array($cardsRaw)) {
+                        foreach ($cardsRaw as $card) {
+                            if (!is_array($card)) continue;
+                            $titleVal  = trim((string)($card['title'] ?? ''));
+                            $subVal    = trim((string)($card['sub'] ?? ''));
+                            $typeVal   = strtolower(trim((string)($card['type'] ?? 'pdf')));
+                            $typeVal   = in_array($typeVal, ['pdf', 'word', 'docx'], true) ? $typeVal : 'pdf';
+                            $fileVal   = $this->sanitizeLinkUrl((string)($card['file'] ?? '#'));
+                            $activeVal = !empty($card['active']) ? 1 : 0;
+
+                            if ($titleVal !== '' || $subVal !== '' || $fileVal !== '#') {
+                                $cleanCards[] = [
+                                    'title'  => $titleVal,
+                                    'sub'    => $subVal,
+                                    'type'   => $typeVal,
+                                    'file'   => $fileVal,
+                                    'active' => $activeVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_cards'] = $cleanCards;
+                }
+            }
+
+            // 20. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -972,6 +1037,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_job_agr_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_med_spec_')) return 'medical_specialties_page';
         if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
+        if (str_starts_with($action, 'update_offers_')) return 'offers_page';
         return null;
     }
 

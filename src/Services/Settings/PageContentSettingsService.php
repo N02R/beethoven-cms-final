@@ -699,7 +699,62 @@ class PageContentSettingsService
                 }
             }
 
-            // 15. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 15. معالجة خاصة لصفحة باقة التدريب الطبي (Medical Packages Page)
+            elseif ($dbKey === 'medical_packages_page') {
+                $postedMedical = is_array($_POST['medical_data'][$targetLang] ?? null)
+                    ? $_POST['medical_data'][$targetLang]
+                    : (is_array($_POST['medical_data'] ?? null) ? $_POST['medical_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedMedical['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedMedical['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/job/servicesimg3.png');
+                    $submittedOldImg = (string)($postedMedical['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('medical_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/job/servicesimg3.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedMedical['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedMedical['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedMedical['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_notes')) {
+                    $pageData['note_title'] = trim((string)($postedMedical['note_title'] ?? ($pageData['note_title'] ?? '')));
+                    $pageData['note_text'] = trim((string)($postedMedical['note_text'] ?? ($pageData['note_text'] ?? '')));
+                } 
+                elseif (str_contains($action, '_card')) {
+                    $dlItemsRaw = $postedMedical['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $subVal   = trim((string)($item['sub'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? '#'));
+
+                            if ($titleVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'sub'   => $subVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 16. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -727,6 +782,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_german_')) return 'germanlang_page';
         if (str_starts_with($action, 'update_health_')) return 'health_page';
         if (str_starts_with($action, 'update_living_')) return 'living_page';
+        if (str_starts_with($action, 'update_medical_')) return 'medical_packages_page';
         return null;
     }
 

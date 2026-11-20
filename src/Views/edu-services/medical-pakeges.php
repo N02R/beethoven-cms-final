@@ -70,7 +70,9 @@ $i18nDefaults = [
 $txt = $i18nDefaults[$current_lang];
 
 $data = is_array($data ?? null) ? $data : [];
-$medical_data = is_array($medical_data ?? null) ? $medical_data : (is_array($medical_packages_page ?? null) ? $medical_packages_page : ($data['medical_data'] ?? []));
+$medical_data = is_array($medical_data ?? null)
+    ? $medical_data
+    : (is_array($medical_packages_page ?? null) ? $medical_packages_page : ($data['medical_data'] ?? []));
 
 $from = $_GET['from'] ?? 'education';
 if ($from === 'job') {

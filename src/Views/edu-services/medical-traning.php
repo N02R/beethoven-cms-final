@@ -85,6 +85,13 @@ if ($from === 'job') {
 
 $is_admin_active = !empty($is_admin) && $is_admin === true;
 $contact_url     = '/' . $current_lang . '/contact';
+
+$formatNoteWithContact = static function (string $rawNote) use ($contact_url, $txt): string {
+    $safeNote = htmlspecialchars($rawNote, ENT_QUOTES, 'UTF-8');
+    $contactAnchor = '<a href="' . htmlspecialchars($contact_url, ENT_QUOTES, 'UTF-8') . '" class="fw-bold" style="color: #66aeee; text-decoration: none;">' . htmlspecialchars($txt['contact_phrase'], ENT_QUOTES, 'UTF-8') . '</a>';
+    $phrases = ['بالتواصل معنا', 'contact us', 'Kontakt aufnehmen'];
+    return nl2br(str_ireplace($phrases, $contactAnchor, $safeNote));
+};
 ?>
 
 <!-- ================= BREADCRUMB SECTION START ================= -->

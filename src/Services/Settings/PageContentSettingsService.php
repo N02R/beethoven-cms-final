@@ -876,7 +876,71 @@ class PageContentSettingsService
                 }
             }
 
-            // 18. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
+            // 18. معالجة خاصة لصفحة خطاب الدافع / التحفيز (Motivation Letter Page)
+            elseif ($dbKey === 'motivation_page') {
+                $postedMot = is_array($_POST['motivation_data'][$targetLang] ?? null)
+                    ? $_POST['motivation_data'][$targetLang]
+                    : (is_array($_POST['motivation_data'] ?? null) ? $_POST['motivation_data'] : $_POST);
+
+                if (str_contains($action, '_breadcrumb')) {
+                    $pageData['page_breadcrumb'] = trim((string)($postedMot['page_breadcrumb'] ?? ($pageData['page_breadcrumb'] ?? '')));
+                    $pageData['page_breadcrumb_url'] = $this->sanitizeLinkUrl((string)($postedMot['page_breadcrumb_url'] ?? ($pageData['page_breadcrumb_url'] ?? '#')));
+                } 
+                elseif (str_contains($action, '_hero')) {
+                    $dbOldImg = (string)($pageData['hero_img'] ?? 'assets/img/education/servicesimg3.png');
+                    $submittedOldImg = (string)($postedMot['old_hero_img'] ?? ($_POST['old_img'] ?? $dbOldImg));
+                    $heroImg = $this->handleImageField('motivation_hero_img', $submittedOldImg, $dbOldImg);
+                    if ($heroImg === '') {
+                        $heroImg = 'assets/img/education/servicesimg3.png';
+                    }
+                    $pageData['hero_img'] = $heroImg;
+                    $posVal = trim((string)($postedMot['hero_position'] ?? ($pageData['hero_position'] ?? 'center center')));
+                    $pageData['hero_position'] = $posVal !== '' ? $posVal : 'center center';
+                } 
+                elseif (str_contains($action, '_main')) {
+                    $pageData['main_title'] = trim((string)($postedMot['main_title'] ?? ($pageData['main_title'] ?? '')));
+                    $pageData['main_desc'] = trim((string)($postedMot['main_desc'] ?? ($pageData['main_desc'] ?? '')));
+                } 
+                elseif (str_contains($action, '_advice')) {
+                    $incomingSec = is_array($postedMot['advice_section'] ?? null) ? $postedMot['advice_section'] : [];
+                    $existingSec = is_array($pageData['advice_section'] ?? null) ? $pageData['advice_section'] : [];
+                    $itemsRaw = $incomingSec['items'] ?? ($postedMot['advice_points'] ?? ($_POST['items'] ?? []));
+                    $cleanItems = is_array($itemsRaw)
+                        ? array_values(array_filter(array_map('trim', $itemsRaw), static fn($val) => $val !== ''))
+                        : [];
+
+                    $pageData['advice_section'] = [
+                        'title' => trim((string)($incomingSec['title'] ?? ($existingSec['title'] ?? ''))),
+                        'items' => $cleanItems,
+                    ];
+                } 
+                elseif (str_contains($action, '_download')) {
+                    $dlItemsRaw = $postedMot['download_items'] ?? [];
+                    $cleanDlItems = [];
+                    if (is_array($dlItemsRaw)) {
+                        foreach ($dlItemsRaw as $item) {
+                            if (!is_array($item)) continue;
+                            $titleVal = trim((string)($item['title'] ?? ''));
+                            $subVal   = trim((string)($item['sub'] ?? ''));
+                            $typeVal  = strtolower(trim((string)($item['type'] ?? 'pdf')));
+                            $typeVal  = in_array($typeVal, ['pdf', 'word'], true) ? $typeVal : 'pdf';
+                            $fileVal  = $this->sanitizeLinkUrl((string)($item['file'] ?? '#'));
+
+                            if ($titleVal !== '' || $fileVal !== '#') {
+                                $cleanDlItems[] = [
+                                    'title' => $titleVal,
+                                    'sub'   => $subVal,
+                                    'type'  => $typeVal,
+                                    'file'  => $fileVal,
+                                ];
+                            }
+                        }
+                    }
+                    $pageData['download_items'] = $cleanDlItems;
+                }
+            }
+
+            // 19. تحديث مصفوفة اللغة وحفظها في جدول pages الجديد
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
@@ -907,6 +971,7 @@ class PageContentSettingsService
         if (str_starts_with($action, 'update_medical_')) return 'medical_packages_page';
         if (str_starts_with($action, 'update_job_agr_')) return 'job_agreements_page';
         if (str_starts_with($action, 'update_med_spec_')) return 'medical_specialties_page';
+        if (str_starts_with($action, 'update_motivation_')) return 'motivation_page';
         return null;
     }
 

@@ -8,8 +8,17 @@ use App\Models\JobAgreementsModel;
 
 class JobAgreementsController {
     public function index(string $lang = 'de'): void {
-        // حماية مخرجات اللغة المعروضة
-        $lang = htmlspecialchars($lang, ENT_QUOTES, 'UTF-8');
+        // حماية وتوحيد رمز اللغة
+        $cleanLang = strtolower(trim(htmlspecialchars($lang, ENT_QUOTES, 'UTF-8')));
+        if (!in_array($cleanLang, ['de', 'en', 'ar'], true)) {
+            $cleanLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+            if (!in_array($cleanLang, ['de', 'en', 'ar'], true)) {
+                $cleanLang = 'de';
+            }
+        }
+        $_SESSION['site_lang'] = $cleanLang;
+        $current_lang = $cleanLang;
+        $current_dir  = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
         // إدارة الجلسات بأمان تام
         if (session_status() === PHP_SESSION_NONE) {
@@ -27,20 +36,26 @@ class JobAgreementsController {
         // 1. جلب بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع
         $data = SiteModel::getGlobalData();
 
-        // 2. جلب بيانات صفحة اتفاقيات البحث عن عمل عبر المودل المخصص وتوفيرها بالتسميات المتوافقة
-        $job_agreements_data_array = JobAgreementsModel::getJobAgreementsData();
-        $data['job_agreements_page'] = $job_agreements_data_array;
-        $data['job_agreements_data'] = $job_agreements_data_array; // لضمان التوافق التام مع الحقول داخل الـ Modals والـ View
+        // 2. جلب بيانات صفحة اتفاقيات البحث عن عمل واستخراج المصفوفة الداخلية مباشرة
+        $modelResult = JobAgreementsModel::getJobAgreementsData($current_lang);
+        $innerAgrData = is_array($modelResult['job_agreements_data'] ?? null)
+            ? $modelResult['job_agreements_data']
+            : $modelResult;
+
+        $data['job_agreements_page'] = $innerAgrData;
+        $data['job_agreements_data'] = $innerAgrData;
 
         // فحص حالة تسجيل الدخول كـ Admin وفق مفاتيح الجلسة المعتمدة
         $is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
         $user_role = $_SESSION['role'] ?? '';
         $is_admin = $is_logged_in && ($user_role === 'admin' || $user_role === 'super_admin');
 
-        // إتاحة حالة المشرف داخل مصفوفة البيانات لاستخدامها في الـ Views
-        $data['is_admin'] = $is_admin;
+        // إتاحة حالة المشرف واللغة داخل مصفوفة البيانات لاستخدامها في الـ Views
+        $data['is_admin']     = $is_admin;
         $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name'] = $_SESSION['admin_name'] ?? 'المشرف';
+        $data['admin_name']   = $_SESSION['admin_name'] ?? 'المشرف';
+        $data['current_lang'] = $current_lang;
+        $data['current_dir']  = $current_dir;
 
         // متغيرات إضافية لتحديد ملفات الـ CSS والـ JS الخاصة بالصفحة
         $path_prefix = '/';

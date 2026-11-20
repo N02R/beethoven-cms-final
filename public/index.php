@@ -146,7 +146,7 @@ $router->add('GET', 'edu-services/foundation', [\App\Controllers\Services\Founda
 $router->add('GET', 'edu-services/general', [\App\Controllers\Services\GeneralController::class, 'index']);
 $router->add('GET', 'edu-services/germanlang', [\App\Controllers\Services\GermanLangController::class, 'index']);
 $router->add('GET', 'edu-services/health', [\App\Controllers\Services\HealthController::class, 'index']);
-$router->add('GET', 'edu-services/living', [\App\Controllers\Services\LivingCostController::class, 'index']);
+$router->add('GET', 'edu-services/living', [\App\Controllers\Services\LivingController::class, 'index']);
 $router->add('GET', 'edu-services/motivitionletter', [\App\Controllers\Services\MotivationController::class, 'index']);
 $router->add('GET', 'edu-services/pakeges', [\App\Controllers\Services\OffersController::class, 'index']);
 $router->add('GET', 'edu-services/services-cost', [\App\Controllers\Services\ServiceCostController::class, 'index']);

@@ -150,7 +150,7 @@ $col3Title    = (string)($currentLangData['col3_title'] ?? $fb['col3_default']);
 $col3Items    = is_array($currentLangData['col3_items'] ?? null) ? $currentLangData['col3_items'] : [];
 
 // الأيقونة الثابتة + نص اللوجو من site_logo_text فقط
-$footerLogoIcon = (string)($fixed_logo_icon ?? '/assets/img/icon.png');
+$footerLogoIcon = (string)($fixed_logo_icon ?? '/public/assets/img/icon.png');
 $footerLogoTxt  = trim((string)($activeLogoText ?? ''));
 if ($footerLogoTxt === '') {
     $rawLogoTxt = $data['site_logo_text']
@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-lg-5">
                 <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
                     <img src="<?php echo htmlspecialchars($footerLogoIcon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-                    <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
+                    <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
                         <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </a>

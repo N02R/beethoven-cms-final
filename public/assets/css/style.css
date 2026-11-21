@@ -581,6 +581,17 @@ body[dir="rtl"] .consult-banner-form button img {
   padding-top: 80px !important;
 }
 
+.footer-section .logo-text-stacked {
+  display: inline-block;
+  max-width: 150px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  color: #0f172a;
+  word-break: normal;
+  white-space: normal;
+}
+
 .footer-desc {
   font-size: 18px;
   line-height: 33px;
@@ -662,7 +673,7 @@ body[dir="rtl"] .consult-banner-form button img {
   opacity: .24;
 }
 
-/* اجعل الكاروسيل يتحرك من اليمين لليسار 
+/* اجعل الكاروسيل يتحرك من اليمين لليسار */
 .carousel-rtl .carousel-inner {
   direction: rtl;
 }

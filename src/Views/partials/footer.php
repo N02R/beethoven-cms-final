@@ -214,7 +214,7 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
 <?php endif; ?>
 
 <!-- footer start -->
-<section class="consult-banner-section editable-wrapper">
+<div class="editable-wrapper">
     <div class="edit-board-box">
         <?php if ($is_admin): ?>
             <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_footer'] ?? 'Edit Footer'), ENT_QUOTES, 'UTF-8'); ?>">
@@ -222,25 +222,120 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
             </button>
         <?php endif; ?>
 
-        <div class="container-fluid custom-container">
-            <div class="consult-banner">
-                <div class="consult-banner-inner">
-                    <div class="consult-banner-text">
-                        <h4><?php echo htmlspecialchars($consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
-                        <p><?php echo htmlspecialchars($consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+        <section class="consult-banner-section">
+            <div class="container-fluid custom-container">
+                <div class="consult-banner">
+                    <div class="consult-banner-inner">
+                        <div class="consult-banner-text">
+                            <h4><?php echo htmlspecialchars($consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
+                            <p><?php echo htmlspecialchars($consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                        </div>
+                        
+                        <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
+                            <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
+                            <button type="button" id="openConsentModalBtn" aria-label="Send Consultation Request">
+                                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
+                            </button>
+                        </form>
                     </div>
-                    
-                    <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
-                        <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
-                        <button type="button" id="openConsentModalBtn" aria-label="Send Consultation Request">
-                            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
-                        </button>
-                    </form>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <footer class="footer-section pt-5">
+            <div class="container-fluid custom-container">
+                <div class="row gy-5">
+                    <!-- العمود الأول: الأيقونة الثابتة + نص اللوجو متعدد اللغات -->
+                    <div class="col-12 col-lg-5">
+                        <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
+                            <img src="<?php echo htmlspecialchars($footerLogoIcon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+                            <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
+                                <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
+                            </span>
+                        </a>
+                        <p class="footer-desc"><?php echo htmlspecialchars($footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                    </div>
+
+                    <!-- العمود الثاني (روابط سريعة من المنيو) -->
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <h5><?php echo htmlspecialchars($col2Title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                        <div class="quick-link">
+                            <?php 
+                            $footer_menu = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
+                            if (is_string($footer_menu)) {
+                                $footer_menu = json_decode($footer_menu, true) ?? [];
+                            }
+                            
+                            if (is_array($footer_menu)) {
+                                foreach ($footer_menu as $link) {
+                                    if (!is_array($link)) continue;
+                                    $raw_link_url = trim(is_array($link['url'] ?? null) ? (string)reset($link['url']) : (string)($link['url'] ?? ''));
+                                    if (preg_match('#^(https?://|mailto:|tel:)#i', $raw_link_url)) {
+                                        $fHref = preg_match('/^(javascript|data|vbscript):/i', $raw_link_url) ? '#' : $raw_link_url;
+                                    } else {
+                                        $cleanSlug = ltrim($raw_link_url, '/');
+                                        $cleanSlug = preg_replace('#^public/#i', '', $cleanSlug);
+                                        $cleanSlug = preg_replace('#^(ar|en|de)(/|$)#i', '', $cleanSlug);
+                                        $cleanSlug = trim((string)$cleanSlug, '/');
+                                        $fHref = '/' . $current_lang_code . '/' . ($cleanSlug !== '' ? $cleanSlug : 'home');
+                                    }
+                                    
+                                    $link_title = $link[$current_lang]['title'] ?? ($link['de']['title'] ?? ($link['en']['title'] ?? ($link['ar']['title'] ?? ($link['title'] ?? ''))));
+                                    if (is_array($link_title)) {
+                                        $link_title = get_multilang_text($link_title, $current_lang);
+                                    }
+                                    ?>
+                                    <a href="<?php echo htmlspecialchars($fHref, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <?php echo htmlspecialchars((string)$link_title, ENT_QUOTES, 'UTF-8'); ?>
+                                    </a>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                        </div>
+                    </div>
+
+                    <!-- العمود الثالث (وسائل التواصل من col3_items) -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <h5><?php echo htmlspecialchars($col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                        <div class="contact-link">
+                            <?php 
+                            foreach ($col3Items as $link): 
+                                if (!is_array($link)) continue;
+                                $icon_img   = get_image_url($link['img'] ?? null);
+                                $col3_title = (string)($link['title'] ?? '');
+                                $col3_url   = trim((string)($link['url'] ?? '#'));
+                                if (preg_match('/^(javascript|data|vbscript):/i', $col3_url)) {
+                                    $col3_url = '#';
+                                }
+                            ?>
+                                <a href="<?php echo htmlspecialchars($col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
+                                    <?php if (!empty($icon_img)): ?>
+                                        <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px;" alt="">
+                                    <?php endif; ?>
+                                    <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
+                    <p class="mb-0 text-center text-md-start">
+                        <span>&copy;</span> <?php echo date('Y'); ?> Beethoven City Services. <?php echo htmlspecialchars($t['rights_reserved'], ENT_QUOTES, 'UTF-8'); ?>
+                    </p>
+                    <div class="legal-links d-flex gap-3 align-items-center">
+                        <a href="<?php echo htmlspecialchars($impressumUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['impressum_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
+                        <span class="text-muted">|</span>
+                        <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-</section>
+</div>
+<!-- footer end -->
 
 <!-- نافذة منبثقة (Popup Modal) للموافقة على سياسة الخصوصية (DSGVO) -->
 <div class="modal fade custom-modal" id="privacyConsentModal" tabindex="-1" aria-hidden="true">
@@ -346,99 +441,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<footer class="footer-section pt-5">
-    <div class="container-fluid custom-container">
-        <div class="row gy-5">
-            <!-- العمود الأول: الأيقونة الثابتة + نص اللوجو متعدد اللغات -->
-            <div class="col-12 col-lg-5">
-                <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-                    <img src="<?php echo htmlspecialchars($footerLogoIcon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-                    <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
-                        <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </a>
-                <p class="footer-desc"><?php echo htmlspecialchars($footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
-
-            <!-- العمود الثاني (روابط سريعة من المنيو) -->
-            <div class="col-12 col-md-6 col-lg-3">
-                <h5><?php echo htmlspecialchars($col2Title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                <div class="quick-link">
-                    <?php 
-                    $footer_menu = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
-                    if (is_string($footer_menu)) {
-                        $footer_menu = json_decode($footer_menu, true) ?? [];
-                    }
-                    
-                    if (is_array($footer_menu)) {
-                        foreach ($footer_menu as $link) {
-                            if (!is_array($link)) continue;
-                            $raw_link_url = trim(is_array($link['url'] ?? null) ? (string)reset($link['url']) : (string)($link['url'] ?? ''));
-                            if (preg_match('#^(https?://|mailto:|tel:)#i', $raw_link_url)) {
-                                $fHref = preg_match('/^(javascript|data|vbscript):/i', $raw_link_url) ? '#' : $raw_link_url;
-                            } else {
-                                $cleanSlug = ltrim($raw_link_url, '/');
-                                $cleanSlug = preg_replace('#^public/#i', '', $cleanSlug);
-                                $cleanSlug = preg_replace('#^(ar|en|de)(/|$)#i', '', $cleanSlug);
-                                $cleanSlug = trim((string)$cleanSlug, '/');
-                                $fHref = '/' . $current_lang_code . '/' . ($cleanSlug !== '' ? $cleanSlug : 'home');
-                            }
-                            
-                            $link_title = $link[$current_lang]['title'] ?? ($link['de']['title'] ?? ($link['en']['title'] ?? ($link['ar']['title'] ?? ($link['title'] ?? ''))));
-                            if (is_array($link_title)) {
-                                $link_title = get_multilang_text($link_title, $current_lang);
-                            }
-                            ?>
-                            <a href="<?php echo htmlspecialchars($fHref, ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo htmlspecialchars((string)$link_title, ENT_QUOTES, 'UTF-8'); ?>
-                            </a>
-                            <?php 
-                        }
-                    }
-                    ?>
-                </div>
-            </div>
-
-            <!-- العمود الثالث (وسائل التواصل من col3_items) -->
-            <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars($col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                <div class="contact-link">
-                    <?php 
-                    foreach ($col3Items as $link): 
-                        if (!is_array($link)) continue;
-                        $icon_img   = get_image_url($link['img'] ?? null);
-                        $col3_title = (string)($link['title'] ?? '');
-                        $col3_url   = trim((string)($link['url'] ?? '#'));
-                        if (preg_match('/^(javascript|data|vbscript):/i', $col3_url)) {
-                            $col3_url = '#';
-                        }
-                    ?>
-                        <a href="<?php echo htmlspecialchars($col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
-                            <?php if (!empty($icon_img)): ?>
-                                <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px;" alt="">
-                            <?php endif; ?>
-                            <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        
-        <hr class="my-4">
-        <div class="foot-bottom d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 pb-4">
-            <p class="mb-0 text-center text-md-start">
-                <span>&copy;</span> <?php echo date('Y'); ?> Beethoven City Services. <?php echo htmlspecialchars($t['rights_reserved'], ENT_QUOTES, 'UTF-8'); ?>
-            </p>
-            <div class="legal-links d-flex gap-3 align-items-center">
-                <a href="<?php echo htmlspecialchars($impressumUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['impressum_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
-                <span class="text-muted">|</span>
-                <a href="<?php echo htmlspecialchars($privacyUrl, ENT_QUOTES, 'UTF-8'); ?>" class="text-muted text-decoration-none small"><?php echo htmlspecialchars($t['privacy_link_text'], ENT_QUOTES, 'UTF-8'); ?></a>
-            </div>
-        </div>
-    </div>
-</footer>
-<!-- footer end -->
 
 <!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع -->
 <?php if ($is_admin): ?>

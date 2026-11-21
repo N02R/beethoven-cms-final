@@ -297,7 +297,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         
         <!-- Desktop Menu -->
         <div class="collapse navbar-collapse">
-          <div class="editable-wrapper d-inline-block w-100">
+          <div class="editable-wrapper d-inline-block">
             <div class="edit-board-box">
               <?php if ($is_admin): ?>
                   <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_main_menu'] ?? 'Edit Menu'), ENT_QUOTES, 'UTF-8'); ?>">

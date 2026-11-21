@@ -91,46 +91,50 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 ?>
 
 <!-- ================= BREADCRUMB SECTION START ================= -->
-<div class="custom-container pt-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<div class="custom-container pt-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverBreadcrumbModal" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $bc_url  = $cover['page_breadcrumb_url'] ?? '#';
-  $bc_text = $cover['page_breadcrumb'] ?? $txt['default_bc'];
-  ?>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb justify-content-start">
-      <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item" aria-current="page">
-        <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
-          <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
-        </a>
-      </li>
-    </ol>
-  </nav>
+    <?php
+    $bc_url  = $cover['page_breadcrumb_url'] ?? '#';
+    $bc_text = $cover['page_breadcrumb'] ?? $txt['default_bc'];
+    ?>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
 </div>
 <!-- Breadcrumb end -->
 
 <!-- ================= CUSTOM HERO SECTION START ================= -->
-<section class="custom-services py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<section class="custom-services py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverHeroModal" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $hero_img = get_image_url($cover['hero_img'] ?? null, 'assets/img/education/servicesimg1.jpg');
-  $hero_pos = htmlspecialchars((string)($cover['hero_position'] ?? 'center -30px'), ENT_QUOTES, 'UTF-8');
-  ?>
-  <div class="custom-container">
-    <div class="coverLetter-hero custom-hero"
-      style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+    <?php
+    $hero_img = get_image_url($cover['hero_img'] ?? null, 'assets/img/education/servicesimg1.jpg');
+    $hero_pos = htmlspecialchars((string)($cover['hero_position'] ?? 'center -30px'), ENT_QUOTES, 'UTF-8');
+    ?>
+    <div class="custom-container">
+      <div class="coverLetter-hero custom-hero"
+        style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+      </div>
     </div>
   </div>
 </section>
@@ -141,126 +145,134 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
   <div class="custom-container">
     
     <!-- 1. العنوان والوصف -->
-    <div class="head-info pb-4 mb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="head-info pb-4 mb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverMainModal" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <h2 class="main-text"><?php echo htmlspecialchars((string)($cover['main_title'] ?? $txt['default_title']), ENT_QUOTES, 'UTF-8'); ?></h2>
-      <?php if (!empty($cover['main_desc'])): ?>
-        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)$cover['main_desc'], ENT_QUOTES, 'UTF-8')); ?></p>
-      <?php endif; ?>
+        <h2 class="main-text"><?php echo htmlspecialchars((string)($cover['main_title'] ?? $txt['default_title']), ENT_QUOTES, 'UTF-8'); ?></h2>
+        <?php if (!empty($cover['main_desc'])): ?>
+          <p class="par-text"><?php echo nl2br(htmlspecialchars((string)$cover['main_desc'], ENT_QUOTES, 'UTF-8')); ?></p>
+        <?php endif; ?>
+      </div>
     </div>
 
     <!-- 2. النصائح والنقاط -->
-    <div class="advice-stars my-4 pb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverAdviceModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_advice'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="advice-text"><?php echo htmlspecialchars((string)($cover['advice_title'] ?? $txt['advice_title']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <div class="row star-list mt-4">
-        <?php 
-        $advice_points = $cover['advice_points'] ?? [];
-        if (is_array($advice_points) && !empty($advice_points)):
-            foreach ($advice_points as $point): 
-                if (empty($point)) continue;
-        ?>
-          <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
-            <div class="d-flex align-items-center">
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" class="ms-2 me-2 flex-shrink-0" alt="" width="25">
-              <p class="mb-0"><?php echo htmlspecialchars((string)$point, ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
-          </div>
-        <?php 
-            endforeach;
-        else:
-        ?>
-          <div class="col-12 text-muted">
-            <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
+    <div class="advice-stars my-4 pb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverAdviceModal" title="<?php echo htmlspecialchars($txt['edit_advice'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
         <?php endif; ?>
+
+        <h5 class="advice-text"><?php echo htmlspecialchars((string)($cover['advice_title'] ?? $txt['advice_title']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <div class="row star-list mt-4">
+          <?php 
+          $advice_points = $cover['advice_points'] ?? [];
+          if (is_array($advice_points) && !empty($advice_points)):
+              foreach ($advice_points as $point): 
+                  if (empty($point)) continue;
+          ?>
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+              <div class="d-flex align-items-center">
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" class="ms-2 me-2 flex-shrink-0" alt="" width="25">
+                <p class="mb-0"><?php echo htmlspecialchars((string)$point, ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
+            </div>
+          <?php 
+              endforeach;
+          else:
+          ?>
+            <div class="col-12 text-muted">
+              <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
 
     <!-- 3. ملاحظات هامة -->
-    <div class="advice-check py-4 mb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="note-text mb-4"><?php echo htmlspecialchars((string)($cover['note_title'] ?? $txt['note_title']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <div class="row">
-        <?php 
-        $notes_items = $cover['notes'] ?? [];
-        if (is_array($notes_items) && !empty($notes_items)):
-            foreach ($notes_items as $note): 
-                if (empty($note)) continue;
-        ?>
-          <div class="col-lg-4 col-md-6 col-sm-6 mb-2">
-            <p>✅ <?php echo htmlspecialchars((string)$note, ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
-        <?php 
-            endforeach;
-        else:
-        ?>
-          <div class="col-12 text-muted">
-            <p><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
+    <div class="advice-check py-4 mb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverNotesModal" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
         <?php endif; ?>
+
+        <h5 class="note-text mb-4"><?php echo htmlspecialchars((string)($cover['note_title'] ?? $txt['note_title']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <div class="row">
+          <?php 
+          $notes_items = $cover['notes'] ?? [];
+          if (is_array($notes_items) && !empty($notes_items)):
+              foreach ($notes_items as $note): 
+                  if (empty($note)) continue;
+          ?>
+            <div class="col-lg-4 col-md-6 col-sm-6 mb-2">
+              <p>✅ <?php echo htmlspecialchars((string)$note, ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
+          <?php 
+              endforeach;
+          else:
+          ?>
+            <div class="col-12 text-muted">
+              <p><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
 
     <!-- 4. عناصر التحميل -->
-    <div class="row pt-2 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" style="position: absolute; top: -10px; right: 10px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_download'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="row pt-2 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#coverDownloadModal" title="<?php echo htmlspecialchars($txt['edit_download'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <?php 
-      $download_items = $cover['download_items'] ?? [];
-      if (is_array($download_items) && !empty($download_items)):
-          foreach ($download_items as $item): 
-              if (!is_array($item)) continue;
-              $is_pdf = (strtolower((string)($item['type'] ?? '')) === 'pdf');
-              $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              $fileUrl = (string)($item['file'] ?? '#');
-              $safeHref = ($fileUrl !== '' && $fileUrl !== '#')
-                  ? get_image_url($fileUrl)
-                  : '#';
-      ?>
-        <div class="col-lg-12">
-          <div class="download-card mb-3">
-            <div class="download-row">
-              <!-- الأيقونة -->
-              <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="dl-icon" />
-              
-              <!-- العنوان والنص الفرعي -->
-              <div class="dl-info">
-                <div class="dl-title"><?php echo htmlspecialchars((string)($item['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></div>
-                <div class="dl-sub"><?php echo htmlspecialchars((string)($item['sub'] ?? $txt['default_sub']), ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php 
+        $download_items = $cover['download_items'] ?? [];
+        if (is_array($download_items) && !empty($download_items)):
+            foreach ($download_items as $item): 
+                if (!is_array($item)) continue;
+                $is_pdf = (strtolower((string)($item['type'] ?? '')) === 'pdf');
+                $icon = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+                $fileUrl = (string)($item['file'] ?? '#');
+                $safeHref = ($fileUrl !== '' && $fileUrl !== '#')
+                    ? get_image_url($fileUrl)
+                    : '#';
+        ?>
+          <div class="col-lg-12">
+            <div class="download-card mb-3">
+              <div class="download-row">
+                <!-- الأيقونة -->
+                <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="icon" class="dl-icon" />
+                
+                <!-- العنوان والنص الفرعي -->
+                <div class="dl-info">
+                  <div class="dl-title"><?php echo htmlspecialchars((string)($item['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></div>
+                  <div class="dl-sub"><?php echo htmlspecialchars((string)($item['sub'] ?? $txt['default_sub']), ENT_QUOTES, 'UTF-8'); ?></div>
+                </div>
+                
+                <!-- النقاط الفاصلة المرنة -->
+                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.......................................................................................................................................................................................................................</span>
+                
+                <!-- زر التحميل -->
+                <a class="download-link" href="<?php echo htmlspecialchars($safeHref, ENT_QUOTES, 'UTF-8'); ?>" download><?php echo htmlspecialchars($txt['download_lbl'], ENT_QUOTES, 'UTF-8'); ?></a>
               </div>
-              
-              <!-- النقاط الفاصلة المرنة -->
-              <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">.......................................................................................................................................................................................................................</span>
-              
-              <!-- زر التحميل -->
-              <a class="download-link" href="<?php echo htmlspecialchars($safeHref, ENT_QUOTES, 'UTF-8'); ?>" download><?php echo htmlspecialchars($txt['download_lbl'], ENT_QUOTES, 'UTF-8'); ?></a>
             </div>
           </div>
-        </div>
-      <?php 
-          endforeach;
-      endif;
-      ?>
+        <?php 
+            endforeach;
+        endif;
+        ?>
+      </div>
     </div>
 
   </div>

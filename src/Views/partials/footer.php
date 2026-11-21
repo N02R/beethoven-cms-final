@@ -214,27 +214,29 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
 <?php endif; ?>
 
 <!-- footer start -->
-<section class="consult-banner-section editable-wrapper" style="position: relative;">
-    <?php if ($is_admin): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_footer'] ?? 'Edit Footer'), ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-    <?php endif; ?>
-    
-    <div class="container-fluid custom-container">
-        <div class="consult-banner">
-            <div class="consult-banner-inner">
-                <div class="consult-banner-text">
-                    <h4><?php echo htmlspecialchars($consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
-                    <p><?php echo htmlspecialchars($consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+<section class="consult-banner-section editable-wrapper">
+    <div class="edit-board-box">
+        <?php if ($is_admin): ?>
+            <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_footer'] ?? 'Edit Footer'), ENT_QUOTES, 'UTF-8'); ?>">
+                <i class="bi bi-pencil-fill"></i>
+            </button>
+        <?php endif; ?>
+
+        <div class="container-fluid custom-container">
+            <div class="consult-banner">
+                <div class="consult-banner-inner">
+                    <div class="consult-banner-text">
+                        <h4><?php echo htmlspecialchars($consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
+                        <p><?php echo htmlspecialchars($consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                    </div>
+                    
+                    <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
+                        <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
+                        <button type="button" id="openConsentModalBtn" aria-label="Send Consultation Request">
+                            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
+                        </button>
+                    </form>
                 </div>
-                
-                <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
-                    <input type="email" id="consultEmailInput" name="email" placeholder="<?php echo htmlspecialchars($t['email_placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required />
-                    <button type="button" id="openConsentModalBtn" aria-label="Send Consultation Request">
-                        <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/send.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="Send" width="35">
-                    </button>
-                </form>
             </div>
         </div>
     </div>

@@ -96,59 +96,61 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 ?>
 
 <!-- ================= GUIDE PAGE START ================= -->
-<section class="guide py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($txt['edit_guide'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<section class="guide py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($txt['edit_guide'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <div class="custom-container">
-    <div class="text-center mb-5">
-      <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
-      <?php if (!empty($guide_desc)): ?>
-        <p class="main-p mx-auto" style="max-width: 700px;">
-          <?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?>
-        </p>
-      <?php endif; ?>
-    </div>
+    <div class="custom-container">
+      <div class="text-center mb-5">
+        <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+        <?php if (!empty($guide_desc)): ?>
+          <p class="main-p mx-auto" style="max-width: 700px;">
+            <?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?>
+          </p>
+        <?php endif; ?>
+      </div>
 
-    <div class="row g-4">
-      <?php if (!empty($guide_items)): ?>
-        <?php foreach ($guide_items as $item): 
-            if (!is_array($item)) continue;
-            
-            $item_title = (string)($item['title'] ?? '');
-            $item_desc  = (string)($item['desc'] ?? '');
-            $item_img   = get_image_url($item['img'] ?? null, '');
-            $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
-            $final_url  = $buildLocalizedUrl($item['url'] ?? ($item['link'] ?? '#'));
-        ?>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="card h-100">
-              <div class="card-body d-flex flex-column">
-                <?php if ($item_img !== ''): ?>
-                  <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
-                <?php endif; ?>
-                <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
-                <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
-                  <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                  <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" 
-                       alt="arrow" 
-                       class="<?php echo ($current_dir === 'ltr' ? 'ms-2' : 'me-2'); ?>" 
-                       width="18" 
-                       style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
-                </a>
+      <div class="row g-4">
+        <?php if (!empty($guide_items)): ?>
+          <?php foreach ($guide_items as $item): 
+              if (!is_array($item)) continue;
+              
+              $item_title = (string)($item['title'] ?? '');
+              $item_desc  = (string)($item['desc'] ?? '');
+              $item_img   = get_image_url($item['img'] ?? null, '');
+              $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
+              $final_url  = $buildLocalizedUrl($item['url'] ?? ($item['link'] ?? '#'));
+          ?>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                  <?php if ($item_img !== ''): ?>
+                    <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
+                  <?php endif; ?>
+                  <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                  <p class="card-text flex-grow-1"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                  <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
+                    <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
+                    <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" 
+                         alt="arrow" 
+                         class="<?php echo ($current_dir === 'ltr' ? 'ms-2' : 'me-2'); ?>" 
+                         width="18" 
+                         style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                  </a>
+                </div>
               </div>
             </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="col-12 text-center text-muted py-4">
+            <p><?php echo htmlspecialchars((string)($lang['no_guide_articles'] ?? $txt['no_articles']), ENT_QUOTES, 'UTF-8'); ?></p>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <div class="col-12 text-center text-muted py-4">
-          <p><?php echo htmlspecialchars((string)($lang['no_guide_articles'] ?? $txt['no_articles']), ENT_QUOTES, 'UTF-8'); ?></p>
-        </div>
-      <?php endif; ?>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
 </section>

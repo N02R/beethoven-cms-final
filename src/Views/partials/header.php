@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Header Partial (Gold Standard MVC, Secure & Multilingual)
- * يدعم تعدد اللغات بالكامل (لوجو، إعلانات نصية وصور، قوائم، لغات ديناميكية، وتواصل اجتماعي)
+ * يدعم تعدد اللغات بالكامل (لوجو نصي + أيقونة ثابتة، إعلانات، قوائم، لغات ديناميكية، وتواصل اجتماعي)
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -51,19 +51,14 @@ $decodeSettingArray = static function (mixed $raw): array {
     return [];
 };
 
-// 4. جلب ومعالجة اللوجو (صورة + نص متعدد اللغات)
-$site_logo_raw = $data['site_logo_path'] ?? (function_exists('get_setting') ? get_setting('site_logo_path', 'assets/img/icon.png') : 'assets/img/icon.png');
-$site_logo_icon = 'assets/img/icon.png';
+// 4. اعتماد الأيقونة الثابتة + نص اللوجو متعدد اللغات من site_logo_text فقط
+$fixed_logo_icon = '/public/assets/img/icon.png';
 
-$logoArr = $decodeSettingArray($site_logo_raw);
-if (!empty($logoArr)) {
-    $candidateLogo = (string)($logoArr[$current_lang] ?? ($logoArr['de'] ?? ($logoArr['en'] ?? ($logoArr['ar'] ?? 'assets/img/icon.png'))));
-    if (trim($candidateLogo) !== '') {
-        $site_logo_icon = trim($candidateLogo);
-    }
-} elseif (is_string($site_logo_raw) && trim($site_logo_raw) !== '') {
-    $site_logo_icon = trim($site_logo_raw);
-}
+$defaultLogoTexts = [
+    'de' => 'Beethoven Stadt Dienste',
+    'en' => 'Beethoven City Services (BCS)',
+    'ar' => 'بيتهوفن سيتي للخدمات (BCS)',
+];
 
 $site_logo_text_raw = $data['site_logo_text'] ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : '');
 $activeLogoText = '';
@@ -75,9 +70,7 @@ if (!empty($logoTextArr)) {
 }
 
 if ($activeLogoText === '') {
-    $activeLogoText = ($current_lang === 'ar')
-        ? 'بيتهوفن سيتي للخدمات (BCS)'
-        : 'Beethoven City Services (BCS)';
+    $activeLogoText = $defaultLogoTexts[$current_lang] ?? $defaultLogoTexts['de'];
 }
 
 // 5. جلب اللغات المفعلة من قاعدة البيانات (دون الكتابة فوق مصفوفة $lang)
@@ -204,7 +197,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     <nav class="nav-top navbar py-2">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- اللوجو الذكي: أيقونة + نص متعدد اللغات (CSS Stacking) -->
+        <!-- اللوجو: أيقونة ثابتة + نص متعدد اللغات -->
         <div class="navbar-brand-wrapper">
           <div class="editable-wrapper d-inline-block position-relative">
             <?php if ($is_admin): ?>
@@ -214,7 +207,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
             <?php endif; ?>
 
             <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-              <img src="<?php echo htmlspecialchars(get_image_url($site_logo_icon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+              <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
               <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
                   <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
               </span>
@@ -299,7 +292,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         <!-- اللوجو (Mobile Only) -->
         <div class="d-lg-none">
           <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_icon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+            <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
             <span class="logo-text-stacked" style="display: inline-block; max-width: 120px; font-weight: 800; font-size: 0.85rem; line-height: 1.15; color: #0f172a;">
                 <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
             </span>
@@ -370,7 +363,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
       <div class="offcanvas-header">
         <h5 class="offcanvas-title m-0">
           <a class="d-inline-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-            <img src="<?php echo htmlspecialchars(get_image_url($site_logo_icon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+            <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
             <span class="logo-text-stacked" style="display: inline-block; max-width: 140px; font-weight: 800; font-size: 0.9rem; line-height: 1.15; color: #0f172a;">
                 <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
             </span>

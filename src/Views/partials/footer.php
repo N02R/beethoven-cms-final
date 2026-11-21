@@ -80,6 +80,7 @@ $fallback_translations = [
         'cookie_reject'          => 'Nur essenzielle',
         'col2_default'           => 'Schnelle Links',
         'col3_default'           => 'Kontaktieren Sie uns',
+        'default_logo_text'      => 'Beethoven Stadt Dienste',
     ],
     'en' => [
         'consult_title'          => 'Get a Free Consultation',
@@ -101,6 +102,7 @@ $fallback_translations = [
         'cookie_reject'          => 'Reject Non-Essential',
         'col2_default'           => 'Quick Links',
         'col3_default'           => 'Contact Us',
+        'default_logo_text'      => 'Beethoven City Services (BCS)',
     ],
     'ar' => [
         'consult_title'          => 'احصل على استشارة مجانية',
@@ -122,6 +124,7 @@ $fallback_translations = [
         'cookie_reject'          => 'رفض غير الضروري',
         'col2_default'           => 'روابط سريعة',
         'col3_default'           => 'تواصل معنا',
+        'default_logo_text'      => 'بيتهوفن سيتي للخدمات (BCS)',
     ],
 ];
 
@@ -146,9 +149,31 @@ $col2Title    = (string)($currentLangData['col2_title'] ?? $fb['col2_default']);
 $col3Title    = (string)($currentLangData['col3_title'] ?? $fb['col3_default']);
 $col3Items    = is_array($currentLangData['col3_items'] ?? null) ? $currentLangData['col3_items'] : [];
 
-// إعادة استخدام بيانات اللوجو المحددة في الهيدر أو استخراجها بأمان
-$footerLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
-$footerLogoTxt  = (string)($activeLogoText ?? (($current_lang === 'ar') ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)'));
+// الأيقونة الثابتة + نص اللوجو من site_logo_text فقط
+$footerLogoIcon = (string)($fixed_logo_icon ?? '/public/assets/img/icon.png');
+$footerLogoTxt  = trim((string)($activeLogoText ?? ''));
+if ($footerLogoTxt === '') {
+    $rawLogoTxt = $data['site_logo_text']
+        ?? (is_array($currentSettings ?? null) ? ($currentSettings['site_logo_text'] ?? '') : '')
+        ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : '');
+
+    if (is_string($rawLogoTxt) && trim($rawLogoTxt) !== '') {
+        $trimmedTxt = trim($rawLogoTxt);
+        if (str_starts_with($trimmedTxt, '{')) {
+            $decodedTxt = json_decode($trimmedTxt, true);
+            if (is_array($decodedTxt)) {
+                $footerLogoTxt = trim((string)($decodedTxt[$current_lang_code] ?? ($decodedTxt['de'] ?? ($decodedTxt['en'] ?? ($decodedTxt['ar'] ?? '')))));
+            }
+        } else {
+            $footerLogoTxt = $trimmedTxt;
+        }
+    } elseif (is_array($rawLogoTxt)) {
+        $footerLogoTxt = trim((string)($rawLogoTxt[$current_lang_code] ?? ($rawLogoTxt['de'] ?? ($rawLogoTxt['en'] ?? ($rawLogoTxt['ar'] ?? '')))));
+    }
+}
+if ($footerLogoTxt === '') {
+    $footerLogoTxt = $fb['default_logo_text'];
+}
 
 $t = [
     'consult_title'          => (string)($lang['consult_title'] ?? $consultTitle),
@@ -323,47 +348,15 @@ document.addEventListener('DOMContentLoaded', function() {
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">
         <div class="row gy-5">
-            <?php
-            // مطابقة اللوجو في الفوتر مع منطق الهيدر تماماً (أيقونة + نص مكدّس حسب اللغة النشطة)
-            $footerLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
-            $footerLogoTxt  = (string)($activeLogoText ?? '');
-
-            if ($footerLogoTxt === '') {
-                $rawLogoTxt = $data['site_logo_text']
-                    ?? (is_array($currentSettings ?? null) ? ($currentSettings['site_logo_text'] ?? '') : '')
-                    ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : '');
-
-                if (is_string($rawLogoTxt) && trim($rawLogoTxt) !== '') {
-                    $trimmedTxt = trim($rawLogoTxt);
-                    if (str_starts_with($trimmedTxt, '{')) {
-                        $decodedTxt = json_decode($trimmedTxt, true);
-                        if (is_array($decodedTxt)) {
-                            $footerLogoTxt = trim((string)($decodedTxt[$current_lang_code] ?? ($decodedTxt['de'] ?? ($decodedTxt['en'] ?? ($decodedTxt['ar'] ?? '')))));
-                        }
-                    } else {
-                        $footerLogoTxt = $trimmedTxt;
-                    }
-                } elseif (is_array($rawLogoTxt)) {
-                    $footerLogoTxt = trim((string)($rawLogoTxt[$current_lang_code] ?? ($rawLogoTxt['de'] ?? ($rawLogoTxt['en'] ?? ($rawLogoTxt['ar'] ?? '')))));
-                }
-            }
-
-            if ($footerLogoTxt === '') {
-                $footerLogoTxt = ($current_lang_code === 'ar')
-                    ? 'بيتهوفن سيتي للخدمات (BCS)'
-                    : 'Beethoven City Services (BCS)';
-            }
-            ?>
-
-            <!-- العمود الأول: اللوجو المطابق للهيدر + وصف الفوتر -->
+            <!-- العمود الأول: الأيقونة الثابتة + نص اللوجو متعدد اللغات -->
             <div class="col-12 col-lg-5">
                 <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-                    <img src="<?php echo htmlspecialchars(get_image_url($footerLogoIcon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+                    <img src="<?php echo htmlspecialchars($footerLogoIcon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
                     <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
                         <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </a>
-                <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="footer-desc"><?php echo htmlspecialchars($footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
             <!-- العمود الثاني (روابط سريعة من المنيو) -->
@@ -443,7 +436,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </footer>
-
 <!-- footer end -->
 
 <!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع -->

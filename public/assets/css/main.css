@@ -97,7 +97,7 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - فصل الأقسام الكاملة عن العناصر المضغوطة
+   أقلام التعديل - فصل الأقسام الكاملة عن العناصر المضغوطة (سمك أوضح للمدير)
    ========================================== */
 
 .editable-wrapper {
@@ -110,18 +110,18 @@ body {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
-    border: 1.5px dashed rgba(29, 78, 216, 0.45) !important;
+    border: 2.5px dashed rgba(29, 78, 216, 0.72) !important;
     border-radius: 10px !important;
     padding: 14px 16px !important;
     margin-block: 8px !important;
-    background-color: rgba(29, 78, 216, 0.015);
+    background-color: rgba(29, 78, 216, 0.02);
     transition: border-color 0.2s ease, background-color 0.2s ease, padding 0.2s ease;
 }
 
 .edit-board-box:has(> .edit-pen):hover {
     border-color: #1d4ed8 !important;
     border-style: solid !important;
-    background-color: rgba(29, 78, 216, 0.035);
+    background-color: rgba(29, 78, 216, 0.045);
 }
 
 /* العناصر المضغوطة (داخل الهيدر أو أي حاوية تحمل .editable-inline) تأخذ عرض المحتوى */
@@ -129,6 +129,7 @@ header .edit-board-box:has(> .edit-pen),
 .editable-inline .edit-board-box:has(> .edit-pen) {
     display: inline-block !important;
     width: fit-content !important;
+    border-width: 2px !important;
     padding: 8px 10px !important;
     margin-block: 4px !important;
     border-radius: 8px !important;
@@ -192,8 +193,15 @@ header .edit-board-box .edit-pen,
 /* شاشات 24 إلى 27 إنش فأعلى (1600px+) */
 @media (min-width: 1600px) {
     .edit-board-box:has(> .edit-pen) {
+        border-width: 3px !important;
         padding: 16px 20px !important;
         border-radius: 12px !important;
+    }
+
+    header .edit-board-box:has(> .edit-pen),
+    .editable-inline .edit-board-box:has(> .edit-pen) {
+        border-width: 2.5px !important;
+        padding: 10px 12px !important;
     }
 
     .edit-board-box .edit-pen {

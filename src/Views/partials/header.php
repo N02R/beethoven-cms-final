@@ -188,49 +188,6 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
       }
   }
   ?>
-
-  <style>
-    header .editable-wrapper {
-      position: relative !important;
-      padding-top: 0 !important;
-    }
-    header .editable-wrapper:has(> .edit-pen) > .edit-board-box {
-      border: 1.5px dashed rgba(37, 99, 235, 0.38);
-      border-radius: 8px;
-      padding: 4px 10px;
-      margin-block: 0;
-      background-color: rgba(37, 99, 235, 0.015);
-      transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
-    header .editable-wrapper:has(> .edit-pen):hover > .edit-board-box {
-      border-color: #2563eb;
-      border-style: solid;
-      background-color: rgba(37, 99, 235, 0.035);
-    }
-    header .editable-wrapper .edit-pen {
-      width: 22px !important;
-      height: 22px !important;
-      border-radius: 6px !important;
-      position: absolute !important;
-      top: -8px !important;
-      inset-inline-end: -8px !important;
-      z-index: 105 !important;
-      background: #2563eb !important;
-      color: #ffffff !important;
-      border: 2px solid #ffffff !important;
-      font-size: 10px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      cursor: pointer !important;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
-      transition: transform 0.15s ease, background-color 0.15s ease !important;
-    }
-    header .editable-wrapper .edit-pen:hover {
-      transform: scale(1.08);
-      background: #1d4ed8 !important;
-    }
-  </style>
 </head>
 
 <body>
@@ -242,14 +199,14 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         
         <!-- اللوجو: أيقونة ثابتة + نص متعدد اللغات -->
         <div class="navbar-brand-wrapper">
-          <div class="editable-wrapper d-inline-block position-relative">
-            <?php if ($is_admin): ?>
-                <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_site_logo'] ?? 'Edit Logo'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <i class="bi bi-pencil-fill"></i>
-                </button>
-            <?php endif; ?>
-
+          <div class="editable-wrapper d-inline-block">
             <div class="edit-board-box">
+              <?php if ($is_admin): ?>
+                  <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#logoEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_site_logo'] ?? 'Edit Logo'), ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
+
               <a class="navbar-brand m-0 py-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
                 <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
                 <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.92rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
@@ -264,13 +221,13 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-2">
           <?php if ($is_visible || $is_admin): ?>
             <div class="editable-wrapper d-block w-100" style="max-width: 480px;">
-              <?php if ($is_admin): ?>
-                  <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="<?php echo htmlspecialchars((string)($lang['announcement_settings'] ?? 'Edit Announcement'), ENT_QUOTES, 'UTF-8'); ?>">
-                      <i class="bi bi-pencil-fill"></i>
-                  </button>
-              <?php endif; ?>
-
               <div class="edit-board-box">
+                <?php if ($is_admin): ?>
+                    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="<?php echo htmlspecialchars((string)($lang['announcement_settings'] ?? 'Edit Announcement'), ENT_QUOTES, 'UTF-8'); ?>">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                <?php endif; ?>
+
                 <?php if ($safeAdLink !== '' && $hasContent): ?>
                     <a href="<?php echo htmlspecialchars($safeAdLink, ENT_QUOTES, 'UTF-8'); ?>" <?php echo (!empty($ad['open_new_tab']) ? 'target="_blank" rel="noopener noreferrer"' : ''); ?> class="text-decoration-none">
                 <?php endif; ?>
@@ -308,13 +265,13 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
           <?php endif; ?>
 
           <div class="editable-wrapper d-inline-block">
-            <?php if ($is_admin): ?>
-                <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_social_platforms'] ?? 'Edit Social Links'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <i class="bi bi-pencil-fill"></i>
-                </button>
-            <?php endif; ?>
-
             <div class="edit-board-box">
+              <?php if ($is_admin): ?>
+                  <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#socialLinksEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_social_platforms'] ?? 'Edit Social Links'), ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
+
               <div class="social-icons d-flex gap-2">
                 <?php foreach ($social_links as $s): 
                     if (!is_array($s)) continue;
@@ -341,13 +298,13 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         <!-- Desktop Menu -->
         <div class="collapse navbar-collapse">
           <div class="editable-wrapper d-inline-block w-100">
-            <?php if ($is_admin): ?>
-                <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_main_menu'] ?? 'Edit Menu'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <i class="bi bi-pencil-fill"></i>
-                </button>
-            <?php endif; ?>
-
             <div class="edit-board-box">
+              <?php if ($is_admin): ?>
+                  <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#menuEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_main_menu'] ?? 'Edit Menu'), ENT_QUOTES, 'UTF-8'); ?>">
+                      <i class="bi bi-pencil-fill"></i>
+                  </button>
+              <?php endif; ?>
+
               <ul class="navbar-nav gap-2">
                 <?php foreach ($menu_links as $link): 
                     if (!is_array($link)) continue;
@@ -371,30 +328,30 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
           
           <div class="dropdown">
             <div class="editable-wrapper d-inline-block">
+              <div class="edit-board-box">
                 <?php if ($is_admin): ?>
                     <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#langEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_languages'] ?? 'Edit Languages'), ENT_QUOTES, 'UTF-8'); ?>">
                         <i class="bi bi-pencil-fill"></i>
                     </button>
                 <?php endif; ?>
                 
-                <div class="edit-board-box">
-                  <button class="btn lang-switch py-1 px-2 d-flex align-items-center justify-content-between gap-1" type="button" data-bs-toggle="dropdown">
-                      <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="18">
-                      <span><?php echo htmlspecialchars($current_lang_name, ENT_QUOTES, 'UTF-8'); ?></span>
-                      <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="14">
-                  </button>
+                <button class="btn lang-switch py-1 px-2 d-flex align-items-center justify-content-between gap-1" type="button" data-bs-toggle="dropdown">
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="18">
+                    <span><?php echo htmlspecialchars($current_lang_name, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="14">
+                </button>
 
-                  <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
-                  <ul class="dropdown-menu dropdown-menu-end">
-                      <?php foreach ($active_languages as $langOption): 
-                          $code = (string)($langOption['code'] ?? 'de');
-                          $name = (string)($langOption['name'] ?? 'Deutsch');
-                          $switchHref = '/' . $code . $clean_uri . $query_str;
-                      ?>
-                          <li><a class="dropdown-item <?php echo ($code === $current_lang) ? 'active' : ''; ?>" href="<?php echo htmlspecialchars($switchHref, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
-                      <?php endforeach; ?>
-                  </ul>
-                </div>
+                <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <?php foreach ($active_languages as $langOption): 
+                        $code = (string)($langOption['code'] ?? 'de');
+                        $name = (string)($langOption['name'] ?? 'Deutsch');
+                        $switchHref = '/' . $code . $clean_uri . $query_str;
+                    ?>
+                        <li><a class="dropdown-item <?php echo ($code === $current_lang) ? 'active' : ''; ?>" href="<?php echo htmlspecialchars($switchHref, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

@@ -97,37 +97,51 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - الحل الجذري والنظيف (Minimalist Glassmorphism)
+   أقلام التعديل - أسلوب Elementor (للمشرف فقط)
    ========================================== */
 
-header .editable-wrapper {
+/* تطبيق إطار التعديل فقط عندما يكون زر القلم موجوداً (للمشرف فقط) */
+.editable-wrapper:has(> .edit-pen) {
     position: relative !important;
     padding-top: 0 !important;
+    outline: 1.5px dashed rgba(37, 99, 235, 0.45);
+    outline-offset: 4px;
+    border-radius: 10px;
+    transition: outline-color 0.2s ease, background-color 0.2s ease;
 }
 
-header .editable-wrapper .edit-pen {
+/* إبراز الإطار عند تمرير الماوس على العنصر */
+.editable-wrapper:has(> .edit-pen):hover {
+    outline: 2px solid #2563eb;
+    background-color: rgba(37, 99, 235, 0.03);
+}
+
+/* زر القلم الصغير في الزاوية (على طريقة Elementor) */
+.editable-wrapper .edit-pen {
     width: 26px !important;
     height: 26px !important;
-    border-radius: 50% !important;
+    border-radius: 6px !important;
     position: absolute !important;
-    top: -6px !important;
-    inset-inline-end: -6px !important;
-    z-index: 100 !important;
-    background: #ffc107 !important;
-    color: #000000 !important;
-    border: 1.5px solid #ffffff !important;
+    top: -10px !important;
+    inset-inline-end: -10px !important;
+    z-index: 105 !important;
+
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    font-size: 11px !important;
+
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 11px !important;
     cursor: pointer !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3) !important;
+    transition: transform 0.15s ease, background-color 0.15s ease !important;
 }
 
-header .editable-wrapper .edit-pen:hover {
-    transform: scale(1.08);
-    background: #ffb300 !important;
+.editable-wrapper .edit-pen:hover {
+    transform: scale(1.1);
+    background: #1d4ed8 !important;
 }
 
 /* تنسيق شريط الموافقة على الكوكيز المتوافق مع معايير الخصوصية */

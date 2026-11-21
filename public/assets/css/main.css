@@ -100,14 +100,20 @@ body {
    أقلام التعديل - أسلوب Elementor (للمشرف فقط)
    ========================================== */
 
-/* تطبيق إطار التعديل فقط عندما يكون زر القلم موجوداً (للمشرف فقط) */
+/* زيادة المساحة الداخلية عند وجود قلم التعديل للمشرف فقط */
 .editable-wrapper:has(> .edit-pen) {
     position: relative !important;
-    padding-top: 0 !important;
+    padding-top: 28px !important;
     outline: 1.5px dashed rgba(37, 99, 235, 0.45);
     outline-offset: 4px;
     border-radius: 10px;
-    transition: outline-color 0.2s ease, background-color 0.2s ease;
+    transition: outline-color 0.2s ease, background-color 0.2s ease, padding 0.2s ease;
+}
+
+/* ضبط خاص داخل الهيدر لزيادة خفيفة ومنضبطة مع قلم التعديل */
+header .editable-wrapper:has(> .edit-pen) {
+    padding-top: 8px !important;
+    padding-inline-end: 18px !important;
 }
 
 /* إبراز الإطار عند تمرير الماوس على العنصر */
@@ -122,8 +128,8 @@ body {
     height: 26px !important;
     border-radius: 6px !important;
     position: absolute !important;
-    top: -10px !important;
-    inset-inline-end: -10px !important;
+    top: 4px !important;
+    inset-inline-end: 4px !important;
     z-index: 105 !important;
 
     background: #2563eb !important;

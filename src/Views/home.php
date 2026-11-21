@@ -115,7 +115,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 ?>
 
 <!-- ================= HERO SECTION START ================= -->
-<section class="hero py-5 editable-wrapper" aria-label="Hero Section" style="position: relative;">
+<section class="hero py-5 editable-wrapper" aria-label="Hero Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
       <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="<?php echo htmlspecialchars($lang['edit_hero_section'] ?? 'Edit Hero', ENT_QUOTES, 'UTF-8'); ?>">
@@ -151,7 +151,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= HERO SECTION END ================= -->
 
 <!-- ================= SERVICES SECTION START ================= -->
-<section class="services py-5 editable-wrapper" style="position: relative;">
+<section class="services py-5 editable-wrapper">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
       <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="<?php echo htmlspecialchars($lang['edit_services_section'] ?? 'Edit Services', ENT_QUOTES, 'UTF-8'); ?>">
@@ -213,7 +213,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= SERVICES SECTION END ================= -->
 
 <!-- ================= CHOOSE US SECTION START ================= -->
-<section class="choose py-5 editable-wrapper" style="position: relative;">
+<section class="choose py-5 editable-wrapper">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
       <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="<?php echo htmlspecialchars($lang['manage_choose'] ?? 'Edit Features', ENT_QUOTES, 'UTF-8'); ?>">
@@ -276,7 +276,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= CHOOSE US SECTION END ================= -->
 
 <!-- ================= REVIEWS SECTION START ================= -->
-<section class="reviews py-5 editable-wrapper" style="position: relative;">
+<section class="reviews py-5 editable-wrapper">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
         <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars($lang['manage_customer_videos'] ?? 'Edit Reviews', ENT_QUOTES, 'UTF-8'); ?>">
@@ -360,7 +360,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= REVIEWS SECTION END ================= -->
 
 <!-- ================= GUIDE HOME SECTION START ================= -->
-<section class="guide py-2 editable-wrapper" style="position: relative;">
+<section class="guide py-2 editable-wrapper">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
       <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($lang['manage_guide'] ?? 'Edit Guide', ENT_QUOTES, 'UTF-8'); ?>">
@@ -447,7 +447,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= GUIDE HOME SECTION END ================= -->
 
 <!-- ================= FAQ SECTION START ================= -->
-<section class="popular py-5 editable-wrapper" style="position: relative;">
+<section class="popular py-5 editable-wrapper">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
       <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="<?php echo htmlspecialchars($lang['manage_faq'] ?? 'Edit FAQ', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-pencil-fill"></i></button>

@@ -97,13 +97,17 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - أسلوب Elementor (منضبط بلا تداخل)
+   أقلام التعديل - أسلوب Elementor مع الـ div الداخلي
    ========================================== */
 
-.editable-wrapper:has(> .edit-pen) {
+/* الحاوية الخارجية تبقى مرجعاً لزر القلم فقط دون إزاحة */
+.editable-wrapper {
     position: relative !important;
-    outline: none !important;
-    border: 1.5px dashed rgba(37, 99, 235, 0.35) !important;
+}
+
+/* البورد الداخلي يظهر فقط إذا كان هناك زر قلم داخل الحاوية */
+.editable-wrapper:has(> .edit-pen) > .edit-board-box {
+    border: 1.5px dashed rgba(37, 99, 235, 0.38) !important;
     border-radius: 12px !important;
     padding: 16px 14px 12px !important;
     margin-block: 8px !important;
@@ -111,20 +115,21 @@ body {
     transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.editable-wrapper:has(> .edit-pen):hover {
+/* إبراز البورد الداخلي عند تمرير الماوس */
+.editable-wrapper:has(> .edit-pen):hover > .edit-board-box {
     border-color: #2563eb !important;
     border-style: solid !important;
     background-color: rgba(37, 99, 235, 0.035);
 }
 
-/* ضبط خاص داخل الهيدر ليبقى مدمجاً ومنظماً */
-header .editable-wrapper:has(> .edit-pen) {
+/* ضبط خاص داخل الهيدر ليبقى مدمجاً ومنظماً بلا تمدد */
+header .editable-wrapper:has(> .edit-pen) > .edit-board-box {
     padding: 4px 10px !important;
     margin-block: 0 !important;
     border-radius: 8px !important;
 }
 
-/* زر القلم الصغير في الزاوية */
+/* زر القلم الصغير في الزاوية (على طريقة Elementor) */
 .editable-wrapper .edit-pen {
     width: 24px !important;
     height: 24px !important;

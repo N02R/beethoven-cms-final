@@ -97,39 +97,41 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - أسلوب Elementor (للمشرف فقط)
+   أقلام التعديل - أسلوب Elementor (منضبط بلا تداخل)
    ========================================== */
 
-/* زيادة المساحة الداخلية عند وجود قلم التعديل للمشرف فقط */
 .editable-wrapper:has(> .edit-pen) {
     position: relative !important;
-    padding-top: 28px !important;
-    outline: 1.5px dashed rgba(37, 99, 235, 0.45);
-    outline-offset: 4px;
-    border-radius: 10px;
-    transition: outline-color 0.2s ease, background-color 0.2s ease, padding 0.2s ease;
+    outline: none !important;
+    border: 1.5px dashed rgba(37, 99, 235, 0.35) !important;
+    border-radius: 12px !important;
+    padding: 16px 14px 12px !important;
+    margin-block: 8px !important;
+    background-color: rgba(37, 99, 235, 0.015);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* ضبط خاص داخل الهيدر لزيادة خفيفة ومنضبطة مع قلم التعديل */
-header .editable-wrapper:has(> .edit-pen) {
-    padding-top: 8px !important;
-    padding-inline-end: 18px !important;
-}
-
-/* إبراز الإطار عند تمرير الماوس على العنصر */
 .editable-wrapper:has(> .edit-pen):hover {
-    outline: 2px solid #2563eb;
-    background-color: rgba(37, 99, 235, 0.03);
+    border-color: #2563eb !important;
+    border-style: solid !important;
+    background-color: rgba(37, 99, 235, 0.035);
 }
 
-/* زر القلم الصغير في الزاوية (على طريقة Elementor) */
+/* ضبط خاص داخل الهيدر ليبقى مدمجاً ومنظماً */
+header .editable-wrapper:has(> .edit-pen) {
+    padding: 4px 10px !important;
+    margin-block: 0 !important;
+    border-radius: 8px !important;
+}
+
+/* زر القلم الصغير في الزاوية */
 .editable-wrapper .edit-pen {
-    width: 26px !important;
-    height: 26px !important;
+    width: 24px !important;
+    height: 24px !important;
     border-radius: 6px !important;
     position: absolute !important;
-    top: 4px !important;
-    inset-inline-end: 4px !important;
+    top: -10px !important;
+    inset-inline-end: -8px !important;
     z-index: 105 !important;
 
     background: #2563eb !important;
@@ -141,12 +143,20 @@ header .editable-wrapper:has(> .edit-pen) {
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3) !important;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
     transition: transform 0.15s ease, background-color 0.15s ease !important;
 }
 
+header .editable-wrapper .edit-pen {
+    top: -8px !important;
+    inset-inline-end: -8px !important;
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 10px !important;
+}
+
 .editable-wrapper .edit-pen:hover {
-    transform: scale(1.1);
+    transform: scale(1.08);
     background: #1d4ed8 !important;
 }
 

@@ -18,7 +18,6 @@ if (!in_array($current_lang, $supported_langs, true)) {
 }
 $current_dir = $current_dir ?? (($current_lang === 'ar') ? 'rtl' : 'ltr');
 
-// نصوص احتياطية مترجمة للغات الثلاث في حال خلو الأقسام من البيانات
 $emptyStateTexts = [
     'de' => [
         'no_services' => 'Derzeit sind keine Dienstleistungen verfügbar.',
@@ -47,11 +46,9 @@ $emptyStateTexts = [
 ];
 $emptyTxt = $emptyStateTexts[$current_lang];
 
-// تهيئة متغيرات البيانات والإعدادات بأمان تام لمنع أي تحذير Undefined variable
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
 $getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
     $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
     
@@ -82,7 +79,6 @@ $getLocalizedData = function(string $settingKey, mixed $default = []) use ($curr
     return $parsed;
 };
 
-// 2. دالة تنقية الروابط وربطها بتسلسل اللغة الموحد (منع ثغرات XSS و Open Redirect)
 $buildLocalizedUrl = function(?string $rawUrl) use ($current_lang): string {
     $url = trim((string)($rawUrl ?? '#'));
     if ($url === '' || $url === '#') {
@@ -98,7 +94,6 @@ $buildLocalizedUrl = function(?string $rawUrl) use ($current_lang): string {
     return '/' . $current_lang . '/' . $cleanPath;
 };
 
-// 3. دالة تحويل روابط يوتيوب إلى صيغة YouTube No-Cookie المتوافقة مع معايير الخصوصية الألمانية DSGVO
 $sanitizeVideoEmbedUrl = function(?string $rawUrl): string {
     $url = trim((string)($rawUrl ?? ''));
     if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
@@ -121,13 +116,13 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
 <!-- ================= HERO SECTION START ================= -->
 <section class="hero py-5 editable-wrapper" aria-label="Hero Section" style="position: relative;">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="<?php echo htmlspecialchars($lang['edit_hero_section'] ?? 'Edit Hero', ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
-
   <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="<?php echo htmlspecialchars($lang['edit_hero_section'] ?? 'Edit Hero', ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <?php
       $hero = $getLocalizedData('hero', []);
@@ -157,13 +152,13 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
 <!-- ================= SERVICES SECTION START ================= -->
 <section class="services py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="<?php echo htmlspecialchars($lang['edit_services_section'] ?? 'Edit Services', ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
-
   <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="<?php echo htmlspecialchars($lang['edit_services_section'] ?? 'Edit Services', ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <?php
       $s_data = $getLocalizedData('services', []);
@@ -219,13 +214,13 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
 <!-- ================= CHOOSE US SECTION START ================= -->
 <section class="choose py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="<?php echo htmlspecialchars($lang['manage_choose'] ?? 'Edit Features', ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
-
   <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="<?php echo htmlspecialchars($lang['manage_choose'] ?? 'Edit Features', ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="container-fluid custom-container choose-container">
       <?php
       $c_data    = $getLocalizedData('choose', []);
@@ -282,97 +277,97 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
 <!-- ================= REVIEWS SECTION START ================= -->
 <section class="reviews py-5 editable-wrapper" style="position: relative;">
+  <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
         <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars($lang['manage_customer_videos'] ?? 'Edit Reviews', ENT_QUOTES, 'UTF-8'); ?>">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
 
-    <div class="edit-board-box">
-      <div class="reviews-bg">
-          <div class="custom-container">
-              <?php 
-              $r_data    = $getLocalizedData('reviews_items', []);
-              $sec_title = $r_data['section_title'] ?? ($r_data['title'] ?? '');
-              ?>
-              <?php if (!empty($sec_title)): ?>
-                <h2 class="py-5 text-center sec-title">
-                    <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
-                </h2>
-              <?php endif; ?>
-          </div>
-      </div>
-
-      <div class="custom-container">
-          <div class="reviews-carousel-wrapper">
-              <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-                  
-                  <div class="carousel-inner">
-                      <?php 
-                      $reviews_videos = $r_data['items'] ?? [];
-                      if (!is_array($reviews_videos)) {
-                          $reviews_videos = [];
-                      }
-
-                      $valid_videos = [];
-                      foreach ($reviews_videos as $v) {
-                          if (is_array($v) && !empty($v['url'])) {
-                              $safeEmbed = $sanitizeVideoEmbedUrl($v['url']);
-                              if ($safeEmbed !== '') {
-                                  $valid_videos[] = ['url' => $safeEmbed];
-                              }
-                          }
-                      }
-                      ?>
-
-                      <?php if (!empty($valid_videos)): ?>
-                          <?php foreach ($valid_videos as $index => $item): ?>
-                              <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
-                                  <div class="video-wrapper">
-                                      <div class="video-container">
-                                          <iframe src="<?php echo htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                                  loading="lazy" 
-                                                  referrerpolicy="strict-origin-when-cross-origin" 
-                                                  allowfullscreen 
-                                                  title="Customer Review Video"></iframe>
-                                      </div>
-                                  </div>
-                              </div>
-                          <?php endforeach; ?>
-                      <?php else: ?>
-                          <div class="text-center py-4 text-muted">
-                              <p><?php echo htmlspecialchars($emptyTxt['no_videos'], ENT_QUOTES, 'UTF-8'); ?></p>
-                          </div>
-                      <?php endif; ?>
-                  </div>
-
-                  <?php if (count($valid_videos) > 1): ?>
-                  <div class="dots mt-4">
-                      <?php foreach ($valid_videos as $index => $item): ?>
-                          <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
-                                data-bs-target="#carousel-reviews" 
-                                data-bs-slide-to="<?php echo $index; ?>">
-                          </span>
-                      <?php endforeach; ?>
-                  </div>
-                  <?php endif; ?>
-                  
-              </div>
-          </div>
-      </div>
+    <div class="reviews-bg">
+        <div class="custom-container">
+            <?php 
+            $r_data    = $getLocalizedData('reviews_items', []);
+            $sec_title = $r_data['section_title'] ?? ($r_data['title'] ?? '');
+            ?>
+            <?php if (!empty($sec_title)): ?>
+              <h2 class="py-5 text-center sec-title">
+                  <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
+              </h2>
+            <?php endif; ?>
+        </div>
     </div>
+
+    <div class="custom-container">
+        <div class="reviews-carousel-wrapper">
+            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+                
+                <div class="carousel-inner">
+                    <?php 
+                    $reviews_videos = $r_data['items'] ?? [];
+                    if (!is_array($reviews_videos)) {
+                        $reviews_videos = [];
+                    }
+
+                    $valid_videos = [];
+                    foreach ($reviews_videos as $v) {
+                        if (is_array($v) && !empty($v['url'])) {
+                            $safeEmbed = $sanitizeVideoEmbedUrl($v['url']);
+                            if ($safeEmbed !== '') {
+                                $valid_videos[] = ['url' => $safeEmbed];
+                            }
+                        }
+                    }
+                    ?>
+
+                    <?php if (!empty($valid_videos)): ?>
+                        <?php foreach ($valid_videos as $index => $item): ?>
+                            <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
+                                <div class="video-wrapper">
+                                    <div class="video-container">
+                                        <iframe src="<?php echo htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                                loading="lazy" 
+                                                referrerpolicy="strict-origin-when-cross-origin" 
+                                                allowfullscreen 
+                                                title="Customer Review Video"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-center py-4 text-muted">
+                            <p><?php echo htmlspecialchars($emptyTxt['no_videos'], ENT_QUOTES, 'UTF-8'); ?></p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (count($valid_videos) > 1): ?>
+                <div class="dots mt-4">
+                    <?php foreach ($valid_videos as $index => $item): ?>
+                        <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
+                              data-bs-target="#carousel-reviews" 
+                              data-bs-slide-to="<?php echo $index; ?>">
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+                
+            </div>
+        </div>
+    </div>
+  </div>
 </section>
 <!-- ================= REVIEWS SECTION END ================= -->
 
 <!-- ================= GUIDE HOME SECTION START ================= -->
 <section class="guide py-2 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($lang['manage_guide'] ?? 'Edit Guide', ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
-
   <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($lang['manage_guide'] ?? 'Edit Guide', ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
+
     <div class="custom-container">
       <?php 
           $lang_guide_data = $getLocalizedData('guide', []);
@@ -453,11 +448,11 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
 <!-- ================= FAQ SECTION START ================= -->
 <section class="popular py-5 editable-wrapper" style="position: relative;">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="<?php echo htmlspecialchars($lang['manage_faq'] ?? 'Edit FAQ', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-pencil-fill"></i></button>
-  <?php endif; ?>
-
   <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="<?php echo htmlspecialchars($lang['manage_faq'] ?? 'Edit FAQ', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-pencil-fill"></i></button>
+    <?php endif; ?>
+
     <div class="container-fluid custom-container" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
       <?php 
           $faq_data  = $getLocalizedData('faq', []);

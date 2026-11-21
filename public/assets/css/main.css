@@ -97,150 +97,150 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - زر Popup أزرق بارز فوق حدود البورد الداخلي
+   أقلام التعديل - طابع أوروبي احترافي وهادئ (24-27 إنش حتى الموبايل)
    ========================================== */
 
 .editable-wrapper {
     position: relative !important;
 }
 
-/* البورد الداخلي يظهر ويأخذ مساحة مريحة للمشرف فقط إذا كان القلم بداخله */
+/* البورد الداخلي: هادئ ورصين، يظهر للمشرف فقط عند وجود .edit-pen */
 .edit-board-box:has(> .edit-pen) {
     position: relative !important;
-    border: 1.5px dashed rgba(37, 99, 235, 0.55) !important;
-    border-radius: 12px !important;
-    padding: 24px 16px 16px !important;
-    margin-block: 12px !important;
-    background-color: rgba(37, 99, 235, 0.015);
-    transition: border-color 0.2s ease, background-color 0.2s ease, padding 0.2s ease;
+    border: 1px dashed rgba(29, 78, 216, 0.35) !important;
+    border-radius: 10px !important;
+    padding: 22px 16px 14px !important;
+    margin-block: 10px !important;
+    background-color: transparent;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .edit-board-box:has(> .edit-pen):hover {
-    border-color: #2563eb !important;
+    border-color: #1d4ed8 !important;
     border-style: solid !important;
-    background-color: rgba(37, 99, 235, 0.035);
+    background-color: rgba(29, 78, 216, 0.025);
 }
 
-/* زر القلم بارز كـ Popup بلونه الأزرق فوق حد البورد */
+/* زر القلم: تصميم أوروبي أنيق، واضح، ومندمج مع الحافة العلوية */
 .edit-board-box .edit-pen {
-    width: 30px !important;
-    height: 30px !important;
-    border-radius: 8px !important;
+    width: 26px !important;
+    height: 22px !important;
     position: absolute !important;
-    top: -13px !important;
-    inset-inline-end: 10px !important;
+    top: -11px !important;
+    inset-inline-end: 12px !important;
     z-index: 110 !important;
 
-    background: #2563eb !important;
+    background: #1d4ed8 !important;
     color: #ffffff !important;
-    border: 2px solid #ffffff !important;
-    font-size: 12.5px !important;
+    border: 1.5px solid #ffffff !important;
+    border-radius: 6px !important;
+    font-size: 11px !important;
 
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35), 0 2px 6px rgba(15, 23, 42, 0.16) !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14) !important;
     transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 .edit-board-box .edit-pen:hover,
 .edit-board-box:has(> .edit-pen):hover .edit-pen {
-    background: #1d4ed8 !important;
-    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.45), 0 3px 8px rgba(15, 23, 42, 0.22) !important;
+    background: #1e40af !important;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28) !important;
 }
 
 .edit-board-box .edit-pen:hover {
-    transform: translateY(-1px) scale(1.06) !important;
+    transform: translateY(-1px) scale(1.05) !important;
 }
 
-/* ضبط خاص داخل الهيدر */
+/* ضبط خاص داخل الهيدر للحفاظ على الرشاقة الأوروبية دون تمدد زائد */
 header .edit-board-box:has(> .edit-pen) {
-    padding: 16px 10px 6px !important;
+    padding: 12px 10px 6px !important;
     margin-block: 0 !important;
     border-radius: 8px !important;
 }
 
 header .edit-board-box .edit-pen {
-    width: 26px !important;
-    height: 26px !important;
-    border-radius: 7px !important;
-    top: -10px !important;
-    inset-inline-end: 6px !important;
-    font-size: 11px !important;
+    width: 22px !important;
+    height: 19px !important;
+    border-radius: 5px !important;
+    top: -9px !important;
+    inset-inline-end: 8px !important;
+    font-size: 10px !important;
 }
 
 /* شاشات 24 إلى 27 إنش فأعلى (1600px+) */
 @media (min-width: 1600px) {
     .edit-board-box:has(> .edit-pen) {
-        padding: 28px 20px 20px !important;
-        border-radius: 14px !important;
+        padding: 26px 20px 18px !important;
+        border-radius: 12px !important;
     }
 
     .edit-board-box .edit-pen {
-        width: 34px !important;
-        height: 34px !important;
-        border-radius: 9px !important;
-        top: -15px !important;
-        inset-inline-end: 12px !important;
-        font-size: 14px !important;
+        width: 30px !important;
+        height: 25px !important;
+        border-radius: 7px !important;
+        top: -12px !important;
+        inset-inline-end: 14px !important;
+        font-size: 12px !important;
     }
 
     header .edit-board-box:has(> .edit-pen) {
-        padding: 18px 12px 8px !important;
+        padding: 14px 12px 7px !important;
     }
 
     header .edit-board-box .edit-pen {
-        width: 28px !important;
-        height: 28px !important;
-        top: -11px !important;
-        font-size: 12px !important;
+        width: 24px !important;
+        height: 21px !important;
+        top: -10px !important;
+        font-size: 10.5px !important;
     }
 }
 
 /* شاشات التابلت والمدى المتوسط (576px إلى 991px) */
 @media (max-width: 991.98px) {
     .edit-board-box:has(> .edit-pen) {
-        padding: 22px 12px 12px !important;
-        margin-block: 10px !important;
+        padding: 20px 12px 12px !important;
+        margin-block: 8px !important;
     }
 
     .edit-board-box .edit-pen {
-        width: 28px !important;
-        height: 28px !important;
-        top: -12px !important;
+        width: 25px !important;
+        height: 21px !important;
+        top: -10px !important;
         inset-inline-end: 8px !important;
-        font-size: 12px !important;
+        font-size: 10.5px !important;
     }
 }
 
 /* شاشات الموبايل (أقل من 576px) */
 @media (max-width: 575.98px) {
     .edit-board-box:has(> .edit-pen) {
-        padding: 22px 10px 10px !important;
+        padding: 20px 10px 10px !important;
         margin-block: 8px !important;
-        border-radius: 10px !important;
+        border-radius: 8px !important;
     }
 
     .edit-board-box .edit-pen {
-        width: 28px !important;
-        height: 28px !important;
-        border-radius: 7px !important;
-        top: -12px !important;
+        width: 26px !important;
+        height: 22px !important;
+        border-radius: 6px !important;
+        top: -11px !important;
         inset-inline-end: 8px !important;
-        font-size: 11.5px !important;
+        font-size: 11px !important;
     }
 
     header .edit-board-box:has(> .edit-pen) {
-        padding: 16px 8px 6px !important;
+        padding: 12px 8px 5px !important;
     }
 
     header .edit-board-box .edit-pen {
-        width: 25px !important;
-        height: 25px !important;
+        width: 22px !important;
+        height: 19px !important;
         top: -9px !important;
         inset-inline-end: 6px !important;
-        font-size: 10.5px !important;
+        font-size: 10px !important;
     }
 }
 

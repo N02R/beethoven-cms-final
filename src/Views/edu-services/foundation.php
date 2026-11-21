@@ -106,46 +106,50 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 ?>
 
 <!-- ================= BREADCRUMB SECTION START ================= -->
-<div class="custom-container pt-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<div class="custom-container pt-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkBreadcrumbModal" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $bc_url  = $stk_data['page_breadcrumb_url'] ?? '#';
-  $bc_text = $stk_data['page_breadcrumb'] ?? $txt['default_bc'];
-  ?>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb justify-content-start">
-      <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item" aria-current="page">
-        <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
-          <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
-        </a>
-      </li>
-    </ol>
-  </nav>
+    <?php
+    $bc_url  = $stk_data['page_breadcrumb_url'] ?? '#';
+    $bc_text = $stk_data['page_breadcrumb'] ?? $txt['default_bc'];
+    ?>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
 </div>
 <!-- Breadcrumb end -->
 
 <!-- ================= CUSTOM HERO SECTION START ================= -->
-<section class="custom-services py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<section class="custom-services py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkHeroModal" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $hero_img = get_image_url($stk_data['hero_img'] ?? null, 'assets/img/education/serviceimg11.png');
-  $hero_pos = htmlspecialchars((string)($stk_data['hero_position'] ?? 'center -20rem'), ENT_QUOTES, 'UTF-8');
-  ?>
-  <div class="custom-container">
-    <div class="foundation-hero custom-hero" 
-         style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+    <?php
+    $hero_img = get_image_url($stk_data['hero_img'] ?? null, 'assets/img/education/serviceimg11.png');
+    $hero_pos = htmlspecialchars((string)($stk_data['hero_position'] ?? 'center -20rem'), ENT_QUOTES, 'UTF-8');
+    ?>
+    <div class="custom-container">
+      <div class="foundation-hero custom-hero" 
+           style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+      </div>
     </div>
   </div>
 </section>
@@ -156,85 +160,38 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
   <div class="custom-container">
     
     <!-- 1. العنوان الرئيسي -->
-    <div class="head-info pb-4 mb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h2 class="main-text"><?php echo htmlspecialchars((string)($stk_data['main_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h2>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['main_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-    </div>
-
-    <!-- 2. أهداف الدورة التأسيسية -->
-    <div class="advice-check py-5 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkGoalsModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_goals'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['goals_title'] ?? $txt['goals_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <div class="row">
-        <?php 
-        $goals_items = $stk_data['goals_items'] ?? [];
-        if (is_array($goals_items) && !empty($goals_items)):
-            foreach ($goals_items as $goal): 
-                if (empty($goal)) continue;
-        ?>
-          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
-            <p class="mb-0">✅ <?php echo htmlspecialchars((string)$goal, ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
-        <?php 
-            endforeach;
-        else:
-        ?>
-          <div class="col-12 text-muted">
-            <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
+    <div class="head-info pb-4 mb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkMainModal" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
         <?php endif; ?>
+
+        <h2 class="main-text"><?php echo htmlspecialchars((string)($stk_data['main_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['main_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
       </div>
     </div>
 
-    <!-- 3. ماذا يدرس و يتعلم الطالب -->
-    <div class="head-info py-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkLearningModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_learn'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <!-- 2. أهداف الدورة التأسيسية -->
+    <div class="advice-check py-5 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkGoalsModal" title="<?php echo htmlspecialchars($txt['edit_goals'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <h5 class="advice-text mb-3"><?php echo htmlspecialchars((string)($stk_data['learning_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars((string)($stk_data['learning_intro'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['learning_p1'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['learning_p2'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-    </div>
-
-    <!-- 4. أنواع دورات السنة التحضيرية -->
-    <div class="advice-stars my-5 pb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkCoursesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_courses'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="mb-4 advice-text"><?php echo htmlspecialchars((string)($stk_data['courses_title'] ?? $txt['courses_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <ul class="star-list list-unstyled">
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['goals_title'] ?? $txt['goals_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
         <div class="row">
           <?php 
-          $courses_items = $stk_data['courses_items'] ?? [];
-          if (is_array($courses_items) && !empty($courses_items)):
-              foreach ($courses_items as $course): 
-                  if (empty($course)) continue;
+          $goals_items = $stk_data['goals_items'] ?? [];
+          if (is_array($goals_items) && !empty($goals_items)):
+              foreach ($goals_items as $goal): 
+                  if (empty($goal)) continue;
           ?>
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-              <li>
-                <p class="mb-0 d-flex align-items-start">
-                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 flex-shrink-0" width="25"/>
-                  <span><?php echo htmlspecialchars((string)$course, ENT_QUOTES, 'UTF-8'); ?></span>
-                </p>
-              </li>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+              <p class="mb-0">✅ <?php echo htmlspecialchars((string)$goal, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
           <?php 
               endforeach;
@@ -245,113 +202,178 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
             </div>
           <?php endif; ?>
         </div>
-      </ul>
+      </div>
+    </div>
+
+    <!-- 3. ماذا يدرس و يتعلم الطالب -->
+    <div class="head-info py-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkLearningModal" title="<?php echo htmlspecialchars($txt['edit_learn'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-3"><?php echo htmlspecialchars((string)($stk_data['learning_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars((string)($stk_data['learning_intro'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['learning_p1'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['learning_p2'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+      </div>
+    </div>
+
+    <!-- 4. أنواع دورات السنة التحضيرية -->
+    <div class="advice-stars my-5 pb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkCoursesModal" title="<?php echo htmlspecialchars($txt['edit_courses'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-4 advice-text"><?php echo htmlspecialchars((string)($stk_data['courses_title'] ?? $txt['courses_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <ul class="star-list list-unstyled">
+          <div class="row">
+            <?php 
+            $courses_items = $stk_data['courses_items'] ?? [];
+            if (is_array($courses_items) && !empty($courses_items)):
+                foreach ($courses_items as $course): 
+                    if (empty($course)) continue;
+            ?>
+              <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                <li>
+                  <p class="mb-0 d-flex align-items-start">
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 flex-shrink-0" width="25"/>
+                    <span><?php echo htmlspecialchars((string)$course, ENT_QUOTES, 'UTF-8'); ?></span>
+                  </p>
+                </li>
+              </div>
+            <?php 
+                endforeach;
+            else:
+            ?>
+              <div class="col-12 text-muted">
+                <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
+            <?php endif; ?>
+          </div>
+        </ul>
+      </div>
     </div>
 
     <!-- 5. ارتباطها بالجامعات -->
-    <div class="head-info py-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkUniTypeModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_uni'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="head-info py-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkUniTypeModal" title="<?php echo htmlspecialchars($txt['edit_uni'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <h5 class="advice-text mb-3"><?php echo htmlspecialchars((string)($stk_data['uni_type_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars((string)($stk_data['uni_type_intro'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['uni_public'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['uni_applied'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+        <h5 class="advice-text mb-3"><?php echo htmlspecialchars((string)($stk_data['uni_type_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo htmlspecialchars((string)($stk_data['uni_type_intro'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['uni_public'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['uni_applied'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+      </div>
     </div>
 
     <!-- 6. أنواع السنة التحضيرية (حكومية / خاصة) -->
-    <div class="head-info py-5 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTypesModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_types'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="head-info py-5 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTypesModal" title="<?php echo htmlspecialchars($txt['edit_types'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['types_title'] ?? $txt['types_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <p class="par-text mb-4"><?php echo nl2br(htmlspecialchars((string)($stk_data['type_public_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['type_private_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['types_title'] ?? $txt['types_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <p class="par-text mb-4"><?php echo nl2br(htmlspecialchars((string)($stk_data['type_public_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($stk_data['type_private_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+      </div>
     </div>
 
     <!-- 7. ملاحظات هامة -->
-    <div class="advice-stars py-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="advice-stars py-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkNotesModal" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <h5 class="note-text mb-4"><?php echo htmlspecialchars((string)($stk_data['notes_title'] ?? $txt['notes_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <ul class="star-list list-unstyled">
-        <div class="d-flex flex-column gap-2">
+        <h5 class="note-text mb-4"><?php echo htmlspecialchars((string)($stk_data['notes_title'] ?? $txt['notes_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <ul class="star-list list-unstyled">
+          <div class="d-flex flex-column gap-2">
+            <?php 
+            $notes_items = $stk_data['notes_items'] ?? [];
+            if (is_array($notes_items) && !empty($notes_items)):
+                foreach ($notes_items as $note): 
+                    if (empty($note)) continue;
+            ?>
+              <li>
+                <p class="mb-0 d-flex align-items-start">
+                  <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 flex-shrink-0" width="25"/>
+                  <span><?php echo htmlspecialchars((string)$note, ENT_QUOTES, 'UTF-8'); ?></span>
+                </p>
+              </li>
+            <?php 
+                endforeach;
+            else:
+            ?>
+              <li class="text-muted">
+                <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
+              </li>
+            <?php endif; ?>
+          </div>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 8. اختبار القبول والـ FSP -->
+    <div class="head-info py-5 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkExamFspModal" title="<?php echo htmlspecialchars($txt['edit_exam'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="mb-3 advice-text"><?php echo htmlspecialchars((string)($stk_data['exam_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <p class="par-text mb-4" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars((string)($stk_data['exam_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+
+        <h5 class="mb-3 advice-text mt-5"><?php echo htmlspecialchars((string)($stk_data['fsp_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <p class="par-text" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars((string)($stk_data['fsp_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+      </div>
+    </div>
+
+    <!-- 9. نصائح مهمة قبل التقديم -->
+    <div class="advice-check py-5 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTipsModal" title="<?php echo htmlspecialchars($txt['edit_tips'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+
+        <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['tips_title'] ?? $txt['tips_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <div class="row">
           <?php 
-          $notes_items = $stk_data['notes_items'] ?? [];
-          if (is_array($notes_items) && !empty($notes_items)):
-              foreach ($notes_items as $note): 
-                  if (empty($note)) continue;
+          $tips_items = $stk_data['tips_items'] ?? [];
+          if (is_array($tips_items) && !empty($tips_items)):
+              foreach ($tips_items as $tip): 
+                  if (empty($tip)) continue;
           ?>
-            <li>
-              <p class="mb-0 d-flex align-items-start">
-                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 flex-shrink-0" width="25"/>
-                <span><?php echo htmlspecialchars((string)$note, ENT_QUOTES, 'UTF-8'); ?></span>
-              </p>
-            </li>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+              <p class="mb-0">✅ <?php echo htmlspecialchars((string)$tip, ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
           <?php 
               endforeach;
           else:
           ?>
-            <li class="text-muted">
+            <div class="col-12 text-muted">
               <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
-            </li>
+            </div>
           <?php endif; ?>
         </div>
-      </ul>
-    </div>
-
-    <!-- 8. اختبار القبول والـ FSP -->
-    <div class="head-info py-5 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkExamFspModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_exam'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="mb-3 advice-text"><?php echo htmlspecialchars((string)($stk_data['exam_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <p class="par-text mb-4" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars((string)($stk_data['exam_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-
-      <h5 class="mb-3 advice-text mt-5"><?php echo htmlspecialchars((string)($stk_data['fsp_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <p class="par-text" style="font-weight: 500;"><?php echo nl2br(htmlspecialchars((string)($stk_data['fsp_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
-    </div>
-
-    <!-- 9. نصائح مهمة قبل التقديم -->
-    <div class="advice-check py-5 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#stkTipsModal" style="position: absolute; top: 10px; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_tips'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-
-      <h5 class="advice-text mb-4"><?php echo htmlspecialchars((string)($stk_data['tips_title'] ?? $txt['tips_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <div class="row">
-        <?php 
-        $tips_items = $stk_data['tips_items'] ?? [];
-        if (is_array($tips_items) && !empty($tips_items)):
-            foreach ($tips_items as $tip): 
-                if (empty($tip)) continue;
-        ?>
-          <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
-            <p class="mb-0">✅ <?php echo htmlspecialchars((string)$tip, ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
-        <?php 
-            endforeach;
-        else:
-        ?>
-          <div class="col-12 text-muted">
-            <p class="mb-0"><?php echo htmlspecialchars($txt['no_items'], ENT_QUOTES, 'UTF-8'); ?></p>
-          </div>
-        <?php endif; ?>
       </div>
     </div>
 

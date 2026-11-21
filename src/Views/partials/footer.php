@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Beethoven CMS - Footer Partial (Production-Ready, Secure & Fully Multilingual)
+ * Beethoven CMS - Footer Partial (Gold Standard MVC, Secure & Fully Multilingual)
  * يتضمن نموذج الاستشارة، موافقة الخصوصية (DSGVO)، روابط الفوتر، شريط الكوكيز المتوافق مع تسلسل اللغة، ومودالات الإدارة.
  */
 
@@ -11,10 +11,8 @@ if (!defined('ALLOWED_ACCESS')) {
     exit('Access Denied');
 }
 
-// 1. تأكيد تهيئة المسار إذا لم يكن معرفاً
 $path_prefix = $path_prefix ?? '/';
 
-// 2. استخدام دالة جلب النصوص متعددة اللغات العامة إن وجدت، أو تعريف النسخة الآمنة الموحدة
 if (!function_exists('get_multilang_text')) {
     function get_multilang_text(mixed $raw_data, string $current_lang, string $default = ''): string {
         $res = $default;
@@ -42,7 +40,6 @@ if (!function_exists('get_multilang_text')) {
     }
 }
 
-// 3. تحديد اللغة الحالية والاتجاه وضمان صحة الرمز
 $supported_langs = ['de', 'en', 'ar'];
 $current_lang = $current_lang ?? (function_exists('get_current_lang') ? get_current_lang() : ($_SESSION['site_lang'] ?? 'de'));
 if (!in_array($current_lang, $supported_langs, true)) {
@@ -51,19 +48,17 @@ if (!in_array($current_lang, $supported_langs, true)) {
 $current_lang_code = $current_lang;
 $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
-// التأكد من تحميل ملف اللغة النشط إذا لم يكن معرفاً مسبقاً
 if (!isset($lang) || !is_array($lang)) {
     $lang_file = __DIR__ . '/../../Lang/' . $current_lang . '.php';
-    if (!file_exists($lang_file)) {
+    if (!is_file($lang_file)) {
         $lang_file = __DIR__ . '/../../lang/' . $current_lang . '.php';
     }
-    $lang = file_exists($lang_file) ? require $lang_file : [];
+    $lang = is_file($lang_file) ? require $lang_file : [];
     if (!is_array($lang)) {
         $lang = [];
     }
 }
 
-// 4. مصفوفة ترجمة افتراضية كاملة للغات الثلاث
 $fallback_translations = [
     'de' => [
         'consult_title'          => 'Kostenlose Beratung anfordern',
@@ -84,7 +79,7 @@ $fallback_translations = [
         'cookie_accept'          => 'Alle akzeptieren',
         'cookie_reject'          => 'Nur essenzielle',
         'col2_default'           => 'Schnelle Links',
-        'col3_default'           => 'Kontaktieren Sie uns'
+        'col3_default'           => 'Kontaktieren Sie uns',
     ],
     'en' => [
         'consult_title'          => 'Get a Free Consultation',
@@ -105,7 +100,7 @@ $fallback_translations = [
         'cookie_accept'          => 'Accept All',
         'cookie_reject'          => 'Reject Non-Essential',
         'col2_default'           => 'Quick Links',
-        'col3_default'           => 'Contact Us'
+        'col3_default'           => 'Contact Us',
     ],
     'ar' => [
         'consult_title'          => 'احصل على استشارة مجانية',
@@ -126,48 +121,55 @@ $fallback_translations = [
         'cookie_accept'          => 'قبول الكل',
         'cookie_reject'          => 'رفض غير الضروري',
         'col2_default'           => 'روابط سريعة',
-        'col3_default'           => 'تواصل معنا'
-    ]
+        'col3_default'           => 'تواصل معنا',
+    ],
 ];
 
 $fb = $fallback_translations[$current_lang];
 
-// 5. استخراج بيانات الفوتر الموحدة من $data
 $footerRaw = $data['footer'] ?? [];
 if (is_string($footerRaw)) {
     $footerRaw = json_decode($footerRaw, true) ?? [];
 }
 
-$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['en'] ?? ($footerRaw['ar'] ?? [])));
+$currentLangData = is_array($footerRaw)
+    ? ($footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['en'] ?? ($footerRaw['ar'] ?? []))))
+    : [];
+if (!is_array($currentLangData)) {
+    $currentLangData = [];
+}
 
-$consultTitle = $currentLangData['consult_title'] ?? ($lang['consult_title'] ?? $fb['consult_title']);
-$consultDesc  = $currentLangData['consult_desc'] ?? '';
-$footerDesc   = $currentLangData['footer_desc'] ?? '';
-$col2Title    = $currentLangData['col2_title'] ?? $fb['col2_default'];
-$col3Title    = $currentLangData['col3_title'] ?? $fb['col3_default'];
-$col3Items    = $currentLangData['col3_items'] ?? [];
+$consultTitle = (string)($currentLangData['consult_title'] ?? ($lang['consult_title'] ?? $fb['consult_title']));
+$consultDesc  = (string)($currentLangData['consult_desc'] ?? '');
+$footerDesc   = (string)($currentLangData['footer_desc'] ?? '');
+$col2Title    = (string)($currentLangData['col2_title'] ?? $fb['col2_default']);
+$col3Title    = (string)($currentLangData['col3_title'] ?? $fb['col3_default']);
+$col3Items    = is_array($currentLangData['col3_items'] ?? null) ? $currentLangData['col3_items'] : [];
+
+// إعادة استخدام بيانات اللوجو المحددة في الهيدر أو استخراجها بأمان
+$footerLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
+$footerLogoTxt  = (string)($activeLogoText ?? (($current_lang === 'ar') ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)'));
 
 $t = [
-    'consult_title'          => $lang['consult_title'] ?? $consultTitle,
-    'email_placeholder'      => $lang['email_placeholder'] ?? $fb['email_placeholder'],
-    'privacy_modal_title'    => $lang['privacy_modal_title'] ?? $fb['privacy_modal_title'],
-    'privacy_modal_desc'     => $lang['privacy_modal_desc'] ?? $fb['privacy_modal_desc'],
-    'privacy_link_text'      => $lang['privacy_link_text'] ?? $fb['privacy_link_text'],
-    'impressum_link_text'    => $lang['impressum_link_text'] ?? $fb['impressum_link_text'],
-    'privacy_checkbox'       => $lang['privacy_checkbox'] ?? $fb['privacy_checkbox'],
-    'cancel'                 => $lang['cancel'] ?? $fb['cancel'],
-    'agree_and_send'         => $lang['agree_and_send'] ?? $fb['agree_and_send'],
-    'alert_checkbox'         => $lang['alert_checkbox'] ?? $fb['alert_checkbox'],
-    'alert_success'          => $lang['alert_success'] ?? $fb['alert_success'],
-    'alert_error'            => $lang['alert_error'] ?? $fb['alert_error'],
-    'alert_connection_error' => $lang['alert_connection_error'] ?? $fb['alert_connection_error'],
-    'rights_reserved'        => $lang['rights_reserved'] ?? $fb['rights_reserved'],
-    'cookie_text'            => $lang['cookie_text'] ?? $fb['cookie_text'],
-    'cookie_accept'          => $lang['cookie_accept'] ?? $fb['cookie_accept'],
-    'cookie_reject'          => $lang['cookie_reject'] ?? $fb['cookie_reject'],
+    'consult_title'          => (string)($lang['consult_title'] ?? $consultTitle),
+    'email_placeholder'      => (string)($lang['email_placeholder'] ?? $fb['email_placeholder']),
+    'privacy_modal_title'    => (string)($lang['privacy_modal_title'] ?? $fb['privacy_modal_title']),
+    'privacy_modal_desc'     => (string)($lang['privacy_modal_desc'] ?? $fb['privacy_modal_desc']),
+    'privacy_link_text'      => (string)($lang['privacy_link_text'] ?? $fb['privacy_link_text']),
+    'impressum_link_text'    => (string)($lang['impressum_link_text'] ?? $fb['impressum_link_text']),
+    'privacy_checkbox'       => (string)($lang['privacy_checkbox'] ?? $fb['privacy_checkbox']),
+    'cancel'                 => (string)($lang['cancel'] ?? $fb['cancel']),
+    'agree_and_send'         => (string)($lang['agree_and_send'] ?? $fb['agree_and_send']),
+    'alert_checkbox'         => (string)($lang['alert_checkbox'] ?? $fb['alert_checkbox']),
+    'alert_success'          => (string)($lang['alert_success'] ?? $fb['alert_success']),
+    'alert_error'            => (string)($lang['alert_error'] ?? $fb['alert_error']),
+    'alert_connection_error' => (string)($lang['alert_connection_error'] ?? $fb['alert_connection_error']),
+    'rights_reserved'        => (string)($lang['rights_reserved'] ?? $fb['rights_reserved']),
+    'cookie_text'            => (string)($lang['cookie_text'] ?? $fb['cookie_text']),
+    'cookie_accept'          => (string)($lang['cookie_accept'] ?? $fb['cookie_accept']),
+    'cookie_reject'          => (string)($lang['cookie_reject'] ?? $fb['cookie_reject']),
 ];
 
-// روابط الصفحات القانونية بتسلسل اللغة الموحد
 $privacyUrl     = '/' . $current_lang_code . '/datenschutz';
 $impressumUrl   = '/' . $current_lang_code . '/impressum';
 $consultPostUrl = '/' . $current_lang_code . '/send-consult';
@@ -177,20 +179,19 @@ $modal_align_class = ($current_lang === 'ar') ? 'float-end ms-2' : 'float-start 
 $is_admin          = !empty($is_admin) && $is_admin === true;
 ?>
 
-<!-- تنسيق خاص لعكس اتجاه الأسهم تلقائياً في حالة اللغة العربية (RTL) -->
+<?php if ($current_lang === 'ar'): ?>
 <style>
-    <?php if ($current_lang === 'ar'): ?>
     .consult-banner-form button img,
     .contact-link a img {
         transform: scaleX(-1);
     }
-    <?php endif; ?>
 </style>
+<?php endif; ?>
 
 <!-- footer start -->
 <section class="consult-banner-section editable-wrapper" style="position: relative;">
     <?php if ($is_admin): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars($lang['manage_footer'] ?? 'Edit Footer', ENT_QUOTES, 'UTF-8'); ?>">
+        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#footerEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_footer'] ?? 'Edit Footer'), ENT_QUOTES, 'UTF-8'); ?>">
             <i class="bi bi-pencil-fill"></i>
         </button>
     <?php endif; ?>
@@ -199,8 +200,8 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
         <div class="consult-banner">
             <div class="consult-banner-inner">
                 <div class="consult-banner-text">
-                    <h4><?php echo htmlspecialchars((string)$consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
-                    <p><?php echo htmlspecialchars((string)$consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                    <h4><?php echo htmlspecialchars($consultTitle, ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <p><?php echo htmlspecialchars($consultDesc, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 
                 <form id="consultForm" class="consult-banner-form" action="<?php echo htmlspecialchars($consultPostUrl, ENT_QUOTES, 'UTF-8'); ?>" method="POST">
@@ -257,18 +258,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (openBtn && consentModal) {
         openBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            if (!emailInput.value || !emailInput.checkValidity()) {
-                emailInput.reportValidity();
+            if (!emailInput || !emailInput.value || !emailInput.checkValidity()) {
+                emailInput?.reportValidity();
                 return;
             }
-            modalCheckbox.checked = false;
+            if (modalCheckbox) modalCheckbox.checked = false;
             consentModal.show();
         });
     }
 
     if (confirmBtn) {
         confirmBtn.addEventListener('click', function() {
-            if (!modalCheckbox.checked) {
+            if (!modalCheckbox || !modalCheckbox.checked) {
                 alert(<?php echo json_encode($t['alert_checkbox'], JSON_UNESCAPED_UNICODE); ?>);
                 return;
             }
@@ -277,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const formData = new FormData();
-            formData.append('email', emailInput.value);
+            formData.append('email', emailInput ? emailInput.value : '');
             formData.append('privacy_consent', 'on');
             formData.append('lang', <?php echo json_encode($current_lang_code, JSON_UNESCAPED_UNICODE); ?>);
 
@@ -288,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch(<?php echo json_encode($consultPostUrl, JSON_UNESCAPED_UNICODE); ?>, {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-Token': csrfToken,
@@ -295,13 +297,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.success) {
+                if (data && data.success) {
                     alert(<?php echo json_encode($t['alert_success'], JSON_UNESCAPED_UNICODE); ?>);
-                    consultForm.reset();
+                    consultForm?.reset();
                 } else {
-                    alert(<?php echo json_encode($t['alert_error'], JSON_UNESCAPED_UNICODE); ?> + (data.message || ''));
+                    alert(<?php echo json_encode($t['alert_error'], JSON_UNESCAPED_UNICODE); ?> + ((data && data.message) ? data.message : ''));
                 }
             })
             .catch(err => {
@@ -316,63 +323,47 @@ document.addEventListener('DOMContentLoaded', function() {
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">
         <div class="row gy-5">
-            <!-- العمود الأول: الأيقونة الثابتة + النص الديناميكي المحدث للفوتر -->
+            <!-- العمود الأول: الأيقونة + النص الديناميكي المحدث للفوتر -->
             <div class="col-12 col-lg-5">
                 <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-                    <img src="/assets/img/icon.png" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-                    
-                    <?php 
-                    // جلب نص الشعار مباشرة ولحظياً لضمان ظهوره فوراً في الفوتر
-                    $footerLogoTxt = '';
-                    try {
-                        $pdoF = \App\Config\Database::getConnection();
-                        $stmtF = $pdoF->prepare("SELECT setting_value FROM global_settings WHERE setting_key = 'site_logo_text'");
-                        $stmtF->execute();
-                        $rawFVal = $stmtF->fetchColumn();
-                        if ($rawFVal) {
-                            $decF = json_decode($rawFVal, true);
-                            if (is_array($decF)) {
-                                $footerLogoTxt = $decF[$current_lang_code] ?? ($decF['de'] ?? ($decF['ar'] ?? ''));
-                            } else {
-                                $footerLogoTxt = $rawFVal;
-                            }
-                        }
-                    } catch (\Exception $e) {}
-
-                    if (empty($footerLogoTxt)) {
-                        $footerLogoTxt = ($current_lang_code === 'ar') ? "بيتهوفن سيتي للخدمات (BCS)" : "Beethoven City Services (BCS)";
-                    }
-                    ?>
-
+                    <img src="<?php echo htmlspecialchars(get_image_url($footerLogoIcon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
                     <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 1rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
                         <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </a>
-                <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="footer-desc"><?php echo htmlspecialchars($footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
             <!-- العمود الثاني (روابط سريعة من المنيو) -->
             <div class="col-12 col-md-6 col-lg-3">
-                <h5><?php echo htmlspecialchars((string)$col2Title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars($col2Title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="quick-link">
                     <?php 
-                    $menu_links = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
-                    if (is_string($menu_links)) {
-                        $menu_links = json_decode($menu_links, true) ?? [];
+                    $footer_menu = $menu_links ?? ($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : []));
+                    if (is_string($footer_menu)) {
+                        $footer_menu = json_decode($footer_menu, true) ?? [];
                     }
                     
-                    if (is_array($menu_links)) {
-                        foreach ($menu_links as $link) {
+                    if (is_array($footer_menu)) {
+                        foreach ($footer_menu as $link) {
                             if (!is_array($link)) continue;
-                            $raw_link_url = ltrim(is_array($link['url'] ?? null) ? (string)reset($link['url']) : (string)($link['url'] ?? ''), '/');
-                            $link_url     = preg_replace('/^(ar|en|de)\//i', '', $raw_link_url);
+                            $raw_link_url = trim(is_array($link['url'] ?? null) ? (string)reset($link['url']) : (string)($link['url'] ?? ''));
+                            if (preg_match('#^(https?://|mailto:|tel:)#i', $raw_link_url)) {
+                                $fHref = preg_match('/^(javascript|data|vbscript):/i', $raw_link_url) ? '#' : $raw_link_url;
+                            } else {
+                                $cleanSlug = ltrim($raw_link_url, '/');
+                                $cleanSlug = preg_replace('#^public/#i', '', $cleanSlug);
+                                $cleanSlug = preg_replace('#^(ar|en|de)(/|$)#i', '', $cleanSlug);
+                                $cleanSlug = trim((string)$cleanSlug, '/');
+                                $fHref = '/' . $current_lang_code . '/' . ($cleanSlug !== '' ? $cleanSlug : 'home');
+                            }
                             
                             $link_title = $link[$current_lang]['title'] ?? ($link['de']['title'] ?? ($link['en']['title'] ?? ($link['ar']['title'] ?? ($link['title'] ?? ''))));
                             if (is_array($link_title)) {
                                 $link_title = get_multilang_text($link_title, $current_lang);
                             }
                             ?>
-                            <a href="/<?php echo htmlspecialchars($current_lang_code . '/' . $link_url, ENT_QUOTES, 'UTF-8'); ?>">
+                            <a href="<?php echo htmlspecialchars($fHref, ENT_QUOTES, 'UTF-8'); ?>">
                                 <?php echo htmlspecialchars((string)$link_title, ENT_QUOTES, 'UTF-8'); ?>
                             </a>
                             <?php 
@@ -384,10 +375,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <!-- العمود الثالث (وسائل التواصل من col3_items) -->
             <div class="col-12 col-md-6 col-lg-4">
-                <h5><?php echo htmlspecialchars((string)$col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                <h5><?php echo htmlspecialchars($col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
                 <div class="contact-link">
                     <?php 
-                    foreach((is_array($col3Items) ? $col3Items : []) as $link): 
+                    foreach ($col3Items as $link): 
                         if (!is_array($link)) continue;
                         $icon_img   = get_image_url($link['img'] ?? null);
                         $col3_title = (string)($link['title'] ?? '');
@@ -397,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     ?>
                         <a href="<?php echo htmlspecialchars($col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
-                            <?php if(!empty($icon_img)): ?>
+                            <?php if (!empty($icon_img)): ?>
                                 <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px;" alt="">
                             <?php endif; ?>
                             <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
@@ -426,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php if ($is_admin): ?>
     <?php 
     $modals_file = __DIR__ . '/../admin/admin_header_modals.php';
-    if (file_exists($modals_file)) {
+    if (is_file($modals_file)) {
         include_once $modals_file;
     }
     ?>

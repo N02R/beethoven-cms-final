@@ -194,7 +194,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
 
 <header>
     <!-- NavTop -->
-    <nav class="nav-top navbar py-2">
+    <nav class="nav-top navbar py-1">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
         <!-- اللوجو: أيقونة ثابتة + نص متعدد اللغات -->
@@ -206,9 +206,9 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
                 </button>
             <?php endif; ?>
 
-            <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-              <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-              <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
+            <a class="navbar-brand m-0 py-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
+              <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+              <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.92rem; line-height: 1.15; color: #0f172a; word-break: normal; white-space: normal;">
                   <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
               </span>
             </a>
@@ -216,9 +216,9 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         </div>
 
         <!-- منطقة الإعلان العلوي -->
-        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-4">
+        <div class="flex-grow-1 d-none d-lg-flex justify-content-center align-items-center px-2">
           <?php if ($is_visible || $is_admin): ?>
-            <div class="editable-wrapper d-block w-100" style="max-width: 500px;">
+            <div class="editable-wrapper d-block w-100" style="max-width: 480px;">
               <?php if ($is_admin): ?>
                   <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#announcementEditModal" title="<?php echo htmlspecialchars((string)($lang['announcement_settings'] ?? 'Edit Announcement'), ENT_QUOTES, 'UTF-8'); ?>">
                       <i class="bi bi-pencil-fill"></i>
@@ -231,19 +231,19 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
               
                 <?php if ($adType === 'text'): ?>
                   <?php if ($hasText): ?>
-                    <div class="p-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars((string)($ad['bg_color'] ?? '#f1f5f9'), ENT_QUOTES, 'UTF-8'); ?>; color: <?php echo htmlspecialchars((string)($ad['text_color'] ?? '#1e293b'), ENT_QUOTES, 'UTF-8'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '16'), ENT_QUOTES, 'UTF-8'); ?>px;">
+                    <div class="py-1 px-2 rounded shadow-sm announcement-ticker-container" style="background-color: <?php echo htmlspecialchars((string)($ad['bg_color'] ?? '#f1f5f9'), ENT_QUOTES, 'UTF-8'); ?>; color: <?php echo htmlspecialchars((string)($ad['text_color'] ?? '#1e293b'), ENT_QUOTES, 'UTF-8'); ?>; font-size: <?php echo htmlspecialchars((string)($ad['font_size'] ?? '15'), ENT_QUOTES, 'UTF-8'); ?>px;">
                       <div class="announcement-ticker-track">
                           <span><?php echo htmlspecialchars((string)$ad['announcement_text'], ENT_QUOTES, 'UTF-8'); ?></span>
                       </div>
                     </div>
                   <?php elseif ($is_admin): ?>
-                    <div class="p-2 rounded border border-dashed text-center text-muted small bg-light">
+                    <div class="py-1 px-2 rounded border border-dashed text-center text-muted small bg-light">
                         <i class="bi bi-megaphone"></i> <?php echo htmlspecialchars((string)($lang['announcement_settings'] ?? 'Announcement (Hidden / Empty)'), ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                   <?php endif; ?>
                 <?php else: ?>
-                  <div class="rounded overflow-hidden shadow-sm text-center" style="max-height: 65px;">
-                    <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png'), ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid" style="object-fit: cover; max-height: 65px;" alt="Advertisement">
+                  <div class="rounded overflow-hidden shadow-sm text-center" style="max-height: 56px;">
+                    <img src="<?php echo htmlspecialchars(get_image_url($ad['image_path'] ?? 'assets/img/default-ad.png'), ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid" style="object-fit: cover; max-height: 56px;" alt="Advertisement">
                   </div>
                 <?php endif; ?>
                 
@@ -253,9 +253,9 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         </div>
 
         <!-- السوشيال ميديا + زر العودة للداشبورد للمشرف -->
-        <div class="d-none d-lg-flex align-items-center gap-3">
+        <div class="d-none d-lg-flex align-items-center gap-2">
           <?php if ($is_admin): ?>
-            <a href="/admin/dashboard" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+            <a href="/admin/dashboard" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
           <?php endif; ?>
@@ -267,7 +267,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
                 </button>
             <?php endif; ?>
 
-            <div class="social-icons d-flex gap-3">
+            <div class="social-icons d-flex gap-2">
               <?php foreach ($social_links as $s): 
                   if (!is_array($s)) continue;
                   $sUrl = trim((string)($s['url'] ?? '#'));
@@ -276,7 +276,7 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
                   }
               ?>
                   <a href="<?php echo htmlspecialchars($sUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo htmlspecialchars((string)($s['name'] ?? 'Social'), ENT_QUOTES, 'UTF-8'); ?>">
-                    <img src="<?php echo htmlspecialchars(get_image_url($s['img'] ?? null), ENT_QUOTES, 'UTF-8'); ?>" width="28" alt="<?php echo htmlspecialchars((string)($s['name'] ?? 'social'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <img src="<?php echo htmlspecialchars(get_image_url($s['img'] ?? null), ENT_QUOTES, 'UTF-8'); ?>" width="26" alt="<?php echo htmlspecialchars((string)($s['name'] ?? 'social'), ENT_QUOTES, 'UTF-8'); ?>">
                   </a>
               <?php endforeach; ?>
             </div>
@@ -286,19 +286,9 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     </nav>
     
     <!-- Main Header -->
-    <nav id="main-header" class="navbar navbar-expand-lg py-3" aria-label="Main Navigation">
+    <nav id="main-header" class="navbar navbar-expand-lg py-2" aria-label="Main Navigation">
       <div class="container-fluid custom-container d-flex align-items-center justify-content-between">
         
-        <!-- اللوجو (Mobile Only) -->
-        <div class="d-lg-none">
-          <a class="navbar-brand m-0 d-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-            <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-            <span class="logo-text-stacked" style="display: inline-block; max-width: 120px; font-weight: 800; font-size: 0.85rem; line-height: 1.15; color: #0f172a;">
-                <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
-            </span>
-          </a>
-        </div>
-
         <!-- Desktop Menu -->
         <div class="collapse navbar-collapse">
           <div class="editable-wrapper d-inline-block w-100">
@@ -308,14 +298,14 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
                 </button>
             <?php endif; ?>
 
-            <ul class="navbar-nav gap-3">
+            <ul class="navbar-nav gap-2">
               <?php foreach ($menu_links as $link): 
                   if (!is_array($link)) continue;
                   $navHref = $buildLocalizedNavUrl($link['url'] ?? '');
                   $link_title = $getMenuTitle($link);
               ?>
                   <li class="nav-item">
-                    <a class="nav-link" href="<?php echo htmlspecialchars($navHref, ENT_QUOTES, 'UTF-8'); ?>">
+                    <a class="nav-link py-1 px-2" href="<?php echo htmlspecialchars($navHref, ENT_QUOTES, 'UTF-8'); ?>">
                       <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
                     </a>
                   </li>
@@ -325,8 +315,8 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         </div>
 
         <!-- Controls & Languages Switcher -->
-        <div class="d-flex align-items-center gap-3">
-          <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <button class="navbar-toggler d-lg-none py-1 px-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
           
           <div class="dropdown">
             <div class="editable-wrapper d-inline-block">
@@ -336,10 +326,10 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
                     </button>
                 <?php endif; ?>
                 
-                <button class="btn lang-switch d-flex align-items-center justify-content-between" type="button" data-bs-toggle="dropdown">
-                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="20">
+                <button class="btn lang-switch py-1 px-2 d-flex align-items-center justify-content-between gap-1" type="button" data-bs-toggle="dropdown">
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/global.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="lang" width="18">
                     <span><?php echo htmlspecialchars($current_lang_name, ENT_QUOTES, 'UTF-8'); ?></span>
-                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="15">
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/arowwdown.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" width="14">
                 </button>
 
                 <!-- روابط تبديل اللغات القادمة من قاعدة البيانات -->
@@ -360,10 +350,10 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
     
     <!-- Offcanvas (Mobile Menu) -->
     <div class="offcanvas <?php echo ($current_dir === 'rtl') ? 'offcanvas-start' : 'offcanvas-end'; ?>" tabindex="-1" id="offcanvasNavbar" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-      <div class="offcanvas-header">
+      <div class="offcanvas-header py-2">
         <h5 class="offcanvas-title m-0">
           <a class="d-inline-flex align-items-center gap-2 text-decoration-none" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
-            <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="42" height="42" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
+            <img src="<?php echo htmlspecialchars($fixed_logo_icon, ENT_QUOTES, 'UTF-8'); ?>" width="38" height="38" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
             <span class="logo-text-stacked" style="display: inline-block; max-width: 140px; font-weight: 800; font-size: 0.9rem; line-height: 1.15; color: #0f172a;">
                 <?php echo htmlspecialchars($activeLogoText, ENT_QUOTES, 'UTF-8'); ?>
             </span>
@@ -371,22 +361,22 @@ $csrf_token = $csrf_token ?? ($data['csrf_token'] ?? \App\Core\Security::generat
         </h5>
         <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body">
-        <ul class="navbar-nav">
+      <div class="offcanvas-body py-2">
+        <ul class="navbar-nav gap-1">
             <?php foreach ($menu_links as $link): 
                 if (!is_array($link)) continue;
                 $navHref = $buildLocalizedNavUrl($link['url'] ?? '');
                 $link_title = $getMenuTitle($link);
             ?>
                 <li class="nav-item">
-                  <a class="nav-link" href="<?php echo htmlspecialchars($navHref, ENT_QUOTES, 'UTF-8'); ?>">
+                  <a class="nav-link py-1" href="<?php echo htmlspecialchars($navHref, ENT_QUOTES, 'UTF-8'); ?>">
                     <?php echo htmlspecialchars($link_title, ENT_QUOTES, 'UTF-8'); ?>
                   </a>
                 </li>
             <?php endforeach; ?>
             <?php if ($is_admin): ?>
-                <li class="nav-item mt-3 pt-3 border-top">
-                  <a class="nav-link text-primary fw-bold" href="/admin/dashboard">
+                <li class="nav-item mt-2 pt-2 border-top">
+                  <a class="nav-link py-1 text-primary fw-bold" href="/admin/dashboard">
                     <i class="bi bi-speedometer2"></i> Dashboard
                   </a>
                 </li>

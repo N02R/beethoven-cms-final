@@ -150,7 +150,7 @@ $col3Title    = (string)($currentLangData['col3_title'] ?? $fb['col3_default']);
 $col3Items    = is_array($currentLangData['col3_items'] ?? null) ? $currentLangData['col3_items'] : [];
 
 // الأيقونة الثابتة + نص اللوجو من site_logo_text فقط
-$footerLogoIcon = (string)($fixed_logo_icon ?? '/public/assets/img/icon.png');
+$footerLogoIcon = (string)($fixed_logo_icon ?? '/assets/img/icon.png');
 $footerLogoTxt  = trim((string)($activeLogoText ?? ''));
 if ($footerLogoTxt === '') {
     $rawLogoTxt = $data['site_logo_text']

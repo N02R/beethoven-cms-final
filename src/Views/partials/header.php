@@ -52,7 +52,7 @@ $decodeSettingArray = static function (mixed $raw): array {
 };
 
 // 4. اعتماد الأيقونة الثابتة + نص اللوجو متعدد اللغات من site_logo_text فقط
-$fixed_logo_icon = '/public/assets/img/icon.png';
+$fixed_logo_icon = '/assets/img/icon.png';
 
 $defaultLogoTexts = [
     'de' => 'Beethoven Stadt Dienste',

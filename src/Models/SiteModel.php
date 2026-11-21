@@ -10,9 +10,6 @@ class SiteModel {
     private static ?array $cachedSettings = null;
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
 
-    /**
-     * جلب جميع الإعدادات العامة من global_settings مع التخزين المؤقت على مستوى الطلب (Request Caching)
-     */
     public static function getSettings(bool $forceRefresh = false): array {
         if (!$forceRefresh && self::$cachedSettings !== null) {
             return self::$cachedSettings;
@@ -33,17 +30,11 @@ class SiteModel {
         return $settings;
     }
 
-    /**
-     * تحديد اللغة الحالية بأمان وفق القائمة البيضاء المعتمدة
-     */
     public static function resolveLang(?string $lang = null): string {
-        $candidate = $lang ?? ($_SESSION['site_lang'] ?? 'de');
+        $candidate = strtolower(trim((string)($lang ?? ($_SESSION['site_lang'] ?? 'de'))));
         return in_array($candidate, self::SUPPORTED_LANGS, true) ? $candidate : 'de';
     }
 
-    /**
-     * دالة موحدة لجلب وتجهيز بيانات الهيدر والفوتر والإعدادات العامة لكل الموقع مع دعم اللغات
-     */
     public static function getGlobalData(?string $langOverride = null): array {
         $settings = self::getSettings();
         $lang = self::resolveLang($langOverride);
@@ -70,28 +61,24 @@ class SiteModel {
             $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
             if (is_array($decoded)) {
                 $val = $decoded[$lang] ?? ($decoded['de'] ?? ($decoded['en'] ?? ($decoded['ar'] ?? $default)));
-                return is_string($val) ? $val : $default;
+                return (is_string($val) && trim($val) !== '') ? trim($val) : $default;
             }
-            return is_string($raw) ? $raw : $default;
+            return (is_string($raw) && trim($raw) !== '') ? trim($raw) : $default;
         };
         
-        // استخراج نص الشعار الديناميكي متعدد اللغات
         $defaultLogoText = ($lang === 'ar') ? 'بيتهوفن سيتي للخدمات (BCS)' : 'Beethoven City Services (BCS)';
         $site_logo_text = $getMultiLang('site_logo_text', $defaultLogoText);
 
-        // معالجة بيانات الدليل الشامل الموحدة (من المفتاح المركزي 'guide')
         $guideBlock    = $getLangData('guide', []);
         $guide_title   = $guideBlock['title'] ?? '';
         $guide_desc    = $guideBlock['desc'] ?? '';
         $read_more_btn = $guideBlock['read_more_btn'] ?? '';
         $guide_items   = is_array($guideBlock['items'] ?? null) ? $guideBlock['items'] : [];
 
-        // معالجة بيانات الأسئلة الشائعة الموحدة (من المفتاح المركزي 'faq')
         $faqBlock  = $getLangData('faq', []);
         $faq_title = $faqBlock['title'] ?? '';
         $faq_items = is_array($faqBlock['items'] ?? null) ? $faqBlock['items'] : [];
 
-        // معالجة بيانات الفوتر الموحدة (من المفتاح المركزي الشامل 'footer')
         $footerBlock       = $getLangData('footer', []);
         $consult_title     = $footerBlock['consult_title'] ?? '';
         $consult_desc      = $footerBlock['consult_desc'] ?? '';
@@ -113,7 +100,6 @@ class SiteModel {
             'services_section_desc'  => $getMultiLang('services_section_desc', ''),
             'services'               => $getLangData('services', []),
 
-            // بيانات الفوتر الموحدة
             'footer'                 => $settings['footer'] ?? '{}',
             'consult_title'          => $consult_title,
             'consult_desc'           => $consult_desc,
@@ -122,14 +108,12 @@ class SiteModel {
             'footer_col3_title'      => $footer_col3_title,
             'footer_col3_links'      => $footer_col3_links,
             
-            // بيانات الدليل الشامل الموحدة
             'guide'                  => $settings['guide'] ?? '{}',
             'guide_title'            => $guide_title,
             'guide_desc'             => $guide_desc,
             'read_more_btn'          => $read_more_btn,
             'guide_items'            => $guide_items,
 
-            // بيانات الأسئلة الشائعة الموحدة
             'faq'                    => $settings['faq'] ?? '{}',
             'faq_title'              => $faq_title,
             'faq_items'              => $faq_items,
@@ -159,7 +143,6 @@ class SiteModel {
             }
         }
 
-        // تفريغ الذاكرة المؤقتة بعد التحديث
         self::$cachedSettings = null;
         return $success;
     }

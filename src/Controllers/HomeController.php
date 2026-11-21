@@ -12,15 +12,13 @@ class HomeController {
     private const SESSION_IDLE_TIMEOUT = 1800; // 30 دقيقة
 
     public function index(string $langCode = 'de'): void {
-        // 1. التحقق الصارم من اللغة وفق القائمة البيضاء (منع Path Traversal)
-        $current_lang = in_array($langCode, self::SUPPORTED_LANGS, true)
-            ? $langCode
-            : (in_array($_SESSION['site_lang'] ?? '', self::SUPPORTED_LANGS, true) ? $_SESSION['site_lang'] : 'de');
-
-        // 2. إدارة الجلسات وتأمينها
-        if (session_status() === PHP_SESSION_NONE) {
+        // 1. إدارة الجلسات وتأمينها أولاً لضمان قراءة الجلسة بأمان
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                        || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+                        || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+                        || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path'     => '/',
@@ -31,19 +29,26 @@ class HomeController {
             session_start();
         }
 
+        // 2. التحقق الصارم من اللغة وفق القائمة البيضاء
+        $cleanCode = strtolower(trim($langCode));
+        $sessionLang = strtolower(trim((string)($_SESSION['site_lang'] ?? 'de')));
+        $current_lang = in_array($cleanCode, self::SUPPORTED_LANGS, true)
+            ? $cleanCode
+            : (in_array($sessionLang, self::SUPPORTED_LANGS, true) ? $sessionLang : 'de');
+
         // 3. حفظ اللغة وتحديد الاتجاه وتحميل ملف الترجمة في مصفوفة $lang
         $_SESSION['site_lang'] = $current_lang;
         $current_dir = ($current_lang === 'ar') ? 'rtl' : 'ltr';
 
         $lang_file = __DIR__ . '/../Lang/' . $current_lang . '.php';
-        if (!file_exists($lang_file)) {
+        if (!is_file($lang_file)) {
             $lang_file = __DIR__ . '/../Lang/de.php';
         }
-        $lang = file_exists($lang_file) ? require $lang_file : [];
+        $lang = is_file($lang_file) ? require $lang_file : [];
         if (!is_array($lang)) {
             $lang = [];
         }
-        $lang_data = $lang; // توافق عكسي مع أي ملف قديم يستخدم $lang_data
+        $lang_data = $lang;
 
         // 4. التحقق الأمني من جلسة المشرف (البصمة + انتهاء الخمول)
         $is_logged_in = !empty($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
@@ -52,7 +57,7 @@ class HomeController {
             $lastActivity     = (int)($_SESSION['LAST_ACTIVITY'] ?? time());
 
             if (
-                (!empty($_SESSION['user_agent_hash']) && !hash_equals($_SESSION['user_agent_hash'], $currentAgentHash))
+                (!empty($_SESSION['user_agent_hash']) && !hash_equals((string)$_SESSION['user_agent_hash'], $currentAgentHash))
                 || (time() - $lastActivity > self::SESSION_IDLE_TIMEOUT)
             ) {
                 unset($_SESSION['is_logged_in'], $_SESSION['role'], $_SESSION['admin_id'], $_SESSION['admin_name']);
@@ -71,38 +76,37 @@ class HomeController {
         }
         $csrf_token = $_SESSION['csrf_token'];
 
-        // 6. جلب بيانات الموقع العامة + بيانات الصفحة الرئيسية
-        $data = SiteModel::getGlobalData();
+        // 6. جلب بيانات الموقع العامة + بيانات الصفحة الرئيسية باللغة الحالية
+        $data = SiteModel::getGlobalData($current_lang);
         $homeData = HomeModel::getHomeData();
         if (is_array($homeData)) {
             $data = array_merge($data, $homeData);
         }
 
-        // إتاحة حالة المشرف واللغة ورمز الأمان داخل مصفوفة البيانات
-        $data['is_admin']     = $is_admin;
-        $data['is_logged_in'] = $is_logged_in;
-        $data['admin_name']   = $_SESSION['admin_name'] ?? 'Admin';
-        $data['csrf_token']   = $csrf_token;
-        $data['current_lang'] = $current_lang;
-        $data['current_dir']  = $current_dir;
+        // إتاحة حالة المشرف واللغة ورمز الأمان والإعدادات داخل مصفوفة البيانات
+        $data['is_admin']        = $is_admin;
+        $data['is_logged_in']    = $is_logged_in;
+        $data['admin_name']      = $_SESSION['admin_name'] ?? 'Admin';
+        $data['csrf_token']      = $csrf_token;
+        $data['current_lang']    = $current_lang;
+        $data['current_dir']     = $current_dir;
+        $data['currentSettings'] = $data;
 
-        // متغيرات العرض المشتركة
         $path_prefix = '/';
         $page_css    = ['/assets/css/style.css'];
 
-        // تعريف ثابت الحماية لملفات العرض (Views)
         if (!defined('ALLOWED_ACCESS')) {
             define('ALLOWED_ACCESS', true);
         }
 
         // 7. تنفيذ دورة العرض المتسلسلة (Header -> View -> Footer)
         $header_file = __DIR__ . '/../Views/partials/header.php';
-        if (file_exists($header_file)) {
+        if (is_file($header_file)) {
             include_once $header_file;
         }
 
         $view_file = __DIR__ . '/../Views/home.php';
-        if (file_exists($view_file)) {
+        if (is_file($view_file)) {
             require_once $view_file;
         } else {
             http_response_code(404);
@@ -110,17 +114,17 @@ class HomeController {
         }
 
         $footer_file = __DIR__ . '/../Views/partials/footer.php';
-        if (file_exists($footer_file)) {
+        if (is_file($footer_file)) {
             include_once $footer_file;
         }
     }
 
     public function switchLang(): void {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
         
-        $targetLang = $_GET['lang'] ?? 'de';
+        $targetLang = strtolower(trim((string)($_GET['lang'] ?? 'de')));
         if (in_array($targetLang, self::SUPPORTED_LANGS, true)) {
             $_SESSION['site_lang'] = $targetLang;
             $_SESSION['admin_login_lang'] = $targetLang;
@@ -128,7 +132,6 @@ class HomeController {
             $targetLang = 'de';
         }
         
-        // منع ثغرة Open Redirect بالتحقق من أن الرابط المرجعي ينتمي لنفس الموقع
         $redirect_url = '/' . $targetLang . '/home';
         if (!empty($_SERVER['HTTP_REFERER'])) {
             $refererParts = parse_url($_SERVER['HTTP_REFERER']);
@@ -140,7 +143,8 @@ class HomeController {
                 $path = $refererParts['path'] ?? '/home';
                 $cleanPath = preg_replace('#^/(ar|en|de)(/|$)#i', '/', $path);
                 $cleanPath = '/' . ltrim((string)$cleanPath, '/');
-                $redirect_url = '/' . $targetLang . ($cleanPath === '/' ? '/home' : $cleanPath);
+                $query = !empty($refererParts['query']) ? '?' . $refererParts['query'] : '';
+                $redirect_url = '/' . $targetLang . ($cleanPath === '/' ? '/home' : $cleanPath) . $query;
             }
         }
 

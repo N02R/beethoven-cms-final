@@ -323,15 +323,47 @@ document.addEventListener('DOMContentLoaded', function() {
 <footer class="footer-section pt-5">
     <div class="container-fluid custom-container">
         <div class="row gy-5">
-            <!-- العمود الأول: الأيقونة + النص الديناميكي المحدث للفوتر -->
+            <?php
+            // مطابقة اللوجو في الفوتر مع منطق الهيدر تماماً (أيقونة + نص مكدّس حسب اللغة النشطة)
+            $footerLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
+            $footerLogoTxt  = (string)($activeLogoText ?? '');
+
+            if ($footerLogoTxt === '') {
+                $rawLogoTxt = $data['site_logo_text']
+                    ?? (is_array($currentSettings ?? null) ? ($currentSettings['site_logo_text'] ?? '') : '')
+                    ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : '');
+
+                if (is_string($rawLogoTxt) && trim($rawLogoTxt) !== '') {
+                    $trimmedTxt = trim($rawLogoTxt);
+                    if (str_starts_with($trimmedTxt, '{')) {
+                        $decodedTxt = json_decode($trimmedTxt, true);
+                        if (is_array($decodedTxt)) {
+                            $footerLogoTxt = trim((string)($decodedTxt[$current_lang_code] ?? ($decodedTxt['de'] ?? ($decodedTxt['en'] ?? ($decodedTxt['ar'] ?? '')))));
+                        }
+                    } else {
+                        $footerLogoTxt = $trimmedTxt;
+                    }
+                } elseif (is_array($rawLogoTxt)) {
+                    $footerLogoTxt = trim((string)($rawLogoTxt[$current_lang_code] ?? ($rawLogoTxt['de'] ?? ($rawLogoTxt['en'] ?? ($rawLogoTxt['ar'] ?? '')))));
+                }
+            }
+
+            if ($footerLogoTxt === '') {
+                $footerLogoTxt = ($current_lang_code === 'ar')
+                    ? 'بيتهوفن سيتي للخدمات (BCS)'
+                    : 'Beethoven City Services (BCS)';
+            }
+            ?>
+
+            <!-- العمود الأول: اللوجو المطابق للهيدر + وصف الفوتر -->
             <div class="col-12 col-lg-5">
                 <a class="d-inline-flex align-items-center gap-2 text-decoration-none mb-4" href="/<?php echo htmlspecialchars($current_lang_code, ENT_QUOTES, 'UTF-8'); ?>/home">
                     <img src="<?php echo htmlspecialchars(get_image_url($footerLogoIcon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="45" height="45" loading="lazy" alt="BCS Icon" style="object-fit: contain; flex-shrink: 0;">
-                    <span class="logo-text-stacked" style="display: inline-block; max-width: 150px; font-weight: 800; font-size: 1rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
+                    <span class="logo-text-stacked" style="display: inline-block; max-width: 130px; font-weight: 800; font-size: 0.95rem; line-height: 1.15; color: #ffffff; word-break: normal; white-space: normal;">
                         <?php echo htmlspecialchars($footerLogoTxt, ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </a>
-                <p class="footer-desc"><?php echo htmlspecialchars($footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="footer-desc"><?php echo htmlspecialchars((string)$footerDesc, ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
 
             <!-- العمود الثاني (روابط سريعة من المنيو) -->
@@ -411,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </footer>
+
 <!-- footer end -->
 
 <!-- 🌟 تضمين مودالات لوحة التحكم المركزية لكل صفحات الموقع -->

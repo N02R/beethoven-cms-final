@@ -48,10 +48,12 @@ $emptyTxt = $emptyStateTexts[$current_lang];
 
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
+$lang = is_array($lang ?? null) ? $lang : [];
 
-$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
-    
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
+
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
         $parsed = is_array($decoded) ? $decoded : $default;
@@ -63,23 +65,17 @@ $getLocalizedData = function(string $settingKey, mixed $default = []) use ($curr
         return $default;
     }
 
-    if (isset($parsed[$current_lang]) && is_array($parsed[$current_lang])) {
-        return $parsed[$current_lang];
-    }
-    if (isset($parsed['de']) && is_array($parsed['de'])) {
-        return $parsed['de'];
-    }
-    if (isset($parsed['en']) && is_array($parsed['en'])) {
-        return $parsed['en'];
-    }
-    if (isset($parsed['ar']) && is_array($parsed['ar'])) {
-        return $parsed['ar'];
+    foreach ([$current_lang, 'de', 'en', 'ar'] as $langKey) {
+        if (isset($parsed[$langKey]) && is_array($parsed[$langKey])) {
+            return $parsed[$langKey];
+        }
     }
 
     return $parsed;
 };
 
-$buildLocalizedUrl = function(?string $rawUrl) use ($current_lang): string {
+// 2. دالة تنقية الروابط وربطها بتسلسل اللغة الموحد (منع ثغرات XSS و Open Redirect)
+$buildLocalizedUrl = static function (?string $rawUrl) use ($current_lang): string {
     $url = trim((string)($rawUrl ?? '#'));
     if ($url === '' || $url === '#') {
         return '#';
@@ -91,10 +87,21 @@ $buildLocalizedUrl = function(?string $rawUrl) use ($current_lang): string {
         return $url;
     }
     $cleanPath = preg_replace('/^(ar|en|de)\//i', '', ltrim($url, '/'));
-    return '/' . $current_lang . '/' . $cleanPath;
+    return '/' . $current_lang . '/' . ltrim((string)$cleanPath, '/');
 };
 
-$sanitizeVideoEmbedUrl = function(?string $rawUrl): string {
+// 3. دالة آمنة لجلب مسارات الصور مع حظر البروتوكولات غير الآمنة
+$resolveSafeImageUrl = static function (mixed $rawPath, string $fallback = '/assets/img/home/default.jpg'): string {
+    $pathStr = trim(is_array($rawPath) ? (string)reset($rawPath) : (string)($rawPath ?? ''));
+    if ($pathStr !== '' && preg_match('/^(javascript|data|vbscript):/i', $pathStr)) {
+        return function_exists('get_image_url') ? (string)get_image_url($fallback) : $fallback;
+    }
+    $target = $pathStr !== '' ? $pathStr : $fallback;
+    return function_exists('get_image_url') ? (string)get_image_url($target) : $target;
+};
+
+// 4. دالة تحويل روابط يوتيوب إلى صيغة YouTube No-Cookie المتوافقة مع معايير الخصوصية الألمانية DSGVO
+$sanitizeVideoEmbedUrl = static function (?string $rawUrl): string {
     $url = trim((string)($rawUrl ?? ''));
     if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
         return '';
@@ -111,37 +118,41 @@ $sanitizeVideoEmbedUrl = function(?string $rawUrl): string {
     return str_replace('www.youtube.com', 'www.youtube-nocookie.com', $url);
 };
 
-$is_admin_active = !empty($is_admin) && $is_admin === true;
+// 5. تحديد حالة المشرف بوضوح وأمان
+$sessionAdmin = !empty($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true
+    && isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'super_admin'], true);
+$is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) : $sessionAdmin;
 ?>
 
 <!-- ================= HERO SECTION START ================= -->
 <section class="hero py-5 editable-wrapper" aria-label="Hero Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="<?php echo htmlspecialchars($lang['edit_hero_section'] ?? 'Edit Hero', ENT_QUOTES, 'UTF-8'); ?>">
-          <i class="bi bi-pencil-fill"></i>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#heroEditModal" title="<?php echo htmlspecialchars((string)($lang['edit_hero_section'] ?? 'Edit Hero'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="custom-container">
       <?php
       $hero = $getLocalizedData('hero', []);
-      
-      $hero_title  = $hero['title'] ?? ($hero['hero_title'] ?? 'Beethoven City Services');
-      $hero_desc   = $hero['desc'] ?? ($hero['hero_desc'] ?? '');
-      $hero_btn    = $hero['btn_text'] ?? ($lang['read_more'] ?? $emptyTxt['read_more']);
-      $hero_url    = $buildLocalizedUrl($hero['btn_url'] ?? '#');
-      $bg_img_path = $hero['img'] ?? null;
-      
-      $hero_bg = get_image_url($bg_img_path, '/assets/img/home/home1.png');
+      $hero = is_array($hero) ? $hero : [];
+
+      $hero_title = (string)($hero['title'] ?? ($hero['hero_title'] ?? 'Beethoven City Services'));
+      $hero_desc  = (string)($hero['desc'] ?? ($hero['hero_desc'] ?? ''));
+      $hero_btn   = (string)($hero['btn_text'] ?? ($lang['read_more'] ?? $emptyTxt['read_more']));
+      $hero_url   = $buildLocalizedUrl($hero['btn_url'] ?? '#');
+      $hero_bg    = $resolveSafeImageUrl($hero['img'] ?? null, '/assets/img/home/home1.png');
       ?>
-      
+
       <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>') center/cover no-repeat;">
         <div class="hero-content">
-          <h1><?php echo htmlspecialchars((string)$hero_title, ENT_QUOTES, 'UTF-8'); ?></h1>
-          <p><?php echo htmlspecialchars((string)$hero_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+          <h1><?php echo htmlspecialchars($hero_title, ENT_QUOTES, 'UTF-8'); ?></h1>
+          <?php if ($hero_desc !== ''): ?>
+            <p><?php echo htmlspecialchars($hero_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+          <?php endif; ?>
           <a href="<?php echo htmlspecialchars($hero_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-lg hero-btn">
-            <?php echo htmlspecialchars((string)$hero_btn, ENT_QUOTES, 'UTF-8'); ?>
+            <?php echo htmlspecialchars($hero_btn, ENT_QUOTES, 'UTF-8'); ?>
           </a>
         </div>
       </div>
@@ -151,50 +162,50 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= HERO SECTION END ================= -->
 
 <!-- ================= SERVICES SECTION START ================= -->
-<section class="services py-5 editable-wrapper">
+<section class="services py-5 editable-wrapper" aria-label="Services Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="<?php echo htmlspecialchars($lang['edit_services_section'] ?? 'Edit Services', ENT_QUOTES, 'UTF-8'); ?>">
-          <i class="bi bi-pencil-fill"></i>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#servicesEditModal" title="<?php echo htmlspecialchars((string)($lang['edit_services_section'] ?? 'Edit Services'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="custom-container">
       <?php
       $s_data = $getLocalizedData('services', []);
-      
-      $sec_title = $s_data['section_title'] ?? ($s_data['title'] ?? '');
-      $sec_desc  = $s_data['section_subtitle'] ?? ($s_data['desc'] ?? '');
-      $services  = $s_data['items'] ?? [];
+      $s_data = is_array($s_data) ? $s_data : [];
+
+      $sec_title = (string)($s_data['section_title'] ?? ($s_data['title'] ?? ''));
+      $sec_desc  = (string)($s_data['section_subtitle'] ?? ($s_data['desc'] ?? ''));
+      $services  = is_array($s_data['items'] ?? null) ? $s_data['items'] : [];
+      $arrow_img = $resolveSafeImageUrl('assets/img/home/ArrowLink.svg.webp', '/assets/img/home/ArrowLink.svg.webp');
       ?>
 
-      <?php if (!empty($sec_title)): ?>
-        <h2 class="mb-3 sec-title">
-            <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
-        </h2>
+      <?php if ($sec_title !== ''): ?>
+        <h2 class="mb-3 sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php endif; ?>
-      
-      <?php if (!empty($sec_desc)): ?>
-          <p class="mb-5 text-muted" style="max-width: 700px;">
-              <?php echo htmlspecialchars((string)$sec_desc, ENT_QUOTES, 'UTF-8'); ?>
-          </p>
+
+      <?php if ($sec_desc !== ''): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;"><?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?></p>
       <?php endif; ?>
 
       <div class="row g-4">
-        <?php if (!empty($services) && is_array($services)): ?>
-          <?php foreach ($services as $service): 
-            if (!is_array($service)) continue;
-            $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/default.jpg');
-            $service_title = $service['title'] ?? '';
+        <?php if (!empty($services)): ?>
+          <?php foreach ($services as $service):
+            if (!is_array($service)) {
+                continue;
+            }
+            $service_img   = $resolveSafeImageUrl($service['img'] ?? null, '/assets/img/home/default.jpg');
+            $service_title = (string)($service['title'] ?? '');
             $service_url   = $buildLocalizedUrl($service['url'] ?? '#');
           ?>
             <div class="col-lg-6 col-md-6 col-sm-12">
               <a href="<?php echo htmlspecialchars($service_url, ENT_QUOTES, 'UTF-8'); ?>" class="card-link text-decoration-none d-block">
                 <div class="card" style="background: url('<?php echo htmlspecialchars($service_img, ENT_QUOTES, 'UTF-8'); ?>') no-repeat center/cover;">
                   <div class="card-info">
-                    <h3><?php echo htmlspecialchars((string)$service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
-                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
-                         alt="Arrow" 
+                    <h3><?php echo htmlspecialchars($service_title, ENT_QUOTES, 'UTF-8'); ?></h3>
+                    <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>"
+                         alt="Arrow"
                          style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                   </div>
                 </div>
@@ -213,53 +224,54 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= SERVICES SECTION END ================= -->
 
 <!-- ================= CHOOSE US SECTION START ================= -->
-<section class="choose py-5 editable-wrapper">
+<section class="choose py-5 editable-wrapper" aria-label="Why Choose Us Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="<?php echo htmlspecialchars($lang['manage_choose'] ?? 'Edit Features', ENT_QUOTES, 'UTF-8'); ?>">
-          <i class="bi bi-pencil-fill"></i>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#chooseEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_choose'] ?? 'Edit Features'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="container-fluid custom-container choose-container">
       <?php
       $c_data    = $getLocalizedData('choose', []);
-      $sec_title = $c_data['section_title'] ?? ($c_data['title'] ?? '');
-      $sec_desc  = $c_data['section_subtitle'] ?? ($c_data['desc'] ?? '');
-      $c_items   = $c_data['items'] ?? [];
+      $c_data    = is_array($c_data) ? $c_data : [];
+      $sec_title = (string)($c_data['section_title'] ?? ($c_data['title'] ?? ''));
+      $sec_desc  = (string)($c_data['section_subtitle'] ?? ($c_data['desc'] ?? ''));
+      $c_items   = is_array($c_data['items'] ?? null) ? $c_data['items'] : [];
       ?>
 
-      <?php if (!empty($sec_title)): ?>
-        <h2 class="mb-5 sec-title"><?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+      <?php if ($sec_title !== ''): ?>
+        <h2 class="mb-5 sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php endif; ?>
-      
-      <?php if (!empty($sec_desc)): ?>
-          <p class="mb-5 text-muted" style="max-width: 700px;">
-              <?php echo htmlspecialchars((string)$sec_desc, ENT_QUOTES, 'UTF-8'); ?>
-          </p>
+
+      <?php if ($sec_desc !== ''): ?>
+        <p class="mb-5 text-muted" style="max-width: 700px;"><?php echo htmlspecialchars($sec_desc, ENT_QUOTES, 'UTF-8'); ?></p>
       <?php endif; ?>
 
       <div class="row g-3">
-        <?php if (!empty($c_items) && is_array($c_items)): ?>
-          <?php foreach ($c_items as $index => $item): 
-            if (!is_array($item)) continue;
-            $item_img   = get_image_url($item['img'] ?? null, 'assets/img/home/Grouphome1.svg');
-            $item_title = $item['title'] ?? '';
-            $item_desc  = $item['desc'] ?? '';
-            $item_url   = $buildLocalizedUrl($item['url'] ?? '#');
-            
-            if (empty($item_title)) continue;
-            
-            $is_active  = ($index === 1) ? 'active' : ''; 
+        <?php if (!empty($c_items)): ?>
+          <?php foreach ($c_items as $index => $item):
+            if (!is_array($item)) {
+                continue;
+            }
+            $item_title = (string)($item['title'] ?? '');
+            if ($item_title === '') {
+                continue;
+            }
+            $item_img  = $resolveSafeImageUrl($item['img'] ?? null, '/assets/img/home/Grouphome1.svg');
+            $item_desc = (string)($item['desc'] ?? '');
+            $item_url  = $buildLocalizedUrl($item['url'] ?? '#');
+            $is_active = ($index === 1) ? 'active' : '';
           ?>
             <div class="col-xxl-3 col-lg-3 col-md-6 col-sm-6 col-12">
               <div class="card choose-card <?php echo $is_active; ?>">
                 <div class="card-body">
                   <a href="<?php echo htmlspecialchars($item_url, ENT_QUOTES, 'UTF-8'); ?>">
-                      <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string)$item_title, ENT_QUOTES, 'UTF-8'); ?>" />
+                    <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>">
                   </a>
-                  <h5 class="card-title"><?php echo htmlspecialchars((string)$item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                  <p class="card-text"><?php echo htmlspecialchars((string)$item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                  <h5 class="card-title"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                  <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
               </div>
             </div>
@@ -276,146 +288,142 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= CHOOSE US SECTION END ================= -->
 
 <!-- ================= REVIEWS SECTION START ================= -->
-<section class="reviews py-5 editable-wrapper">
+<section class="reviews py-5 editable-wrapper" aria-label="Customer Reviews Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars($lang['manage_customer_videos'] ?? 'Edit Reviews', ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#reviewsEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_customer_videos'] ?? 'Edit Reviews'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
+      </button>
     <?php endif; ?>
 
-    <div class="reviews-bg">
+    <?php
+    $r_data    = $getLocalizedData('reviews_items', []);
+    $r_data    = is_array($r_data) ? $r_data : [];
+    $sec_title = (string)($r_data['section_title'] ?? ($r_data['title'] ?? ''));
+
+    $reviews_videos = is_array($r_data['items'] ?? null) ? $r_data['items'] : [];
+    $valid_videos = [];
+    foreach ($reviews_videos as $v) {
+        if (is_array($v) && !empty($v['url'])) {
+            $safeEmbed = $sanitizeVideoEmbedUrl((string)$v['url']);
+            if ($safeEmbed !== '') {
+                $valid_videos[] = ['url' => $safeEmbed];
+            }
+        }
+    }
+    ?>
+
+    <?php if ($sec_title !== ''): ?>
+      <div class="reviews-bg">
         <div class="custom-container">
-            <?php 
-            $r_data    = $getLocalizedData('reviews_items', []);
-            $sec_title = $r_data['section_title'] ?? ($r_data['title'] ?? '');
-            ?>
-            <?php if (!empty($sec_title)): ?>
-              <h2 class="py-5 text-center sec-title">
-                  <?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?>
-              </h2>
-            <?php endif; ?>
+          <h2 class="py-5 text-center sec-title"><?php echo htmlspecialchars($sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
         </div>
-    </div>
+      </div>
+    <?php endif; ?>
 
     <div class="custom-container">
-        <div class="reviews-carousel-wrapper">
-            <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-                
-                <div class="carousel-inner">
-                    <?php 
-                    $reviews_videos = $r_data['items'] ?? [];
-                    if (!is_array($reviews_videos)) {
-                        $reviews_videos = [];
-                    }
-
-                    $valid_videos = [];
-                    foreach ($reviews_videos as $v) {
-                        if (is_array($v) && !empty($v['url'])) {
-                            $safeEmbed = $sanitizeVideoEmbedUrl($v['url']);
-                            if ($safeEmbed !== '') {
-                                $valid_videos[] = ['url' => $safeEmbed];
-                            }
-                        }
-                    }
-                    ?>
-
-                    <?php if (!empty($valid_videos)): ?>
-                        <?php foreach ($valid_videos as $index => $item): ?>
-                            <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
-                                <div class="video-wrapper">
-                                    <div class="video-container">
-                                        <iframe src="<?php echo htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                                loading="lazy" 
-                                                referrerpolicy="strict-origin-when-cross-origin" 
-                                                allowfullscreen 
-                                                title="Customer Review Video"></iframe>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="text-center py-4 text-muted">
-                            <p><?php echo htmlspecialchars($emptyTxt['no_videos'], ENT_QUOTES, 'UTF-8'); ?></p>
-                        </div>
-                    <?php endif; ?>
+      <div class="reviews-carousel-wrapper">
+        <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+          <div class="carousel-inner">
+            <?php if (!empty($valid_videos)): ?>
+              <?php foreach ($valid_videos as $index => $item): ?>
+                <div class="carousel-item <?php echo ($index === 0) ? 'active' : ''; ?>">
+                  <div class="video-wrapper">
+                    <div class="video-container">
+                      <iframe src="<?php echo htmlspecialchars($item['url'], ENT_QUOTES, 'UTF-8'); ?>"
+                              loading="lazy"
+                              referrerpolicy="strict-origin-when-cross-origin"
+                              allowfullscreen
+                              title="Customer Review Video"></iframe>
+                    </div>
+                  </div>
                 </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center py-4 text-muted">
+                <p><?php echo htmlspecialchars($emptyTxt['no_videos'], ENT_QUOTES, 'UTF-8'); ?></p>
+              </div>
+            <?php endif; ?>
+          </div>
 
-                <?php if (count($valid_videos) > 1): ?>
-                <div class="dots mt-4">
-                    <?php foreach ($valid_videos as $index => $item): ?>
-                        <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>" 
-                              data-bs-target="#carousel-reviews" 
-                              data-bs-slide-to="<?php echo $index; ?>">
-                        </span>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
-                
+          <?php if (count($valid_videos) > 1): ?>
+            <div class="dots mt-4">
+              <?php foreach ($valid_videos as $index => $item): ?>
+                <span class="dot <?php echo ($index === 0) ? 'active' : ''; ?>"
+                      data-bs-target="#carousel-reviews"
+                      data-bs-slide-to="<?php echo $index; ?>"></span>
+              <?php endforeach; ?>
             </div>
+          <?php endif; ?>
         </div>
+      </div>
     </div>
   </div>
 </section>
 <!-- ================= REVIEWS SECTION END ================= -->
 
 <!-- ================= GUIDE HOME SECTION START ================= -->
-<section class="guide py-2 editable-wrapper">
+<section class="guide py-2 editable-wrapper" aria-label="Guide Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars($lang['manage_guide'] ?? 'Edit Guide', ENT_QUOTES, 'UTF-8'); ?>">
-          <i class="bi bi-pencil-fill"></i>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_guide'] ?? 'Edit Guide'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
       </button>
     <?php endif; ?>
 
     <div class="custom-container">
-      <?php 
-          $lang_guide_data = $getLocalizedData('guide', []);
+      <?php
+      $lang_guide_data = $getLocalizedData('guide', []);
+      $lang_guide_data = is_array($lang_guide_data) ? $lang_guide_data : [];
 
-          $guide_title    = $lang_guide_data['title'] ?? ($data['guide_title'] ?? '');
-          $guide_desc     = $lang_guide_data['desc'] ?? ($data['guide_desc'] ?? '');
-          $read_more_text = $lang_guide_data['read_more_btn'] ?? ($lang['read_more'] ?? $emptyTxt['read_more']);
-          $guide_items    = $lang_guide_data['items'] ?? ($data['guide_items'] ?? []);
-
-          if (!is_array($guide_items)) {
-              $guide_items = [];
-          }
+      $guide_title    = (string)($lang_guide_data['title'] ?? ($data['guide_title'] ?? ''));
+      $guide_desc     = (string)($lang_guide_data['desc'] ?? ($data['guide_desc'] ?? ''));
+      $read_more_text = (string)($lang_guide_data['read_more_btn'] ?? ($lang['read_more'] ?? $emptyTxt['read_more']));
+      $guide_items    = is_array($lang_guide_data['items'] ?? null)
+          ? $lang_guide_data['items']
+          : (is_array($data['guide_items'] ?? null) ? $data['guide_items'] : []);
+      $arrow_img      = $resolveSafeImageUrl('assets/img/ArrowLeft.svg.webp', '/assets/img/ArrowLeft.svg.webp');
+      $chunks         = !empty($guide_items) ? array_chunk($guide_items, 3) : [];
       ?>
-      
-      <?php if (!empty($guide_title)): ?>
-        <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars((string)$guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+
+      <?php if ($guide_title !== ''): ?>
+        <h2 class="mb-2 pt-5 sec-title"><?php echo htmlspecialchars($guide_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php endif; ?>
-      <?php if (!empty($guide_desc)): ?>
-          <p class="main-p"><?php echo nl2br(htmlspecialchars((string)$guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
+
+      <?php if ($guide_desc !== ''): ?>
+        <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
       <?php endif; ?>
 
       <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
         <div class="carousel-inner" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-          <?php if (!empty($guide_items)): ?>
-            <?php $chunks = array_chunk($guide_items, 3); ?>
+          <?php if (!empty($chunks)): ?>
             <?php foreach ($chunks as $index => $slide_items): ?>
               <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
                 <div class="row g-4">
-                  <?php foreach ($slide_items as $item): 
-                    if (!is_array($item)) continue;
-
-                    $item_title = $item['title'] ?? '';
-                    $item_desc  = $item['desc'] ?? '';
-                    $item_img   = get_image_url($item['img'] ?? null);
-                    $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
+                  <?php foreach ($slide_items as $item):
+                    if (!is_array($item)) {
+                        continue;
+                    }
+                    $item_title = (string)($item['title'] ?? '');
+                    $item_desc  = (string)($item['desc'] ?? '');
+                    $item_img   = !empty($item['img']) ? $resolveSafeImageUrl($item['img']) : '';
                     $final_url  = $buildLocalizedUrl($item['url'] ?? ($item['link'] ?? '#'));
                   ?>
                     <div class="col-lg-4 col-md-6 col-sm-12">
                       <div class="card h-100">
                         <div class="card-body d-flex flex-column">
-                          <?php if (!empty($item_img)): ?>
-                            <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string)$item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
+                          <?php if ($item_img !== ''): ?>
+                            <img src="<?php echo htmlspecialchars($item_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid guide-img">
                           <?php endif; ?>
-                          <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars((string)$item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
-                          <p class="card-text"><?php echo htmlspecialchars((string)$item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
+                          <h5 class="card-title fw-bold mt-3"><?php echo htmlspecialchars($item_title, ENT_QUOTES, 'UTF-8'); ?></h5>
+                          <p class="card-text"><?php echo htmlspecialchars($item_desc, ENT_QUOTES, 'UTF-8'); ?></p>
                           <a href="<?php echo htmlspecialchars($final_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn fw-bold mt-auto d-flex align-items-center gap-2">
-                            <?php echo htmlspecialchars((string)$read_more_text, ENT_QUOTES, 'UTF-8'); ?>
-                            <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>" alt="arrow" class="<?php echo ($current_dir === 'ltr' ? 'ms-2' : 'me-2'); ?>" width="18" style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
+                            <?php echo htmlspecialchars($read_more_text, ENT_QUOTES, 'UTF-8'); ?>
+                            <img src="<?php echo htmlspecialchars($arrow_img, ENT_QUOTES, 'UTF-8'); ?>"
+                                 alt="arrow"
+                                 class="<?php echo ($current_dir === 'ltr') ? 'ms-2' : 'me-2'; ?>"
+                                 width="18"
+                                 style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                           </a>
                         </div>
                       </div>
@@ -433,7 +441,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <?php endif; ?>
         </div>
 
-        <?php if (!empty($chunks) && count($chunks) > 1): ?>
+        <?php if (count($chunks) > 1): ?>
           <div class="dots mt-4">
             <?php foreach ($chunks as $index => $slide): ?>
               <span class="dot <?php echo $index === 0 ? 'active' : ''; ?>" data-bs-target="#carousel-guide" data-bs-slide-to="<?php echo $index; ?>"></span>
@@ -447,42 +455,52 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 <!-- ================= GUIDE HOME SECTION END ================= -->
 
 <!-- ================= FAQ SECTION START ================= -->
-<section class="popular py-5 editable-wrapper">
+<section class="popular py-5 editable-wrapper" aria-label="FAQ Section">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="<?php echo htmlspecialchars($lang['manage_faq'] ?? 'Edit FAQ', ENT_QUOTES, 'UTF-8'); ?>"><i class="bi bi-pencil-fill"></i></button>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#faqEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_faq'] ?? 'Edit FAQ'), ENT_QUOTES, 'UTF-8'); ?>">
+        <i class="bi bi-pencil-fill"></i>
+      </button>
     <?php endif; ?>
 
     <div class="container-fluid custom-container" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-      <?php 
-          $faq_data  = $getLocalizedData('faq', []);
-          $faq_title = $faq_data['title'] ?? ($data['faq_title'] ?? '');
-          $faq_items = $faq_data['items'] ?? ($data['faq_items'] ?? []);
-
-          if (!is_array($faq_items)) {
-              $faq_items = [];
-          }
+      <?php
+      $faq_data  = $getLocalizedData('faq', []);
+      $faq_data  = is_array($faq_data) ? $faq_data : [];
+      $faq_title = (string)($faq_data['title'] ?? ($data['faq_title'] ?? ''));
+      $faq_items = is_array($faq_data['items'] ?? null)
+          ? $faq_data['items']
+          : (is_array($data['faq_items'] ?? null) ? $data['faq_items'] : []);
       ?>
 
-      <?php if (!empty($faq_title)): ?>
-        <h2 class="sec-title mb-5"><?php echo htmlspecialchars((string)$faq_title, ENT_QUOTES, 'UTF-8'); ?></h2>
+      <?php if ($faq_title !== ''): ?>
+        <h2 class="sec-title mb-5"><?php echo htmlspecialchars($faq_title, ENT_QUOTES, 'UTF-8'); ?></h2>
       <?php endif; ?>
-      
+
       <div class="accordion mb-5" id="accordionExample">
         <?php if (!empty($faq_items)): ?>
-          <?php foreach ($faq_items as $index => $item): 
-              if (!is_array($item)) continue;
-              $faq_question = $item['question'] ?? '';
-              $faq_answer   = $item['answer'] ?? '';
+          <?php foreach ($faq_items as $index => $item):
+            if (!is_array($item)) {
+                continue;
+            }
+            $faq_question = (string)($item['question'] ?? '');
+            $faq_answer   = (string)($item['answer'] ?? '');
           ?>
             <div class="accordion-item">
               <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-                <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>" aria-controls="collapse<?php echo $index; ?>">
-                  <?php echo htmlspecialchars((string)$faq_question, ENT_QUOTES, 'UTF-8'); ?>
+                <button class="accordion-button <?php echo ($index !== 0) ? 'collapsed' : ''; ?>"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse<?php echo $index; ?>"
+                        aria-expanded="<?php echo ($index === 0) ? 'true' : 'false'; ?>"
+                        aria-controls="collapse<?php echo $index; ?>">
+                  <?php echo htmlspecialchars($faq_question, ENT_QUOTES, 'UTF-8'); ?>
                 </button>
               </h2>
-              <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>" data-bs-parent="#accordionExample">
-                <div class="accordion-body"><?php echo nl2br(htmlspecialchars((string)$faq_answer, ENT_QUOTES, 'UTF-8')); ?></div>
+              <div id="collapse<?php echo $index; ?>"
+                   class="accordion-collapse collapse <?php echo ($index === 0) ? 'show' : ''; ?>"
+                   data-bs-parent="#accordionExample">
+                <div class="accordion-body"><?php echo nl2br(htmlspecialchars($faq_answer, ENT_QUOTES, 'UTF-8')); ?></div>
               </div>
             </div>
           <?php endforeach; ?>

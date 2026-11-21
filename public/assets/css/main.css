@@ -97,22 +97,22 @@ body {
 }
 
 /* ==========================================
-   أقلام التعديل - إطار دائم للمشرف + زر مربع كبير طافي عند التحويم
+   أقلام التعديل - فصل الأقسام الكاملة عن العناصر المضغوطة
    ========================================== */
 
 .editable-wrapper {
     position: relative !important;
 }
 
-/* البورد الداخلي بعرض العنصر يظهر دائماً للمشرف فقط عند وجود .edit-pen */
+/* القاعدة الافتراضية للبورد الداخلي: عرض كامل للأقسام الكبيرة وصفحات المحتوى */
 .edit-board-box:has(> .edit-pen) {
     position: relative !important;
-    display: inline-block !important;
-    width: fit-content !important;
+    display: block !important;
+    width: 100% !important;
     max-width: 100% !important;
     border: 1.5px dashed rgba(29, 78, 216, 0.45) !important;
     border-radius: 10px !important;
-    padding: 12px 14px !important;
+    padding: 14px 16px !important;
     margin-block: 8px !important;
     background-color: rgba(29, 78, 216, 0.015);
     transition: border-color 0.2s ease, background-color 0.2s ease, padding 0.2s ease;
@@ -124,14 +124,24 @@ body {
     background-color: rgba(29, 78, 216, 0.035);
 }
 
-/* زر القلم المربع الكبير الطافي فوق زاوية الحدود - يظهر بوضوح عند التحويم */
+/* العناصر المضغوطة (داخل الهيدر أو أي حاوية تحمل .editable-inline) تأخذ عرض المحتوى */
+header .edit-board-box:has(> .edit-pen),
+.editable-inline .edit-board-box:has(> .edit-pen) {
+    display: inline-block !important;
+    width: fit-content !important;
+    padding: 8px 10px !important;
+    margin-block: 4px !important;
+    border-radius: 8px !important;
+}
+
+/* زر القلم المربع الكبير الطافي فوق زاوية الحدود - يظهر عند التحويم */
 .edit-board-box .edit-pen {
     width: 38px !important;
     height: 38px !important;
     border-radius: 8px !important;
     position: absolute !important;
     top: -15px !important;
-    inset-inline-end: -15px !important;
+    inset-inline-end: 12px !important;
     z-index: 120 !important;
 
     background: #1d4ed8 !important;
@@ -152,6 +162,17 @@ body {
     transition: opacity 0.18s ease, visibility 0.18s ease, transform 0.18s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
+/* تموضع الزر على الزاوية الخارجية للعناصر المضغوطة (الهيدر و .editable-inline) */
+header .edit-board-box .edit-pen,
+.editable-inline .edit-board-box .edit-pen {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 7px !important;
+    top: -13px !important;
+    inset-inline-end: -13px !important;
+    font-size: 14px !important;
+}
+
 /* إظهار الزر المربع الكبير عند التحويم على البورد أو على الزر نفسه */
 .edit-board-box:has(> .edit-pen):hover .edit-pen,
 .edit-board-box .edit-pen:hover,
@@ -168,26 +189,10 @@ body {
     box-shadow: 0 10px 24px rgba(30, 64, 175, 0.45), 0 4px 10px rgba(15, 23, 42, 0.22) !important;
 }
 
-/* بادينغ وبورد منضبط داخل الهيدر للمشرف فقط */
-header .edit-board-box:has(> .edit-pen) {
-    padding: 8px 10px !important;
-    margin-block: 4px !important;
-    border-radius: 8px !important;
-}
-
-header .edit-board-box .edit-pen {
-    width: 34px !important;
-    height: 34px !important;
-    border-radius: 7px !important;
-    top: -13px !important;
-    inset-inline-end: -13px !important;
-    font-size: 14px !important;
-}
-
 /* شاشات 24 إلى 27 إنش فأعلى (1600px+) */
 @media (min-width: 1600px) {
     .edit-board-box:has(> .edit-pen) {
-        padding: 16px 18px !important;
+        padding: 16px 20px !important;
         border-radius: 12px !important;
     }
 
@@ -196,15 +201,12 @@ header .edit-board-box .edit-pen {
         height: 42px !important;
         border-radius: 9px !important;
         top: -17px !important;
-        inset-inline-end: -17px !important;
+        inset-inline-end: 16px !important;
         font-size: 18px !important;
     }
 
-    header .edit-board-box:has(> .edit-pen) {
-        padding: 10px 12px !important;
-    }
-
-    header .edit-board-box .edit-pen {
+    header .edit-board-box .edit-pen,
+    .editable-inline .edit-board-box .edit-pen {
         width: 36px !important;
         height: 36px !important;
         top: -14px !important;
@@ -216,7 +218,7 @@ header .edit-board-box .edit-pen {
 /* شاشات التابلت والمدى المتوسط (576px إلى 991px) */
 @media (max-width: 991.98px) {
     .edit-board-box:has(> .edit-pen) {
-        padding: 10px 12px !important;
+        padding: 12px 14px !important;
         margin-block: 6px !important;
     }
 
@@ -224,19 +226,24 @@ header .edit-board-box .edit-pen {
         width: 36px !important;
         height: 36px !important;
         top: -14px !important;
-        inset-inline-end: -14px !important;
+        inset-inline-end: 10px !important;
         font-size: 15px !important;
+    }
+
+    header .edit-board-box .edit-pen,
+    .editable-inline .edit-board-box .edit-pen {
+        width: 32px !important;
+        height: 32px !important;
+        top: -12px !important;
+        inset-inline-end: -12px !important;
+        font-size: 13.5px !important;
     }
 }
 
 /* شاشات الموبايل (أقل من 576px) */
 @media (max-width: 575.98px) {
-    .sec-title {
-        font-size: 24px;
-    }
-
     .edit-board-box:has(> .edit-pen) {
-        padding: 10px !important;
+        padding: 10px 12px !important;
         margin-block: 6px !important;
         border-radius: 8px !important;
     }
@@ -246,15 +253,12 @@ header .edit-board-box .edit-pen {
         height: 36px !important;
         border-radius: 7px !important;
         top: -14px !important;
-        inset-inline-end: -14px !important;
+        inset-inline-end: 8px !important;
         font-size: 15px !important;
     }
 
-    header .edit-board-box:has(> .edit-pen) {
-        padding: 7px 8px !important;
-    }
-
-    header .edit-board-box .edit-pen {
+    header .edit-board-box .edit-pen,
+    .editable-inline .edit-board-box .edit-pen {
         width: 32px !important;
         height: 32px !important;
         top: -12px !important;

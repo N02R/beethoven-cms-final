@@ -105,7 +105,7 @@
 }
 /* why study style end */
 
-/* time line style start (Direction Aware & Easy to Adjust) */
+/* ================= TIMELINE CONTROLS & STYLES ================= */
 .timeline-section {
     background-color: #ffffff;
     padding: 100px 0;
@@ -184,24 +184,28 @@
     transform: translateX(-50%);
 }
 
+/* 1. رقم الخطوة (01 - 06) */
 .step-img-num {
     position: absolute;
     width: 24px;
     height: 24px;
     object-fit: contain;
     top: var(--num-top, 0px);
-    left: 50%;
+    left: var(--num-left, 50%);
     transform: translateX(-50%);
     z-index: 12;
 }
 
+/* 2. الصورة الأساسية في منتصف الدائرة */
 .icon-main {
     position: absolute;
-    width: 46px;
-    height: 46px;
+    width: var(--icon-size, 46px);
+    height: var(--icon-size, 46px);
     top: var(--icon-top, 45px);
-    left: 50%;
+    left: var(--icon-left, 50%);
     transform: translateX(-50%);
+    border-radius: 50%;
+    overflow: hidden;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
     z-index: 11;
 }
@@ -209,15 +213,17 @@
 .icon-main img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
+/* 3. صندوق النصوص كاملاً كـ Box واحد لكل خطوة */
 .info-content {
-    position: relative;
+    position: absolute;
     width: 100%;
+    top: var(--info-top, 110px);
+    left: var(--info-x, 0px);
     text-align: center;
-    margin-top: var(--info-mt, 105px);
-    margin-bottom: var(--info-mb, 0px);
+    z-index: 10;
 }
 
 .info-content h3 {
@@ -228,19 +234,19 @@
     white-space: nowrap;
 }
 
-.info-content h4 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #3f3f3f;
-    margin-bottom: 6px;
-}
-
 .dot {
     display: block;
     width: 8px;
     height: 8px;
     border-radius: 50%;
     margin: 8px auto;
+}
+
+.info-content h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #3f3f3f;
+    margin-bottom: 6px;
 }
 
 .info-content p {
@@ -256,13 +262,15 @@
 .bg-orange { background-color: #F2994A; }
 .bg-red { background-color: #EB5757; }
 
-/* توزيع تناوبي سهل التعديل: خطوات فردية للأسفل وخطوات زوجية للأعلى */
+/* إحداثيات الخطوات (1 إلى 6) للتحكم الكامل بالسلاسة */
 .step-1 {
     --step-pos: 3.25%;
     --step-top: 30%;
-    --num-top: 0px;
+    --num-top: 10px;
     --icon-top: 45px;
-    --info-mt: 105px;
+    --icon-left: 50%;
+    --info-top: 110px;
+    --info-x: 0px;
 }
 
 .step-2 {
@@ -270,7 +278,9 @@
     --step-top: -6%;
     --num-top: 105px;
     --icon-top: 25px;
-    --info-mt: -165px;
+    --icon-left: 50%;
+    --info-top: -175px;
+    --info-x: 0px;
 }
 
 .step-3 {
@@ -278,7 +288,9 @@
     --step-top: 30%;
     --num-top: -15px;
     --icon-top: 80px;
-    --info-mt: 135px;
+    --icon-left: 50%;
+    --info-top: 140px;
+    --info-x: 0px;
 }
 
 .step-4 {
@@ -286,7 +298,9 @@
     --step-top: -6%;
     --num-top: 105px;
     --icon-top: 25px;
-    --info-mt: -165px;
+    --icon-left: 50%;
+    --info-top: -175px;
+    --info-x: 0px;
 }
 
 .step-5 {
@@ -294,7 +308,9 @@
     --step-top: 30%;
     --num-top: 0px;
     --icon-top: 45px;
-    --info-mt: 105px;
+    --icon-left: 50%;
+    --info-top: 110px;
+    --info-x: 0px;
 }
 
 .step-6 {
@@ -302,7 +318,9 @@
     --step-top: -6%;
     --num-top: 95px;
     --icon-top: 25px;
-    --info-mt: -165px;
+    --icon-left: 50%;
+    --info-top: -175px;
+    --info-x: 0px;
 }
 
 /* تنسيق عرض الموبايل */

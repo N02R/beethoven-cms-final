@@ -159,19 +159,21 @@ class SettingsController
                     $adImage = $oldAdImage;
                 }
 
-                $status   = in_array($_POST['status'] ?? '', ['Draft', 'Published'], true) ? $_POST['status'] : 'Draft';
-                $type     = in_array($_POST['type'] ?? '', ['text', 'image'], true) ? $_POST['type'] : 'text';
-                $bgColor  = preg_match('/^#[0-9a-fA-F]{6}$/', (string)($_POST['bg_color'] ?? '')) ? $_POST['bg_color'] : '#f1f5f9';
-                $txtColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string)($_POST['text_color'] ?? '')) ? $_POST['text_color'] : '#1e293b';
-                $fontSize = max(10, min(48, (int)($_POST['font_size'] ?? 16)));
+                $status    = in_array($_POST['status'] ?? '', ['Draft', 'Published'], true) ? $_POST['status'] : 'Draft';
+                $type      = in_array($_POST['type'] ?? '', ['text', 'image'], true) ? $_POST['type'] : 'text';
+                $bgColor   = preg_match('/^#[0-9a-fA-F]{6}$/', (string)($_POST['bg_color'] ?? '')) ? $_POST['bg_color'] : '#f1f5f9';
+                $txtColor  = preg_match('/^#[0-9a-fA-F]{6}$/', (string)($_POST['text_color'] ?? '')) ? $_POST['text_color'] : '#1e293b';
+                $fontSize  = max(10, min(48, (int)($_POST['font_size'] ?? 16)));
+                $startDate = trim((string)($_POST['start_date'] ?? ''));
+                $endDate   = trim((string)($_POST['end_date'] ?? ''));
 
                 $rawLink = trim((string)($_POST['link'] ?? ''));
                 $safeLink = ($rawLink !== '' && !preg_match('/^(javascript|data|vbscript):/i', $rawLink)) ? $rawLink : '';
 
                 $adData = [
                     'status'            => $status,
-                    'start_date'        => trim((string)($_POST['start_date'] ?? '')),
-                    'end_date'          => trim((string)($_POST['end_date'] ?? '')),
+                    'start_date'        => $startDate,
+                    'end_date'          => $endDate,
                     'type'              => $type,
                     'announcement_text' => trim((string)($_POST['announcement_text'] ?? '')),
                     'bg_color'          => $bgColor,
@@ -182,6 +184,16 @@ class SettingsController
                 ];
 
                 $announcements[$targetLang] = $adData;
+                $announcements['shared_start_date'] = $startDate;
+                $announcements['shared_end_date']   = $endDate;
+
+                foreach (self::SUPPORTED_LANGS as $langKey) {
+                    if (isset($announcements[$langKey]) && is_array($announcements[$langKey])) {
+                        $announcements[$langKey]['start_date'] = $startDate;
+                        $announcements[$langKey]['end_date']   = $endDate;
+                    }
+                }
+
                 $jsonVal = json_encode($announcements, JSON_UNESCAPED_UNICODE);
                 $stmt->execute(['k' => 'announcement', 'v' => $jsonVal, 'v_update' => $jsonVal]);
             } else {

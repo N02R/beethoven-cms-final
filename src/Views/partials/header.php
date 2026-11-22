@@ -97,7 +97,7 @@ foreach ($active_languages as $langItem) {
 $menu_links = array_values($decodeSettingArray($data['menu_links'] ?? (function_exists('get_setting') ? get_setting('menu_links', []) : [])));
 $social_links = array_values($decodeSettingArray($data['social_links'] ?? (function_exists('get_setting') ? get_setting('social_links', []) : [])));
 
-// 7. استخراج وتأمين بيانات الإعلان (Announcement)
+// 7. استخراج وتأمين بيانات الإعلان (Announcement) مع توحيد التوقيت بين اللغات
 $rawAnnouncement = $data['announcement'] ?? (function_exists('get_setting') ? get_setting('announcement', []) : []);
 $allAds = $decodeSettingArray($rawAnnouncement);
 $ad = $allAds[$current_lang] ?? ($allAds['de'] ?? ($allAds['en'] ?? ($allAds['ar'] ?? (isset($allAds['status']) ? $allAds : []))));
@@ -113,11 +113,14 @@ $hasContent = ($hasText || $hasImage);
 $status       = (string)($ad['status'] ?? 'Draft');
 $current_time = date('Y-m-d\TH:i');
 
+$effectiveStartDate = trim((string)($allAds['shared_start_date'] ?? ($ad['start_date'] ?? '')));
+$effectiveEndDate   = trim((string)($allAds['shared_end_date'] ?? ($ad['end_date'] ?? '')));
+
 $is_in_time = true;
-if (!empty($ad['start_date']) && $current_time < (string)$ad['start_date']) {
+if ($effectiveStartDate !== '' && $current_time < $effectiveStartDate) {
     $is_in_time = false;
 }
-if (!empty($ad['end_date']) && $current_time > (string)$ad['end_date']) {
+if ($effectiveEndDate !== '' && $current_time > $effectiveEndDate) {
     $is_in_time = false;
 }
 

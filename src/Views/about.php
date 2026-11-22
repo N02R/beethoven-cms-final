@@ -373,19 +373,20 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $countsRaw    = $decodeRawSetting('about_counts', []);
-      $countsRaw    = is_array($countsRaw) ? $countsRaw : [];
-      $sharedCounts = is_array($countsRaw['shared_items_img'] ?? null) ? $countsRaw['shared_items_img'] : [];
-      $counts_data  = $getLocalizedData('about_counts', []);
-      $counts_data  = is_array($counts_data) ? $counts_data : [];
-      $counts_items = is_array($counts_data['items'] ?? null) ? $counts_data['items'] : [];
+      $countsRaw      = $decodeRawSetting('about_counts', []);
+      $countsRaw      = is_array($countsRaw) ? $countsRaw : [];
+      $sharedCounts   = is_array($countsRaw['shared_items_img'] ?? null) ? $countsRaw['shared_items_img'] : [];
+      $sharedNumbers  = is_array($countsRaw['shared_items_number'] ?? null) ? $countsRaw['shared_items_number'] : [];
+      $counts_data    = $getLocalizedData('about_counts', []);
+      $counts_data    = is_array($counts_data) ? $counts_data : [];
+      $counts_items   = is_array($counts_data['items'] ?? null) ? $counts_data['items'] : [];
       ?>
       <div class="row g-4">
         <?php if (!empty($counts_items)): ?>
           <?php foreach ($counts_items as $cIdx => $c): 
               if (!is_array($c)) continue;
-              $c_num    = $c['number'] ?? '';
-              $c_title  = $c['title'] ?? '';
+              $c_num    = (string)($sharedNumbers[$cIdx] ?? ($c['number'] ?? ''));
+              $c_title  = (string)($c['title'] ?? '');
               $rawCImg  = $sharedCounts[$cIdx] ?? ($c['img'] ?? '');
               $c_img    = get_image_url($rawCImg, '');
           ?>
@@ -393,12 +394,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
               <div class="count-card">
                 <?php if (!empty($c_img)): ?>
                   <div class="count-img">
-                    <img src="<?php echo htmlspecialchars($c_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string)$c_title, ENT_QUOTES, 'UTF-8'); ?>">
+                    <img src="<?php echo htmlspecialchars($c_img, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?>">
                   </div>
                 <?php endif; ?>
                 <div class="count-info">
-                  <span><?php echo htmlspecialchars((string)$c_num, ENT_QUOTES, 'UTF-8'); ?></span>
-                  <p><?php echo htmlspecialchars((string)$c_title, ENT_QUOTES, 'UTF-8'); ?></p>
+                  <span><?php echo htmlspecialchars($c_num, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <p><?php echo htmlspecialchars($c_title, ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
               </div>
             </div>

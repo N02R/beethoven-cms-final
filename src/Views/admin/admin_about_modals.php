@@ -502,6 +502,7 @@ $extractLangFromRaw = static function (array $decoded) use ($current_lang): arra
                 <?php 
                 $rawCountsAll   = $fetchRawSettingAll('about_counts');
                 $sharedCountImg = is_array($rawCountsAll['shared_items_img'] ?? null) ? $rawCountsAll['shared_items_img'] : [];
+                $sharedCountNum = is_array($rawCountsAll['shared_items_number'] ?? null) ? $rawCountsAll['shared_items_number'] : [];
                 $curLangCounts  = $extractLangFromRaw($rawCountsAll);
                 $countsItems    = is_array($curLangCounts['items'] ?? null) ? $curLangCounts['items'] : [];
                 ?>
@@ -511,12 +512,17 @@ $extractLangFromRaw = static function (array $decoded) use ($current_lang): arra
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($activeCsrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     
-                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($lang['manage_counts'] ?? 'Counters', ENT_QUOTES, 'UTF-8'); ?></h6>
+                    <div class="d-flex align-items-center justify-content-between mb-3 <?php echo $modal_align; ?>">
+                        <h6 class="fw-bold m-0"><?php echo htmlspecialchars($lang['manage_counts'] ?? 'Counters', ENT_QUOTES, 'UTF-8'); ?></h6>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">
+                            <?php echo htmlspecialchars($lang['shared_numbers_images_notice'] ?? 'الأرقام والصور موحدة • النص حسب اللغة', ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                    </div>
 
                     <div id="countsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($countsItems as $index => $c): 
                             if (!is_array($c)) continue;
-                            $cNum   = (string)($c['number'] ?? '');
+                            $cNum   = (string)($sharedCountNum[$index] ?? ($c['number'] ?? ''));
                             $cTitle = (string)($c['title'] ?? '');
                             $cImg   = (string)($sharedCountImg[$index] ?? ($c['img'] ?? ''));
                         ?>
@@ -719,7 +725,9 @@ function addAboutServiceRow() {
             </div>
             <div class="col-md-11">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.image_icon}</label>
-                <input type="file" class="form-control about-service-file w-100" name="about_services_img_0" accept="image/*">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control about-service-file w-100" name="about_services_img_0" accept="image/*">
+                </div>
             </div>
             <input type="hidden" class="about-service-old-img" name="about_services[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
@@ -750,7 +758,9 @@ function addTeamRow() {
             </div>
             <div class="col-md-5">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.member_image}</label>
-                <input type="file" class="form-control team-file w-100" name="team_img_0" accept="image/*">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control team-file w-100" name="team_img_0" accept="image/*">
+                </div>
             </div>
             <input type="hidden" class="team-old-img" name="team[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
@@ -781,7 +791,9 @@ function addCountRow() {
             </div>
             <div class="col-md-4">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.count_image}</label>
-                <input type="file" class="form-control count-file w-100" name="count_img_0" accept="image/*">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control count-file w-100" name="count_img_0" accept="image/*">
+                </div>
             </div>
             <input type="hidden" class="count-old-img" name="about_counts[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
@@ -804,7 +816,9 @@ function addPartnerRow() {
         <div class="row g-3 align-items-center">
             <div class="col-md-11">
                 <label class="small fw-bold mb-1 text-secondary">${ABOUT_MODAL_TXT.partner_image}</label>
-                <input type="file" class="form-control partner-file w-100" name="partner_img_0" accept="image/*">
+                <div class="d-flex align-items-center gap-2">
+                    <input type="file" class="form-control partner-file w-100" name="partner_img_0" accept="image/*">
+                </div>
             </div>
             <input type="hidden" class="partner-old-img" name="partners[${ABOUT_ACTIVE_LANG}][items][0][img]" value="">
             <div class="col-md-1 text-center pt-3">
@@ -819,6 +833,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addTeamRowBtn')?.addEventListener('click', addTeamRow);
     document.getElementById('addCountRowBtn')?.addEventListener('click', addCountRow);
     document.getElementById('addPartnerRowBtn')?.addEventListener('click', addPartnerRow);
+
+    // معاينة فورية للصور المختارة داخل صفوف مودلات صفحة من نحن
+    document.addEventListener('change', function(e) {
+        const input = e.target;
+        if (!(input instanceof HTMLInputElement) || input.type !== 'file') return;
+        const isRowFile = input.matches('.about-service-file, .team-file, .count-file, .partner-file');
+        if (!isRowFile) return;
+
+        const file = input.files && input.files[0];
+        const row = input.closest('.service-item-row, .team-row-item, .count-row-item, .partner-row-item');
+        if (!file || !row) return;
+
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const src = String(ev.target?.result || '');
+            if (!src) return;
+            let imgEl = row.querySelector('img');
+            if (!imgEl) {
+                imgEl = document.createElement('img');
+                imgEl.alt = 'Preview';
+                imgEl.className = 'rounded border';
+                imgEl.style.cssText = 'width: 38px; height: 38px; object-fit: cover; flex-shrink: 0;';
+                input.parentElement?.appendChild(imgEl);
+            }
+            imgEl.src = src;
+        };
+        reader.readAsDataURL(file);
+    });
 
     const aboutFormIds = new Set(['aboutSectionForm', 'aboutServicesForm', 'teamForm', 'countsForm', 'partnersForm']);
 

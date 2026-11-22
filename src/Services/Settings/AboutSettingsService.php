@@ -166,7 +166,7 @@ class AboutSettingsService
             $this->saveSetting($pdo, 'about_services', $allLangs);
         }
 
-        // 3. تحديث العدادات والإحصائيات (About Counts) مع توحيد صور العناصر
+        // 3. تحديث العدادات والإحصائيات (About Counts) مع توحيد الأرقام والصور وإبقاء النص التوضيحي مترجماً
         elseif ($action === 'update_about_counts') {
             $targetLang = $this->resolveTargetLang(['targetLang', 'about_counts_lang']);
             $allLangs   = $this->fetchSetting($pdo, 'about_counts', $currentSettings);
@@ -174,12 +174,14 @@ class AboutSettingsService
             $currentLangData = is_array($allLangs[$targetLang] ?? null) ? $allLangs[$targetLang] : [];
             $existingItems   = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
             $sharedImgs      = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
+            $sharedNumbers   = is_array($allLangs['shared_items_number'] ?? null) ? $allLangs['shared_items_number'] : [];
 
             $postedItems = $_POST['about_counts'][$targetLang]['items']
                 ?? ($_POST['about_counts']['items'] ?? []);
 
-            $finalItems    = [];
-            $newSharedImgs = [];
+            $finalItems       = [];
+            $newSharedImgs    = [];
+            $newSharedNumbers = [];
 
             if (is_array($postedItems)) {
                 $rowPos = 0;
@@ -191,12 +193,17 @@ class AboutSettingsService
                     $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
                     $img      = $this->handleImageField('count_img_' . $index, $oldImg, $dbOldImg);
 
+                    $fallbackNum = (string)($sharedNumbers[$rowPos] ?? ($sharedNumbers[$index] ?? ($existingItems[$index]['number'] ?? '')));
+                    $numVal      = trim((string)($item['number'] ?? $fallbackNum));
+                    $titleVal    = trim((string)($item['title'] ?? ''));
+
                     $finalItems[] = [
-                        'number' => trim((string)($item['number'] ?? '')),
-                        'title'  => trim((string)($item['title'] ?? '')),
+                        'number' => $numVal,
+                        'title'  => $titleVal,
                         'img'    => $img,
                     ];
-                    $newSharedImgs[] = $img;
+                    $newSharedImgs[]    = $img;
+                    $newSharedNumbers[] = $numVal;
                     $rowPos++;
                 }
             }
@@ -204,8 +211,36 @@ class AboutSettingsService
             $allLangs[$targetLang] = [
                 'items' => $finalItems,
             ];
-            $allLangs['shared_items_img'] = $newSharedImgs;
-            $this->propagateSharedListImages($allLangs, $newSharedImgs, $targetLang, ['number' => '', 'title' => '']);
+            $allLangs['shared_items_img']    = $newSharedImgs;
+            $allLangs['shared_items_number'] = $newSharedNumbers;
+
+            foreach (self::SUPPORTED_LANGS as $langKey) {
+                if ($langKey === $targetLang || !isset($allLangs[$langKey]) || !is_array($allLangs[$langKey])) {
+                    continue;
+                }
+                $otherItems = is_array($allLangs[$langKey]['items'] ?? null) ? $allLangs[$langKey]['items'] : [];
+                $maxCount   = max(count($newSharedNumbers), count($newSharedImgs), count($otherItems));
+
+                for ($idx = 0; $idx < $maxCount; $idx++) {
+                    $sharedNum = $newSharedNumbers[$idx] ?? ($otherItems[$idx]['number'] ?? '');
+                    $sharedImg = $newSharedImgs[$idx] ?? ($otherItems[$idx]['img'] ?? '');
+                    if (!isset($otherItems[$idx]) || !is_array($otherItems[$idx])) {
+                        $otherItems[$idx] = [
+                            'number' => $sharedNum,
+                            'title'  => $finalItems[$idx]['title'] ?? '',
+                            'img'    => $sharedImg,
+                        ];
+                    } else {
+                        if ($sharedNum !== '') {
+                            $otherItems[$idx]['number'] = $sharedNum;
+                        }
+                        if ($sharedImg !== '') {
+                            $otherItems[$idx]['img'] = $sharedImg;
+                        }
+                    }
+                }
+                $allLangs[$langKey]['items'] = $otherItems;
+            }
 
             $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, $allLangs);
             $this->saveSetting($pdo, 'about_counts', $allLangs);

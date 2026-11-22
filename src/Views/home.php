@@ -381,12 +381,6 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 <!-- ================= GUIDE HOME SECTION START ================= -->
 <section class="guide py-2 editable-wrapper" aria-label="Guide Section">
   <div class="edit-board-box">
-    <?php if ($is_admin_active): ?>
-      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#guideEditModal" title="<?php echo htmlspecialchars((string)($lang['manage_guide'] ?? 'Edit Guide'), ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-      </button>
-    <?php endif; ?>
-
     <div class="custom-container">
       <?php
       $gRaw = $decodeRawSetting('guide', []);

@@ -81,6 +81,7 @@ $fallback_translations = [
         'col2_default'           => 'Schnelle Links',
         'col3_default'           => 'Kontaktieren Sie uns',
         'default_logo_text'      => 'Beethoven Stadt Dienste',
+        'default_footer_desc'    => 'Zuverlässige Unterstützung für Studium, Ausbildung, Sprachkurse und den Start in Deutschland – persönlich und transparent begleitet.',
     ],
     'en' => [
         'consult_title'          => 'Get a Free Consultation',
@@ -103,6 +104,7 @@ $fallback_translations = [
         'col2_default'           => 'Quick Links',
         'col3_default'           => 'Contact Us',
         'default_logo_text'      => 'Beethoven City Services (BCS)',
+        'default_footer_desc'    => 'Trusted guidance for university study, vocational training, German courses, and starting your journey in Germany with personal support.',
     ],
     'ar' => [
         'consult_title'          => 'احصل على استشارة مجانية',
@@ -125,26 +127,33 @@ $fallback_translations = [
         'col2_default'           => 'روابط سريعة',
         'col3_default'           => 'تواصل معنا',
         'default_logo_text'      => 'بيتهوفن سيتي للخدمات (BCS)',
+        'default_footer_desc'    => 'نرافقك بثقة ووضوح في رحلة الدراسة، التدريب المهني، تعلم اللغة الألمانية، وبداية مسيرتك في ألمانيا خطوة بخطوة.',
     ],
 ];
 
 $fb = $fallback_translations[$current_lang];
 
-$footerRaw = $data['footer'] ?? [];
+$footerRaw = $data['footer'] ?? (function_exists('get_setting') ? get_setting('footer', []) : []);
 if (is_string($footerRaw)) {
     $footerRaw = json_decode($footerRaw, true) ?? [];
 }
+if (!is_array($footerRaw)) {
+    $footerRaw = [];
+}
 
-$currentLangData = is_array($footerRaw)
-    ? ($footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['en'] ?? ($footerRaw['ar'] ?? []))))
-    : [];
+$sharedCol3Imgs = is_array($footerRaw['shared_col3_img'] ?? null) ? $footerRaw['shared_col3_img'] : [];
+
+$currentLangData = $footerRaw[$current_lang] ?? ($footerRaw['de'] ?? ($footerRaw['en'] ?? ($footerRaw['ar'] ?? [])));
 if (!is_array($currentLangData)) {
     $currentLangData = [];
 }
 
 $consultTitle = (string)($currentLangData['consult_title'] ?? ($lang['consult_title'] ?? $fb['consult_title']));
 $consultDesc  = (string)($currentLangData['consult_desc'] ?? '');
-$footerDesc   = (string)($currentLangData['footer_desc'] ?? '');
+$footerDesc   = trim((string)($currentLangData['footer_desc'] ?? ''));
+if ($footerDesc === '') {
+    $footerDesc = $fb['default_footer_desc'];
+}
 $col2Title    = (string)($currentLangData['col2_title'] ?? $fb['col2_default']);
 $col3Title    = (string)($currentLangData['col3_title'] ?? $fb['col3_default']);
 $col3Items    = is_array($currentLangData['col3_items'] ?? null) ? $currentLangData['col3_items'] : [];
@@ -295,14 +304,15 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
                         </div>
                     </div>
 
-                    <!-- العمود الثالث (وسائل التواصل من col3_items) -->
+                    <!-- العمود الثالث (وسائل التواصل من col3_items مع صور موحدة) -->
                     <div class="col-12 col-md-6 col-lg-4">
                         <h5><?php echo htmlspecialchars($col3Title, ENT_QUOTES, 'UTF-8'); ?></h5>
                         <div class="contact-link">
                             <?php 
-                            foreach ($col3Items as $link): 
+                            foreach ($col3Items as $cIdx => $link): 
                                 if (!is_array($link)) continue;
-                                $icon_img   = get_image_url($link['img'] ?? null);
+                                $rawCol3Img = $sharedCol3Imgs[$cIdx] ?? ($link['img'] ?? null);
+                                $icon_img   = get_image_url($rawCol3Img);
                                 $col3_title = (string)($link['title'] ?? '');
                                 $col3_url   = trim((string)($link['url'] ?? '#'));
                                 if (preg_match('/^(javascript|data|vbscript):/i', $col3_url)) {
@@ -311,7 +321,7 @@ $is_admin          = !empty($is_admin) && $is_admin === true;
                             ?>
                                 <a href="<?php echo htmlspecialchars($col3_url, ENT_QUOTES, 'UTF-8'); ?>" class="d-flex align-items-center gap-2">
                                     <?php if (!empty($icon_img)): ?>
-                                        <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px;" alt="">
+                                        <img src="<?php echo htmlspecialchars($icon_img, ENT_QUOTES, 'UTF-8'); ?>" style="width:20px; height:20px; object-fit:contain; flex-shrink:0;" alt="">
                                     <?php endif; ?>
                                     <?php echo htmlspecialchars($col3_title, ENT_QUOTES, 'UTF-8'); ?>
                                 </a>

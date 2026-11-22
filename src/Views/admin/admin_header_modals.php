@@ -1417,6 +1417,10 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
             <div class="modal-body p-4">
                 <?php 
                 $footerAllLangs = $decodeAdminJson($settingsPool['footer'] ?? ($data['footer'] ?? []));
+                $sharedCol3ModalImgs = is_array($footerAllLangs['shared_col3_img'] ?? null)
+                    ? $footerAllLangs['shared_col3_img']
+                    : [];
+
                 $curLangFooterData = is_array($footerAllLangs[$current_lang] ?? null)
                     ? $footerAllLangs[$current_lang]
                     : (is_array($footerAllLangs['de'] ?? null) ? $footerAllLangs['de'] : []);
@@ -1489,6 +1493,8 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                                     $footerCol3LinksData = is_array($curLangFooterData['col3_items'] ?? null) ? $curLangFooterData['col3_items'] : [];
                                     foreach ($footerCol3LinksData as $i => $link): 
                                         if (!is_array($link)) continue;
+                                        $rawCol3ModalImg = $sharedCol3ModalImgs[$i] ?? ($link['img'] ?? '');
+                                        $safeCol3ModalImg = safe_admin_string($rawCol3ModalImg, $current_lang);
                                     ?>
                                         <div class="p-3 shadow-sm footer-col3-item" id="col3_<?php echo $i; ?>" style="background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0 !important;">
                                             <div class="row g-3 align-items-center">
@@ -1505,9 +1511,9 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                                                 <div class="col-md-3 <?php echo $modal_align; ?>">
                                                     <label class="small fw-bold mb-1 text-secondary"><?php echo htmlspecialchars((string)($ml['contact_icon_image'] ?? 'الأيقونة / الصورة'), ENT_QUOTES, 'UTF-8'); ?></label>
                                                     <div class="d-flex align-items-center gap-2">
-                                                        <?php if (!empty($link['img'])): ?>
+                                                        <?php if ($safeCol3ModalImg !== ''): ?>
                                                             <div class="p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center" style="flex-shrink: 0;">
-                                                                <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($link['img']) : $link['img'], $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
+                                                                <img src="<?php echo htmlspecialchars(safe_admin_string(function_exists('get_image_url') ? get_image_url($safeCol3ModalImg) : $safeCol3ModalImg, $current_lang), ENT_QUOTES, 'UTF-8'); ?>" 
                                                                      alt="Contact Icon" 
                                                                      class="rounded-2" 
                                                                      style="width: 36px; height: 36px; object-fit: cover;">
@@ -1523,7 +1529,7 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                                                     </button>
                                                 </div>
                                             </div>
-                                            <input type="hidden" class="footer-col3-old-img" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars(safe_admin_string($link['img'] ?? '', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" class="footer-col3-old-img" name="col3[<?php echo $i; ?>][old_img]" value="<?php echo htmlspecialchars($safeCol3ModalImg, ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -1970,6 +1976,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (adTypeSelect) {
         toggleAdContent(adTypeSelect.value);
     }
+
+    // معاينة فورية لصورة الفوتر المشتركة عند اختيار ملف في الصف
+    document.addEventListener('change', function(e) {
+        const target = e.target;
+        if (!(target instanceof HTMLInputElement) || target.type !== 'file' || !target.classList.contains('footer-col3-file')) {
+            return;
+        }
+        const row = target.closest('.footer-col3-item');
+        const file = target.files && target.files[0];
+        if (!row || !file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const previewUrl = String(ev.target?.result || '');
+            if (!previewUrl) return;
+            let previewImg = row.querySelector('img');
+            if (!previewImg) {
+                const holder = document.createElement('div');
+                holder.className = 'p-1 bg-white rounded-3 border d-flex align-items-center justify-content-center';
+                holder.style.flexShrink = '0';
+                previewImg = document.createElement('img');
+                previewImg.alt = 'Contact Icon';
+                previewImg.className = 'rounded-2';
+                previewImg.style.cssText = 'width: 36px; height: 36px; object-fit: cover;';
+                holder.appendChild(previewImg);
+                target.parentElement?.insertBefore(holder, target);
+            }
+            previewImg.src = previewUrl;
+        };
+        reader.readAsDataURL(file);
+    });
 
     document.addEventListener('submit', async function(e) {
         const form = e.target;

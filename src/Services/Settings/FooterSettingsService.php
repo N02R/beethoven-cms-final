@@ -77,6 +77,10 @@ class FooterSettingsService
                 }
             }
 
+            $sharedCol3Imgs = is_array($footerAllLangs['shared_col3_img'] ?? null)
+                ? $footerAllLangs['shared_col3_img']
+                : [];
+
             $postedFooter    = $_POST['footer'][$targetLang] ?? $_POST['footer'] ?? [];
             $currentLangData = $footerAllLangs[$targetLang] ?? [];
 
@@ -86,20 +90,23 @@ class FooterSettingsService
             $col2Title    = trim((string)($postedFooter['col2_title'] ?? ($currentLangData['col2_title'] ?? '')));
             $col3Title    = trim((string)($postedFooter['col3_title'] ?? ($currentLangData['col3_title'] ?? '')));
 
-            $incomingCol3   = $_POST['col3'] ?? [];
-            $processedItems = [];
+            $incomingCol3    = $_POST['col3'] ?? [];
+            $processedItems  = [];
+            $newSharedImgs   = [];
 
             if (is_array($incomingCol3)) {
+                $rowPos = 0;
                 foreach ($incomingCol3 as $index => $item) {
                     if (!is_array($item)) continue;
 
                     $title  = trim((string)($item['title'] ?? ''));
                     $url    = $this->sanitizeUrl($item['url'] ?? '#');
                     $oldImg = (string)($item['old_img'] ?? '');
-                    
-                    $fileToCheck = $_FILES['col3_img_' . $index] ?? null;
+                    $fallbackSharedImg = (string)($sharedCol3Imgs[$rowPos] ?? ($sharedCol3Imgs[$index] ?? ''));
 
-                    $imgVal = $oldImg;
+                    $fileToCheck = $_FILES['col3_img_' . $index] ?? ($_FILES['col3_img_' . $rowPos] ?? null);
+
+                    $imgVal = $oldImg !== '' ? $oldImg : $fallbackSharedImg;
                     if ($fileToCheck && is_array($fileToCheck) && $fileToCheck['error'] === UPLOAD_ERR_OK) {
                         if ($oldImg !== '' && str_starts_with($oldImg, 'assets/uploads/')) {
                             $this->deleteOldImageFile($oldImg);
@@ -108,12 +115,14 @@ class FooterSettingsService
                         $imgVal = 'assets/uploads/' . $filename;
                     }
 
-                    if ($title !== '' || $url !== '#') {
+                    if ($title !== '' || $url !== '#' || $imgVal !== '') {
                         $processedItems[] = [
                             'title' => $title,
                             'url'   => $url,
                             'img'   => $imgVal
                         ];
+                        $newSharedImgs[] = $imgVal;
+                        $rowPos++;
                     }
                 }
             }
@@ -126,6 +135,34 @@ class FooterSettingsService
                 'footer_desc'   => $footerDesc,
                 'col3_items'    => $processedItems
             ];
+            $footerAllLangs['shared_col3_img'] = $newSharedImgs;
+
+            foreach (self::SUPPORTED_LANGS as $langKey) {
+                if (!isset($footerAllLangs[$langKey]) || !is_array($footerAllLangs[$langKey])) {
+                    continue;
+                }
+                if ($langKey === $targetLang) {
+                    continue;
+                }
+                $otherItems = is_array($footerAllLangs[$langKey]['col3_items'] ?? null)
+                    ? $footerAllLangs[$langKey]['col3_items']
+                    : [];
+                foreach ($newSharedImgs as $sIdx => $sImg) {
+                    if ($sImg === '') {
+                        continue;
+                    }
+                    if (!isset($otherItems[$sIdx]) || !is_array($otherItems[$sIdx])) {
+                        $otherItems[$sIdx] = [
+                            'title' => $processedItems[$sIdx]['title'] ?? '',
+                            'url'   => $processedItems[$sIdx]['url'] ?? '#',
+                            'img'   => $sImg
+                        ];
+                    } else {
+                        $otherItems[$sIdx]['img'] = $sImg;
+                    }
+                }
+                $footerAllLangs[$langKey]['col3_items'] = $otherItems;
+            }
 
             $jsonVal = json_encode($footerAllLangs, JSON_UNESCAPED_UNICODE);
             if ($jsonVal === false || trim($jsonVal) === '') {

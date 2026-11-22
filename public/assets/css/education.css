@@ -266,7 +266,7 @@
 .step-1 {
     --step-pos: 3.25%;
     --step-top: 30%;
-    --num-top: 100px;
+    --num-top: 10px;
     --icon-top: 45px;
     --icon-left: 50%;
     --info-top: 110px;

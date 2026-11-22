@@ -266,7 +266,7 @@
 .step-1 {
     --step-pos: 3.25%;
     --step-top: 30%;
-    --num-top: 7px;
+    --num-top: 0px;
     --icon-top: 45px;
     --icon-left: 50%;
     --info-top: 110px;
@@ -276,7 +276,7 @@
 .step-2 {
     --step-pos: 21%;
     --step-top: -6%;
-    --num-top: 105px;
+    --num-top: 0px;
     --icon-top: 25px;
     --icon-left: 50%;
     --info-top: -175px;
@@ -286,7 +286,7 @@
 .step-3 {
     --step-pos: 40%;
     --step-top: 30%;
-    --num-top: -15px;
+    --num-top: 0px;
     --icon-top: 80px;
     --icon-left: 50%;
     --info-top: 140px;
@@ -296,7 +296,7 @@
 .step-4 {
     --step-pos: 58%;
     --step-top: -6%;
-    --num-top: 105px;
+    --num-top: 0px;
     --icon-top: 25px;
     --icon-left: 50%;
     --info-top: -175px;
@@ -316,7 +316,7 @@
 .step-6 {
     --step-pos: 96%;
     --step-top: -6%;
-    --num-top: 95px;
+    --num-top: 0px;
     --icon-top: 25px;
     --icon-left: 50%;
     --info-top: -175px;

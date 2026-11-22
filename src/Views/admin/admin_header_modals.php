@@ -193,7 +193,6 @@ if (!defined('ALLOWED_ACCESS')) {
 .custom-modal input[type="datetime-local"] {
     direction: ltr !important;
     text-align: left !important;
-    unicode-bidi: isolate;
 }
 
     /* ==========================================================================
@@ -612,11 +611,11 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['start_date'] ?? 'تاريخ البدء'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="datetime-local" class="form-control" name="start_date" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedStartVal, $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="start_date" lang="en-GB" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedStartVal, $current_lang)); ?>">
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['end_date'] ?? 'تاريخ الانتهاء'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="datetime-local" class="form-control" name="end_date" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedEndVal, $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="end_date" lang="en-GB" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedEndVal, $current_lang)); ?>">
                             </div>
                         </div>
                     </div>

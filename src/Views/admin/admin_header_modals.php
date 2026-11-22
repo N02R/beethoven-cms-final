@@ -190,10 +190,6 @@ if (!defined('ALLOWED_ACCESS')) {
         background: #fecaca; 
         transform: translateY(-1px);
     }
-.custom-modal input[type="datetime-local"] {
-    direction: ltr !important;
-    text-align: left !important;
-}
 
     /* ==========================================================================
        2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)

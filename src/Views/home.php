@@ -313,11 +313,17 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
     <?php endif; ?>
 
     <?php
+    $rRaw      = $decodeRawSetting('reviews_items', []);
+    $rRaw      = is_array($rRaw) ? $rRaw : [];
     $r_data    = $getLocalizedData('reviews_items', []);
     $r_data    = is_array($r_data) ? $r_data : [];
     $sec_title = (string)($r_data['section_title'] ?? ($r_data['title'] ?? ''));
 
-    $reviews_videos = is_array($r_data['items'] ?? null) ? $r_data['items'] : [];
+    // توحيد فيديوهات التقييمات لتكون مشتركة بين كل اللغات
+    $reviews_videos = is_array($rRaw['shared_items'] ?? null)
+        ? $rRaw['shared_items']
+        : (is_array($r_data['items'] ?? null) ? $r_data['items'] : []);
+
     $valid_videos = [];
     foreach ($reviews_videos as $v) {
         if (is_array($v) && !empty($v['url'])) {

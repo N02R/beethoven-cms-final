@@ -310,7 +310,7 @@ class HomeSettingsService
             $this->saveSetting($pdo, 'faq', $faqAllLangs);
         }
 
-        // 4. تحديث التقييمات وفيديوهات العملاء (Reviews - DSGVO No-Cookie)
+        // 4. تحديث التقييمات وفيديوهات العملاء (Reviews - DSGVO No-Cookie) مع توحيد الفيديوهات عبر اللغات
         elseif ($action === 'update_reviews') {
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['targetLang'] ?? ''),
@@ -329,8 +329,9 @@ class HomeSettingsService
             $reviewsTitle = trim((string)($postedReviews['title'] ?? ($_POST['reviews_title'] ?? ($currentLangData['title'] ?? ''))));
 
             $finalItems = [];
-            if (isset($postedReviews['items']) && is_array($postedReviews['items'])) {
-                foreach ($postedReviews['items'] as $item) {
+            $rawItems = $postedReviews['items'] ?? ($_POST['reviews_items'] ?? []);
+            if (is_array($rawItems)) {
+                foreach ($rawItems as $item) {
                     if (!is_array($item)) {
                         continue;
                     }
@@ -347,6 +348,18 @@ class HomeSettingsService
                 'title' => $reviewsTitle,
                 'items' => $finalItems,
             ];
+            $reviewsAllLangs['shared_items'] = $finalItems;
+
+            foreach (self::SUPPORTED_LANGS as $langCode) {
+                if (!isset($reviewsAllLangs[$langCode]) || !is_array($reviewsAllLangs[$langCode])) {
+                    $reviewsAllLangs[$langCode] = [
+                        'title' => $reviewsTitle,
+                        'items' => $finalItems,
+                    ];
+                } else {
+                    $reviewsAllLangs[$langCode]['items'] = $finalItems;
+                }
+            }
 
             $this->saveSetting($pdo, 'reviews_items', $reviewsAllLangs);
         }

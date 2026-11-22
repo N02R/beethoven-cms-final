@@ -1156,7 +1156,9 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                 $decodedReviews = $decodeAdminJson($settingsPool['reviews_items'] ?? ($data['reviews_items'] ?? []));
                 $rModalData = is_array($decodedReviews[$current_lang] ?? null) ? $decodedReviews[$current_lang] : $decodedReviews;
                 $curTitle   = $rModalData['title'] ?? '';
-                $curVideos  = is_array($rModalData['items'] ?? null) ? $rModalData['items'] : [];
+                $curVideos  = is_array($decodedReviews['shared_items'] ?? null)
+                    ? $decodedReviews['shared_items']
+                    : (is_array($rModalData['items'] ?? null) ? $rModalData['items'] : []);
                 ?>
 
                 <form id="reviewsForm" class="admin-settings-form">
@@ -1174,9 +1176,14 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         </div>
                     </div>
 
-                    <h6 class="fw-bold mb-3 <?php echo $modal_align; ?>">
-                        <?php echo htmlspecialchars((string)($ml['added_videos'] ?? 'الفيديوهات المضافة'), ENT_QUOTES, 'UTF-8'); ?>
-                    </h6>
+                    <div class="d-flex align-items-center justify-content-between mb-3 <?php echo $modal_align; ?>">
+                        <h6 class="fw-bold m-0">
+                            <?php echo htmlspecialchars((string)($ml['added_videos'] ?? 'الفيديوهات المضافة'), ENT_QUOTES, 'UTF-8'); ?>
+                        </h6>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">
+                            <?php echo htmlspecialchars((string)($ml['shared_across_languages'] ?? 'مشترك لجميع اللغات'), ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                    </div>
                     <div id="reviewsRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($curVideos as $index => $item): 
                             if (!is_array($item)) continue;

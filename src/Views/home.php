@@ -345,7 +345,7 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
     <div class="custom-container">
       <div class="reviews-carousel-wrapper">
-        <div id="carousel-reviews" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+        <div id="carousel-reviews" class="carousel slide" data-bs-ride="false" data-bs-interval="false" data-bs-touch="true" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
           <div class="carousel-inner">
             <?php if (!empty($valid_videos)): ?>
               <?php foreach ($valid_videos as $index => $item): ?>
@@ -414,7 +414,7 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
         <p class="main-p"><?php echo nl2br(htmlspecialchars($guide_desc, ENT_QUOTES, 'UTF-8')); ?></p>
       <?php endif; ?>
 
-      <div id="carousel-guide" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+      <div id="carousel-guide" class="carousel slide" data-bs-ride="false" data-bs-interval="false" data-bs-touch="true">
         <div class="carousel-inner" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
           <?php if (!empty($chunks)): ?>
             <?php foreach ($chunks as $index => $slide_items): ?>

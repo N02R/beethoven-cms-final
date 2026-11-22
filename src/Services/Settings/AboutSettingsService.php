@@ -40,7 +40,7 @@ class AboutSettingsService
 
         $this->filesToDelete = [];
 
-        // 1. تحديث قسم من نحن الرئيسي (About Section)
+        // 1. تحديث قسم من نحن الرئيسي (About Section) مع توحيد الصور المشتركة عبر اللغات
         if ($action === 'update_about_section') {
             $targetLang = $this->resolveTargetLang(['about_lang', 'targetLang']);
             $allLangs   = $this->fetchSetting($pdo, 'about_section', $currentSettings);
@@ -53,28 +53,33 @@ class AboutSettingsService
                 ? $_POST['about'][$targetLang]
                 : (is_array($_POST['about'] ?? null) ? $_POST['about'] : []);
 
+            $fallbackMain   = (string)($allLangs['shared_main_img'] ?? ($currentLangData['main_img'] ?? ''));
+            $fallbackSub    = (string)($allLangs['shared_sub_img'] ?? ($currentLangData['sub_img'] ?? ''));
+            $fallbackVision = (string)($allLangs['shared_vision_icon'] ?? ($currentLangData['vision_icon'] ?? ''));
+            $fallbackMsg    = (string)($allLangs['shared_message_icon'] ?? ($currentLangData['message_icon'] ?? ''));
+
             $mainImg = $this->handleImageField(
                 'about_main_img',
-                (string)($postAbout['old_main_img'] ?? ($currentLangData['main_img'] ?? '')),
-                (string)($currentLangData['main_img'] ?? '')
+                (string)($postAbout['old_main_img'] ?? $fallbackMain),
+                $fallbackMain
             );
 
             $subImg = $this->handleImageField(
                 'about_sub_img',
-                (string)($postAbout['old_sub_img'] ?? ($currentLangData['sub_img'] ?? '')),
-                (string)($currentLangData['sub_img'] ?? '')
+                (string)($postAbout['old_sub_img'] ?? $fallbackSub),
+                $fallbackSub
             );
 
             $visionIcon = $this->handleImageField(
                 'about_vision_icon',
-                (string)($postAbout['old_vision_icon'] ?? ($currentLangData['vision_icon'] ?? '')),
-                (string)($currentLangData['vision_icon'] ?? '')
+                (string)($postAbout['old_vision_icon'] ?? $fallbackVision),
+                $fallbackVision
             );
 
             $messageIcon = $this->handleImageField(
                 'about_message_icon',
-                (string)($postAbout['old_message_icon'] ?? ($currentLangData['message_icon'] ?? '')),
-                (string)($currentLangData['message_icon'] ?? '')
+                (string)($postAbout['old_message_icon'] ?? $fallbackMsg),
+                $fallbackMsg
             );
 
             $allLangs[$targetLang] = [
@@ -92,10 +97,22 @@ class AboutSettingsService
                 'message_icon'  => $messageIcon,
             ];
 
+            $allLangs['shared_main_img']    = $mainImg;
+            $allLangs['shared_sub_img']     = $subImg;
+            $allLangs['shared_vision_icon'] = $visionIcon;
+            $allLangs['shared_message_icon'] = $messageIcon;
+
+            $this->propagateSharedSectionImages($allLangs, [
+                'main_img'     => $mainImg,
+                'sub_img'      => $subImg,
+                'vision_icon'  => $visionIcon,
+                'message_icon' => $messageIcon,
+            ]);
+
             $this->saveSetting($pdo, 'about_section', $allLangs);
         }
 
-        // 2. تحديث خدمات صفحة من نحن المستقلة (About Services)
+        // 2. تحديث خدمات صفحة من نحن المستقلة (About Services) مع توحيد صور العناصر
         elseif ($action === 'update_about_services') {
             $targetLang = $this->resolveTargetLang(['targetLang', 'about_services_lang']);
             $allLangs   = $this->fetchSetting($pdo, 'about_services', $currentSettings);
@@ -108,19 +125,22 @@ class AboutSettingsService
                 ? $_POST['about_services'][$targetLang]
                 : (is_array($_POST['about_services'] ?? null) ? $_POST['about_services'] : []);
 
-            $secTitle = trim((string)($postedServices['section_title'] ?? ($currentLangData['section_title'] ?? '')));
-            $secSub   = trim((string)($postedServices['section_subtitle'] ?? ($currentLangData['section_subtitle'] ?? '')));
+            $secTitle      = trim((string)($postedServices['section_title'] ?? ($currentLangData['section_title'] ?? '')));
+            $secSub        = trim((string)($postedServices['section_subtitle'] ?? ($currentLangData['section_subtitle'] ?? '')));
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+            $sharedImgs    = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
 
-            $finalItems = [];
-            $rawItems = $postedServices['items'] ?? [];
+            $finalItems    = [];
+            $newSharedImgs = [];
+            $rawItems      = $postedServices['items'] ?? [];
 
             if (is_array($rawItems)) {
+                $rowPos = 0;
                 foreach ($rawItems as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$rowPos] ?? ($sharedImgs[$index] ?? ($existingItems[$index]['img'] ?? '')));
                     $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
                     $img      = $this->handleImageField('about_services_img_' . $index, $oldImg, $dbOldImg);
 
@@ -129,38 +149,45 @@ class AboutSettingsService
                         'url'   => $this->sanitizeLinkUrl((string)($item['url'] ?? '#')),
                         'img'   => $img,
                     ];
+                    $newSharedImgs[] = $img;
+                    $rowPos++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'section_title'    => $secTitle,
                 'section_subtitle' => $secSub,
                 'items'            => $finalItems,
             ];
+            $allLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedListImages($allLangs, $newSharedImgs, $targetLang, ['title' => '', 'url' => '#']);
 
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, $allLangs);
             $this->saveSetting($pdo, 'about_services', $allLangs);
         }
 
-        // 3. تحديث العدادات والإحصائيات (About Counts)
+        // 3. تحديث العدادات والإحصائيات (About Counts) مع توحيد صور العناصر
         elseif ($action === 'update_about_counts') {
             $targetLang = $this->resolveTargetLang(['targetLang', 'about_counts_lang']);
             $allLangs   = $this->fetchSetting($pdo, 'about_counts', $currentSettings);
 
             $currentLangData = is_array($allLangs[$targetLang] ?? null) ? $allLangs[$targetLang] : [];
             $existingItems   = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+            $sharedImgs      = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
 
             $postedItems = $_POST['about_counts'][$targetLang]['items']
                 ?? ($_POST['about_counts']['items'] ?? []);
 
-            $finalItems = [];
+            $finalItems    = [];
+            $newSharedImgs = [];
+
             if (is_array($postedItems)) {
+                $rowPos = 0;
                 foreach ($postedItems as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$rowPos] ?? ($sharedImgs[$index] ?? ($existingItems[$index]['img'] ?? '')));
                     $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
                     $img      = $this->handleImageField('count_img_' . $index, $oldImg, $dbOldImg);
 
@@ -169,19 +196,22 @@ class AboutSettingsService
                         'title'  => trim((string)($item['title'] ?? '')),
                         'img'    => $img,
                     ];
+                    $newSharedImgs[] = $img;
+                    $rowPos++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'items' => $finalItems,
             ];
+            $allLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedListImages($allLangs, $newSharedImgs, $targetLang, ['number' => '', 'title' => '']);
 
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, $allLangs);
             $this->saveSetting($pdo, 'about_counts', $allLangs);
         }
 
-        // 4. تحديث الشركاء (Partners)
+        // 4. تحديث الشركاء (Partners) مع توحيد صور العناصر
         elseif ($action === 'update_partners' || $action === 'update_about_partners') {
             $targetLang = $this->resolveTargetLang(['targetLang', 'partners_lang']);
             $allLangs   = $this->fetchSetting($pdo, 'partners', $currentSettings);
@@ -196,36 +226,42 @@ class AboutSettingsService
 
             $partnersTitle = trim((string)($postedPartners['title'] ?? ($_POST['partners_title'] ?? ($currentLangData['title'] ?? ''))));
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+            $sharedImgs    = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
 
-            $finalItems = [];
-            $rawItems = $postedPartners['items'] ?? ($_POST['partner_items'] ?? []);
+            $finalItems    = [];
+            $newSharedImgs = [];
+            $rawItems      = $postedPartners['items'] ?? ($_POST['partner_items'] ?? []);
 
             if (is_array($rawItems)) {
+                $rowPos = 0;
                 foreach ($rawItems as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$rowPos] ?? ($sharedImgs[$index] ?? ($existingItems[$index]['img'] ?? '')));
                     $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
                     $img      = $this->handleImageField('partner_img_' . $index, $oldImg, $dbOldImg);
 
                     if ($img !== '') {
-                        $finalItems[] = ['img' => $img];
+                        $finalItems[]    = ['img' => $img];
+                        $newSharedImgs[] = $img;
+                        $rowPos++;
                     }
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'title' => $partnersTitle,
                 'items' => $finalItems,
             ];
+            $allLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedListImages($allLangs, $newSharedImgs, $targetLang, []);
 
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, $allLangs);
             $this->saveSetting($pdo, 'partners', $allLangs);
         }
 
-        // 5. تحديث فريق العمل (Team)
+        // 5. تحديث فريق العمل (Team) مع توحيد صور العناصر
         elseif ($action === 'update_about_team' || $action === 'update_team') {
             $targetLang = $this->resolveTargetLang(['targetLang', 'team_lang']);
             $allLangs   = $this->fetchSetting($pdo, 'team', $currentSettings);
@@ -238,19 +274,22 @@ class AboutSettingsService
                 ? $_POST['team'][$targetLang]
                 : (is_array($_POST['team'] ?? null) ? $_POST['team'] : []);
 
-            $teamTitle = trim((string)($postedTeam['title'] ?? ($_POST['team_title'] ?? ($currentLangData['title'] ?? ''))));
-            $teamDesc  = trim((string)($postedTeam['desc'] ?? ($_POST['team_desc'] ?? ($currentLangData['desc'] ?? ''))));
+            $teamTitle     = trim((string)($postedTeam['title'] ?? ($_POST['team_title'] ?? ($currentLangData['title'] ?? ''))));
+            $teamDesc      = trim((string)($postedTeam['desc'] ?? ($_POST['team_desc'] ?? ($currentLangData['desc'] ?? ''))));
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+            $sharedImgs    = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
 
-            $finalItems = [];
-            $rawItems = $postedTeam['items'] ?? [];
+            $finalItems    = [];
+            $newSharedImgs = [];
+            $rawItems      = $postedTeam['items'] ?? [];
 
             if (is_array($rawItems)) {
+                $rowPos = 0;
                 foreach ($rawItems as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$rowPos] ?? ($sharedImgs[$index] ?? ($existingItems[$index]['img'] ?? '')));
                     $oldImg   = (string)($item['img'] ?? ($item['old_img'] ?? $dbOldImg));
                     $img      = $this->handleImageField('team_img_' . $index, $oldImg, $dbOldImg);
 
@@ -259,17 +298,20 @@ class AboutSettingsService
                         'role' => trim((string)($item['role'] ?? '')),
                         'img'  => $img,
                     ];
+                    $newSharedImgs[] = $img;
+                    $rowPos++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems);
 
             $allLangs[$targetLang] = [
                 'title' => $teamTitle,
                 'desc'  => $teamDesc,
                 'items' => $finalItems,
             ];
+            $allLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedListImages($allLangs, $newSharedImgs, $targetLang, ['name' => '', 'role' => '']);
 
+            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, $allLangs);
             $this->saveSetting($pdo, 'team', $allLangs);
         }
 
@@ -280,14 +322,74 @@ class AboutSettingsService
     }
 
     /**
-     * جدولة صور العناصر التي تم حذفها من القائمة لحذفها بأمان بعد حفظ قاعدة البيانات
+     * تعميم صور القسم المشتركة على جميع اللغات الموجودة في الإعداد
      */
-    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems): void
+    private function propagateSharedSectionImages(array &$allLangs, array $imageMap): void
+    {
+        foreach (self::SUPPORTED_LANGS as $langKey) {
+            if (!isset($allLangs[$langKey]) || !is_array($allLangs[$langKey])) {
+                continue;
+            }
+            foreach ($imageMap as $field => $val) {
+                if ($val !== '') {
+                    $allLangs[$langKey][$field] = $val;
+                }
+            }
+        }
+    }
+
+    /**
+     * تعميم صور العناصر المشتركة على بقية اللغات الموجودة في الإعداد
+     */
+    private function propagateSharedListImages(array &$allLangs, array $sharedImgs, string $sourceLang, array $itemDefaults): void
+    {
+        foreach (self::SUPPORTED_LANGS as $langKey) {
+            if ($langKey === $sourceLang || !isset($allLangs[$langKey]) || !is_array($allLangs[$langKey])) {
+                continue;
+            }
+            $otherItems = is_array($allLangs[$langKey]['items'] ?? null) ? $allLangs[$langKey]['items'] : [];
+            foreach ($sharedImgs as $idx => $imgPath) {
+                if ($imgPath === '') {
+                    continue;
+                }
+                if (!isset($otherItems[$idx]) || !is_array($otherItems[$idx])) {
+                    $otherItems[$idx] = array_merge($itemDefaults, ['img' => $imgPath]);
+                } else {
+                    $otherItems[$idx]['img'] = $imgPath;
+                }
+            }
+            $allLangs[$langKey]['items'] = $otherItems;
+        }
+    }
+
+    /**
+     * جدولة صور العناصر التي تم حذفها من القائمة لحذفها بأمان إذا لم تعد مستخدمة
+     */
+    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems, array $allLangs): void
     {
         $retainedImages = [];
         foreach ($finalItems as $item) {
             if (is_array($item) && !empty($item['img'])) {
                 $retainedImages[ltrim((string)$item['img'], '/')] = true;
+            }
+        }
+
+        if (is_array($allLangs['shared_items_img'] ?? null)) {
+            foreach ($allLangs['shared_items_img'] as $sImg) {
+                if (is_string($sImg) && $sImg !== '') {
+                    $retainedImages[ltrim($sImg, '/')] = true;
+                }
+            }
+        }
+
+        foreach (self::SUPPORTED_LANGS as $langKey) {
+            if (!is_array($allLangs[$langKey]['items'] ?? null)) {
+                continue;
+            }
+            foreach ($allLangs[$langKey]['items'] as $langItem) {
+                if (is_array($langItem) && !empty($langItem['img'])) {
+                    $retainedImages[ltrim((string)$langItem['img'], '/')] = true;
+                }
             }
         }
 

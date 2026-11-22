@@ -106,13 +106,15 @@ $modalI18n = [
 ];
 $mTxt = $modalI18n[$current_lang];
 
-// دالة مساعدة لجلب البيانات الخام لكل قسم متعدد اللغات
-$fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
+// دالة مساعدة لجلب البيانات الخام الكاملة لكل قسم متعدد اللغات (بما في ذلك المفاتيح المشتركة)
+$fetchRawSettingAll = static function (string $key): array {
     $raw = get_setting($key, '{}');
     $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
-    if (!is_array($decoded)) {
-        return [];
-    }
+    return is_array($decoded) ? $decoded : [];
+};
+
+// دالة مساعدة لجلب بيانات اللغة الحالية من الإعداد الكامل
+$extractLangFromRaw = static function (array $decoded) use ($current_lang): array {
     if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
         return $decoded[$current_lang];
     }
@@ -143,19 +145,20 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
             </div>
             <div class="modal-body p-4">
                 <?php 
-                $curLangAbout      = $fetchRawMultilingualSetting('about_section');
+                $rawAboutAll       = $fetchRawSettingAll('about_section');
+                $curLangAbout      = $extractLangFromRaw($rawAboutAll);
                 $modalAbTitle      = $curLangAbout['title'] ?? ($ab['title'] ?? '');
                 $modalAbDesc       = $curLangAbout['desc'] ?? ($ab['desc'] ?? '');
                 $modalAbBtnText    = $curLangAbout['btn_text'] ?? ($ab['btn_text'] ?? '');
                 $modalAbBtnUrl     = $curLangAbout['btn_url'] ?? ($ab['btn_url'] ?? '#');
-                $modalMainImg      = $curLangAbout['main_img'] ?? ($ab['main_img'] ?? '');
-                $modalSubImg       = $curLangAbout['sub_img'] ?? ($ab['sub_img'] ?? '');
+                $modalMainImg      = $rawAboutAll['shared_main_img'] ?? ($curLangAbout['main_img'] ?? ($ab['main_img'] ?? ''));
+                $modalSubImg       = $rawAboutAll['shared_sub_img'] ?? ($curLangAbout['sub_img'] ?? ($ab['sub_img'] ?? ''));
                 $modalVisionTitle  = $curLangAbout['vision_title'] ?? ($ab['vision_title'] ?? '');
                 $modalVisionDesc   = $curLangAbout['vision_desc'] ?? ($ab['vision_desc'] ?? '');
-                $modalVisionIcon   = $curLangAbout['vision_icon'] ?? ($ab['vision_icon'] ?? '');
+                $modalVisionIcon   = $rawAboutAll['shared_vision_icon'] ?? ($curLangAbout['vision_icon'] ?? ($ab['vision_icon'] ?? ''));
                 $modalMessageTitle = $curLangAbout['message_title'] ?? ($ab['message_title'] ?? '');
                 $modalMessageDesc  = $curLangAbout['message_desc'] ?? ($ab['message_desc'] ?? '');
-                $modalMessageIcon  = $curLangAbout['message_icon'] ?? ($ab['message_icon'] ?? '');
+                $modalMessageIcon  = $rawAboutAll['shared_message_icon'] ?? ($curLangAbout['message_icon'] ?? ($ab['message_icon'] ?? ''));
                 ?>
 
                 <form id="aboutSectionForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -300,10 +303,12 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
             
             <div class="modal-body p-4">
                 <?php 
-                $curLangAS = $fetchRawMultilingualSetting('about_services');
-                $asTitle   = $curLangAS['section_title'] ?? ($curLangAS['title'] ?? '');
-                $asDesc    = $curLangAS['section_subtitle'] ?? ($curLangAS['desc'] ?? '');
-                $asItems   = is_array($curLangAS['items'] ?? null) ? $curLangAS['items'] : [];
+                $rawASAll    = $fetchRawSettingAll('about_services');
+                $sharedASImg = is_array($rawASAll['shared_items_img'] ?? null) ? $rawASAll['shared_items_img'] : [];
+                $curLangAS   = $extractLangFromRaw($rawASAll);
+                $asTitle     = $curLangAS['section_title'] ?? ($curLangAS['title'] ?? '');
+                $asDesc      = $curLangAS['section_subtitle'] ?? ($curLangAS['desc'] ?? '');
+                $asItems     = is_array($curLangAS['items'] ?? null) ? $curLangAS['items'] : [];
                 ?>
 
                 <form id="aboutServicesForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -335,7 +340,7 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
                             if (!is_array($item)) continue;
                             $itemTitle = (string)($item['title'] ?? '');
                             $itemUrl   = (string)($item['url'] ?? '');
-                            $itemImg   = (string)($item['img'] ?? '');
+                            $itemImg   = (string)($sharedASImg[$index] ?? ($item['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm service-item-row" id="about_service_row_<?php echo $index; ?>" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                                 <div class="row g-3 align-items-center">
@@ -397,7 +402,9 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
             
             <div class="modal-body p-4">
                 <?php 
-                $curLangTeam    = $fetchRawMultilingualSetting('team');
+                $rawTeamAll     = $fetchRawSettingAll('team');
+                $sharedTeamImg  = is_array($rawTeamAll['shared_items_img'] ?? null) ? $rawTeamAll['shared_items_img'] : [];
+                $curLangTeam    = $extractLangFromRaw($rawTeamAll);
                 $modalTeamTitle = $curLangTeam['title'] ?? ($data['team_title'] ?? '');
                 $modalTeamDesc  = $curLangTeam['desc'] ?? ($data['team_desc'] ?? '');
                 $modalTeamItems = is_array($curLangTeam['items'] ?? null) ? $curLangTeam['items'] : [];
@@ -433,7 +440,7 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
                             if (!is_array($member)) continue;
                             $mName = (string)($member['name'] ?? '');
                             $mRole = (string)($member['role'] ?? '');
-                            $mImg  = (string)($member['img'] ?? '');
+                            $mImg  = (string)($sharedTeamImg[$index] ?? ($member['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm team-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="team_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
@@ -493,8 +500,10 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
             
             <div class="modal-body p-4">
                 <?php 
-                $curLangCounts = $fetchRawMultilingualSetting('about_counts');
-                $countsItems   = is_array($curLangCounts['items'] ?? null) ? $curLangCounts['items'] : [];
+                $rawCountsAll   = $fetchRawSettingAll('about_counts');
+                $sharedCountImg = is_array($rawCountsAll['shared_items_img'] ?? null) ? $rawCountsAll['shared_items_img'] : [];
+                $curLangCounts  = $extractLangFromRaw($rawCountsAll);
+                $countsItems    = is_array($curLangCounts['items'] ?? null) ? $curLangCounts['items'] : [];
                 ?>
 
                 <form id="countsForm" class="admin-settings-form" enctype="multipart/form-data">
@@ -509,7 +518,7 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
                             if (!is_array($c)) continue;
                             $cNum   = (string)($c['number'] ?? '');
                             $cTitle = (string)($c['title'] ?? '');
-                            $cImg   = (string)($c['img'] ?? '');
+                            $cImg   = (string)($sharedCountImg[$index] ?? ($c['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm count-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="count_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">
@@ -569,7 +578,9 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
             
             <div class="modal-body p-4">
                 <?php 
-                $curLangPartners = $fetchRawMultilingualSetting('partners');
+                $rawPartnersAll  = $fetchRawSettingAll('partners');
+                $sharedPartImg   = is_array($rawPartnersAll['shared_items_img'] ?? null) ? $rawPartnersAll['shared_items_img'] : [];
+                $curLangPartners = $extractLangFromRaw($rawPartnersAll);
                 $partnersTitle   = $curLangPartners['title'] ?? '';
                 $partnersItems   = is_array($curLangPartners['items'] ?? null) ? $curLangPartners['items'] : [];
                 ?>
@@ -593,7 +604,7 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
                     <div id="partnersRowsContainer" class="d-flex flex-column gap-3">
                         <?php foreach ($partnersItems as $index => $p): 
                             if (!is_array($p)) continue;
-                            $pImg = (string)($p['img'] ?? '');
+                            $pImg = (string)($sharedPartImg[$index] ?? ($p['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm partner-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="partner_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">

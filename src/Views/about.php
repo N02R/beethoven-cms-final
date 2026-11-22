@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - About View (Gold Standard MVC, Multilingual & Security Hardened)
- * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php.
+ * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php مع توحيد الصور المشتركة عبر اللغات.
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -81,16 +81,19 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
-$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
-
+// 0. دالة مساعدة لفك الإعداد الخام كـ Array دون فقدان المفاتيح المشتركة مثل shared_items_img
+$decodeRawSetting = function(string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+    return is_array($raw) ? $raw : $default;
+};
+
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
 
     if (!is_array($parsed)) {
         return $default;
@@ -142,7 +145,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php 
-      $ab = $getLocalizedData('about_section', []);
+      $abRaw = $decodeRawSetting('about_section', []);
+      $abRaw = is_array($abRaw) ? $abRaw : [];
+      $ab    = $getLocalizedData('about_section', []);
+      $ab    = is_array($ab) ? $ab : [];
       
       $ab_title       = $ab['title'] ?? $txt['about_title'];
       $ab_desc        = $ab['desc'] ?? '';
@@ -154,10 +160,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $message_title  = $ab['message_title'] ?? $txt['message_title'];
       $message_desc   = $ab['message_desc'] ?? '';
 
-      $about_main_img = get_image_url($ab['main_img'] ?? null, '/assets/img/about/about1.jpg');
-      $about_sub_img  = get_image_url($ab['sub_img'] ?? null, '/assets/img/about/about2.png');
-      $vision_icon    = get_image_url($ab['vision_icon'] ?? null, '/assets/img/about/CompanyVision.svg.webp');
-      $message_icon   = get_image_url($ab['message_icon'] ?? null, '/assets/img/about/CompanyMessage.svg.webp');
+      $sharedMainImg    = $abRaw['shared_main_img'] ?? ($ab['main_img'] ?? ($abRaw['de']['main_img'] ?? ($abRaw['en']['main_img'] ?? ($abRaw['ar']['main_img'] ?? null))));
+      $sharedSubImg     = $abRaw['shared_sub_img'] ?? ($ab['sub_img'] ?? ($abRaw['de']['sub_img'] ?? ($abRaw['en']['sub_img'] ?? ($abRaw['ar']['sub_img'] ?? null))));
+      $sharedVisionIcon = $abRaw['shared_vision_icon'] ?? ($ab['vision_icon'] ?? ($abRaw['de']['vision_icon'] ?? ($abRaw['en']['vision_icon'] ?? ($abRaw['ar']['vision_icon'] ?? null))));
+      $sharedMsgIcon    = $abRaw['shared_message_icon'] ?? ($ab['message_icon'] ?? ($abRaw['de']['message_icon'] ?? ($abRaw['en']['message_icon'] ?? ($abRaw['ar']['message_icon'] ?? null))));
+
+      $about_main_img = get_image_url($sharedMainImg, '/assets/img/about/about1.jpg');
+      $about_sub_img  = get_image_url($sharedSubImg, '/assets/img/about/about2.png');
+      $vision_icon    = get_image_url($sharedVisionIcon, '/assets/img/about/CompanyVision.svg.webp');
+      $message_icon   = get_image_url($sharedMsgIcon, '/assets/img/about/CompanyMessage.svg.webp');
       ?>
 
       <div class="row align-items-center g-5">
@@ -232,11 +243,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $s_data = $getLocalizedData('about_services', []);
+      $sRaw      = $decodeRawSetting('about_services', []);
+      $sRaw      = is_array($sRaw) ? $sRaw : [];
+      $sharedSrv = is_array($sRaw['shared_items_img'] ?? null) ? $sRaw['shared_items_img'] : [];
+      $s_data    = $getLocalizedData('about_services', []);
+      $s_data    = is_array($s_data) ? $s_data : [];
       
       $sec_title = $s_data['section_title'] ?? ($s_data['title'] ?? $txt['services_title']);
       $sec_desc  = $s_data['section_subtitle'] ?? ($s_data['desc'] ?? '');
-      $services  = $s_data['items'] ?? [];
+      $services  = is_array($s_data['items'] ?? null) ? $s_data['items'] : [];
       ?>
 
       <h2 class="mb-3 sec-title"><?php echo htmlspecialchars((string)$sec_title, ENT_QUOTES, 'UTF-8'); ?></h2>
@@ -248,10 +263,11 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       <?php endif; ?>
 
       <div class="row g-4">
-        <?php if (!empty($services) && is_array($services)): ?>
-          <?php foreach ($services as $service): 
+        <?php if (!empty($services)): ?>
+          <?php foreach ($services as $sIdx => $service): 
             if (!is_array($service)) continue;
-            $service_img   = get_image_url($service['img'] ?? null, '/assets/img/home/education.jpg');
+            $rawSrvImg     = $sharedSrv[$sIdx] ?? ($service['img'] ?? null);
+            $service_img   = get_image_url($rawSrvImg, '/assets/img/home/education.jpg');
             $service_title = $service['title'] ?? '';
             $service_url   = $buildLocalizedUrl($service['url'] ?? '#');
           ?>
@@ -290,14 +306,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $team_data  = $getLocalizedData('team', []);
+      $teamRaw     = $decodeRawSetting('team', []);
+      $teamRaw     = is_array($teamRaw) ? $teamRaw : [];
+      $sharedTeam  = is_array($teamRaw['shared_items_img'] ?? null) ? $teamRaw['shared_items_img'] : [];
+      $team_data   = $getLocalizedData('team', []);
+      $team_data   = is_array($team_data) ? $team_data : [];
       
       $team_title = $team_data['title'] ?? $txt['team_title'];
       $team_desc  = $team_data['desc'] ?? '';
-      $team_items = $team_data['items'] ?? [];
-      if (!is_array($team_items)) {
-          $team_items = [];
-      }
+      $team_items = is_array($team_data['items'] ?? null) ? $team_data['items'] : [];
       ?>
       
       <div class="team-text mb-5">
@@ -311,11 +328,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
         <div class="swiper mySwiper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
           <div class="swiper-wrapper">
             <?php if (!empty($team_items)): ?>
-              <?php foreach ($team_items as $member): 
+              <?php foreach ($team_items as $tIdx => $member): 
                 if (!is_array($member)) continue;
-                $m_name = $member['name'] ?? '';
-                $m_role = $member['role'] ?? '';
-                $m_img  = get_image_url($member['img'] ?? null, '/assets/img/team/member1.jpg');
+                $m_name    = $member['name'] ?? '';
+                $m_role    = $member['role'] ?? '';
+                $rawMImg   = $sharedTeam[$tIdx] ?? ($member['img'] ?? null);
+                $m_img     = get_image_url($rawMImg, '/assets/img/team/member1.jpg');
               ?>
                 <div class="swiper-slide">
                   <div class="team-card">
@@ -355,19 +373,21 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
+      $countsRaw    = $decodeRawSetting('about_counts', []);
+      $countsRaw    = is_array($countsRaw) ? $countsRaw : [];
+      $sharedCounts = is_array($countsRaw['shared_items_img'] ?? null) ? $countsRaw['shared_items_img'] : [];
       $counts_data  = $getLocalizedData('about_counts', []);
-      $counts_items = $counts_data['items'] ?? [];
-      if (!is_array($counts_items)) {
-          $counts_items = [];
-      }
+      $counts_data  = is_array($counts_data) ? $counts_data : [];
+      $counts_items = is_array($counts_data['items'] ?? null) ? $counts_data['items'] : [];
       ?>
       <div class="row g-4">
         <?php if (!empty($counts_items)): ?>
-          <?php foreach ($counts_items as $c): 
+          <?php foreach ($counts_items as $cIdx => $c): 
               if (!is_array($c)) continue;
-              $c_num   = $c['number'] ?? '';
-              $c_title = $c['title'] ?? '';
-              $c_img   = get_image_url($c['img'] ?? null, '');
+              $c_num    = $c['number'] ?? '';
+              $c_title  = $c['title'] ?? '';
+              $rawCImg  = $sharedCounts[$cIdx] ?? ($c['img'] ?? '');
+              $c_img    = get_image_url($rawCImg, '');
           ?>
             <div class="col-lg-3 col-md-6">
               <div class="count-card">
@@ -405,12 +425,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
+      $partnersRaw    = $decodeRawSetting('partners', []);
+      $partnersRaw    = is_array($partnersRaw) ? $partnersRaw : [];
+      $sharedPartners = is_array($partnersRaw['shared_items_img'] ?? null) ? $partnersRaw['shared_items_img'] : [];
       $partners_data  = $getLocalizedData('partners', []);
       $partners_title = is_array($partners_data) ? ($partners_data['title'] ?? $txt['partners_title']) : $txt['partners_title'];
       $partners_items = is_array($partners_data) ? ($partners_data['items'] ?? []) : [];
       
       if (empty($partners_items)) {
-          $old_items = get_setting('partners_items', []);
+          $old_items = function_exists('get_setting') ? get_setting('partners_items', []) : [];
           $partners_items = is_string($old_items) ? (json_decode($old_items, true) ?? []) : $old_items;
       }
       if (!is_array($partners_items)) {
@@ -421,9 +444,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       
       <div class="row row-cols-2 row-cols-md-4 g-4 align-items-center justify-content-center">
         <?php if (!empty($partners_items)): ?>
-          <?php foreach ($partners_items as $p): 
+          <?php foreach ($partners_items as $pIdx => $p): 
             if (!is_array($p)) continue;
-            $p_img = get_image_url($p['img'] ?? null, '');
+            $rawPImg = $sharedPartners[$pIdx] ?? ($p['img'] ?? null);
+            $p_img   = get_image_url($rawPImg, '');
             if (empty($p_img)) continue;
           ?>
             <div class="col">

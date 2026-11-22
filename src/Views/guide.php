@@ -54,6 +54,8 @@ if (is_string($guide_raw)) {
     $guide_all = is_array($guide_raw) ? $guide_raw : [];
 }
 
+$shared_guide_imgs = is_array($guide_all['shared_items_img'] ?? null) ? $guide_all['shared_items_img'] : [];
+
 if (isset($guide_all[$current_lang]) && is_array($guide_all[$current_lang])) {
     $lang_guide_data = $guide_all[$current_lang];
 } elseif (isset($guide_all['de']) && is_array($guide_all['de'])) {
@@ -116,12 +118,13 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-4">
         <?php if (!empty($guide_items)): ?>
-          <?php foreach ($guide_items as $item): 
+          <?php foreach ($guide_items as $idx => $item): 
               if (!is_array($item)) continue;
               
               $item_title = (string)($item['title'] ?? '');
               $item_desc  = (string)($item['desc'] ?? '');
-              $item_img   = get_image_url($item['img'] ?? null, '');
+              $raw_img    = $shared_guide_imgs[$idx] ?? ($item['img'] ?? null);
+              $item_img   = get_image_url($raw_img, '');
               $arrow_img  = get_image_url('assets/img/ArrowLeft.svg.webp');
               $final_url  = $buildLocalizedUrl($item['url'] ?? ($item['link'] ?? '#'));
           ?>

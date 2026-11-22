@@ -12,12 +12,64 @@ if (!defined('ALLOWED_ACCESS')) {
 }
 ?>
 <style>
+    /* ==========================================================================
+       1. التنسيق الأساسي للمودلات (Glassmorphism & Custom Styling)
+       ========================================================================== */
+    .custom-modal .modal-content { 
+        border-radius: 24px; 
+        border: none; 
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); 
+        background: #ffffff;
+        overflow: hidden; 
+    }
+    .custom-modal .modal-header { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 22px 28px; 
+        border-bottom: 1px solid #f1f5f9; 
+        background: #ffffff;
+    }
+    .custom-modal .modal-title { 
+        margin: 0; 
+        display: flex; 
+        align-items: center; 
+        gap: .75rem; 
+        font-weight: 700; 
+        color: #0f172a; 
+        font-size: 1.2rem;
+    }
+    .custom-modal .btn-close { 
+        margin: 0; 
+        flex-shrink: 0; 
+    }
+    
     .custom-modal .modal-body {
-        max-height: calc(100vh - 180px) !important;
+        background: #f8fafc;
+        padding: 28px;
         padding-bottom: 24px !important;
+        max-height: calc(100vh - 180px) !important;
         overflow-y: auto;
     }
 
+    /* الحقول والإدخالات (Inputs) */
+    .custom-modal .form-control, .custom-modal .form-select { 
+        border-radius: 12px; 
+        border: 1px solid #e2e8f0; 
+        height: 46px; 
+        padding: 0 16px; 
+        transition: all 0.2s ease; 
+        width: 100%; 
+        background-color: #ffffff;
+        font-size: 0.95rem;
+    }
+    .custom-modal .form-control:focus, .custom-modal .form-select:focus { 
+        border-color: #3b82f6; 
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
+        background-color: #ffffff;
+    }
+
+    /* تنسيق القوائم المنسدلة الموحدة في الإعلانات (RTL / LTR) */
     .custom-modal[dir="rtl"] .ad-dropdown-btn {
         direction: rtl;
         text-align: right;
@@ -66,7 +118,145 @@ if (!defined('ALLOWED_ACCESS')) {
         background-color: #1d4ed8 !important;
         color: #ffffff !important;
     }
+    
+    /* رفع الملفات (File Upload) */
+    .custom-modal input[type="file"].form-control { 
+        padding: 9px 16px; 
+        background: #ffffff; 
+        cursor: pointer; 
+        width: 100%; 
+        height: auto;
+    }
+
+    /* تنسيق الفوتر الموحد */
+    .custom-modal .modal-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 28px;
+        background: #ffffff;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .custom-modal .modal-footer button {
+        flex: 1;
+        height: 48px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 12px;
+    }
+
+    /* تنسيق زر الإلغاء */
+    .btn-cancel {
+        background-color: #f1f5f9;
+        color: #475569;   
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    .btn-cancel:hover {
+        background-color: #e2e8f0;
+        color: #1e293b;
+    }
+
+    /* تنسيق زر الحفظ */
+    .btn-premium { 
+        background: linear-gradient(135deg, #2563eb, #3b82f6); 
+        color: white; 
+        border: none; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-premium:hover {
+        background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-icon-trash { 
+        width: 44px; 
+        height: 44px; 
+        border-radius: 12px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        background: #fee2e2; 
+        color: #dc2626; 
+        border: none; 
+        transition: all 0.2s ease;
+    }
+    .btn-icon-trash:hover { 
+        background: #fecaca; 
+        transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)
+       ========================================================================== */
+    @media (min-width: 1920px) {
+        .custom-modal .modal-lg {
+            max-width: 950px;
+        }
+        .custom-modal .modal-xl {
+            max-width: 1300px;
+        }
+        .custom-modal .modal-header {
+            padding: 28px 36px;
+        }
+        .custom-modal .modal-title {
+            font-size: 1.4rem;
+        }
+        .custom-modal .modal-body {
+            padding: 36px;
+        }
+        .custom-modal .form-control, .custom-modal .form-select {
+            height: 52px;
+            font-size: 1.05rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .custom-modal .modal-dialog {
+            margin: 10px;
+            max-width: calc(100% - 20px);
+        }
+        .custom-modal .modal-header {
+            padding: 16px 20px;
+        }
+        .custom-modal .modal-title {
+            font-size: 1.05rem;
+        }
+        .custom-modal .modal-body {
+            padding: 18px;
+        }
+        .custom-modal .modal-footer {
+            padding: 15px 18px;
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+        .custom-modal .modal-footer button {
+            width: 100%;
+            height: 44px;
+        }
+        .social-row-item, .menu-row-item, .lang-row-item, 
+        .service-row-item, .choose-row-item, .review-row-item, 
+        .guide-row-item, .faq-row-item, .footer-col3-item {
+            padding: 12px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .custom-modal .modal-content {
+            border-radius: 16px;
+        }
+        .custom-modal .form-control, .custom-modal .form-select {
+            height: 42px;
+            font-size: 0.9rem;
+        }
+    }
 </style>
+
 <?php
 if (!function_exists('safe_admin_string')) {
     function safe_admin_string(mixed $val, string $current_lang = 'de'): string {
@@ -1327,6 +1517,7 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
         </div>
     </div>
 </div>
+
 <script>
 const ML = <?php echo json_encode($ml, JSON_UNESCAPED_UNICODE); ?>;
 const CURRENT_MODAL_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;

@@ -410,6 +410,23 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
     </div>
 </div>
 
+<style>
+    .custom-modal[dir="rtl"] select.form-select {
+        direction: rtl;
+        text-align: right;
+        background-position: left 0.95rem center !important;
+        padding-left: 2.4rem !important;
+        padding-right: 1rem !important;
+    }
+    .custom-modal[dir="ltr"] select.form-select {
+        direction: ltr;
+        text-align: left;
+        background-position: right 0.95rem center !important;
+        padding-right: 2.4rem !important;
+        padding-left: 1rem !important;
+    }
+</style>
+
 <!-- 3. Announcement Modal -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
@@ -445,7 +462,7 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         <div class="row g-3">
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['display_status'] ?? 'حالة العرض'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <select class="form-select" name="status">
+                                <select class="form-select" name="status" dir="<?php echo $modal_dir; ?>">
                                     <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) === 'Draft' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['status_draft'] ?? 'مخفي (مسودة)'), ENT_QUOTES, 'UTF-8'); ?></option>
                                     <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) === 'Published' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['status_published'] ?? 'نشط (يظهر للزوار)'), ENT_QUOTES, 'UTF-8'); ?></option>
                                 </select>
@@ -468,7 +485,7 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         </div>
                         <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['ad_type'] ?? 'نوع الإعلان:'), ENT_QUOTES, 'UTF-8'); ?></label>
                         <?php $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang); ?>
-                        <select class="form-select mb-3" name="type" id="adTypeSelect" onchange="toggleAdContent(this.value)">
+                        <select class="form-select mb-3" name="type" id="adTypeSelect" dir="<?php echo $modal_dir; ?>" onchange="toggleAdContent(this.value)">
                             <option value="text" <?php echo ($adTypeVal === 'text' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['ad_type_text'] ?? 'نص متحرك'), ENT_QUOTES, 'UTF-8'); ?></option>
                             <option value="image" <?php echo ($adTypeVal === 'image' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['ad_type_image'] ?? 'صورة (بانر دعائي)'), ENT_QUOTES, 'UTF-8'); ?></option>
                         </select>

@@ -274,8 +274,12 @@ class ImageUploader
     {
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, created_at) VALUES (:filename, NOW())');
-            $stmt->execute(['filename' => $filename]);
+            $filePath = 'assets/uploads/' . $filename;
+            $stmt = $pdo->prepare('INSERT INTO uploaded_images (filename, file_path, created_at) VALUES (:filename, :file_path, NOW())');
+            $stmt->execute([
+                'filename'  => $filename,
+                'file_path' => $filePath,
+            ]);
         } catch (Throwable $e) {
             error_log('Failed to log uploaded image to database: ' . $e->getMessage());
         }

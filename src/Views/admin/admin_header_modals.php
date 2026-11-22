@@ -488,11 +488,39 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                             <?php echo htmlspecialchars((string)($ml['announcement_content'] ?? 'محتوى الإعلان'), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                         </div>
                         <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['ad_type'] ?? 'نوع الإعلان:'), ENT_QUOTES, 'UTF-8'); ?></label>
-                        <?php $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang); ?>
-                        <select class="form-select mb-3" name="type" id="adTypeSelect" dir="<?php echo $modal_dir; ?>" onchange="toggleAdContent(this.value)">
-                            <option value="text" <?php echo ($adTypeVal === 'text' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['ad_type_text'] ?? 'نص متحرك'), ENT_QUOTES, 'UTF-8'); ?></option>
-                            <option value="image" <?php echo ($adTypeVal === 'image' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['ad_type_image'] ?? 'صورة (بانر دعائي)'), ENT_QUOTES, 'UTF-8'); ?></option>
-                        </select>
+                        <?php 
+                        $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang);
+                        $adTypeTextLabel  = (string)($ml['ad_type_text'] ?? 'نص متحرك');
+                        $adTypeImageLabel = (string)($ml['ad_type_image'] ?? 'صورة (بانر دعائي)');
+                        $activeAdTypeLabel = ($adTypeVal === 'image') ? $adTypeImageLabel : $adTypeTextLabel;
+                        ?>
+                        <input type="hidden" name="type" id="adTypeSelect" value="<?php echo htmlspecialchars($adTypeVal, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="dropdown mb-3 w-100" dir="<?php echo $modal_dir; ?>">
+                            <button class="form-select d-flex align-items-center justify-content-between w-100"
+                                    type="button"
+                                    id="adTypeDropdownBtn"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-display="static"
+                                    aria-expanded="false">
+                                <span id="adTypeDropdownText"><?php echo htmlspecialchars($activeAdTypeLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                            </button>
+                            <ul class="dropdown-menu w-100 shadow-sm border-0 rounded-3 mt-1 <?php echo $modal_align; ?>" aria-labelledby="adTypeDropdownBtn">
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item py-2 <?php echo ($adTypeVal === 'text' ? 'active' : ''); ?>"
+                                            onclick="selectAdTypeOption('text', <?php echo htmlspecialchars(json_encode($adTypeTextLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
+                                        <?php echo htmlspecialchars($adTypeTextLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item py-2 <?php echo ($adTypeVal === 'image' ? 'active' : ''); ?>"
+                                            onclick="selectAdTypeOption('image', <?php echo htmlspecialchars(json_encode($adTypeImageLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
+                                        <?php echo htmlspecialchars($adTypeImageLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
 
                         <div id="textEditor" class="<?php echo ($adTypeVal === 'text' ? '' : 'd-none'); ?> <?php echo $modal_align; ?>">
                             <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['announcement_text_label'] ?? 'نص الإعلان:'), ENT_QUOTES, 'UTF-8'); ?></label>
@@ -1399,6 +1427,22 @@ function toggleAdContent(type) {
     }
 }
 
+function selectAdTypeOption(val, label, el) {
+    const hiddenInput = document.getElementById('adTypeSelect');
+    const btnText = document.getElementById('adTypeDropdownText');
+    if (hiddenInput) hiddenInput.value = val;
+    if (btnText) btnText.textContent = label;
+
+    if (el && el.closest) {
+        el.closest('.dropdown-menu')?.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        el.classList.add('active');
+    }
+
+    toggleAdContent(val);
+}
+
 function removeRow(target) {
     if (typeof target === 'string') {
         const el = document.getElementById(target);
@@ -1924,3 +1968,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }, true);
 });
 </script>
+

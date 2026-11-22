@@ -190,6 +190,11 @@ if (!defined('ALLOWED_ACCESS')) {
         background: #fecaca; 
         transform: translateY(-1px);
     }
+.custom-modal input[type="datetime-local"] {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate;
+}
 
     /* ==========================================================================
        2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)
@@ -553,6 +558,9 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         ? $decodedAds[$current_lang]
                         : (isset($decodedAds['status']) ? $decodedAds : []);
 
+                    $sharedStartVal = (string)($decodedAds['shared_start_date'] ?? ($currentAd['start_date'] ?? ''));
+                    $sharedEndVal   = (string)($decodedAds['shared_end_date'] ?? ($currentAd['end_date'] ?? ''));
+
                     $adStatusVal = safe_admin_string($currentAd['status'] ?? 'Draft', $current_lang);
                     $adStatusDraftLabel     = (string)($ml['status_draft'] ?? 'مخفي (مسودة)');
                     $adStatusPublishedLabel = (string)($ml['status_published'] ?? 'نشط (يظهر للزوار)');
@@ -604,11 +612,11 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['start_date'] ?? 'تاريخ البدء'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="datetime-local" class="form-control" name="start_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['start_date'] ?? '', $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="start_date" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedStartVal, $current_lang)); ?>">
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['end_date'] ?? 'تاريخ الانتهاء'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input type="datetime-local" class="form-control" name="end_date" value="<?php echo str_replace(' ', 'T', safe_admin_string($currentAd['end_date'] ?? '', $current_lang)); ?>">
+                                <input type="datetime-local" class="form-control" name="end_date" dir="ltr" value="<?php echo str_replace(' ', 'T', safe_admin_string($sharedEndVal, $current_lang)); ?>">
                             </div>
                         </div>
                     </div>

@@ -431,6 +431,56 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
     }
 </style>
 
+<style>
+    .custom-modal[dir="rtl"] #adTypeDropdownBtn {
+        direction: rtl;
+        text-align: right;
+        background-position: left 0.95rem center !important;
+        padding-left: 2.5rem !important;
+        padding-right: 1rem !important;
+        border-color: #93c5fd;
+        background-color: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    .custom-modal[dir="ltr"] #adTypeDropdownBtn {
+        direction: ltr;
+        text-align: left;
+        background-position: right 0.95rem center !important;
+        padding-right: 2.5rem !important;
+        padding-left: 1rem !important;
+        border-color: #93c5fd;
+        background-color: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
+    }
+
+    .custom-modal .ad-type-menu {
+        background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%) !important;
+        border: 1px solid #93c5fd !important;
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.16) !important;
+        padding: 6px !important;
+    }
+
+    .custom-modal .ad-type-menu .dropdown-item {
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .custom-modal .ad-type-menu .dropdown-item:hover {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    .custom-modal .ad-type-menu .dropdown-item.active {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+    }
+</style>
+
 <!-- 3. Announcement Modal -->
 <div class="modal fade custom-modal" id="announcementEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog modal-lg">
@@ -496,25 +546,26 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         ?>
                         <input type="hidden" name="type" id="adTypeSelect" value="<?php echo htmlspecialchars($adTypeVal, ENT_QUOTES, 'UTF-8'); ?>">
                         <div class="dropdown mb-3 w-100" dir="<?php echo $modal_dir; ?>">
-                            <button class="form-select d-flex align-items-center justify-content-between w-100"
+                            <button class="form-select d-flex align-items-center justify-content-between w-100 <?php echo $modal_align; ?>"
                                     type="button"
                                     id="adTypeDropdownBtn"
+                                    dir="<?php echo $modal_dir; ?>"
                                     data-bs-toggle="dropdown"
                                     data-bs-display="static"
                                     aria-expanded="false">
-                                <span id="adTypeDropdownText"><?php echo htmlspecialchars($activeAdTypeLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                <span id="adTypeDropdownText" class="flex-grow-1 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($activeAdTypeLabel, ENT_QUOTES, 'UTF-8'); ?></span>
                             </button>
-                            <ul class="dropdown-menu w-100 shadow-sm border-0 rounded-3 mt-1 <?php echo $modal_align; ?>" aria-labelledby="adTypeDropdownBtn">
+                            <ul class="dropdown-menu ad-type-menu w-100 rounded-3 mt-1 <?php echo $modal_align; ?>" dir="<?php echo $modal_dir; ?>" aria-labelledby="adTypeDropdownBtn">
                                 <li>
                                     <button type="button"
-                                            class="dropdown-item py-2 <?php echo ($adTypeVal === 'text' ? 'active' : ''); ?>"
+                                            class="dropdown-item py-2 <?php echo $modal_align; ?> <?php echo ($adTypeVal === 'text' ? 'active' : ''); ?>"
                                             onclick="selectAdTypeOption('text', <?php echo htmlspecialchars(json_encode($adTypeTextLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
                                         <?php echo htmlspecialchars($adTypeTextLabel, ENT_QUOTES, 'UTF-8'); ?>
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button"
-                                            class="dropdown-item py-2 <?php echo ($adTypeVal === 'image' ? 'active' : ''); ?>"
+                                            class="dropdown-item py-2 <?php echo $modal_align; ?> <?php echo ($adTypeVal === 'image' ? 'active' : ''); ?>"
                                             onclick="selectAdTypeOption('image', <?php echo htmlspecialchars(json_encode($adTypeImageLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
                                         <?php echo htmlspecialchars($adTypeImageLabel, ENT_QUOTES, 'UTF-8'); ?>
                                     </button>
@@ -1430,6 +1481,7 @@ function toggleAdContent(type) {
 function selectAdTypeOption(val, label, el) {
     const hiddenInput = document.getElementById('adTypeSelect');
     const btnText = document.getElementById('adTypeDropdownText');
+    const dropdownBtn = document.getElementById('adTypeDropdownBtn');
     if (hiddenInput) hiddenInput.value = val;
     if (btnText) btnText.textContent = label;
 
@@ -1438,6 +1490,11 @@ function selectAdTypeOption(val, label, el) {
             item.classList.remove('active');
         });
         el.classList.add('active');
+    }
+
+    if (dropdownBtn && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+        const instance = bootstrap.Dropdown.getInstance(dropdownBtn);
+        if (instance) instance.hide();
     }
 
     toggleAdContent(val);
@@ -1968,4 +2025,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }, true);
 });
 </script>
-

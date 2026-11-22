@@ -139,6 +139,10 @@ if (!defined('ALLOWED_ACCESS')) {
         background: #fecaca; 
         transform: translateY(-1px);
     }
+.custom-modal .modal-body {
+    max-height: 82vh;
+    padding-bottom: 110px !important;
+}
 
     /* ==========================================================================
        2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)

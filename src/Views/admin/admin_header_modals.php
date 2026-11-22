@@ -321,10 +321,55 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
 <div class="modal fade custom-modal" id="logoEditModal" tabindex="-1" aria-hidden="true" dir="<?php echo $modal_dir; ?>">
     <div class="modal-dialog">
         <div class="modal-content">
+            <?php
+            $logoModalI18n = [
+                'de' => [
+                    'title'        => 'Logotext verwalten',
+                    'label'        => 'Logotext (DE):',
+                    'placeholder'  => 'Beethoven Stadt Dienste',
+                    'hint'         => 'Das feste Symbol wird automatisch neben diesem Text angezeigt.',
+                    'save'         => 'Änderungen speichern',
+                    'cancel'       => 'Abbrechen',
+                    'default_logo' => 'Beethoven Stadt Dienste',
+                ],
+                'en' => [
+                    'title'        => 'Manage Logo Text',
+                    'label'        => 'Logo Text (EN):',
+                    'placeholder'  => 'Beethoven City Services (BCS)',
+                    'hint'         => 'The fixed icon will be displayed neatly next to this text automatically.',
+                    'save'         => 'Save Changes',
+                    'cancel'       => 'Cancel',
+                    'default_logo' => 'Beethoven City Services (BCS)',
+                ],
+                'ar' => [
+                    'title'        => 'إدارة نص الشعار',
+                    'label'        => 'نص الشعار (AR):',
+                    'placeholder'  => 'بيتهوفن سيتي للخدمات (BCS)',
+                    'hint'         => 'سيتم عرض الأيقونة الثابتة بجانب هذا النص تلقائياً بتنسيق مرتب.',
+                    'save'         => 'حفظ التغييرات',
+                    'cancel'       => 'إلغاء',
+                    'default_logo' => 'بيتهوفن سيتي للخدمات (BCS)',
+                ],
+            ];
+            $lTxt = $logoModalI18n[$current_lang] ?? $logoModalI18n['de'];
+
+            $logoTextRaw = $settingsPool['site_logo_text'] ?? ($data['site_logo_text'] ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : ''));
+            $decodedLogoText = $decodeAdminJson($logoTextRaw);
+            $modalLogoText = !empty($decodedLogoText)
+                ? (string)($decodedLogoText[$current_lang] ?? '')
+                : (is_string($logoTextRaw) ? trim($logoTextRaw) : '');
+
+            if ($modalLogoText === '') {
+                $modalLogoText = $lTxt['default_logo'];
+            }
+
+            $modalLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
+            ?>
+
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title">
                     <i class="bi bi-image text-primary <?php echo $is_rtl ? 'ms-2' : 'me-2'; ?>"></i> 
-                    <?php echo htmlspecialchars((string)($ml['manage_site_logo'] ?? 'إدارة نص الشعار'), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
+                    <?php echo htmlspecialchars((string)($ml['manage_site_logo'] ?? $lTxt['title']), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                 </h5>
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -334,27 +379,11 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                     <input type="hidden" name="action" value="update_logo">
                     <input type="hidden" name="logo_lang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="targetLang" value="<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>">
-                    
-                    <?php 
-                    $logoTextRaw = $settingsPool['site_logo_text'] ?? ($data['site_logo_text'] ?? (function_exists('get_setting') ? get_setting('site_logo_text', '') : ''));
-                    $decodedLogoText = $decodeAdminJson($logoTextRaw);
-                    $modalLogoText = !empty($decodedLogoText)
-                        ? (string)($decodedLogoText[$current_lang] ?? '')
-                        : (is_string($logoTextRaw) ? trim($logoTextRaw) : '');
-
-                    if ($modalLogoText === '') {
-                        $modalLogoText = ($current_lang === 'ar')
-                            ? 'بيتهوفن سيتي للخدمات (BCS)'
-                            : 'Beethoven City Services (BCS)';
-                    }
-
-                    $modalLogoIcon = (string)($site_logo_icon ?? 'assets/img/icon.png');
-                    ?>
 
                     <div class="mb-4 text-center">
-                        <div class="p-3 shadow-sm d-inline-flex align-items-center gap-2 bg-white rounded-4 border">
+                        <div class="p-3 shadow-sm d-inline-flex align-items-center gap-2 bg-white rounded-4 border" dir="<?php echo $modal_dir; ?>">
                             <img src="<?php echo htmlspecialchars(get_image_url($modalLogoIcon, 'assets/img/icon.png'), ENT_QUOTES, 'UTF-8'); ?>" width="36" height="36" alt="Icon" style="object-fit: contain;">
-                            <div class="text-start" style="line-height: 1.15;">
+                            <div class="<?php echo $modal_align; ?>" style="line-height: 1.15;">
                                 <span class="d-block fw-bold text-dark" style="font-size: 0.95rem;"><?php echo htmlspecialchars($modalLogoText, ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
                         </div>
@@ -362,11 +391,11 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                     
                     <div class="mb-3 <?php echo $modal_align; ?>" dir="<?php echo $modal_dir; ?>">
                         <label class="small fw-bold mb-2 text-secondary d-block">
-                            <?php echo htmlspecialchars((string)($ml['logo_text_label'] ?? 'نص الشعار (لغة ' . strtoupper($current_lang) . '):'), ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars((string)($ml['logo_text_label'] ?? $lTxt['label']), ENT_QUOTES, 'UTF-8'); ?>
                         </label>
-                        <input type="text" class="form-control w-100" name="logo_text" value="<?php echo htmlspecialchars($modalLogoText, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Beethoven City Services (BCS)" required>
+                        <input type="text" class="form-control w-100" name="logo_text" value="<?php echo htmlspecialchars($modalLogoText, ENT_QUOTES, 'UTF-8'); ?>" placeholder="<?php echo htmlspecialchars($lTxt['placeholder'], ENT_QUOTES, 'UTF-8'); ?>" required>
                         <div class="form-text small text-muted mt-1">
-                            <?php echo htmlspecialchars((string)($ml['logo_text_hint'] ?? 'سيتم عرض الأيقونة الثابتة بجانب هذا النص تلقائياً بتنسيق مرتب.'), ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo htmlspecialchars((string)($ml['logo_text_hint'] ?? $lTxt['hint']), ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
 
@@ -374,8 +403,8 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn"><?php echo htmlspecialchars((string)($ml['save_changes'] ?? 'حفظ التغييرات'), ENT_QUOTES, 'UTF-8'); ?></button>
-                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars((string)($ml['cancel'] ?? 'إلغاء'), ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="submit" form="logoEditForm" class="btn-premium" id="saveLogoBtn"><?php echo htmlspecialchars((string)($ml['save_changes'] ?? $lTxt['save']), ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal"><?php echo htmlspecialchars((string)($ml['cancel'] ?? $lTxt['cancel']), ENT_QUOTES, 'UTF-8'); ?></button>
             </div>
         </div>
     </div>

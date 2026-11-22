@@ -50,17 +50,19 @@ $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 $lang = is_array($lang ?? null) ? $lang : [];
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
-$getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
+// دالة مساعدة لاستخراج الكائن الخام لفك JSON بأمان
+$decodeRawSetting = static function (string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
     $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
-
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+    return is_array($raw) ? $raw : $default;
+};
 
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
     if (!is_array($parsed)) {
         return $default;
     }
@@ -135,6 +137,8 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
     <div class="custom-container">
       <?php
+      $heroRaw = $decodeRawSetting('hero', []);
+      $heroRaw = is_array($heroRaw) ? $heroRaw : [];
       $hero = $getLocalizedData('hero', []);
       $hero = is_array($hero) ? $hero : [];
 
@@ -142,7 +146,9 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
       $hero_desc  = (string)($hero['desc'] ?? ($hero['hero_desc'] ?? ''));
       $hero_btn   = (string)($hero['btn_text'] ?? ($lang['read_more'] ?? $emptyTxt['read_more']));
       $hero_url   = $buildLocalizedUrl($hero['btn_url'] ?? '#');
-      $hero_bg    = $resolveSafeImageUrl($hero['img'] ?? null, '/assets/img/home/home1.png');
+      // الصورة المشتركة على مستوى القسم أولاً ثم صورة اللغة كاحتياط
+      $sharedHeroImg = $heroRaw['img'] ?? ($heroRaw['hero_img'] ?? ($hero['img'] ?? null));
+      $hero_bg    = $resolveSafeImageUrl($sharedHeroImg, '/assets/img/home/home1.png');
       ?>
 
       <div class="hero-container" style="background: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>') center/cover no-repeat;">
@@ -172,6 +178,10 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
     <div class="custom-container">
       <?php
+      $sRaw = $decodeRawSetting('services', []);
+      $sRaw = is_array($sRaw) ? $sRaw : [];
+      $sharedServiceImgs = is_array($sRaw['shared_items_img'] ?? null) ? $sRaw['shared_items_img'] : [];
+
       $s_data = $getLocalizedData('services', []);
       $s_data = is_array($s_data) ? $s_data : [];
 
@@ -191,11 +201,12 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
       <div class="row g-4">
         <?php if (!empty($services)): ?>
-          <?php foreach ($services as $service):
+          <?php foreach ($services as $sIdx => $service):
             if (!is_array($service)) {
                 continue;
             }
-            $service_img   = $resolveSafeImageUrl($service['img'] ?? null, '/assets/img/home/default.jpg');
+            $rawServiceImg = $sharedServiceImgs[$sIdx] ?? ($service['img'] ?? null);
+            $service_img   = $resolveSafeImageUrl($rawServiceImg, '/assets/img/home/default.jpg');
             $service_title = (string)($service['title'] ?? '');
             $service_url   = $buildLocalizedUrl($service['url'] ?? '#');
           ?>
@@ -234,6 +245,10 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
     <div class="container-fluid custom-container choose-container">
       <?php
+      $cRaw = $decodeRawSetting('choose', []);
+      $cRaw = is_array($cRaw) ? $cRaw : [];
+      $sharedChooseImgs = is_array($cRaw['shared_items_img'] ?? null) ? $cRaw['shared_items_img'] : [];
+
       $c_data    = $getLocalizedData('choose', []);
       $c_data    = is_array($c_data) ? $c_data : [];
       $sec_title = (string)($c_data['section_title'] ?? ($c_data['title'] ?? ''));
@@ -259,7 +274,8 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
             if ($item_title === '') {
                 continue;
             }
-            $item_img  = $resolveSafeImageUrl($item['img'] ?? null, '/assets/img/home/Grouphome1.svg');
+            $rawChooseImg = $sharedChooseImgs[$index] ?? ($item['img'] ?? null);
+            $item_img  = $resolveSafeImageUrl($rawChooseImg, '/assets/img/home/Grouphome1.svg');
             $item_desc = (string)($item['desc'] ?? '');
             $item_url  = $buildLocalizedUrl($item['url'] ?? '#');
             $is_active = ($index === 1) ? 'active' : '';
@@ -373,6 +389,10 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
 
     <div class="custom-container">
       <?php
+      $gRaw = $decodeRawSetting('guide', []);
+      $gRaw = is_array($gRaw) ? $gRaw : [];
+      $sharedGuideImgs = is_array($gRaw['shared_items_img'] ?? null) ? $gRaw['shared_items_img'] : [];
+
       $lang_guide_data = $getLocalizedData('guide', []);
       $lang_guide_data = is_array($lang_guide_data) ? $lang_guide_data : [];
 
@@ -383,7 +403,7 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
           ? $lang_guide_data['items']
           : (is_array($data['guide_items'] ?? null) ? $data['guide_items'] : []);
       $arrow_img      = $resolveSafeImageUrl('assets/img/ArrowLeft.svg.webp', '/assets/img/ArrowLeft.svg.webp');
-      $chunks         = !empty($guide_items) ? array_chunk($guide_items, 3) : [];
+      $chunks         = !empty($guide_items) ? array_chunk($guide_items, 3, true) : [];
       ?>
 
       <?php if ($guide_title !== ''): ?>
@@ -400,13 +420,14 @@ $is_admin_active = isset($is_admin) ? (!empty($is_admin) && $is_admin === true) 
             <?php foreach ($chunks as $index => $slide_items): ?>
               <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
                 <div class="row g-4">
-                  <?php foreach ($slide_items as $item):
+                  <?php foreach ($slide_items as $origIdx => $item):
                     if (!is_array($item)) {
                         continue;
                     }
                     $item_title = (string)($item['title'] ?? '');
                     $item_desc  = (string)($item['desc'] ?? '');
-                    $item_img   = !empty($item['img']) ? $resolveSafeImageUrl($item['img']) : '';
+                    $rawGuideImg = $sharedGuideImgs[$origIdx] ?? ($item['img'] ?? '');
+                    $item_img   = !empty($rawGuideImg) ? $resolveSafeImageUrl($rawGuideImg) : '';
                     $final_url  = $buildLocalizedUrl($item['url'] ?? ($item['link'] ?? '#'));
                   ?>
                     <div class="col-lg-4 col-md-6 col-sm-12">

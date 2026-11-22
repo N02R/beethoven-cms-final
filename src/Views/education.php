@@ -151,8 +151,7 @@ $buildLocalizedUrl = function(?string $rawUrl, bool $isEduService = false, strin
 
 $is_admin_active = !empty($is_admin) && $is_admin === true;
 ?>
-
-<!-- ================= 1. EDUCATION HERO SECTION START ================= -->
+  <!-- ================= 1. EDUCATION HERO SECTION START ================= -->
 <section class="education py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
   <div class="edit-board-box">
     <?php if ($is_admin_active): ?>
@@ -175,27 +174,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $sharedHeroImg = $eduHeroRaw['shared_img'] ?? ($edu_hero['img'] ?? ($eduHeroRaw['de']['img'] ?? ($eduHeroRaw['en']['img'] ?? ($eduHeroRaw['ar']['img'] ?? null))));
       $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/education/hero.jpg');
       ?>
-      <style>
-        .education .edu-hero-img-box {
-          min-height: 340px;
-          height: 100%;
-          border-radius: 20px;
-          background-size: cover;
-          background-position: center;
-          background-repeat: no-repeat;
-        }
-        @media (min-width: 992px) {
-          .education .edu-hero-img-box {
-            max-height: 520px;
-          }
-        }
-      </style>
       <div class="row align-items-stretch g-5">
-        <div class="col-lg-6 d-flex">
-          <div class="img-hero edu-hero-img-box w-100" style="background-image: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>');"></div>
+        <div class="col-lg-6">
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
-        <div class="col-lg-6 d-flex align-items-center <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
-          <div class="education-info py-2 w-100">
+        <div class="col-lg-6 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
+          <div class="education-info pt-2">
             <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$hero_title, ENT_QUOTES, 'UTF-8'); ?></h2>
             <p class="main-p mb-4"><?php echo nl2br(htmlspecialchars((string)$hero_desc, ENT_QUOTES, 'UTF-8')); ?></p>
             <a href="<?php echo htmlspecialchars($hero_btn_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-education">

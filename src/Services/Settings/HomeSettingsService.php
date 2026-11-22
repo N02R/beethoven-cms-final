@@ -110,7 +110,7 @@ class HomeSettingsService
 
         $this->filesToDelete = [];
 
-        // 1. تحديث قسم الهيرو (Hero)
+        // 1. تحديث قسم الهيرو (Hero) مع توحيد الصورة المشتركة عبر اللغات
         if ($action === 'update_hero') {
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['targetLang'] ?? ''),
@@ -126,18 +126,17 @@ class HomeSettingsService
                 $heroAllLangs = [$targetLang => $oldData];
             }
 
-            $dbOldImg = (string)($heroAllLangs[$targetLang]['img'] ?? ($heroAllLangs['img'] ?? 'assets/img/hero-bg.jpg'));
+            $dbOldImg = (string)($heroAllLangs['img'] ?? ($heroAllLangs[$targetLang]['img'] ?? 'assets/img/hero-bg.jpg'));
             $submittedOldImg = (string)($_POST['old_hero_img'] ?? $dbOldImg);
             $safeOldImg = $this->sanitizeImagePath($submittedOldImg !== '' ? $submittedOldImg : $dbOldImg);
+            $uploadedNewHero = false;
 
             if (isset($_FILES['hero_img']) && is_array($_FILES['hero_img']) && ($_FILES['hero_img']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                 $filename = $this->imageUploader->processAndUploadFile((string)$_FILES['hero_img']['tmp_name']);
-                if ($dbOldImg !== '' && str_starts_with(ltrim($dbOldImg, '/'), 'assets/uploads/')) {
-                    $this->filesToDelete[] = ltrim($dbOldImg, '/');
-                }
                 $heroImg = 'assets/uploads/' . $filename;
+                $uploadedNewHero = true;
             } else {
-                $heroImg = $safeOldImg !== '' ? $safeOldImg : 'assets/img/hero-bg.jpg';
+                $heroImg = $safeOldImg !== '' ? $safeOldImg : $dbOldImg;
             }
 
             $postedHero = is_array($_POST['hero'][$targetLang] ?? null)
@@ -152,12 +151,24 @@ class HomeSettingsService
                 'img'      => $heroImg,
             ];
 
+            // توحيد صورة الهيرو على مستوى الجذر وفي اللغات الأخرى عند رفع صورة جديدة
             $heroAllLangs['img'] = $heroImg;
+            if ($uploadedNewHero) {
+                foreach (self::SUPPORTED_LANGS as $langCode) {
+                    if (isset($heroAllLangs[$langCode]) && is_array($heroAllLangs[$langCode])) {
+                        $heroAllLangs[$langCode]['img'] = $heroImg;
+                    }
+                }
+            }
+
+            if ($dbOldImg !== '' && $dbOldImg !== $heroImg && str_starts_with(ltrim($dbOldImg, '/'), 'assets/uploads/')) {
+                $this->filesToDelete[] = ltrim($dbOldImg, '/');
+            }
 
             $this->saveSetting($pdo, 'hero', $heroAllLangs);
         }
 
-        // 2. تحديث قسم الخدمات (Services)
+        // 2. تحديث قسم الخدمات (Services) مع مزامنة shared_items_img
         elseif ($action === 'update_services') {
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['targetLang'] ?? ''),
@@ -167,6 +178,9 @@ class HomeSettingsService
             );
 
             $servicesAllLangs = $this->fetchSetting($pdo, 'services', $currentSettings);
+            $sharedImgs = is_array($servicesAllLangs['shared_items_img'] ?? null)
+                ? $servicesAllLangs['shared_items_img']
+                : [];
             $existingItems = is_array($servicesAllLangs[$targetLang]['items'] ?? null)
                 ? $servicesAllLangs[$targetLang]['items']
                 : [];
@@ -179,18 +193,20 @@ class HomeSettingsService
             $secDesc  = trim((string)($postedServices['section_subtitle'] ?? ($postedServices['desc'] ?? ($_POST['services_section_subtitle'] ?? ''))));
 
             $finalItems = [];
+            $newSharedImgs = [];
             $items = $postedServices['items'] ?? ($_POST['service_items'] ?? ($_POST['services_items'] ?? []));
 
             if (is_array($items)) {
+                $cleanIdx = 0;
                 foreach ($items as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
 
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$cleanIdx] ?? ($existingItems[$index]['img'] ?? ''));
                     $submittedOldImg = (string)($item['old_img'] ?? ($item['img'] ?? $dbOldImg));
                     $safeOldImg = $this->sanitizeImagePath($submittedOldImg !== '' ? $submittedOldImg : $dbOldImg);
-                    $img = $safeOldImg;
+                    $img = $safeOldImg !== '' ? $safeOldImg : $dbOldImg;
 
                     $fileTmp = null;
                     $fileErr = UPLOAD_ERR_NO_FILE;
@@ -208,9 +224,6 @@ class HomeSettingsService
 
                     if ($fileTmp !== null && $fileErr === UPLOAD_ERR_OK) {
                         $filename = $this->imageUploader->processAndUploadFile((string)$fileTmp);
-                        if ($dbOldImg !== '' && str_starts_with(ltrim($dbOldImg, '/'), 'assets/uploads/')) {
-                            $this->filesToDelete[] = ltrim($dbOldImg, '/');
-                        }
                         $img = 'assets/uploads/' . $filename;
                     }
 
@@ -226,10 +239,10 @@ class HomeSettingsService
                         'img'   => $img,
                         'url'   => $this->sanitizeUrl($item['url'] ?? '#'),
                     ];
+                    $newSharedImgs[] = $img;
+                    $cleanIdx++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'img');
 
             $servicesAllLangs[$targetLang] = [
                 'title'            => $secTitle,
@@ -238,6 +251,9 @@ class HomeSettingsService
                 'section_subtitle' => $secDesc,
                 'items'            => $finalItems,
             ];
+            $servicesAllLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedItemImages($servicesAllLangs, $targetLang, $newSharedImgs);
+            $this->queueOrphanedImagesAcrossSection($servicesAllLangs, $sharedImgs, 'img');
 
             $this->saveSetting($pdo, 'services', $servicesAllLangs);
         }
@@ -335,7 +351,7 @@ class HomeSettingsService
             $this->saveSetting($pdo, 'reviews_items', $reviewsAllLangs);
         }
 
-        // 5. تحديث قسم المميزات (Choose Us)
+        // 5. تحديث قسم المميزات (Choose Us) مع مزامنة shared_items_img
         elseif ($action === 'update_choose') {
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['targetLang'] ?? ''),
@@ -345,6 +361,9 @@ class HomeSettingsService
             );
 
             $chooseAllLangs = $this->fetchSetting($pdo, 'choose', $currentSettings);
+            $sharedImgs = is_array($chooseAllLangs['shared_items_img'] ?? null)
+                ? $chooseAllLangs['shared_items_img']
+                : [];
 
             $currentLangData = is_array($chooseAllLangs[$targetLang] ?? null) ? $chooseAllLangs[$targetLang] : [];
             $postedChoose    = is_array($_POST['choose'][$targetLang] ?? null)
@@ -361,22 +380,21 @@ class HomeSettingsService
 
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
             $finalItems = [];
+            $newSharedImgs = [];
 
             if (isset($postedChoose['items']) && is_array($postedChoose['items'])) {
+                $cleanIdx = 0;
                 foreach ($postedChoose['items'] as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$cleanIdx] ?? ($existingItems[$index]['img'] ?? ''));
                     $submittedOldImg = (string)($item['old_img'] ?? ($item['img'] ?? $dbOldImg));
                     $safeOldImg = $this->sanitizeImagePath($submittedOldImg !== '' ? $submittedOldImg : $dbOldImg);
-                    $img = $safeOldImg;
+                    $img = $safeOldImg !== '' ? $safeOldImg : $dbOldImg;
 
                     if (isset($_FILES['choose_img_' . $index]) && is_array($_FILES['choose_img_' . $index]) && ($_FILES['choose_img_' . $index]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                         $filename = $this->imageUploader->processAndUploadFile((string)$_FILES['choose_img_' . $index]['tmp_name']);
-                        if ($dbOldImg !== '' && str_starts_with(ltrim($dbOldImg, '/'), 'assets/uploads/')) {
-                            $this->filesToDelete[] = ltrim($dbOldImg, '/');
-                        }
                         $img = 'assets/uploads/' . $filename;
                     }
 
@@ -392,10 +410,10 @@ class HomeSettingsService
                         'img'   => $img,
                         'url'   => $this->sanitizeUrl($item['url'] ?? '#'),
                     ];
+                    $newSharedImgs[] = $img;
+                    $cleanIdx++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'img');
 
             $chooseAllLangs[$targetLang] = [
                 'section_title'    => $secTitle,
@@ -404,11 +422,14 @@ class HomeSettingsService
                 'desc'             => $secDesc,
                 'items'            => $finalItems,
             ];
+            $chooseAllLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedItemImages($chooseAllLangs, $targetLang, $newSharedImgs);
+            $this->queueOrphanedImagesAcrossSection($chooseAllLangs, $sharedImgs, 'img');
 
             $this->saveSetting($pdo, 'choose', $chooseAllLangs);
         }
 
-        // 6. تحديث الدليل الشامل (Guide)
+        // 6. تحديث الدليل الشامل (Guide) مع مزامنة shared_items_img
         elseif ($action === 'update_guide') {
             $targetLang = $this->resolveTargetLang(
                 (string)($_POST['targetLang'] ?? ''),
@@ -418,6 +439,9 @@ class HomeSettingsService
             );
 
             $guideAllLangs = $this->fetchSetting($pdo, 'guide', $currentSettings);
+            $sharedImgs = is_array($guideAllLangs['shared_items_img'] ?? null)
+                ? $guideAllLangs['shared_items_img']
+                : [];
 
             $currentLangData = is_array($guideAllLangs[$targetLang] ?? null) ? $guideAllLangs[$targetLang] : [];
             $existingTitle   = (string)($currentLangData['title'] ?? '');
@@ -440,22 +464,21 @@ class HomeSettingsService
             }
 
             $processedItems = [];
+            $newSharedImgs = [];
             if (isset($postedGuide['items']) && is_array($postedGuide['items'])) {
+                $cleanIdx = 0;
                 foreach ($postedGuide['items'] as $index => $item) {
                     if (!is_array($item)) {
                         continue;
                     }
 
-                    $dbOldImg = (string)($existingItems[$index]['img'] ?? '');
+                    $dbOldImg = (string)($sharedImgs[$cleanIdx] ?? ($existingItems[$index]['img'] ?? ''));
                     $submittedOldImg = (string)($item['old_img'] ?? ($item['img'] ?? $dbOldImg));
                     $safeOldImg = $this->sanitizeImagePath($submittedOldImg !== '' ? $submittedOldImg : $dbOldImg);
-                    $finalImg = $safeOldImg;
+                    $finalImg = $safeOldImg !== '' ? $safeOldImg : $dbOldImg;
 
                     if (isset($_FILES['guide_img_' . $index]) && is_array($_FILES['guide_img_' . $index]) && ($_FILES['guide_img_' . $index]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                         $filename = $this->imageUploader->processAndUploadFile((string)$_FILES['guide_img_' . $index]['tmp_name']);
-                        if ($dbOldImg !== '' && str_starts_with(ltrim($dbOldImg, '/'), 'assets/uploads/')) {
-                            $this->filesToDelete[] = ltrim($dbOldImg, '/');
-                        }
                         $finalImg = 'assets/uploads/' . $filename;
                     }
 
@@ -470,10 +493,10 @@ class HomeSettingsService
                         'url'   => $this->sanitizeUrl($item['url'] ?? '#'),
                         'img'   => $finalImg,
                     ];
+                    $newSharedImgs[] = $finalImg;
+                    $cleanIdx++;
                 }
             }
-
-            $this->queueOrphanedImagesForDeletion($existingItems, $processedItems, 'img');
 
             $guideAllLangs[$targetLang] = [
                 'title'         => $guideTitle,
@@ -481,6 +504,9 @@ class HomeSettingsService
                 'read_more_btn' => $readMoreBtn,
                 'items'         => $processedItems,
             ];
+            $guideAllLangs['shared_items_img'] = $newSharedImgs;
+            $this->propagateSharedItemImages($guideAllLangs, $targetLang, $newSharedImgs);
+            $this->queueOrphanedImagesAcrossSection($guideAllLangs, $sharedImgs, 'img');
 
             $this->saveSetting($pdo, 'guide', $guideAllLangs);
         }
@@ -489,6 +515,57 @@ class HomeSettingsService
         $this->flushDeletedFiles();
 
         return true;
+    }
+
+    /**
+     * عكس الصور المشتركة على العناصر المقابلة في اللغات الأخرى إن وجدت
+     */
+    private function propagateSharedItemImages(array &$sectionAllLangs, string $updatedLang, array $sharedImgs): void
+    {
+        foreach (self::SUPPORTED_LANGS as $langCode) {
+            if ($langCode === $updatedLang || !isset($sectionAllLangs[$langCode]['items']) || !is_array($sectionAllLangs[$langCode]['items'])) {
+                continue;
+            }
+            foreach ($sectionAllLangs[$langCode]['items'] as $idx => &$langItem) {
+                if (is_array($langItem) && array_key_exists($idx, $sharedImgs) && $sharedImgs[$idx] !== '') {
+                    $langItem['img'] = $sharedImgs[$idx];
+                }
+            }
+            unset($langItem);
+        }
+    }
+
+    /**
+     * جدولة الصور القديمة غير المستخدمة في أي لغة أو في shared_items_img للحذف الآمن
+     */
+    private function queueOrphanedImagesAcrossSection(array $sectionAllLangs, array $previousSharedImgs, string $imageKey): void
+    {
+        $activePaths = [];
+        if (isset($sectionAllLangs['shared_items_img']) && is_array($sectionAllLangs['shared_items_img'])) {
+            foreach ($sectionAllLangs['shared_items_img'] as $path) {
+                if (is_string($path) && $path !== '') {
+                    $activePaths[ltrim($path, '/')] = true;
+                }
+            }
+        }
+
+        foreach (self::SUPPORTED_LANGS as $langCode) {
+            if (!isset($sectionAllLangs[$langCode]['items']) || !is_array($sectionAllLangs[$langCode]['items'])) {
+                continue;
+            }
+            foreach ($sectionAllLangs[$langCode]['items'] as $item) {
+                if (is_array($item) && !empty($item[$imageKey])) {
+                    $activePaths[ltrim((string)$item[$imageKey], '/')] = true;
+                }
+            }
+        }
+
+        foreach ($previousSharedImgs as $oldImg) {
+            $oldPath = ltrim((string)$oldImg, '/');
+            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($activePaths[$oldPath])) {
+                $this->filesToDelete[] = $oldPath;
+            }
+        }
     }
 
     private function fetchSetting(PDO $pdo, string $key, array $currentSettings): array
@@ -532,26 +609,6 @@ class HomeSettingsService
             'v'        => $jsonVal,
             'v_update' => $jsonVal,
         ]);
-    }
-
-    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems, string $imageKey): void
-    {
-        $retainedImages = [];
-        foreach ($finalItems as $item) {
-            if (is_array($item) && !empty($item[$imageKey])) {
-                $retainedImages[ltrim((string)$item[$imageKey], '/')] = true;
-            }
-        }
-
-        foreach ($existingItems as $oldItem) {
-            if (!is_array($oldItem) || empty($oldItem[$imageKey])) {
-                continue;
-            }
-            $oldPath = ltrim((string)$oldItem[$imageKey], '/');
-            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($retainedImages[$oldPath])) {
-                $this->filesToDelete[] = $oldPath;
-            }
-        }
     }
 
     private function flushDeletedFiles(): void

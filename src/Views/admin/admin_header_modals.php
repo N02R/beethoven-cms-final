@@ -12,204 +12,61 @@ if (!defined('ALLOWED_ACCESS')) {
 }
 ?>
 <style>
-    /* ==========================================================================
-       1. التنسيق الأساسي للمودلات (Glassmorphism & Custom Styling)
-       ========================================================================== */
-    .custom-modal .modal-content { 
-        border-radius: 24px; 
-        border: none; 
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); 
-        background: #ffffff;
-        overflow: hidden; 
-    }
-    .custom-modal .modal-header { 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between; 
-        padding: 22px 28px; 
-        border-bottom: 1px solid #f1f5f9; 
-        background: #ffffff;
-    }
-    .custom-modal .modal-title { 
-        margin: 0; 
-        display: flex; 
-        align-items: center; 
-        gap: .75rem; 
-        font-weight: 700; 
-        color: #0f172a; 
-        font-size: 1.2rem;
-    }
-    .custom-modal .btn-close { 
-        margin: 0; 
-        flex-shrink: 0; 
-    }
-    
     .custom-modal .modal-body {
-        background: #f8fafc;
-        padding: 28px;
-        max-height: 75vh;
+        max-height: calc(100vh - 180px) !important;
+        padding-bottom: 24px !important;
         overflow-y: auto;
     }
 
-    /* الحقول والإدخالات (Inputs) */
-    .custom-modal .form-control, .custom-modal .form-select { 
-        border-radius: 12px; 
-        border: 1px solid #e2e8f0; 
-        height: 46px; 
-        padding: 0 16px; 
-        transition: all 0.2s ease; 
-        width: 100%; 
-        background-color: #ffffff;
-        font-size: 0.95rem;
-    }
-    .custom-modal .form-control:focus, .custom-modal .form-select:focus { 
-        border-color: #3b82f6; 
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
-        background-color: #ffffff;
-    }
-    
-    /* رفع الملفات (File Upload) */
-    .custom-modal input[type="file"].form-control { 
-        padding: 9px 16px; 
-        background: #ffffff; 
-        cursor: pointer; 
-        width: 100%; 
-        height: auto;
-    }
-
-    /* تنسيق الفوتر الموحد */
-    .custom-modal .modal-footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-        padding: 20px 28px;
-        background: #ffffff;
-        border-top: 1px solid #f1f5f9;
-    }
-
-    .custom-modal .modal-footer button {
-        flex: 1;
-        height: 48px;
-        font-size: 15px;
+    .custom-modal[dir="rtl"] .ad-dropdown-btn {
+        direction: rtl;
+        text-align: right;
+        background-position: left 0.95rem center !important;
+        padding-left: 2.5rem !important;
+        padding-right: 1rem !important;
+        border-color: #93c5fd;
+        background-color: #eff6ff;
+        color: #1e3a8a;
         font-weight: 600;
-        border-radius: 12px;
     }
 
-    /* تنسيق زر الإلغاء */
-    .btn-cancel {
-        background-color: #f1f5f9;
-        color: #475569;   
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
-    }
-    .btn-cancel:hover {
-        background-color: #e2e8f0;
-        color: #1e293b;
-    }
-
-    /* تنسيق زر الحفظ */
-    .btn-premium { 
-        background: linear-gradient(135deg, #2563eb, #3b82f6); 
-        color: white; 
-        border: none; 
-        transition: all 0.3s ease; 
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-    }
-    .btn-premium:hover {
-        background: linear-gradient(135deg, #1d4ed8, #2563eb);
-        color: white;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    .custom-modal[dir="ltr"] .ad-dropdown-btn {
+        direction: ltr;
+        text-align: left;
+        background-position: right 0.95rem center !important;
+        padding-right: 2.5rem !important;
+        padding-left: 1rem !important;
+        border-color: #93c5fd;
+        background-color: #eff6ff;
+        color: #1e3a8a;
+        font-weight: 600;
     }
 
-    .btn-icon-trash { 
-        width: 44px; 
-        height: 44px; 
-        border-radius: 12px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        background: #fee2e2; 
-        color: #dc2626; 
-        border: none; 
+    .custom-modal .ad-type-menu {
+        background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%) !important;
+        border: 1px solid #93c5fd !important;
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.16) !important;
+        padding: 6px !important;
+        z-index: 1065 !important;
+    }
+
+    .custom-modal .ad-type-menu .dropdown-item {
+        border-radius: 10px;
+        color: #1e3a8a;
+        font-weight: 600;
         transition: all 0.2s ease;
     }
-    .btn-icon-trash:hover { 
-        background: #fecaca; 
-        transform: translateY(-1px);
-    }
-.custom-modal .modal-body {
-    max-height: 82vh;
-    padding-bottom: 110px !important;
-}
 
-    /* ==========================================================================
-       2. قواعد التجاوب مع الشاشات (RESPONSIVE DESIGN: Mobile to 27" Desktop)
-       ========================================================================== */
-    @media (min-width: 1920px) {
-        .custom-modal .modal-lg {
-            max-width: 950px;
-        }
-        .custom-modal .modal-xl {
-            max-width: 1300px;
-        }
-        .custom-modal .modal-header {
-            padding: 28px 36px;
-        }
-        .custom-modal .modal-title {
-            font-size: 1.4rem;
-        }
-        .custom-modal .modal-body {
-            padding: 36px;
-        }
-        .custom-modal .form-control, .custom-modal .form-select {
-            height: 52px;
-            font-size: 1.05rem;
-        }
+    .custom-modal .ad-type-menu .dropdown-item:hover {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
     }
 
-    @media (max-width: 768px) {
-        .custom-modal .modal-dialog {
-            margin: 10px;
-            max-width: calc(100% - 20px);
-        }
-        .custom-modal .modal-header {
-            padding: 16px 20px;
-        }
-        .custom-modal .modal-title {
-            font-size: 1.05rem;
-        }
-        .custom-modal .modal-body {
-            padding: 18px;
-        }
-        .custom-modal .modal-footer {
-            padding: 15px 18px;
-            flex-direction: column-reverse;
-            gap: 10px;
-        }
-        .custom-modal .modal-footer button {
-            width: 100%;
-            height: 44px;
-        }
-        .social-row-item, .menu-row-item, .lang-row-item, 
-        .service-row-item, .choose-row-item, .review-row-item, 
-        .guide-row-item, .faq-row-item, .footer-col3-item {
-            padding: 12px !important;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .custom-modal .modal-content {
-            border-radius: 16px;
-        }
-        .custom-modal .form-control, .custom-modal .form-select {
-            height: 42px;
-            font-size: 0.9rem;
-        }
+    .custom-modal .ad-type-menu .dropdown-item.active {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
     }
 </style>
-
 <?php
 if (!function_exists('safe_admin_string')) {
     function safe_admin_string(mixed $val, string $current_lang = 'de'): string {
@@ -505,6 +362,16 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                     $currentAd = is_array($decodedAds[$current_lang] ?? null)
                         ? $decodedAds[$current_lang]
                         : (isset($decodedAds['status']) ? $decodedAds : []);
+
+                    $adStatusVal = safe_admin_string($currentAd['status'] ?? 'Draft', $current_lang);
+                    $adStatusDraftLabel     = (string)($ml['status_draft'] ?? 'مخفي (مسودة)');
+                    $adStatusPublishedLabel = (string)($ml['status_published'] ?? 'نشط (يظهر للزوار)');
+                    $activeAdStatusLabel    = ($adStatusVal === 'Published') ? $adStatusPublishedLabel : $adStatusDraftLabel;
+
+                    $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang);
+                    $adTypeTextLabel   = (string)($ml['ad_type_text'] ?? 'نص متحرك');
+                    $adTypeImageLabel  = (string)($ml['ad_type_image'] ?? 'صورة (بانر دعائي)');
+                    $activeAdTypeLabel = ($adTypeVal === 'image') ? $adTypeImageLabel : $adTypeTextLabel;
                     ?>
                     <input type="hidden" name="old_ad_image" value="<?php echo htmlspecialchars(safe_admin_string($currentAd['image_path'] ?? 'assets/img/default-ad.png', $current_lang), ENT_QUOTES, 'UTF-8'); ?>">
                     
@@ -516,10 +383,34 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                         <div class="row g-3">
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['display_status'] ?? 'حالة العرض'), ENT_QUOTES, 'UTF-8'); ?></label>
-                                <select class="form-select" name="status" dir="<?php echo $modal_dir; ?>">
-                                    <option value="Draft" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) === 'Draft' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['status_draft'] ?? 'مخفي (مسودة)'), ENT_QUOTES, 'UTF-8'); ?></option>
-                                    <option value="Published" <?php echo ((safe_admin_string($currentAd['status'] ?? '', $current_lang)) === 'Published' ? 'selected' : ''); ?>><?php echo htmlspecialchars((string)($ml['status_published'] ?? 'نشط (يظهر للزوار)'), ENT_QUOTES, 'UTF-8'); ?></option>
-                                </select>
+                                <input type="hidden" name="status" id="adStatusInput" value="<?php echo htmlspecialchars($adStatusVal, ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="dropdown w-100" dir="<?php echo $modal_dir; ?>">
+                                    <button class="form-select ad-dropdown-btn d-flex align-items-center justify-content-between w-100 <?php echo $modal_align; ?>"
+                                            type="button"
+                                            id="adStatusDropdownBtn"
+                                            dir="<?php echo $modal_dir; ?>"
+                                            data-bs-toggle="dropdown"
+                                            data-bs-display="static"
+                                            aria-expanded="false">
+                                        <span id="adStatusDropdownText" class="flex-grow-1 <?php echo $modal_align; ?>"><?php echo htmlspecialchars($activeAdStatusLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </button>
+                                    <ul class="dropdown-menu ad-type-menu w-100 rounded-3 mt-1 <?php echo $modal_align; ?>" dir="<?php echo $modal_dir; ?>" aria-labelledby="adStatusDropdownBtn">
+                                        <li>
+                                            <button type="button"
+                                                    class="dropdown-item py-2 <?php echo $modal_align; ?> <?php echo ($adStatusVal === 'Draft' ? 'active' : ''); ?>"
+                                                    onclick="selectAdStatusOption('Draft', <?php echo htmlspecialchars(json_encode($adStatusDraftLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
+                                                <?php echo htmlspecialchars($adStatusDraftLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button"
+                                                    class="dropdown-item py-2 <?php echo $modal_align; ?> <?php echo ($adStatusVal === 'Published' ? 'active' : ''); ?>"
+                                                    onclick="selectAdStatusOption('Published', <?php echo htmlspecialchars(json_encode($adStatusPublishedLabel, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8'); ?>, this)">
+                                                <?php echo htmlspecialchars($adStatusPublishedLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="col-md-4 <?php echo $modal_align; ?>">
                                 <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['start_date'] ?? 'تاريخ البدء'), ENT_QUOTES, 'UTF-8'); ?></label>
@@ -538,15 +429,9 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                             <?php echo htmlspecialchars((string)($ml['announcement_content'] ?? 'محتوى الإعلان'), ENT_QUOTES, 'UTF-8'); ?> (<?php echo strtoupper($current_lang); ?>)
                         </div>
                         <label class="small fw-bold mb-1"><?php echo htmlspecialchars((string)($ml['ad_type'] ?? 'نوع الإعلان:'), ENT_QUOTES, 'UTF-8'); ?></label>
-                        <?php 
-                        $adTypeVal = safe_admin_string($currentAd['type'] ?? 'text', $current_lang);
-                        $adTypeTextLabel  = (string)($ml['ad_type_text'] ?? 'نص متحرك');
-                        $adTypeImageLabel = (string)($ml['ad_type_image'] ?? 'صورة (بانر دعائي)');
-                        $activeAdTypeLabel = ($adTypeVal === 'image') ? $adTypeImageLabel : $adTypeTextLabel;
-                        ?>
                         <input type="hidden" name="type" id="adTypeSelect" value="<?php echo htmlspecialchars($adTypeVal, ENT_QUOTES, 'UTF-8'); ?>">
                         <div class="dropdown mb-3 w-100" dir="<?php echo $modal_dir; ?>">
-                            <button class="form-select d-flex align-items-center justify-content-between w-100 <?php echo $modal_align; ?>"
+                            <button class="form-select ad-dropdown-btn d-flex align-items-center justify-content-between w-100 <?php echo $modal_align; ?>"
                                     type="button"
                                     id="adTypeDropdownBtn"
                                     dir="<?php echo $modal_dir; ?>"
@@ -1442,7 +1327,6 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
         </div>
     </div>
 </div>
-
 <script>
 const ML = <?php echo json_encode($ml, JSON_UNESCAPED_UNICODE); ?>;
 const CURRENT_MODAL_LANG = <?php echo json_encode($current_lang, JSON_UNESCAPED_UNICODE); ?>;
@@ -1475,6 +1359,26 @@ function toggleAdContent(type) {
     } else {
         imageEditor.classList.add('d-none');
         textEditor.classList.remove('d-none');
+    }
+}
+
+function selectAdStatusOption(val, label, el) {
+    const hiddenInput = document.getElementById('adStatusInput');
+    const btnText = document.getElementById('adStatusDropdownText');
+    const dropdownBtn = document.getElementById('adStatusDropdownBtn');
+    if (hiddenInput) hiddenInput.value = val;
+    if (btnText) btnText.textContent = label;
+
+    if (el && el.closest) {
+        el.closest('.dropdown-menu')?.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        el.classList.add('active');
+    }
+
+    if (dropdownBtn && typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+        const instance = bootstrap.Dropdown.getInstance(dropdownBtn);
+        if (instance) instance.hide();
     }
 }
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Education Page View (Gold Standard MVC, Multilingual & Security Hardened)
- * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php و about.php.
+ * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php و about.php مع توحيد الصور المشتركة عبر اللغات.
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -69,16 +69,19 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
-$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
-
+// 0. دالة مساعدة لفك الإعداد الخام كـ Array دون فقدان المفاتيح المشتركة
+$decodeRawSetting = function(string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+    return is_array($raw) ? $raw : $default;
+};
+
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
 
     if (!is_array($parsed)) {
         return $default;
@@ -160,13 +163,17 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php 
-      $edu_hero = $getLocalizedData('edu_hero', []);
+      $eduHeroRaw = $decodeRawSetting('edu_hero', []);
+      $eduHeroRaw = is_array($eduHeroRaw) ? $eduHeroRaw : [];
+      $edu_hero   = $getLocalizedData('edu_hero', []);
+      $edu_hero   = is_array($edu_hero) ? $edu_hero : [];
       
       $hero_title    = $edu_hero['title'] ?? $txt['hero_title'];
       $hero_desc     = $edu_hero['desc'] ?? '';
       $hero_btn_text = $edu_hero['btn_text'] ?? $txt['hero_btn'];
       $hero_btn_url  = $buildLocalizedUrl($edu_hero['btn_url'] ?? '#');
-      $hero_bg       = get_image_url($edu_hero['img'] ?? null, '/assets/img/education/hero.jpg');
+      $sharedHeroImg = $eduHeroRaw['shared_img'] ?? ($edu_hero['img'] ?? ($eduHeroRaw['de']['img'] ?? ($eduHeroRaw['en']['img'] ?? ($eduHeroRaw['ar']['img'] ?? null))));
+      $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/education/hero.jpg');
       ?>
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6">
@@ -198,14 +205,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $edu_why = $getLocalizedData('edu_why', []);
+      $eduWhyRaw     = $decodeRawSetting('edu_why', []);
+      $eduWhyRaw     = is_array($eduWhyRaw) ? $eduWhyRaw : [];
+      $sharedWhyImgs = is_array($eduWhyRaw['shared_items_img'] ?? null) ? $eduWhyRaw['shared_items_img'] : [];
+      $edu_why       = $getLocalizedData('edu_why', []);
+      $edu_why       = is_array($edu_why) ? $edu_why : [];
       
       $why_title = $edu_why['title'] ?? $txt['why_title'];
       $why_desc  = $edu_why['desc'] ?? '';
-      $why_items = $edu_why['items'] ?? [];
-      if (!is_array($why_items)) {
-          $why_items = [];
-      }
+      $why_items = is_array($edu_why['items'] ?? null) ? $edu_why['items'] : [];
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -217,9 +225,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-3">
         <?php if (!empty($why_items)): ?>
-          <?php foreach ($why_items as $item): 
+          <?php foreach ($why_items as $wIdx => $item): 
             if (!is_array($item)) continue;
-            $item_img   = get_image_url($item['img'] ?? null, '');
+            $rawWhyImg  = $sharedWhyImgs[$wIdx] ?? ($item['img'] ?? null);
+            $item_img   = get_image_url($rawWhyImg, '');
             $item_title = $item['title'] ?? '';
             $item_desc  = $item['desc'] ?? '';
           ?>
@@ -259,13 +268,17 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $edu_timeline   = $getLocalizedData('edu_timeline', []);
-      $timeline_title = $edu_timeline['title'] ?? $txt['timeline_title'];
-      $timeline_desc  = $edu_timeline['desc'] ?? '';
-      $steps_items    = $edu_timeline['steps'] ?? ($edu_timeline['items'] ?? []);
-      if (!is_array($steps_items)) {
-          $steps_items = [];
-      }
+      $eduTimelineRaw  = $decodeRawSetting('edu_timeline', []);
+      $eduTimelineRaw  = is_array($eduTimelineRaw) ? $eduTimelineRaw : [];
+      $sharedStepImgs  = is_array($eduTimelineRaw['shared_steps_img'] ?? null)
+          ? $eduTimelineRaw['shared_steps_img']
+          : (is_array($eduTimelineRaw['shared_items_img'] ?? null) ? $eduTimelineRaw['shared_items_img'] : []);
+      $edu_timeline    = $getLocalizedData('edu_timeline', []);
+      $edu_timeline    = is_array($edu_timeline) ? $edu_timeline : [];
+      $timeline_title  = $edu_timeline['title'] ?? $txt['timeline_title'];
+      $timeline_desc   = $edu_timeline['desc'] ?? '';
+      $rawSteps        = $edu_timeline['steps'] ?? ($edu_timeline['items'] ?? []);
+      $steps_items     = is_array($rawSteps) ? $rawSteps : [];
       ?>
       
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -289,7 +302,8 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
                 $dotClass = $dots[(int)$idx % count($dots)];
                 
                 $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
-                $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+                $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+                $iconPath    = get_image_url($rawStepImg, $defaultIcon);
                 $groupNumImg = get_image_url('assets/img/vector/Group' . ((int)$idx + 1) . '.png');
                 
                 $stepNumberClass = 'step-' . ((int)$idx + 1);
@@ -315,7 +329,8 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
               if (!is_array($step)) continue;
               $num = sprintf("%02d", (int)$idx + 1);
               $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
-              $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+              $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+              $iconPath    = get_image_url($rawStepImg, $defaultIcon);
           ?>
             <div class="m-step">
               <div class="m-number-box">
@@ -355,14 +370,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $edu_services = $getLocalizedData('edu_services', []);
+      $eduServicesRaw  = $decodeRawSetting('edu_services', []);
+      $eduServicesRaw  = is_array($eduServicesRaw) ? $eduServicesRaw : [];
+      $sharedSrvImgs   = is_array($eduServicesRaw['shared_items_img'] ?? null) ? $eduServicesRaw['shared_items_img'] : [];
+      $edu_services    = $getLocalizedData('edu_services', []);
+      $edu_services    = is_array($edu_services) ? $edu_services : [];
       
       $services_title = $edu_services['title'] ?? ($edu_services['section_title'] ?? $txt['services_title']);
       $services_desc  = $edu_services['desc'] ?? ($edu_services['section_subtitle'] ?? '');
-      $services_items = $edu_services['items'] ?? [];
-      if (!is_array($services_items)) {
-          $services_items = [];
-      }
+      $services_items = is_array($edu_services['items'] ?? null) ? $edu_services['items'] : [];
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -374,10 +390,11 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php if (!empty($services_items)): ?>
-          <?php foreach ($services_items as $item): 
+          <?php foreach ($services_items as $sIdx => $item): 
               if (!is_array($item)) continue;
               $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true, 'education');
-              $bg_img     = get_image_url($item['img'] ?? null, '/assets/img/home/education.jpg');
+              $rawSrvImg  = $sharedSrvImgs[$sIdx] ?? ($item['img'] ?? null);
+              $bg_img     = get_image_url($rawSrvImg, '/assets/img/home/education.jpg');
               $item_title = $item['title'] ?? '';
           ?>
             <div class="col">

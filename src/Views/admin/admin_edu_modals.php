@@ -109,13 +109,15 @@ $modalI18n = [
 ];
 $mTxt = $modalI18n[$current_lang];
 
-// دالة مساعدة لجلب البيانات الخام لكل قسم متعدد اللغات
-$fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
+// دالة مساعدة لجلب البيانات الخام الكاملة لكل قسم متعدد اللغات (بما في ذلك المفاتيح المشتركة)
+$fetchRawSettingAll = static function (string $key): array {
     $raw = get_setting($key, '{}');
     $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
-    if (!is_array($decoded)) {
-        return [];
-    }
+    return is_array($decoded) ? $decoded : [];
+};
+
+// دالة مساعدة لاستخراج بيانات اللغة الحالية من الإعداد الكامل
+$extractLangFromRaw = static function (array $decoded) use ($current_lang): array {
     if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
         return $decoded[$current_lang];
     }
@@ -131,16 +133,28 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
     return $decoded;
 };
 
-$curEduHero     = $fetchRawMultilingualSetting('edu_hero');
-$curEduWhy      = $fetchRawMultilingualSetting('edu_why');
-$curEduTimeline = $fetchRawMultilingualSetting('edu_timeline');
-$curEduServices = $fetchRawMultilingualSetting('edu_services');
+$rawEduHeroAll     = $fetchRawSettingAll('edu_hero');
+$rawEduWhyAll      = $fetchRawSettingAll('edu_why');
+$rawEduTimelineAll = $fetchRawSettingAll('edu_timeline');
+$rawEduServicesAll = $fetchRawSettingAll('edu_services');
+
+$curEduHero     = $extractLangFromRaw($rawEduHeroAll);
+$curEduWhy      = $extractLangFromRaw($rawEduWhyAll);
+$curEduTimeline = $extractLangFromRaw($rawEduTimelineAll);
+$curEduServices = $extractLangFromRaw($rawEduServicesAll);
+
+$sharedHeroImg     = (string)($rawEduHeroAll['shared_img'] ?? '');
+$sharedWhyImgs     = is_array($rawEduWhyAll['shared_items_img'] ?? null) ? $rawEduWhyAll['shared_items_img'] : [];
+$sharedStepImgs    = is_array($rawEduTimelineAll['shared_steps_img'] ?? null)
+    ? $rawEduTimelineAll['shared_steps_img']
+    : (is_array($rawEduTimelineAll['shared_items_img'] ?? null) ? $rawEduTimelineAll['shared_items_img'] : []);
+$sharedServiceImgs = is_array($rawEduServicesAll['shared_items_img'] ?? null) ? $rawEduServicesAll['shared_items_img'] : [];
 
 $modalHeroTitle   = (string)($curEduHero['title'] ?? ($edu_hero['title'] ?? ''));
 $modalHeroDesc    = (string)($curEduHero['desc'] ?? ($edu_hero['desc'] ?? ''));
 $modalHeroBtnText = (string)($curEduHero['btn_text'] ?? ($edu_hero['btn_text'] ?? ''));
 $modalHeroBtnUrl  = (string)($curEduHero['btn_url'] ?? ($edu_hero['btn_url'] ?? '#'));
-$modalHeroImg     = (string)($curEduHero['img'] ?? ($edu_hero['img'] ?? ''));
+$modalHeroImg     = $sharedHeroImg !== '' ? $sharedHeroImg : (string)($curEduHero['img'] ?? ($edu_hero['img'] ?? ''));
 
 $modalWhyTitle = (string)($curEduWhy['title'] ?? ($edu_why_title ?? ''));
 $modalWhyDesc  = (string)($curEduWhy['desc'] ?? ($edu_why_desc ?? ''));
@@ -251,7 +265,7 @@ $modalServicesItems = is_array($curEduServices['items'] ?? null) ? $curEduServic
                             if (!is_array($item)) continue;
                             $wTitle = (string)($item['title'] ?? '');
                             $wDesc  = (string)($item['desc'] ?? '');
-                            $wImg   = (string)($item['img'] ?? '');
+                            $wImg   = (string)($sharedWhyImgs[$index] ?? ($item['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm edu-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="why_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
@@ -336,7 +350,7 @@ $modalServicesItems = is_array($curEduServices['items'] ?? null) ? $curEduServic
                             $sSubtitle = (string)($step['subtitle'] ?? '');
                             $sDesc     = (string)($step['desc'] ?? '');
                             $sOrder    = (string)($step['order'] ?? $index);
-                            $sIcon     = (string)($step['icon'] ?? '');
+                            $sIcon     = (string)($sharedStepImgs[$index] ?? ($step['icon'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm edu-timeline-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="step_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
@@ -430,7 +444,7 @@ $modalServicesItems = is_array($curEduServices['items'] ?? null) ? $curEduServic
                             if (!is_array($item)) continue;
                             $srvTitle = (string)($item['title'] ?? '');
                             $srvUrl   = (string)($item['url'] ?? '');
-                            $srvImg   = (string)($item['img'] ?? '');
+                            $srvImg   = (string)($sharedServiceImgs[$index] ?? ($item['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm edu-service-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="edu_srv_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">

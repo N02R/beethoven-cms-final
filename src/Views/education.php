@@ -100,8 +100,8 @@ $getLocalizedData = function(string $settingKey, mixed $default = []) use ($curr
     return $parsed;
 };
 
-// 2. دالة تنقية الروابط وربطها ببادئة اللغة الحالية (منع XSS و Open Redirect)
-$buildLocalizedUrl = function(?string $rawUrl, bool $isEduService = false) use ($current_lang): string {
+// 2. دالة تنقية الروابط وربطها ببادئة اللغة الحالية والبادئة الموحدة services + from (منع XSS و Open Redirect)
+$buildLocalizedUrl = function(?string $rawUrl, bool $isEduService = false, string $fromSource = 'education') use ($current_lang): string {
     $url = trim((string)($rawUrl ?? '#'));
     if ($url === '' || $url === '#') {
         return '#';
@@ -113,15 +113,36 @@ $buildLocalizedUrl = function(?string $rawUrl, bool $isEduService = false) use (
         return $url;
     }
 
-    $cleanPath = preg_replace('/^(ar|en|de)\//i', '', ltrim($url, '/'));
-    if ($isEduService && !str_starts_with($cleanPath, 'edu-services/')) {
-        $cleanPath = 'edu-services/' . $cleanPath;
+    $parts = explode('?', $url, 2);
+    $pathPart = $parts[0];
+    $queryPart = $parts[1] ?? '';
+
+    $cleanPath = preg_replace('/^(ar|en|de)\//i', '', ltrim($pathPart, '/'));
+    $cleanPath = trim((string)$cleanPath, '/');
+    if ($cleanPath === '') {
+        return '#';
+    }
+
+    if ($isEduService) {
+        // توحيد بادئات الخدمات القديمة أو الـ slug المباشر إلى services/{slug}
+        $cleanPath = preg_replace('/^(edu-services|job-services|services)\//i', '', $cleanPath);
+        $cleanPath = 'services/' . ltrim((string)$cleanPath, '/');
     }
 
     $localized = '/' . $current_lang . '/' . $cleanPath;
-    if ($isEduService && !str_contains($localized, '?')) {
-        $localized .= '?from=education';
+
+    parse_str($queryPart, $queryParams);
+    if (!is_array($queryParams)) {
+        $queryParams = [];
     }
+    if ($isEduService && $fromSource !== '' && !isset($queryParams['from'])) {
+        $queryParams['from'] = $fromSource;
+    }
+
+    if (!empty($queryParams)) {
+        $localized .= '?' . http_build_query($queryParams);
+    }
+
     return $localized;
 };
 
@@ -355,7 +376,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
         <?php if (!empty($services_items)): ?>
           <?php foreach ($services_items as $item): 
               if (!is_array($item)) continue;
-              $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true);
+              $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true, 'education');
               $bg_img     = get_image_url($item['img'] ?? null, '/assets/img/home/education.jpg');
               $item_title = $item['title'] ?? '';
           ?>

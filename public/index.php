@@ -133,8 +133,32 @@ $router->add('GET', 'education', [\App\Controllers\EducationController::class, '
 $router->add('GET', 'job', [\App\Controllers\JobController::class, 'index']);
 $router->add('GET', 'guide', [\App\Controllers\GuideController::class, 'index']);
 $router->add('GET', 'contact', [\App\Controllers\ContactController::class, 'index']);
-$router->add('GET', 'edu-services/arrival', [\App\Controllers\Services\ArrivalController::class, 'index']);
+
+// المسار الموحّد للخدمات (services/{slug}) مع تمرير ?from=education أو ?from=job
+$router->add('GET', 'services/arrival', [\App\Controllers\Services\ArrivalController::class, 'index']);
 $router->add('GET', 'services/german-language-courses', [\App\Controllers\ServiceController::class, 'germanCourses']);
+$router->add('GET', 'services/bachelor-package', [\App\Controllers\Services\BachelorPackageController::class, 'index']);
+$router->add('GET', 'services/check', [\App\Controllers\Services\CheckController::class, 'index']);
+$router->add('GET', 'services/courses', [\App\Controllers\Services\CoursesController::class, 'index']);
+$router->add('GET', 'services/coverletter', [\App\Controllers\Services\CoverLetterController::class, 'index']);
+$router->add('GET', 'services/cv', [\App\Controllers\Services\CvController::class, 'index']);
+$router->add('GET', 'services/englishlang', [\App\Controllers\Services\EnglishLangController::class, 'index']);
+$router->add('GET', 'services/financial', [\App\Controllers\Services\FinancialController::class, 'index']);
+$router->add('GET', 'services/foundation', [\App\Controllers\Services\FoundationController::class, 'index']);
+$router->add('GET', 'services/general', [\App\Controllers\Services\GeneralController::class, 'index']);
+$router->add('GET', 'services/germanlang', [\App\Controllers\Services\GermanLangController::class, 'index']);
+$router->add('GET', 'services/health', [\App\Controllers\Services\HealthController::class, 'index']);
+$router->add('GET', 'services/living', [\App\Controllers\Services\LivingController::class, 'index']);
+$router->add('GET', 'services/motivitionletter', [\App\Controllers\Services\MotivationController::class, 'index']);
+$router->add('GET', 'services/pakeges', [\App\Controllers\Services\OffersController::class, 'index']);
+$router->add('GET', 'services/services-cost', [\App\Controllers\Services\PriceListController::class, 'index']);
+$router->add('GET', 'services/medical-pakeges', [\App\Controllers\Services\MedicalPackageController::class, 'index']);
+$router->add('GET', 'services/medical-traning', [\App\Controllers\Services\JobAgreementsController::class, 'index']);
+$router->add('GET', 'services/medical', [\App\Controllers\Services\MedicalSpecialtiesController::class, 'index']);
+$router->add('GET', 'services/vocational', [\App\Controllers\Services\AusbildungPackageController::class, 'index']);
+
+// إبقاء مسارات edu-services للتوافق مع الروابط القديمة
+$router->add('GET', 'edu-services/arrival', [\App\Controllers\Services\ArrivalController::class, 'index']);
 $router->add('GET', 'edu-services/bachelor-package', [\App\Controllers\Services\BachelorPackageController::class, 'index']);
 $router->add('GET', 'edu-services/check', [\App\Controllers\Services\CheckController::class, 'index']);
 $router->add('GET', 'edu-services/courses', [\App\Controllers\Services\CoursesController::class, 'index']);

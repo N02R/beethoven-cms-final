@@ -1032,14 +1032,29 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
             </div>
             <div class="modal-body p-4">
                 <?php 
-                $choose_data_modal = is_array($choose_section ?? null) ? $choose_section : [];
-                if (empty($choose_data_modal)) {
-                    $decodedChoose = $decodeAdminJson($settingsPool['choose'] ?? ($data['choose'] ?? []));
-                    $choose_data_modal = is_array($decodedChoose[$current_lang] ?? null)
-                        ? $decodedChoose[$current_lang]
-                        : (is_array($decodedChoose['de'] ?? null) ? $decodedChoose['de'] : []);
+                $rawChooseSetting = $settingsPool['choose']
+                    ?? ($data['choose']
+                    ?? (function_exists('get_setting') ? get_setting('choose', []) : []));
+                $decodedChoose = $decodeAdminJson($rawChooseSetting);
+
+                $choose_data_modal = [];
+                foreach ([$current_lang, 'de', 'en', 'ar'] as $langCandidate) {
+                    if (isset($decodedChoose[$langCandidate]) && is_array($decodedChoose[$langCandidate])) {
+                        $choose_data_modal = $decodedChoose[$langCandidate];
+                        break;
+                    }
                 }
-                
+                if (empty($choose_data_modal) && !empty($decodedChoose)) {
+                    $choose_data_modal = $decodedChoose;
+                }
+                if (empty($choose_data_modal) && is_array($choose_section ?? null)) {
+                    $choose_data_modal = $choose_section;
+                }
+
+                $sharedChooseModalImgs = is_array($decodedChoose['shared_items_img'] ?? null)
+                    ? $decodedChoose['shared_items_img']
+                    : [];
+
                 $choose_sec_title    = $choose_data_modal['section_title'] ?? ($choose_data_modal['title'] ?? '');
                 $choose_sec_subtitle = $choose_data_modal['section_subtitle'] ?? ($choose_data_modal['desc'] ?? '');
                 $choose_itemsList    = is_array($choose_data_modal['items'] ?? null) ? $choose_data_modal['items'] : [];
@@ -1073,7 +1088,8 @@ $settingsPool = is_array($currentSettings ?? null) ? $currentSettings : (is_arra
                             $itTitle = safe_admin_string($item['title'] ?? '', $current_lang);
                             $itDesc  = safe_admin_string($item['desc'] ?? '', $current_lang);
                             $itUrl   = safe_admin_string($item['url'] ?? '#', $current_lang);
-                            $itImg   = safe_admin_string($item['img'] ?? '', $current_lang);
+                            $rawItImg = $sharedChooseModalImgs[$index] ?? ($item['img'] ?? '');
+                            $itImg   = safe_admin_string($rawItImg, $current_lang);
                         ?>
                             <div class="p-3 shadow-sm choose-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="choose_row_<?php echo $index; ?>">
                                 <div class="row g-3 align-items-center">

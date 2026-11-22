@@ -105,7 +105,7 @@
 }
 /* why study style end */
 
-/* time line style start (Direction Aware) */
+/* time line style start (Direction Aware & Easy to Adjust) */
 .timeline-section {
     background-color: #ffffff;
     padding: 100px 0;
@@ -116,8 +116,14 @@
     position: relative;
     width: 95%;
     max-width: 1053px;
-    margin: 150px auto;
+    margin: 190px auto;
     aspect-ratio: 1053 / 198;
+}
+
+.map-box {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .line-base,
@@ -137,13 +143,6 @@
 [dir="ltr"] .line-base,
 [dir="ltr"] .line-active {
     left: 0;
-    transform: scaleX(-1);
-}
-
-.line-base {
-    z-index: 1;
-    opacity: 0.3;
-    filter: blur(1px);
 }
 
 [dir="rtl"] .line-base {
@@ -154,22 +153,34 @@
     transform: scaleX(-1) translateY(3.5%);
 }
 
+[dir="ltr"] .line-active {
+    transform: scaleX(-1);
+}
+
+.line-base {
+    z-index: 1;
+    opacity: 0.3;
+    filter: blur(1px);
+}
+
 .line-active {
     z-index: 2;
 }
 
 .step-wrapper {
     position: absolute;
-    width: 180px;
+    width: 190px;
     z-index: 10;
-    display: block;
+    top: var(--step-top, 30%);
 }
 
 [dir="rtl"] .step-wrapper {
+    right: var(--step-pos, 0%);
     transform: translateX(50%);
 }
 
 [dir="ltr"] .step-wrapper {
+    left: var(--step-pos, 0%);
     transform: translateX(-50%);
 }
 
@@ -178,24 +189,35 @@
     width: 24px;
     height: 24px;
     object-fit: contain;
+    top: var(--num-top, 0px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
 }
 
 .icon-main {
     position: absolute;
     width: 46px;
     height: 46px;
+    top: var(--icon-top, 45px);
+    left: 50%;
+    transform: translateX(-50%);
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    z-index: 11;
 }
 
 .icon-main img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
 }
 
 .info-content {
     position: relative;
     width: 100%;
     text-align: center;
+    margin-top: var(--info-mt, 105px);
+    margin-bottom: var(--info-mb, 0px);
 }
 
 .info-content h3 {
@@ -234,36 +256,54 @@
 .bg-orange { background-color: #F2994A; }
 .bg-red { background-color: #EB5757; }
 
-/* إحداثيات الخطوات متكيفة مع الاتجاهين (RTL / LTR) */
-[dir="rtl"] .step-1 { right: 3.25%; top: 30%; }
-[dir="ltr"] .step-1 { left: 3.25%; top: 30%; }
-.step-1 .step-img-num { top: 0%; right: 50%; transform: translateX(50%); }
-.step-1 .icon-main { top: 45px; right: 37%; }
-.step-1 .info-content { margin-top: 105px; }
+/* توزيع تناوبي سهل التعديل: خطوات فردية للأسفل وخطوات زوجية للأعلى */
+.step-1 {
+    --step-pos: 3.25%;
+    --step-top: 30%;
+    --num-top: 0px;
+    --icon-top: 45px;
+    --info-mt: 105px;
+}
 
-[dir="rtl"] .step-2 { right: 21%; top: -6%; }
-[dir="ltr"] .step-2 { left: 21%; top: -6%; }
-.step-2 .info-content { margin-top: 140px; }
+.step-2 {
+    --step-pos: 21%;
+    --step-top: -6%;
+    --num-top: 105px;
+    --icon-top: 25px;
+    --info-mt: -165px;
+}
 
-[dir="rtl"] .step-3 { right: 40%; top: 30%; }
-[dir="ltr"] .step-3 { left: 40%; top: 30%; }
-.step-3 .step-img-num { top: -15px; right: 53%; transform: translateX(50%); }
-.step-3 .icon-main { top: 80px; right: 40%; }
-.step-3 .info-content { margin-top: 135px; }
+.step-3 {
+    --step-pos: 40%;
+    --step-top: 30%;
+    --num-top: -15px;
+    --icon-top: 80px;
+    --info-mt: 135px;
+}
 
-[dir="rtl"] .step-4 { right: 58%; top: -6%; }
-[dir="ltr"] .step-4 { left: 58%; top: -6%; }
-.step-4 .info-content { margin-top: 140px; }
+.step-4 {
+    --step-pos: 58%;
+    --step-top: -6%;
+    --num-top: 105px;
+    --icon-top: 25px;
+    --info-mt: -165px;
+}
 
-[dir="rtl"] .step-5 { right: 78%; top: 30%; }
-[dir="ltr"] .step-5 { left: 78%; top: 30%; }
-.step-5 .step-img-num { top: 0%; right: 49%; transform: translateX(50%); }
-.step-5 .icon-main { top: 45px; right: 37%; }
-.step-5 .info-content { margin-top: 105px; }
+.step-5 {
+    --step-pos: 78%;
+    --step-top: 30%;
+    --num-top: 0px;
+    --icon-top: 45px;
+    --info-mt: 105px;
+}
 
-[dir="rtl"] .step-6 { right: 96%; top: -6%; }
-[dir="ltr"] .step-6 { left: 96%; top: -6%; }
-.step-6 .info-content { margin-top: 140px; }
+.step-6 {
+    --step-pos: 96%;
+    --step-top: -6%;
+    --num-top: 95px;
+    --icon-top: 25px;
+    --info-mt: -165px;
+}
 
 /* تنسيق عرض الموبايل */
 .mobile-timeline .m-step {

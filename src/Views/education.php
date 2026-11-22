@@ -308,15 +308,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
                 $stepNumberClass = 'step-' . ((int)$idx + 1);
             ?>
               <div class="step-wrapper <?php echo htmlspecialchars($stepNumberClass, ENT_QUOTES, 'UTF-8'); ?>">
-                <img src="<?php echo htmlspecialchars($groupNumImg, ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+                <img src="<?php echo htmlspecialchars($groupNumImg, ENT_QU_OTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo $num; ?>">
                 <div class="icon-main">
-                  <img src="<?php echo htmlspecialchars($iconPath, ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                  <img src="<?php echo htmlspecialchars($iconPath, ENT_QU_OTES, 'UTF-8'); ?>" alt="">
                 </div>
                 <div class="info-content">
-                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></h3>
                   <span class="dot <?php echo $dotClass; ?>"></span>
-                  <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                  <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                  <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></h4>
+                  <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></p>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -338,19 +338,19 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
               <div class="m-content">
                 <div class="m-header">
                   <div class="m-icon">
-                    <img src="<?php echo htmlspecialchars($iconPath, ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                    <img src="<?php echo htmlspecialchars($iconPath, ENT_QU_OTES, 'UTF-8'); ?>" alt="">
                   </div>
-                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></h3>
                 </div>
-                <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></h4>
+                <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QU_OTES, 'UTF-8'); ?></p>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
       <?php else: ?>
         <div class="text-center text-muted py-4">
-          <p><?php echo htmlspecialchars($txt['no_steps'], ENT_QUOTES, 'UTF-8'); ?></p>
+          <p><?php echo htmlspecialchars($txt['no_steps'], ENT_QU_OTES, 'UTF-8'); ?></p>
         </div>
       <?php endif; ?>
     </div>

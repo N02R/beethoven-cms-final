@@ -21,8 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ================= 3. Carousel Dot Control ================= */
+  /* ================= 3. Carousel Dot Control & Touch Swipe ================= */
   initCarouselDots();
+  initReviewsSwipe();
 
   /* ================= 4. Animated Counters ================= */
   const counters = document.querySelectorAll(".count-info span");
@@ -55,6 +56,60 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ================= Helper Functions ================= */
+
+// تفعيل السحب باللمس في كاروسيل التقييمات مع دعم RTL و LTR
+function initReviewsSwipe() {
+  const carouselEl = document.getElementById('carousel-reviews');
+  if (!carouselEl || typeof bootstrap === 'undefined' || !bootstrap.Carousel) return;
+
+  const carouselInstance = bootstrap.Carousel.getOrCreateInstance(carouselEl, {
+    interval: false,
+    ride: false,
+    touch: true
+  });
+
+  let startX = 0;
+  let startY = 0;
+  let isTracking = false;
+  const swipeThreshold = 50;
+
+  carouselEl.addEventListener('touchstart', function (e) {
+    if (!e.touches || e.touches.length === 0) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isTracking = true;
+  }, { passive: true });
+
+  carouselEl.addEventListener('touchend', function (e) {
+    if (!isTracking || !e.changedTouches || e.changedTouches.length === 0) return;
+    isTracking = false;
+
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = endX - startX;
+    const diffY = endY - startY;
+
+    if (Math.abs(diffX) < swipeThreshold || Math.abs(diffX) <= Math.abs(diffY)) {
+      return;
+    }
+
+    const isRtl = (carouselEl.getAttribute('dir') || document.dir || 'ltr').toLowerCase() === 'rtl';
+
+    if (diffX < 0) {
+      if (isRtl) {
+        carouselInstance.prev();
+      } else {
+        carouselInstance.next();
+      }
+    } else {
+      if (isRtl) {
+        carouselInstance.next();
+      } else {
+        carouselInstance.prev();
+      }
+    }
+  }, { passive: true });
+}
 
 // دالة الكاروسيل
 function initCarouselDots() {

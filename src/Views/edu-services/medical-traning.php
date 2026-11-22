@@ -95,46 +95,50 @@ $formatNoteWithContact = static function (string $rawNote) use ($contact_url, $t
 ?>
 
 <!-- ================= BREADCRUMB SECTION START ================= -->
-<div class="custom-container pt-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrBreadcrumbModal" style="position: absolute; top: 20px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<div class="custom-container pt-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrBreadcrumbModal" title="<?php echo htmlspecialchars($txt['edit_bc'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $bc_url  = $job_agreements_data['page_breadcrumb_url'] ?? '#';
-  $bc_text = $job_agreements_data['page_breadcrumb'] ?? $txt['default_bc'];
-  ?>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb justify-content-start">
-      <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
-      <li class="breadcrumb-item" aria-current="page">
-        <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
-          <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
-        </a>
-      </li>
-    </ol>
-  </nav>
+    <?php
+    $bc_url  = $job_agreements_data['page_breadcrumb_url'] ?? '#';
+    $bc_text = $job_agreements_data['page_breadcrumb'] ?? $txt['default_bc'];
+    ?>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-start">
+        <li class="breadcrumb-item"><a href="/<?php echo htmlspecialchars($current_lang, ENT_QUOTES, 'UTF-8'); ?>/home"><?php echo htmlspecialchars($txt['home'], ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item"><a href="<?php echo htmlspecialchars($parent_url, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($parent_name, ENT_QUOTES, 'UTF-8'); ?></a></li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="<?php echo htmlspecialchars($bc_url, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php echo htmlspecialchars($bc_text, ENT_QUOTES, 'UTF-8'); ?>
+          </a>
+        </li>
+      </ol>
+    </nav>
+  </div>
 </div>
 <!-- Breadcrumb end -->
 
 <!-- ================= CUSTOM HERO SECTION START ================= -->
-<section class="custom-services py-5 editable-wrapper" style="position: relative;" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
-  <?php if ($is_admin_active): ?>
-    <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrHeroModal" style="position: absolute; top: 10px; right: 20px; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
-        <i class="bi bi-pencil-fill"></i>
-    </button>
-  <?php endif; ?>
+<section class="custom-services py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">
+  <div class="edit-board-box">
+    <?php if ($is_admin_active): ?>
+      <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrHeroModal" title="<?php echo htmlspecialchars($txt['edit_hero'], ENT_QUOTES, 'UTF-8'); ?>">
+          <i class="bi bi-pencil-fill"></i>
+      </button>
+    <?php endif; ?>
 
-  <?php
-  $hero_img = get_image_url($job_agreements_data['hero_img'] ?? null, 'assets/img/job/servicesimg4.png');
-  $hero_pos = htmlspecialchars((string)($job_agreements_data['hero_position'] ?? 'center center'), ENT_QUOTES, 'UTF-8');
-  ?>
-  <div class="custom-container">
-    <div class="coverLetter-hero custom-hero" 
-         style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+    <?php
+    $hero_img = get_image_url($job_agreements_data['hero_img'] ?? null, 'assets/img/job/servicesimg4.png');
+    $hero_pos = htmlspecialchars((string)($job_agreements_data['hero_position'] ?? 'center center'), ENT_QUOTES, 'UTF-8');
+    ?>
+    <div class="custom-container">
+      <div class="coverLetter-hero custom-hero" 
+           style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>'); background-position: <?php echo $hero_pos; ?>;">
+      </div>
     </div>
   </div>
 </section>
@@ -145,102 +149,108 @@ $formatNoteWithContact = static function (string $rawNote) use ($contact_url, $t
   <div class="custom-container">
     
     <!-- العنوان والوصف الرئيسي -->
-    <div class="head-info pb-4 mb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrMainModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-      <h2 class="main-text"><?php echo htmlspecialchars((string)($job_agreements_data['main_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h2>
-      <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($job_agreements_data['main_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+    <div class="head-info pb-4 mb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrMainModal" title="<?php echo htmlspecialchars($txt['edit_main'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+        <h2 class="main-text"><?php echo htmlspecialchars((string)($job_agreements_data['main_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h2>
+        <p class="par-text"><?php echo nl2br(htmlspecialchars((string)($job_agreements_data['main_desc'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></p>
+      </div>
     </div>
 
     <!-- ملاحظات هامة (قائمة متعددة ديناميكية) -->
-    <div class="advice-stars pt-3 pb-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrNotesModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
-      <h5 class="note-text mb-3"><?php echo htmlspecialchars((string)($job_agreements_data['note_title'] ?? $txt['note_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
-      <?php
-      $notesList = is_array($job_agreements_data['notes_list'] ?? null) ? $job_agreements_data['notes_list'] : [];
-      if (empty($notesList) && !empty($job_agreements_data['note_text'])) {
-          $notesList = [(string)$job_agreements_data['note_text']];
-      }
-      ?>
-      <ul class="star-list list-unstyled">
-        <?php foreach ($notesList as $noteItem):
-            if (trim((string)$noteItem) === '') continue;
+    <div class="advice-stars pt-3 pb-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrNotesModal" title="<?php echo htmlspecialchars($txt['edit_notes'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
+        <h5 class="note-text mb-3"><?php echo htmlspecialchars((string)($job_agreements_data['note_title'] ?? $txt['note_ttl']), ENT_QUOTES, 'UTF-8'); ?></h5>
+        <?php
+        $notesList = is_array($job_agreements_data['notes_list'] ?? null) ? $job_agreements_data['notes_list'] : [];
+        if (empty($notesList) && !empty($job_agreements_data['note_text'])) {
+            $notesList = [(string)$job_agreements_data['note_text']];
+        }
         ?>
-          <li class="mb-2">
-            <p class="mb-0 d-flex align-items-start">
-              <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 mt-1 flex-shrink-0" width="25" />
-              <span><?php echo $formatNoteWithContact((string)$noteItem); ?></span>
-            </p>
-          </li>
-        <?php endforeach; ?>
-      </ul>
+        <ul class="star-list list-unstyled">
+          <?php foreach ($notesList as $noteItem):
+              if (trim((string)$noteItem) === '') continue;
+          ?>
+            <li class="mb-2">
+              <p class="mb-0 d-flex align-items-start">
+                <img src="<?php echo htmlspecialchars(get_image_url('assets/img/starList.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" alt="" class="ms-2 me-2 mt-1 flex-shrink-0" width="25" />
+                <span><?php echo $formatNoteWithContact((string)$noteItem); ?></span>
+              </p>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
     </div>
 
     <!-- كرت التحميل -->
-    <div class="dl-card py-4 editable-wrapper" style="position: relative;">
-      <?php if ($is_admin_active): ?>
-        <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrCardModal" style="position: absolute; top: 0; right: 0; z-index: 10;" title="<?php echo htmlspecialchars($txt['edit_card'], ENT_QUOTES, 'UTF-8'); ?>">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
-      <?php endif; ?>
+    <div class="dl-card py-4 editable-wrapper">
+      <div class="edit-board-box">
+        <?php if ($is_admin_active): ?>
+          <button type="button" class="edit-pen" data-bs-toggle="modal" data-bs-target="#jobAgrCardModal" title="<?php echo htmlspecialchars($txt['edit_card'], ENT_QUOTES, 'UTF-8'); ?>">
+              <i class="bi bi-pencil-fill"></i>
+          </button>
+        <?php endif; ?>
 
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-          <?php 
-          $download_items = $job_agreements_data['download_items'] ?? [];
-          if (empty($download_items) && !empty($job_agreements_data['download_item'])) {
-              $download_items = [$job_agreements_data['download_item']];
-          }
-          if (empty($download_items)) {
-              $download_items = [[
-                  'type'  => 'pdf',
-                  'title' => $txt['default_bc'],
-                  'sub'   => 'Example',
-                  'file'  => 'assets/files/job_search_agreement.pdf'
-              ]];
-          }
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <?php 
+            $download_items = $job_agreements_data['download_items'] ?? [];
+            if (empty($download_items) && !empty($job_agreements_data['download_item'])) {
+                $download_items = [$job_agreements_data['download_item']];
+            }
+            if (empty($download_items)) {
+                $download_items = [[
+                    'type'  => 'pdf',
+                    'title' => $txt['default_bc'],
+                    'sub'   => 'Example',
+                    'file'  => 'assets/files/job_search_agreement.pdf'
+                ]];
+            }
 
-          $total_items = count($download_items);
-          foreach ($download_items as $index => $item):
-              if (!is_array($item)) continue;
-              $is_pdf   = (strtolower((string)($item['type'] ?? 'pdf')) === 'pdf');
-              $icon     = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
-              $alt_text = $is_pdf ? $txt['pdf_alt'] : $txt['word_alt'];
-              $is_last  = ($index === $total_items - 1);
+            $total_items = count($download_items);
+            foreach ($download_items as $index => $item):
+                if (!is_array($item)) continue;
+                $is_pdf   = (strtolower((string)($item['type'] ?? 'pdf')) === 'pdf');
+                $icon     = $is_pdf ? 'assets/img/Grouppdf.webp' : 'assets/img/Groupword.webp';
+                $alt_text = $is_pdf ? $txt['pdf_alt'] : $txt['word_alt'];
+                $is_last  = ($index === $total_items - 1);
 
-              $raw_file = trim((string)($item['file'] ?? '#'));
-              $file_url = ($raw_file !== '' && $raw_file !== '#')
-                  ? htmlspecialchars('/' . ltrim($raw_file, '/'), ENT_QUOTES, 'UTF-8')
-                  : '#';
-          ?>
-            <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
-              <div class="download-row">
-                <!-- الأيقونة -->
-                <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8'); ?>" class="dl-icon" />
-                
-                <!-- العنوان والنص الفرعي -->
-                <div class="dl-info">
-                  <div class="dl-title"><?php echo htmlspecialchars((string)($item['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></div>
-                  <?php if (!empty($item['sub'])): ?>
-                    <div class="dl-sub"><?php echo htmlspecialchars((string)$item['sub'], ENT_QUOTES, 'UTF-8'); ?></div>
-                  <?php endif; ?>
+                $raw_file = trim((string)($item['file'] ?? '#'));
+                $file_url = ($raw_file !== '' && $raw_file !== '#')
+                    ? htmlspecialchars('/' . ltrim($raw_file, '/'), ENT_QUOTES, 'UTF-8')
+                    : '#';
+            ?>
+              <div class="download-card <?php echo !$is_last ? 'mb-3' : ''; ?>">
+                <div class="download-row">
+                  <!-- الأيقونة -->
+                  <img src="<?php echo htmlspecialchars(get_image_url($icon), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($alt_text, ENT_QUOTES, 'UTF-8'); ?>" class="dl-icon" />
+                  
+                  <!-- العنوان والنص الفرعي -->
+                  <div class="dl-info">
+                    <div class="dl-title"><?php echo htmlspecialchars((string)($item['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></div>
+                    <?php if (!empty($item['sub'])): ?>
+                      <div class="dl-sub"><?php echo htmlspecialchars((string)$item['sub'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <?php endif; ?>
+                  </div>
+                  
+                  <!-- النقاط الفاصلة المرنة -->
+                  <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">......................................................................................................................................................................................</span>
+                  
+                  <!-- زر التحميل -->
+                  <a class="download-link" href="<?php echo $file_url; ?>" download><?php echo htmlspecialchars($txt['download_lbl'], ENT_QUOTES, 'UTF-8'); ?></a>
                 </div>
-                
-                <!-- النقاط الفاصلة المرنة -->
-                <span class="leader d-lg-block d-md-none d-sm-none" aria-hidden="true">......................................................................................................................................................................................</span>
-                
-                <!-- زر التحميل -->
-                <a class="download-link" href="<?php echo $file_url; ?>" download><?php echo htmlspecialchars($txt['download_lbl'], ENT_QUOTES, 'UTF-8'); ?></a>
               </div>
-            </div>
-          <?php endforeach; ?>
+            <?php endforeach; ?>
+          </div>
         </div>
       </div>
     </div>

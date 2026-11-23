@@ -262,7 +262,7 @@
 .bg-orange { background-color: #F2994A; }
 .bg-red { background-color: #EB5757; }
 
-/* إحداثيات الخطوات (1 إلى 6) للتحكم الكامل بالسلاسة */
+/* إحداثيات الخطوات (1 إلى 6) المعتمدة */
 .step-1 {
     --step-pos: 3.25%;
     --step-top: 30%;
@@ -341,6 +341,14 @@
     --info-x: -10px;
 }
 
+/* ضبط مستقل لـ LTR (الإنجليزية والألمانية) عند الحاجة */
+[dir="ltr"] .step-1 { --step-pos: 3.25%; }
+[dir="ltr"] .step-2 { --step-pos: 21%; }
+[dir="ltr"] .step-3 { --step-pos: 40%; }
+[dir="ltr"] .step-4 { --step-pos: 58%; }
+[dir="ltr"] .step-5 { --step-pos: 78%; }
+[dir="ltr"] .step-6 { --step-pos: 96%; }
+
 /* تنسيق عرض الموبايل */
 .mobile-timeline .m-step {
     display: flex;
@@ -404,6 +412,7 @@
     margin-bottom: 0;
 }
 /* time line style end */
+
 /* education services style start */
 .edu-services {
     padding: 60px 0;

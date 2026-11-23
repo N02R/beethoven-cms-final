@@ -595,7 +595,7 @@
 
     .mobile-timeline .step-1 {
         top: 4%;
-        --num-top: 100px;
+        --num-top: 15px;
         --num-left: 70%;
         --icon-top: 32px;
         --icon-left: 50%;

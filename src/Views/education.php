@@ -323,16 +323,20 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           </div>
         </div>
 
-        <div class="mobile-timeline d-lg-none">
-          <?php foreach ($steps_items as $idx => $step): 
+                <div class="mobile-timeline d-lg-none">
+          <?php 
+          $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
+          foreach ($steps_items as $idx => $step): 
               if (!is_array($step)) continue;
-              $num = sprintf("%02d", (int)$idx + 1);
-              $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
+              $stepIndex   = (int)$idx + 1;
+              $num         = sprintf("%02d", $stepIndex);
+              $dotClass    = $dots[(int)$idx % count($dots)];
+              $defaultIcon = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
               $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
               $iconPath    = get_image_url($rawStepImg, $defaultIcon);
           ?>
             <div class="m-step">
-              <div class="m-number-box">
+              <div class="m-number-box <?php echo $dotClass; ?>">
                 <span class="m-num"><?php echo $num; ?></span>
               </div>
               <div class="m-content">
@@ -348,6 +352,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
             </div>
           <?php endforeach; ?>
         </div>
+
       <?php else: ?>
         <div class="text-center text-muted py-4">
           <p><?php echo htmlspecialchars($txt['no_steps'], ENT_QUOTES, 'UTF-8'); ?></p>

@@ -419,42 +419,104 @@
     --info-x: 5px;
 }
 
-/* تنسيق عرض الموبايل */
-.mobile-timeline .m-step {
-    display: flex;
-    gap: 16px;
-    padding: 18px;
-    margin-bottom: 16px;
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+/* ================= VERTICAL MOBILE TIMELINE (Y-AXIS) ================= */
+.mobile-timeline {
+    position: relative;
+    padding: 10px 0;
 }
 
+/* الخط العمودي المتصل على محور الصادات */
+.mobile-timeline::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    bottom: 28px;
+    width: 3px;
+    background: linear-gradient(180deg, #66AEEE 0%, #4CAF50 25%, #FBD105 50%, #F2994A 75%, #EB5757 100%);
+    border-radius: 3px;
+    z-index: 1;
+}
+
+[dir="rtl"] .mobile-timeline::before {
+    right: 21px;
+    /* يتوسط الدائرة التي عرضها 44px */
+}
+
+[dir="ltr"] .mobile-timeline::before {
+    left: 21px;
+}
+
+.mobile-timeline .m-step {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    z-index: 2;
+}
+
+.mobile-timeline .m-step:last-child {
+    margin-bottom: 0;
+}
+
+/* دائرة الرقم المثبتة على الخط العمودي */
 .mobile-timeline .m-number-box {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: var(--main-color, #66aeee);
-    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 15px;
     flex-shrink: 0;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    z-index: 3;
+}
+
+/* بطاقة محتوى الخطوة بجانب الخط العمودي */
+.mobile-timeline .m-content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+[dir="rtl"] .mobile-timeline .m-content {
+    text-align: right;
+}
+
+[dir="ltr"] .mobile-timeline .m-content {
+    text-align: left;
+}
+
+.mobile-timeline .m-step:hover .m-content {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 174, 238, 0.14);
 }
 
 .mobile-timeline .m-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .mobile-timeline .m-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #f8fafc;
+    padding: 4px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mobile-timeline .m-icon img {
@@ -465,7 +527,8 @@
 
 .mobile-timeline .m-content h3 {
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
+    color: #000000;
     margin: 0;
 }
 
@@ -473,12 +536,13 @@
     font-size: 14px;
     font-weight: 600;
     color: #3f3f3f;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .mobile-timeline .m-content p {
     font-size: 13px;
     color: #4f4f4f;
+    line-height: 1.6;
     margin-bottom: 0;
 }
 /* time line style end */

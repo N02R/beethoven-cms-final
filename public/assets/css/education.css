@@ -393,7 +393,19 @@
     --info-x: 5px;
 }
 
-[dir="ltr"] .step-5 { --step-pos: 78%; }
+[dir="ltr"] .step-5 {
+    --step-pos: 78%;
+    --step-top: 30%;
+    --num-top: 21px;
+    --num-left: 51%;
+    --num-size: 24px;
+    --icon-top: 75px;
+    --icon-left: 51%;
+    --icon-size: 55px;
+    --info-top: -100px;
+    --info-x: 0px;
+}
+
 [dir="ltr"] .step-6 { --step-pos: 96%; }
 
 /* تنسيق عرض الموبايل */

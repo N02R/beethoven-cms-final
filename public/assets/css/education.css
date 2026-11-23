@@ -187,8 +187,8 @@
 /* 1. رقم الخطوة (01 - 06) */
 .step-img-num {
     position: absolute;
-    width: 24px;
-    height: 24px;
+    width: var(--num-size, 24px);
+    height: var(--num-size, 24px);
     object-fit: contain;
     top: var(--num-top, 0px);
     left: var(--num-left, 50%);
@@ -267,8 +267,11 @@
     --step-pos: 3.25%;
     --step-top: 30%;
     --num-top: 0px;
+    --num-left: 50%;
+    --num-size: 24px;
     --icon-top: 45px;
     --icon-left: 50%;
+    --icon-size: 46px;
     --info-top: -160px;
     --info-x: 0px;
 }
@@ -278,8 +281,10 @@
     --step-top: -6%;
     --num-top: 107px;
     --num-left: 87px;
+    --num-size: 24px;
     --icon-top: 25px;
     --icon-left: 46%;
+    --icon-size: 46px;
     --info-top: -175px;
     --info-x: 0px;
 }
@@ -288,8 +293,11 @@
     --step-pos: 40%;
     --step-top: 30%;
     --num-top: 100px;
+    --num-left: 50%;
+    --num-size: 24px;
     --icon-top: 80px;
     --icon-left: 50%;
+    --icon-size: 46px;
     --info-top: 140px;
     --info-x: 0px;
 }
@@ -298,8 +306,11 @@
     --step-pos: 58%;
     --step-top: -6%;
     --num-top: 100px;
+    --num-left: 50%;
+    --num-size: 24px;
     --icon-top: 25px;
     --icon-left: 50%;
+    --icon-size: 46px;
     --info-top: -175px;
     --info-x: 0px;
 }
@@ -308,8 +319,11 @@
     --step-pos: 78%;
     --step-top: 30%;
     --num-top: 100px;
+    --num-left: 50%;
+    --num-size: 24px;
     --icon-top: 45px;
     --icon-left: 50%;
+    --icon-size: 46px;
     --info-top: 110px;
     --info-x: 0px;
 }
@@ -318,8 +332,11 @@
     --step-pos: 96%;
     --step-top: -6%;
     --num-top: 100px;
+    --num-left: 50%;
+    --num-size: 24px;
     --icon-top: 25px;
     --icon-left: 50%;
+    --icon-size: 46px;
     --info-top: -175px;
     --info-x: 0px;
 }

@@ -380,7 +380,7 @@
     --info-x: 5px;
 }
 
-.step-4 {
+[dir="ltr"] .step-4 {
     --step-pos: 58%;
     --step-top: -6%;
     --num-top: 106px;

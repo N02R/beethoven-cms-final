@@ -406,7 +406,18 @@
     --info-x: 0px;
 }
 
-[dir="ltr"] .step-6 { --step-pos: 96%; }
+[dir="ltr"] .step-6 {
+    --step-pos: 96%;
+    --step-top: -5%;
+    --num-top: 122px;
+    --num-left: 43%;
+    --num-size: 24px;
+    --icon-top: 50px;
+    --icon-left: 40%;
+    --icon-size: 55px;
+    --info-top: 155px;
+    --info-x: 5px;
+}
 
 /* تنسيق عرض الموبايل */
 .mobile-timeline .m-step {

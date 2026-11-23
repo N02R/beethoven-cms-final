@@ -425,7 +425,7 @@
     padding: 10px 0;
 }
 
-/* الخط العمودي المتصل على محور الصادات */
+/* نفس تسلسل الألوان من الأعلى (أزرق) للأسفل (أحمر) في RTL و LTR */
 .mobile-timeline::before {
     content: "";
     position: absolute;
@@ -439,10 +439,12 @@
 
 [dir="rtl"] .mobile-timeline::before {
     right: 21px;
+    left: auto;
 }
 
 [dir="ltr"] .mobile-timeline::before {
     left: 21px;
+    right: auto;
 }
 
 .mobile-timeline .m-step {
@@ -570,6 +572,7 @@
         transform-origin: center center;
     }
 
+    /* الحفاظ على نفس اتجاه الألوان من الأعلى (أزرق) للأسفل (أحمر) في RTL و LTR */
     .mobile-timeline .line-active {
         transform: translate(-50%, -50%) rotate(90deg);
     }
@@ -579,11 +582,11 @@
     }
 
     [dir="ltr"] .mobile-timeline .line-active {
-        transform: translate(-50%, -50%) rotate(90deg) scaleX(-1);
+        transform: translate(-50%, -50%) rotate(90deg);
     }
 
     [dir="ltr"] .mobile-timeline .line-base {
-        transform: translate(-50%, -50%) rotate(90deg) scaleX(-1) translateY(3.5%);
+        transform: translate(-50%, -50%) rotate(90deg) translateY(3.5%);
     }
 
     .mobile-timeline .step-wrapper {
@@ -593,14 +596,22 @@
         transform: translateX(-50%);
     }
 
+    [dir="rtl"] .mobile-timeline .info-content {
+        text-align: right;
+    }
+
+    [dir="ltr"] .mobile-timeline .info-content {
+        text-align: left;
+    }
+
     .mobile-timeline .step-1 {
         top: 4%;
-        --num-top: 10px;
-        --num-left: 70%;
-        --icon-top: 5px;
-        --icon-left: 30%;
-        --info-top: 0px;
-        --info-x: 30px;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
     }
 
     .mobile-timeline .step-2 {

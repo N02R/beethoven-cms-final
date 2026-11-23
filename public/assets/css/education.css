@@ -597,10 +597,10 @@
         top: 4%;
         --num-top: 10px;
         --num-left: 70%;
-        --icon-top: 20px;
+        --icon-top: 5px;
         --icon-left: 30%;
         --info-top: 0px;
-        --info-x: 0px;
+        --info-x: 30px;
     }
 
     .mobile-timeline .step-2 {

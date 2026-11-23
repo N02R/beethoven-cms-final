@@ -290,7 +290,7 @@
 }
 
 .step-3 {
-    --step-pos: 3.25%;
+    --step-pos: 40%;
     --step-top: 30%;
     --num-top: 100px;
     --num-left: 50%;
@@ -298,7 +298,7 @@
     --icon-top: 80px;
     --icon-left: 50%;
     --icon-size: 55px;
-    --info-top: -160px;
+    --info-top: -140px;
     --info-x: 0px;
 }
 

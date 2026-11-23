@@ -351,8 +351,8 @@
     --icon-top: 45px;
     --icon-left: 50%;
     --icon-size: 50px;
-    --info-top: -130px;
-    --info-x: 0px;
+    --info-top: -140px;
+    --info-x: 10px;
 }
 [dir="ltr"] .step-2 { --step-pos: 21%; }
 [dir="ltr"] .step-3 { --step-pos: 40%; }

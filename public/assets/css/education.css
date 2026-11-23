@@ -595,11 +595,11 @@
 
     .mobile-timeline .step-1 {
         top: 4%;
-        --num-top: 15px;
+        --num-top: 10px;
         --num-left: 70%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
+        --icon-top: 60px;
+        --icon-left: 30%;
+        --info-top: 100px;
         --info-x: 0px;
     }
 

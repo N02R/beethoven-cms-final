@@ -351,7 +351,7 @@
     --icon-top: 45px;
     --icon-left: 50%;
     --icon-size: 50px;
-    --info-top: -120px;
+    --info-top: -110px;
     --info-x: 0px;
 }
 [dir="ltr"] .step-2 { --step-pos: 21%; }

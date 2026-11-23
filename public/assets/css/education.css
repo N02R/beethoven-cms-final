@@ -390,7 +390,7 @@
     --icon-left: 57%;
     --icon-size: 55px;
     --info-top: 145px;
-    --info-x: -10px;
+    --info-x: 5px;
 }
 
 [dir="ltr"] .step-5 { --step-pos: 78%; }

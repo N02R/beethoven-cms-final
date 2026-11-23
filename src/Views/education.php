@@ -288,25 +288,20 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       </div>
       
       <?php if (!empty($steps_items)): ?>
-        <div class="map-container d-none d-lg-block">
-          <div class="map-box">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
-            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
-            
-            <?php 
-            $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-            foreach ($steps_items as $idx => $step): 
+        <?php 
+        $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
+        $renderTimelineSteps = static function (array $items, array $sharedImgs, array $dotPalette): void {
+            foreach ($items as $idx => $step): 
                 if (!is_array($step)) continue;
-                $num = sprintf("%02d", (int)$idx + 1);
-                $dotClass = $dots[(int)$idx % count($dots)];
-                
-                $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
-                $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
-                $iconPath    = get_image_url($rawStepImg, $defaultIcon);
-                $groupNumImg = get_image_url('assets/img/vector/Group' . ((int)$idx + 1) . '.png');
-                
-                $stepNumberClass = 'step-' . ((int)$idx + 1);
-            ?>
+                $stepIndex       = (int)$idx + 1;
+                $num             = sprintf("%02d", $stepIndex);
+                $dotClass        = $dotPalette[(int)$idx % count($dotPalette)];
+                $defaultIcon     = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
+                $rawStepImg      = $sharedImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+                $iconPath        = get_image_url($rawStepImg, $defaultIcon);
+                $groupNumImg     = get_image_url('assets/img/vector/Group' . $stepIndex . '.png');
+                $stepNumberClass = 'step-' . $stepIndex;
+        ?>
               <div class="step-wrapper <?php echo htmlspecialchars($stepNumberClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <img src="<?php echo htmlspecialchars($groupNumImg, ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo $num; ?>">
                 <div class="icon-main">
@@ -319,40 +314,28 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
                   <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
               </div>
-            <?php endforeach; ?>
+        <?php 
+            endforeach;
+        };
+        ?>
+
+        <!-- عرض الديسكتوب (أفقي) -->
+        <div class="map-container desktop-timeline d-none d-lg-block">
+          <div class="map-box">
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
+            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
           </div>
         </div>
 
-                <div class="mobile-timeline d-lg-none">
-          <?php 
-          $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-          foreach ($steps_items as $idx => $step): 
-              if (!is_array($step)) continue;
-              $stepIndex   = (int)$idx + 1;
-              $num         = sprintf("%02d", $stepIndex);
-              $dotClass    = $dots[(int)$idx % count($dots)];
-              $defaultIcon = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
-              $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
-              $iconPath    = get_image_url($rawStepImg, $defaultIcon);
-          ?>
-            <div class="m-step">
-              <div class="m-number-box <?php echo $dotClass; ?>">
-                <span class="m-num"><?php echo $num; ?></span>
-              </div>
-              <div class="m-content">
-                <div class="m-header">
-                  <div class="m-icon">
-                    <img src="<?php echo htmlspecialchars($iconPath, ENT_QUOTES, 'UTF-8'); ?>" alt="">
-                  </div>
-                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
-                </div>
-                <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-              </div>
-            </div>
-          <?php endforeach; ?>
+        <!-- عرض الموبايل (الفيكتور واقف عمودياً وقممه/قيعانه يميناً ويساراً) -->
+        <div class="map-container mobile-timeline d-lg-none">
+          <div class="map-box">
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
+            <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
+            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
+          </div>
         </div>
-
       <?php else: ?>
         <div class="text-center text-muted py-4">
           <p><?php echo htmlspecialchars($txt['no_steps'], ENT_QUOTES, 'UTF-8'); ?></p>

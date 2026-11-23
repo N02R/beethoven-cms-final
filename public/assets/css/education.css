@@ -419,7 +419,7 @@
     --info-x: 5px;
 }
 
-/* ================= VERTICAL MOBILE TIMELINE (Y-AXIS) ================= */
+/* ================= VERTICAL MOBILE TIMELINE (Y-AXIS WITH VECTOR) ================= */
 .mobile-timeline {
     position: relative;
     padding: 10px 0;
@@ -439,7 +439,6 @@
 
 [dir="rtl"] .mobile-timeline::before {
     right: 21px;
-    /* يتوسط الدائرة التي عرضها 44px */
 }
 
 [dir="ltr"] .mobile-timeline::before {
@@ -544,6 +543,128 @@
     color: #4f4f4f;
     line-height: 1.6;
     margin-bottom: 0;
+}
+
+/* إيقاف الـ vector في الموبايل ليقف عمودياً وقممه/قيعانه لليمين واليسار */
+@media (max-width: 991.98px) {
+    .mobile-timeline.map-container {
+        width: 100%;
+        max-width: 420px;
+        height: 1120px;
+        margin: 80px auto 120px auto;
+        padding: 0;
+        aspect-ratio: auto;
+    }
+
+    .mobile-timeline::before {
+        display: none;
+    }
+
+    .mobile-timeline .line-base,
+    .mobile-timeline .line-active {
+        width: 1120px;
+        height: 198px;
+        top: 50%;
+        left: 50%;
+        right: auto;
+        transform-origin: center center;
+    }
+
+    .mobile-timeline .line-active {
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    .mobile-timeline .line-base {
+        transform: translate(-50%, -50%) rotate(90deg) translateY(3.5%);
+    }
+
+    [dir="ltr"] .mobile-timeline .line-active {
+        transform: translate(-50%, -50%) rotate(90deg) scaleX(-1);
+    }
+
+    [dir="ltr"] .mobile-timeline .line-base {
+        transform: translate(-50%, -50%) rotate(90deg) scaleX(-1) translateY(3.5%);
+    }
+
+    .mobile-timeline .step-wrapper {
+        width: 155px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .mobile-timeline .step-1 {
+        top: 4%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-2 {
+        top: 20%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-3 {
+        top: 36%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-4 {
+        top: 52%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-5 {
+        top: 68%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-6 {
+        top: 84%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 32px;
+        --icon-left: 50%;
+        --info-top: 90px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .info-content h3 {
+        font-size: 15px;
+        white-space: normal;
+    }
+
+    .mobile-timeline .info-content h4 {
+        font-size: 13px;
+    }
+
+    .mobile-timeline .info-content p {
+        font-size: 12px;
+    }
 }
 /* time line style end */
 

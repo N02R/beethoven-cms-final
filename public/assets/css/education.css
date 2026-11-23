@@ -342,7 +342,18 @@
 }
 
 /* ضبط مستقل لـ LTR (الإنجليزية والألمانية) عند الحاجة */
-[dir="ltr"] .step-1 { --step-pos: 3.25%; }
+[dir="ltr"] .step-1 {
+    --step-pos: 3.25%;
+    --step-top: 30%;
+    --num-top: 0px;
+    --num-left: 50%;
+    --num-size: 24px;
+    --icon-top: 45px;
+    --icon-left: 50%;
+    --icon-size: 50px;
+    --info-top: -120px;
+    --info-x: 0px;
+}
 [dir="ltr"] .step-2 { --step-pos: 21%; }
 [dir="ltr"] .step-3 { --step-pos: 40%; }
 [dir="ltr"] .step-4 { --step-pos: 58%; }

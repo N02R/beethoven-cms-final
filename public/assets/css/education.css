@@ -367,7 +367,19 @@
     --info-x: 5px;
 }
 
-[dir="ltr"] .step-3 { --step-pos: 40%; }
+[dir="ltr"].step-3 {
+    --step-pos: 40%;
+    --step-top: 31%;
+    --num-top: 21px;
+    --num-left: 47%;
+    --num-size: 24px;
+    --icon-top: 75px;
+    --icon-left: 47%;
+    --icon-size: 55px;
+    --info-top: -100px;
+    --info-x: 0px;
+}
+
 [dir="ltr"] .step-4 { --step-pos: 58%; }
 [dir="ltr"] .step-5 { --step-pos: 78%; }
 [dir="ltr"] .step-6 { --step-pos: 96%; }

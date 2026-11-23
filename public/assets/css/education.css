@@ -292,7 +292,7 @@
 .step-3 {
     --step-pos: 40%;
     --step-top: 30%;
-    --num-top: 100px;
+    --num-top: 0px;
     --num-left: 50%;
     --num-size: 24px;
     --icon-top: 80px;

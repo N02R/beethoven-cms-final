@@ -352,7 +352,7 @@
     --icon-left: 50%;
     --icon-size: 50px;
     --info-top: -140px;
-    --info-x: 10px;
+    --info-x: 5px;
 }
 [dir="ltr"] .step-2 { --step-pos: 21%; }
 [dir="ltr"] .step-3 { --step-pos: 40%; }

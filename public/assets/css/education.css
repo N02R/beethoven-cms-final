@@ -420,151 +420,20 @@
 }
 
 /* ================= VERTICAL MOBILE TIMELINE (Y-AXIS WITH VECTOR) ================= */
-.mobile-timeline {
-    position: relative;
-    padding: 10px 0;
-}
-
-/* نفس تسلسل الألوان من الأعلى (أزرق) للأسفل (أحمر) في RTL و LTR */
-.mobile-timeline::before {
-    content: "";
-    position: absolute;
-    top: 28px;
-    bottom: 28px;
-    width: 3px;
-    background: linear-gradient(180deg, #66AEEE 0%, #4CAF50 25%, #FBD105 50%, #F2994A 75%, #EB5757 100%);
-    border-radius: 3px;
-    z-index: 1;
-}
-
-[dir="rtl"] .mobile-timeline::before {
-    right: 21px;
-    left: auto;
-}
-
-[dir="ltr"] .mobile-timeline::before {
-    left: 21px;
-    right: auto;
-}
-
-.mobile-timeline .m-step {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 24px;
-    z-index: 2;
-}
-
-.mobile-timeline .m-step:last-child {
-    margin-bottom: 0;
-}
-
-/* دائرة الرقم المثبتة على الخط العمودي */
-.mobile-timeline .m-number-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 15px;
-    flex-shrink: 0;
-    border: 4px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    z-index: 3;
-}
-
-/* بطاقة محتوى الخطوة بجانب الخط العمودي */
-.mobile-timeline .m-content {
-    flex: 1;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 16px 18px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-[dir="rtl"] .mobile-timeline .m-content {
-    text-align: right;
-}
-
-[dir="ltr"] .mobile-timeline .m-content {
-    text-align: left;
-}
-
-.mobile-timeline .m-step:hover .m-content {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(102, 174, 238, 0.14);
-}
-
-.mobile-timeline .m-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-.mobile-timeline .m-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #f8fafc;
-    padding: 4px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mobile-timeline .m-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.mobile-timeline .m-content h3 {
-    font-size: 16px;
-    font-weight: 800;
-    color: #000000;
-    margin: 0;
-}
-
-.mobile-timeline .m-content h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #3f3f3f;
-    margin-bottom: 6px;
-}
-
-.mobile-timeline .m-content p {
-    font-size: 13px;
-    color: #4f4f4f;
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-
-/* إيقاف الـ vector في الموبايل ليقف عمودياً وقممه/قيعانه لليمين واليسار */
 @media (max-width: 991.98px) {
     .mobile-timeline.map-container {
         width: 100%;
         max-width: 420px;
-        height: 1120px;
-        margin: 80px auto 120px auto;
+        height: 1180px;
+        margin: 60px auto 140px auto;
         padding: 0;
         aspect-ratio: auto;
     }
 
-    .mobile-timeline::before {
-        display: none;
-    }
-
+    /* إيقاف الـ vector ليبدأ من الأزرق في الأعلى وينتهي بالأحمر في الأسفل */
     .mobile-timeline .line-base,
     .mobile-timeline .line-active {
-        width: 1120px;
+        width: 1180px;
         height: 198px;
         top: 50%;
         left: 50%;
@@ -572,28 +441,89 @@
         transform-origin: center center;
     }
 
-    /* الحفاظ على نفس اتجاه الألوان من الأعلى (أزرق) للأسفل (أحمر) في RTL و LTR */
     .mobile-timeline .line-active {
-        transform: translate(-50%, -50%) rotate(90deg);
+        transform: translate(-50%, -50%) rotate(-90deg);
     }
 
     .mobile-timeline .line-base {
-        transform: translate(-50%, -50%) rotate(90deg) translateY(3.5%);
+        transform: translate(-50%, -50%) rotate(-90deg) translateY(3.5%);
     }
 
-    [dir="ltr"] .mobile-timeline .line-active {
-        transform: translate(-50%, -50%) rotate(90deg);
-    }
-
-    [dir="ltr"] .mobile-timeline .line-base {
-        transform: translate(-50%, -50%) rotate(90deg) translateY(3.5%);
-    }
-
+    /* توزيع الخطوات الست من الأعلى للأسفل مع تناوب القمم والقيعان يميناً ويساراً */
     .mobile-timeline .step-wrapper {
         width: 155px;
         right: auto;
         left: 50%;
         transform: translateX(-50%);
+    }
+
+    .mobile-timeline .step-1 {
+        top: 3%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-2 {
+        top: 19%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-3 {
+        top: 35%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-4 {
+        top: 51%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-5 {
+        top: 67%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    .mobile-timeline .step-6 {
+        top: 83%;
+        --num-top: 0px;
+        --num-left: 50%;
+        --icon-top: 28px;
+        --icon-left: 50%;
+        --info-top: 86px;
+        --info-x: 0px;
+    }
+
+    /* توجيه النصوص لليمين في RTL ولليسار في LTR مع بقاء نفس ترتيب الألوان */
+    [dir="rtl"] .mobile-timeline .step-wrapper {
+        left: 62%;
+    }
+
+    [dir="ltr"] .mobile-timeline .step-wrapper {
+        left: 38%;
     }
 
     [dir="rtl"] .mobile-timeline .info-content {
@@ -604,64 +534,9 @@
         text-align: left;
     }
 
-    .mobile-timeline .step-1 {
-        top: 4%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
-    }
-
-    .mobile-timeline .step-2 {
-        top: 20%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
-    }
-
-    .mobile-timeline .step-3 {
-        top: 36%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
-    }
-
-    .mobile-timeline .step-4 {
-        top: 52%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
-    }
-
-    .mobile-timeline .step-5 {
-        top: 68%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
-    }
-
-    .mobile-timeline .step-6 {
-        top: 84%;
-        --num-top: 0px;
-        --num-left: 50%;
-        --icon-top: 32px;
-        --icon-left: 50%;
-        --info-top: 90px;
-        --info-x: 0px;
+    [dir="rtl"] .mobile-timeline .dot,
+    [dir="ltr"] .mobile-timeline .dot {
+        margin: 6px 0;
     }
 
     .mobile-timeline .info-content h3 {

@@ -328,7 +328,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           </div>
         </div>
 
-        <!-- عرض الموبايل (الفيكتور واقف عمودياً وقممه/قيعانه يميناً ويساراً) -->
+        <!-- عرض الموبايل (الفيكتور واقف عمودياً من الأعلى للأسفل وقممه/قيعانه يميناً ويساراً) -->
         <div class="map-container mobile-timeline d-lg-none">
           <div class="map-box">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
@@ -345,6 +345,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
   </div>
 </section>
 <!-- ================= TIMELINE SECTION END ================= -->
+
 
 <!-- ================= 4. EDUCATION SERVICES SECTION START ================= -->
 <section class="edu-services py-5 editable-wrapper" dir="<?php echo htmlspecialchars($current_dir, ENT_QUOTES, 'UTF-8'); ?>">

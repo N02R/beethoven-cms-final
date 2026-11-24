@@ -481,129 +481,271 @@ section.popular .call button:hover {
 
 /* popular style end */
 
-/* 9. Consult Banner & Footer */
+/* ================================================
+   FOOTER & CONSULTATION BANNER — OPTIMIZED CSS
+   Supports RTL (ar) & LTR (en, de) + Responsive
+================================================ */
+
+:root {
+  --footer-accent: #66aeee;
+  --footer-accent-hover: #4a96d8;
+  --footer-bg: rgba(233, 244, 253, 0.25);
+  --footer-text: #4f4f4f;
+  --footer-dark: #0f172a;
+  --footer-border: rgba(15, 23, 42, 0.08);
+}
+
+/* ---------- 1. Consultation Banner ---------- */
 .consult-banner-section {
   position: relative;
   z-index: 20;
-  margin-bottom: -40px;
+  margin-bottom: -44px;
   padding-inline: 16px;
 }
 
 .consult-banner {
-  background-color: #66aeee;
+  background-color: var(--footer-accent);
   border-radius: 20px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, .14);
-  padding: 28px 32px;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+  padding: 28px 36px;
 }
 
 .consult-banner-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.6rem;
+  gap: 2rem;
 }
 
 .consult-banner-text {
+  flex: 1;
   max-width: 52%;
 }
 
 .consult-banner-text h4 {
   margin: 0 0 6px;
-  font-size: 35px;
+  font-size: clamp(22px, 2.5vw, 35px);
   font-weight: 700;
   line-height: 1.35;
-  color: #fff;
+  color: #ffffff;
 }
 
 .consult-banner-text p {
   margin: 0;
-  font-size: 16px;
+  font-size: clamp(14px, 1.1vw, 16px);
   line-height: 1.7;
-  color: rgba(255, 255, 255, .95);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .consult-banner-form {
   display: flex;
-  align-items: center;
-  height: 64px;
-  min-width: 600px;
-  background-color: #fff;
-  border-radius: 10px;
+  align-items: stretch;
+  height: 62px;
+  flex: 0 1 560px;
+  min-width: 0;
+  background-color: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .consult-banner-form input {
   flex: 1;
+  min-width: 0;
   height: 100%;
   border: none;
   outline: none;
-  padding: 0 22px;
+  padding: 0 20px;
   font-size: 14px;
   background: transparent;
-  color: #333;
+  color: #333333;
 }
 
 .consult-banner-form input::placeholder {
   font-weight: 400;
-  color: rgba(148, 148, 148, 1);
+  color: #949494;
   font-size: 14px;
 }
 
 .consult-banner-form button {
-  width: 90px;
-  height: 100%;
+  width: 84px;
+  flex-shrink: 0;
   border: none;
-  background-color: #000;
-  color: #fff;
+  background-color: #000000;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color .3s ease;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
 }
 
 .consult-banner-form button:hover {
-  background-color: #1a1a1a;
+  background-color: #1f2937;
 }
 
-/* إذا كانت اللغات الأجنبية هي الافتراضية في الكود الأصلي للصورة: */
-.consult-banner-form button img {
-  transform: scaleX(-1); /* اتجاه الإنجليزية والألمانية */
+/* اتجاه أيقونة الإرسال حسب الاتجاه */
+[dir="ltr"] .consult-banner-form button img {
+  transform: scaleX(-1);
 }
 
-/* عندما يكون الموقع بالعربية (تأكدي من أن عنصر الـ html أو body يحمل dir="rtl"): */
-html[dir="rtl"] .consult-banner-form button img,
-body[dir="rtl"] .consult-banner-form button img {
-  transform: none; /* اتجاه اللغة العربية */
+[dir="rtl"] .consult-banner-form button img {
+  transform: none;
 }
 
+/* ---------- 2. Footer Main Section ---------- */
 .footer-section {
-  background: rgba(233, 244, 253, .2);
-  padding-top: 80px !important;
+  position: relative;
+  background: var(--footer-bg);
+  padding-top: 86px !important;
+  border-top: 1px solid var(--footer-border);
 }
 
 .footer-section .logo-text-stacked {
   display: inline-block;
-  max-width: 150px;
+  max-width: 170px;
   font-weight: 800;
   font-size: 0.95rem;
-  line-height: 1.15;
-  color: #0f172a;
+  line-height: 1.2;
+  color: var(--footer-dark);
   word-break: normal;
   white-space: normal;
 }
 
 .footer-desc {
-  font-size: 18px;
-  line-height: 33px;
-  color: rgba(79, 79, 79, 1);
-  max-width: 90%;
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--footer-text);
+  max-width: 92%;
+  margin-bottom: 0;
 }
 
 .footer-section h5 {
-  font-weight: 500;
-  color: #000;
-  font-size: 20px;
-  margin-bottom: 2rem;
+  font-weight: 700;
+  color: var(--footer-dark);
+  font-size: 18px;
+  margin-bottom: 1.5rem;
+}
+
+/* روابط العمود الثاني */
+.footer-section .quick-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.footer-section .quick-link a {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.5;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-section .quick-link a:hover {
+  color: var(--footer-accent-hover);
+}
+
+[dir="rtl"] .footer-section .quick-link a:hover {
+  transform: translateX(-4px);
+}
+
+[dir="ltr"] .footer-section .quick-link a:hover {
+  transform: translateX(4px);
+}
+
+/* روابط العمود الثالث */
+.footer-section .contact-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-section .contact-link a {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+.footer-section .contact-link a:hover {
+  color: var(--footer-accent-hover);
+}
+
+/* أسفل الفوتر */
+.footer-section .foot-bottom {
+  font-size: 14px;
+  color: var(--footer-text);
+}
+
+.footer-section .legal-links a {
+  transition: color 0.2s ease;
+}
+
+.footer-section .legal-links a:hover {
+  color: var(--footer-dark) !important;
+}
+
+/* ---------- 3. Responsive Adjustments ---------- */
+@media (max-width: 991.98px) {
+  .consult-banner-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .consult-banner-text {
+    max-width: 100%;
+  }
+
+  .consult-banner-form {
+    flex: none;
+    width: 100%;
+    max-width: 520px;
+    height: 54px;
+  }
+
+  .footer-desc {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .consult-banner-section {
+    margin-bottom: -36px;
+    padding-inline: 12px;
+  }
+
+  .consult-banner {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .consult-banner-form {
+    max-width: 100%;
+    height: 50px;
+    border-radius: 10px;
+  }
+
+  .consult-banner-form input {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .consult-banner-form button {
+    width: 64px;
+  }
+
+  .footer-section {
+    padding-top: 72px !important;
+    text-align: center;
+  }
+
+  .footer-section .contact-link a {
+    justify-content: center;
+  }
 }
 
 .quick-link {

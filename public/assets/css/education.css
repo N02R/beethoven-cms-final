@@ -527,10 +527,10 @@
         top: 35%;
         --num-top: 65px;
         --num-left: 87%;
-        --icon-top: 47px;
+        --icon-top: 50px;
         --icon-left: 40%;
         --info-top: 50px;
-        --info-x: 135px;
+        --info-x: 137px;
     }
 
     .mobile-timeline .step-4 {

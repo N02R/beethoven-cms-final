@@ -484,7 +484,6 @@
         --icon-left: 37%;
         --info-top: 37px;
         --info-x: -170px;
-         text-align: center;
     }
 
     .mobile-timeline .step-2 {
@@ -537,32 +536,36 @@
         --info-x: 0px;
     }
 
-    [dir="rtl"] .mobile-timeline .info-content {
-        text-align: right;
-    }
-
+    /* توسيط النصوص والنقطة في المنتصف لكلا الاتجاهين (RTL و LTR) */
+    .mobile-timeline .info-content,
+    [dir="rtl"] .mobile-timeline .info-content,
     [dir="ltr"] .mobile-timeline .info-content {
-        text-align: left;
+        text-align: center;
     }
 
+    .mobile-timeline .dot,
     [dir="rtl"] .mobile-timeline .dot,
     [dir="ltr"] .mobile-timeline .dot {
-        margin: 6px 0;
+        margin: 6px auto;
     }
 
     .mobile-timeline .info-content h3 {
         font-size: 15px;
         white-space: normal;
+        text-align: center;
     }
 
     .mobile-timeline .info-content h4 {
         font-size: 13px;
+        text-align: center;
     }
 
     .mobile-timeline .info-content p {
         font-size: 12px;
+        text-align: center;
     }
 }
+
 /* time line style end */
 
 /* education services style start */

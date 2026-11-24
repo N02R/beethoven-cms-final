@@ -507,7 +507,7 @@
 [dir="ltr"] .mobile-timeline .step-2 {
         top: 19%;
     --num-top: 57px;
-    --num-left: -100%;
+    --num-left: 100%;
     --icon-top: 42px;
     --icon-left: 0%;
     --info-top: 37px;

@@ -496,12 +496,12 @@
 }
     .mobile-timeline .step-2 {
         top: 19%;
-    --num-top: 54px;
+    --num-top: 50px;
     --num-left: 23%;
     --icon-top: 42px;
     --icon-left: -25%;
     --info-top: 37px;
-    --info-x: 45px;
+    --info-x: 43px;
     }
 
     .mobile-timeline .step-3 {

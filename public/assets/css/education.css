@@ -419,7 +419,7 @@
     --info-x: 5px;
 }
 
-/* ================= VERTICAL MOBILE TIMELINE (Y-AXIS WITH VECTOR) ================= */
+/* ================= VERTICAL MOBILE TIMELINE (Y-AXIS WITH MIRROR LTR) ================= */
 @media (max-width: 991.98px) {
     .mobile-timeline.map-container {
         width: 100%;
@@ -430,7 +430,10 @@
         aspect-ratio: auto;
     }
 
-    /* إيقاف الـ vector ليبدأ من الأزرق في الأعلى وينتهي بالأحمر في الأسفل */
+    .mobile-timeline::before {
+        display: none;
+    }
+
     .mobile-timeline .line-base,
     .mobile-timeline .line-active {
         width: 1180px;
@@ -441,6 +444,7 @@
         transform-origin: center center;
     }
 
+    /* RTL: يبقى كما هو تماماً من الأزرق بالأعلى للأحمر بالأسفل */
     .mobile-timeline .line-active {
         transform: translate(-50%, -50%) rotate(-90deg);
     }
@@ -449,12 +453,27 @@
         transform: translate(-50%, -50%) rotate(-90deg) translateY(3.5%);
     }
 
-    /* توزيع الخطوات الست من الأعلى للأسفل مع تناوب القمم والقيعان يميناً ويساراً */
+    /* LTR: انعكاس مرآة (يمين/يسار) للقمم والقيعان مع بقاء نفس ترتيب الألوان من الأعلى للأسفل */
+    [dir="ltr"] .mobile-timeline .line-active {
+        transform: translate(-50%, -50%) rotate(-90deg) scaleY(-1);
+    }
+
+    [dir="ltr"] .mobile-timeline .line-base {
+        transform: translate(-50%, -50%) rotate(-90deg) scaleY(-1) translateY(3.5%);
+    }
+
     .mobile-timeline .step-wrapper {
         width: 155px;
         right: auto;
-        left: 50%;
         transform: translateX(-50%);
+    }
+
+    [dir="rtl"] .mobile-timeline .step-wrapper {
+        left: 62%;
+    }
+
+    [dir="ltr"] .mobile-timeline .step-wrapper {
+        left: 38%;
     }
 
     .mobile-timeline .step-1 {
@@ -515,15 +534,6 @@
         --icon-left: 50%;
         --info-top: 86px;
         --info-x: 0px;
-    }
-
-    /* توجيه النصوص لليمين في RTL ولليسار في LTR مع بقاء نفس ترتيب الألوان */
-    [dir="rtl"] .mobile-timeline .step-wrapper {
-        left: 62%;
-    }
-
-    [dir="ltr"] .mobile-timeline .step-wrapper {
-        left: 38%;
     }
 
     [dir="rtl"] .mobile-timeline .info-content {

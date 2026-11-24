@@ -488,9 +488,9 @@
 [dir="ltr"] .mobile-timeline .step-1 {
     top: 3%;
     --num-top: 50px;
-    --num-left: 50%;
+    --num-left: 100%;
     --icon-top: 37px;
-    --icon-left: 50%;
+    --icon-left: 100%;
     --info-top: 37px;
     --info-x: 170px;
 }

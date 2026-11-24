@@ -526,11 +526,11 @@
 [dir="ltr"] .mobile-timeline .step-3 {
         top: 35%;
         --num-top: 65px;
-        --num-left: 100%;
+        --num-left: 80%;
         --icon-top: 49px;
         --icon-left: 59%;
         --info-top: 50px;
-        --info-x: 170px;
+        --info-x: 160px;
     }
 
     .mobile-timeline .step-4 {

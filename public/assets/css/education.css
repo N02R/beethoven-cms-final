@@ -484,6 +484,7 @@
         --icon-left: 37%;
         --info-top: 37px;
         --info-x: -170px;
+         text-align: end;
     }
 
     .mobile-timeline .step-2 {

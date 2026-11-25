@@ -543,6 +543,16 @@
         --info-x: 40px;
     }
 
+[dir="ltr"] .mobile-timeline .step-4 {
+        top: 51%;
+        --num-top: 72px;
+        --num-left: 20%;
+        --icon-top: 57px;
+        --icon-left: -25%;
+        --info-top: 55px;
+        --info-x: 150px;
+    }
+
     .mobile-timeline .step-5 {
         top: 67%;
         --num-top: 0px;

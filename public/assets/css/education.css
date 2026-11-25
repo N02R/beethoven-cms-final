@@ -538,8 +538,8 @@
         --num-top: 0px;
         --num-left: 50%;
         --icon-top: 28px;
-        --icon-left: 0%;
-        --info-top: 10px;
+        --icon-left: -20%;
+        --info-top: -10px;
         --info-x: 170px;
     }
 

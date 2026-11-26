@@ -51,15 +51,19 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-$getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
+$decodeRawSetting = static function (string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
 
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+
+    return is_array($raw) ? $raw : $default;
+};
+
+$getLocalizedData = static function (string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
 
     if (!is_array($parsed)) {
         return $default;
@@ -106,13 +110,21 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <div class="contact-hero-img text-center">
-        <?php 
-        $contact_hero = $getLocalizedData('contact_hero', []);
-        $contact_hero_bg = get_image_url($contact_hero['img'] ?? null, '/assets/img/contacthero.png');
+        <?php
+        $contactHeroRaw  = $decodeRawSetting('contact_hero', []);
+        $contactHeroRaw  = is_array($contactHeroRaw) ? $contactHeroRaw : [];
+        $contact_hero    = $getLocalizedData('contact_hero', []);
+        $contact_hero    = is_array($contact_hero) ? $contact_hero : [];
+        $sharedHeroImg   = $contactHeroRaw['shared_img']
+            ?? ($contact_hero['img']
+            ?? ($contactHeroRaw['de']['img']
+            ?? ($contactHeroRaw['en']['img']
+            ?? ($contactHeroRaw['ar']['img'] ?? null))));
+        $contact_hero_bg = get_image_url($sharedHeroImg, 'assets/img/contacthero.png');
         ?>
-        <img src="<?php echo htmlspecialchars($contact_hero_bg, ENT_QUOTES, 'UTF-8'); ?>" 
-             alt="<?php echo htmlspecialchars($txt['hero_alt'], ENT_QUOTES, 'UTF-8'); ?>" 
-             class="img-fluid rounded-4" 
+        <img src="<?php echo htmlspecialchars($contact_hero_bg, ENT_QUOTES, 'UTF-8'); ?>"
+             alt="<?php echo htmlspecialchars($txt['hero_alt'], ENT_QUOTES, 'UTF-8'); ?>"
+             class="img-fluid rounded-4"
              style="max-height: 450px; width: 100%; object-fit: cover;">
       </div>
     </div>
@@ -131,13 +143,18 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
+      $contactInfoRaw   = $decodeRawSetting('contact_info', []);
+      $contactInfoRaw   = is_array($contactInfoRaw) ? $contactInfoRaw : [];
+      $sharedInfoImgs   = is_array($contactInfoRaw['shared_items_img'] ?? null) ? $contactInfoRaw['shared_items_img'] : [];
       $contact_info_raw = $getLocalizedData('contact_info', []);
+      $contact_info_raw = is_array($contact_info_raw) ? $contact_info_raw : [];
+
       $info_title    = (string)($contact_info_raw['title'] ?? $txt['info_title']);
       $info_desc     = (string)($contact_info_raw['desc'] ?? '');
       $contact_items = class_exists(\App\Models\ContactModel::class)
           ? \App\Models\ContactModel::normalizeContactItems($contact_info_raw)
           : (is_array($contact_info_raw['items'] ?? null) ? $contact_info_raw['items'] : []);
-      $divider_img = get_image_url('assets/img/Line.png');
+      $divider_img   = get_image_url('assets/img/Line.png');
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -149,13 +166,14 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <?php if (!empty($contact_items)): ?>
         <div class="contact-info-bar" style="color: inherit;">
-          <?php foreach ($contact_items as $item): 
+          <?php foreach ($contact_items as $idx => $item):
               if (!is_array($item)) continue;
-              $item_text = (string)($item['text'] ?? '');
-              $item_url  = $sanitizeUrl($item['url'] ?? '');
-              $item_icon = get_image_url($item['icon'] ?? null, '/assets/img/Location.svg');
-              $is_ltr    = !empty($item['is_ltr']);
-              $is_ext    = ($item_url !== '' && (str_starts_with($item_url, 'http://') || str_starts_with($item_url, 'https://')));
+              $item_text    = (string)($item['text'] ?? '');
+              $item_url     = $sanitizeUrl($item['url'] ?? '');
+              $rawItemIcon  = $sharedInfoImgs[$idx] ?? ($item['icon'] ?? ($item['img'] ?? null));
+              $item_icon    = get_image_url($rawItemIcon, 'assets/img/Location.svg');
+              $is_ltr       = !empty($item['is_ltr']);
+              $is_ext       = ($item_url !== '' && (str_starts_with($item_url, 'http://') || str_starts_with($item_url, 'https://')));
           ?>
             <div class="contact-info-item">
               <div class="contact-info-icon">
@@ -199,18 +217,20 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
     <div class="custom-container">
       <?php
       $whatsapp_data    = $getLocalizedData('whatsapp_section', []);
+      $whatsapp_data    = is_array($whatsapp_data) ? $whatsapp_data : [];
       $whatsapp_text    = (string)($whatsapp_data['text'] ?? '');
-      $whatsapp_url     = $sanitizeUrl($whatsapp_data['url'] ?? '#') ?: '#';
+      $sanitizedWaUrl   = $sanitizeUrl($whatsapp_data['url'] ?? '');
+      $whatsapp_url     = $sanitizedWaUrl !== '' ? $sanitizedWaUrl : '#';
+      $is_wa_ext        = ($sanitizedWaUrl !== '' && (str_starts_with($sanitizedWaUrl, 'http://') || str_starts_with($sanitizedWaUrl, 'https://')));
       $whatsapp_btn_txt = (string)($whatsapp_data['btn_text'] ?? $txt['whatsapp_btn']);
       ?>
       <div class="whatsapp-box text-center">
         <h2 class="whatsapp-title mb-4">
           <?php echo nl2br(htmlspecialchars($whatsapp_text, ENT_QUOTES, 'UTF-8')); ?>
         </h2>
-        <a href="<?php echo htmlspecialchars($whatsapp_url, ENT_QUOTES, 'UTF-8'); ?>" 
-           target="_blank" 
-           rel="noopener noreferrer" 
-           class="btn whatsapp-btn text-decoration-none" 
+        <a href="<?php echo htmlspecialchars($whatsapp_url, ENT_QUOTES, 'UTF-8'); ?>"
+           <?php echo $is_wa_ext ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+           class="btn whatsapp-btn text-decoration-none"
            style="text-decoration: none !important;">
           <?php echo htmlspecialchars($whatsapp_btn_txt, ENT_QUOTES, 'UTF-8'); ?>
         </a>
@@ -220,9 +240,9 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 </section>
 <!-- ================= WHATSAPP SECTION END ================= -->
 
-<?php 
+<?php
 $contact_modals_file = __DIR__ . '/admin/admin_contact_modals.php';
-if ($is_admin_active && is_file($contact_modals_file)) { 
-    include_once $contact_modals_file; 
+if ($is_admin_active && is_file($contact_modals_file)) {
+    include_once $contact_modals_file;
 }
 ?>

@@ -9,6 +9,8 @@ use PDO;
 class ContactSettingsService
 {
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const DEFAULT_HERO_IMG = 'assets/img/contacthero.png';
+    private const DEFAULT_ITEM_ICON = 'assets/img/Location.svg';
 
     private string $rootPath;
     private ImageUploader $imageUploader;
@@ -37,28 +39,43 @@ class ContactSettingsService
         $this->filesToDelete = [];
         $targetLang = $this->resolveTargetLang(['targetLang', 'contact_lang', 'lang']);
 
-        // 1. تحديث هيرو صفحة تواصل معنا (Contact Hero)
+        // 1. تحديث هيرو صفحة تواصل معنا (Contact Hero) مع توحيد shared_img
         if ($action === 'update_contact_hero') {
             $allLangs = $this->fetchSetting($pdo, 'contact_hero', $currentSettings);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
                 ? $allLangs[$targetLang]
                 : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
-            $dbOldImg = (string)($currentLangData['img'] ?? 'assets/img/contacthero.png');
+            $existingSharedImg = $this->sanitizeImagePath((string)($allLangs['shared_img'] ?? ''));
+            $currentLangImg = $this->sanitizeImagePath((string)($currentLangData['img'] ?? ''));
+            $dbOldImg = $existingSharedImg !== ''
+                ? $existingSharedImg
+                : ($currentLangImg !== '' ? $currentLangImg : self::DEFAULT_HERO_IMG);
+
             $submittedOldImg = (string)($_POST['old_contact_hero_img'] ?? $dbOldImg);
             $heroImg = $this->handleImageField('contact_hero_img', $submittedOldImg, $dbOldImg);
             if ($heroImg === '') {
-                $heroImg = 'assets/img/contacthero.png';
+                $heroImg = self::DEFAULT_HERO_IMG;
             }
 
+            $allLangs['shared_img'] = $heroImg;
             $allLangs[$targetLang] = [
                 'img' => $heroImg,
             ];
 
+            foreach (self::SUPPORTED_LANGS as $langCode) {
+                if ($langCode !== $targetLang) {
+                    $allLangs[$langCode] = [
+                        'img' => $heroImg,
+                    ];
+                }
+            }
+
+            $this->queueOrphanedSingleImageForDeletion($allLangs, 'img');
             $this->saveSetting($pdo, 'contact_hero', $allLangs);
         }
 
-        // 2. تحديث بطاقات معلومات التواصل الديناميكية (Contact Info Items)
+        // 2. تحديث بطاقات معلومات التواصل الديناميكية (Contact Info Items) مع توحيد shared_items_img
         elseif ($action === 'update_contact_info') {
             $allLangs = $this->fetchSetting($pdo, 'contact_info', $currentSettings);
             $currentLangData = is_array($allLangs[$targetLang] ?? null)
@@ -66,6 +83,7 @@ class ContactSettingsService
                 : (is_array($allLangs['de'] ?? null) ? $allLangs['de'] : []);
 
             $existingItems = is_array($currentLangData['items'] ?? null) ? $currentLangData['items'] : [];
+            $existingSharedImgs = is_array($allLangs['shared_items_img'] ?? null) ? $allLangs['shared_items_img'] : [];
 
             $postedInfo = is_array($_POST['contact_info'][$targetLang] ?? null)
                 ? $_POST['contact_info'][$targetLang]
@@ -74,48 +92,56 @@ class ContactSettingsService
             $title = trim((string)($postedInfo['title'] ?? ($currentLangData['title'] ?? '')));
             $desc  = trim((string)($postedInfo['desc'] ?? ($currentLangData['desc'] ?? '')));
 
-            $rawItems   = $postedInfo['items'] ?? [];
-            $finalItems = [];
+            $rawItems       = $postedInfo['items'] ?? [];
+            $finalItems     = [];
+            $sharedItemsImg = [];
 
             if (is_array($rawItems)) {
-                foreach ($rawItems as $index => $item) {
+                $idxCounter = 0;
+                foreach ($rawItems as $item) {
                     if (!is_array($item)) {
                         continue;
                     }
 
-                    $dbOldIcon = (string)($existingItems[$index]['icon'] ?? '');
-                    $oldIcon   = (string)($item['icon'] ?? ($item['old_icon'] ?? $dbOldIcon));
-                    $icon      = $this->handleImageField('contact_item_icon_' . $index, $oldIcon, $dbOldIcon);
+                    $dbOldIcon = $this->sanitizeImagePath((string)(
+                        $existingSharedImgs[$idxCounter]
+                        ?? ($existingItems[$idxCounter]['icon'] ?? '')
+                    ));
+                    $oldIcon = (string)($item['icon'] ?? ($item['old_icon'] ?? $dbOldIcon));
+                    $icon    = $this->handleImageField('contact_item_icon_' . $idxCounter, $oldIcon, $dbOldIcon);
                     if ($icon === '') {
-                        $icon = 'assets/img/Location.svg';
+                        $icon = self::DEFAULT_ITEM_ICON;
                     }
 
-                    $text  = trim((string)($item['text'] ?? ''));
-                    $url   = $this->sanitizeContactUrl((string)($item['url'] ?? ''));
+                    $text     = trim((string)($item['text'] ?? ''));
+                    $url      = $this->sanitizeContactUrl((string)($item['url'] ?? ''));
                     $isLtrVal = $item['is_ltr'] ?? false;
-                    $isLtr = ($isLtrVal === true || $isLtrVal === '1' || $isLtrVal === 1 || $isLtrVal === 'on');
+                    $isLtr    = ($isLtrVal === true || $isLtrVal === '1' || $isLtrVal === 1 || $isLtrVal === 'on');
 
                     if ($text === '' && $url === '') {
                         continue;
                     }
 
+                    $sharedItemsImg[$idxCounter] = $icon;
                     $finalItems[] = [
                         'text'   => $text,
                         'url'    => $url,
                         'icon'   => $icon,
                         'is_ltr' => $isLtr,
                     ];
+                    $idxCounter++;
                 }
             }
 
-            $this->queueOrphanedImagesForDeletion($existingItems, $finalItems, 'icon');
-
+            $allLangs['shared_items_img'] = $sharedItemsImg;
             $allLangs[$targetLang] = [
                 'title' => $title,
                 'desc'  => $desc,
                 'items' => $finalItems,
             ];
 
+            $this->syncSharedArrayToOtherLangs($allLangs, $targetLang, 'items', 'icon', $sharedItemsImg);
+            $this->queueOrphanedListImagesForDeletion($allLangs, 'items', 'icon', $sharedItemsImg);
             $this->saveSetting($pdo, 'contact_info', $allLangs);
         }
 
@@ -148,24 +174,86 @@ class ContactSettingsService
         return true;
     }
 
-    private function queueOrphanedImagesForDeletion(array $existingItems, array $finalItems, string $imageKey): void
+    private function syncSharedArrayToOtherLangs(
+        array &$allLangs,
+        string $targetLang,
+        string $listKey,
+        string $imgField,
+        array $sharedImgs
+    ): void {
+        foreach (self::SUPPORTED_LANGS as $langCode) {
+            if ($langCode === $targetLang || !isset($allLangs[$langCode]) || !is_array($allLangs[$langCode])) {
+                continue;
+            }
+            if (!isset($allLangs[$langCode][$listKey]) || !is_array($allLangs[$langCode][$listKey])) {
+                continue;
+            }
+            foreach ($allLangs[$langCode][$listKey] as $idx => &$row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                if (array_key_exists($idx, $sharedImgs) && $sharedImgs[$idx] !== '') {
+                    $row[$imgField] = $sharedImgs[$idx];
+                }
+            }
+            unset($row);
+        }
+    }
+
+    private function queueOrphanedSingleImageForDeletion(array $allLangs, string $imgField): void
     {
-        $retainedImages = [];
-        foreach ($finalItems as $item) {
-            if (is_array($item) && !empty($item[$imageKey])) {
-                $retainedImages[ltrim((string)$item[$imageKey], '/')] = true;
+        $retained = [];
+        $sharedVal = ltrim((string)($allLangs['shared_img'] ?? ''), '/');
+        if ($sharedVal !== '') {
+            $retained[$sharedVal] = true;
+        }
+        foreach (self::SUPPORTED_LANGS as $langCode) {
+            $val = ltrim((string)($allLangs[$langCode][$imgField] ?? ''), '/');
+            if ($val !== '') {
+                $retained[$val] = true;
             }
         }
 
-        foreach ($existingItems as $oldItem) {
-            if (!is_array($oldItem) || empty($oldItem[$imageKey])) {
-                continue;
-            }
-            $oldPath = ltrim((string)$oldItem[$imageKey], '/');
-            if ($oldPath !== '' && str_starts_with($oldPath, 'assets/uploads/') && !isset($retainedImages[$oldPath])) {
-                $this->filesToDelete[] = $oldPath;
+        $this->filesToDelete = array_values(array_filter(
+            array_unique($this->filesToDelete),
+            static fn(string $path): bool => !isset($retained[ltrim($path, '/')])
+        ));
+    }
+
+    private function queueOrphanedListImagesForDeletion(
+        array $allLangs,
+        string $listKey,
+        string $imgField,
+        array $sharedImgs
+    ): void {
+        $retained = [];
+        foreach ($sharedImgs as $imgPath) {
+            $clean = ltrim((string)$imgPath, '/');
+            if ($clean !== '') {
+                $retained[$clean] = true;
             }
         }
+
+        foreach (self::SUPPORTED_LANGS as $langCode) {
+            $list = $allLangs[$langCode][$listKey] ?? [];
+            if (!is_array($list)) {
+                continue;
+            }
+            foreach ($list as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $clean = ltrim((string)($row[$imgField] ?? ''), '/');
+                if ($clean !== '') {
+                    $retained[$clean] = true;
+                }
+            }
+        }
+
+        $this->filesToDelete = array_values(array_filter(
+            array_unique($this->filesToDelete),
+            static fn(string $path): bool => !isset($retained[ltrim($path, '/')])
+        ));
     }
 
     private function resolveTargetLang(array $postKeys): string
@@ -188,6 +276,12 @@ class ContactSettingsService
         $stmtFetch = $pdo->prepare('SELECT setting_value FROM global_settings WHERE setting_key = :k LIMIT 1');
         $stmtFetch->execute(['k' => $key]);
         $dbRaw = $stmtFetch->fetchColumn();
+
+        if (!is_string($dbRaw) || $dbRaw === '') {
+            $stmtFallback = $pdo->prepare('SELECT setting_value FROM global_settings WHERE LOWER(setting_key) = LOWER(:k) LIMIT 1');
+            $stmtFallback->execute(['k' => $key]);
+            $dbRaw = $stmtFallback->fetchColumn();
+        }
 
         if (is_string($dbRaw) && $dbRaw !== '') {
             $decoded = json_decode($dbRaw, true);

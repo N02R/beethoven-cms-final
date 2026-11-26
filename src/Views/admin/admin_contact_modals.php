@@ -92,12 +92,13 @@ $modalI18n = [
 ];
 $mTxt = $modalI18n[$current_lang];
 
-$fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
+$fetchRawSettingArray = static function (string $key): array {
     $raw = get_setting($key, '{}');
     $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
-    if (!is_array($decoded)) {
-        return [];
-    }
+    return is_array($decoded) ? $decoded : [];
+};
+
+$resolveLangBucket = static function (array $decoded) use ($current_lang): array {
     if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
         return $decoded[$current_lang];
     }
@@ -113,16 +114,37 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
     return $decoded;
 };
 
-$curContactHero     = $fetchRawMultilingualSetting('contact_hero');
-$curContactInfo     = $fetchRawMultilingualSetting('contact_info');
-$curWhatsappSection = $fetchRawMultilingualSetting('whatsapp_section');
+$rawContactHero     = $fetchRawSettingArray('contact_hero');
+$curContactHero     = $resolveLangBucket($rawContactHero);
 
-$modalHeroImg   = (string)($curContactHero['img'] ?? ($contact_hero_img ?? 'assets/img/contacthero.png'));
+$rawContactInfo     = $fetchRawSettingArray('contact_info');
+$curContactInfo     = $resolveLangBucket($rawContactInfo);
+$sharedInfoImgs     = is_array($rawContactInfo['shared_items_img'] ?? null) ? $rawContactInfo['shared_items_img'] : [];
+
+$rawWhatsappSection = $fetchRawSettingArray('whatsapp_section');
+$curWhatsappSection = $resolveLangBucket($rawWhatsappSection);
+
+$modalHeroImg   = (string)(
+    $rawContactHero['shared_img']
+    ?? ($curContactHero['img']
+    ?? ($rawContactHero['de']['img']
+    ?? ($rawContactHero['en']['img']
+    ?? ($rawContactHero['ar']['img']
+    ?? ($contact_hero_img ?? 'assets/img/contacthero.png')))))
+);
+
 $modalInfoTitle = (string)($curContactInfo['title'] ?? ($contact_info_title ?? ''));
 $modalInfoDesc  = (string)($curContactInfo['desc'] ?? ($contact_info_desc ?? ''));
 $modalInfoItems = class_exists(\App\Models\ContactModel::class)
     ? \App\Models\ContactModel::normalizeContactItems($curContactInfo)
     : (is_array($curContactInfo['items'] ?? null) ? $curContactInfo['items'] : []);
+
+foreach ($modalInfoItems as $idx => &$modalItem) {
+    if (is_array($modalItem) && isset($sharedInfoImgs[$idx]) && is_string($sharedInfoImgs[$idx]) && $sharedInfoImgs[$idx] !== '') {
+        $modalItem['icon'] = $sharedInfoImgs[$idx];
+    }
+}
+unset($modalItem);
 
 $modalWaText   = (string)($curWhatsappSection['text'] ?? ($whatsapp_text ?? ''));
 $modalWaUrl    = (string)($curWhatsappSection['url'] ?? ($whatsapp_url ?? '#'));

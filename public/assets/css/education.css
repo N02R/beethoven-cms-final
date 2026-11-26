@@ -585,11 +585,11 @@
 [dir="ltr"] .mobile-timeline .step-6 {
         top: 83%;
 --num-top: 90px;
---num-left: 35%;
+--num-left: 77%;
 --icon-top: 74px;
---icon-left: -4%;
+--icon-left: 125%;
 --info-top: 75px;
---info-x: 50px;
+--info-x: -40px;
     }
 
     /* توسيط النصوص والنقطة في المنتصف لكلا الاتجاهين (RTL و LTR) */

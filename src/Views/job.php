@@ -183,11 +183,14 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $hero_title    = $job_hero['title'] ?? $txt['hero_title'];
       $hero_desc     = $job_hero['desc'] ?? '';
       $hero_btn_text = $job_hero['btn_text'] ?? $txt['hero_btn'];
-      $hero_btn_url  = $buildLocalizedUrl($job_hero['btn_url'] ?? 'contact');
+      $hero_btn_url  = $buildLocalizedUrl($job_hero['btn_url'] ?? '#');
       $sharedHeroImg = $jobHeroRaw['shared_img'] ?? ($job_hero['img'] ?? ($jobHeroRaw['de']['img'] ?? ($jobHeroRaw['en']['img'] ?? ($jobHeroRaw['ar']['img'] ?? null))));
       $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/job/jobhero.png');
       ?>
       <div class="row align-items-stretch g-5">
+        <div class="col-lg-6">
+          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
+        </div>
         <div class="col-lg-6 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
           <div class="job-info pt-2">
             <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$hero_title, ENT_QUOTES, 'UTF-8'); ?></h2>
@@ -196,9 +199,6 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
               <?php echo htmlspecialchars((string)$hero_btn_text, ENT_QUOTES, 'UTF-8'); ?>
             </a>
           </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="img-hero" style="background-image: url('<?php echo htmlspecialchars($hero_bg, ENT_QUOTES, 'UTF-8'); ?>'); background-size: cover; background-position: center; min-height: 350px; border-radius: 20px;"></div>
         </div>
       </div>
     </div>

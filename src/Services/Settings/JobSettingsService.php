@@ -70,11 +70,10 @@ class JobSettingsService
                 'img'      => $heroImg,
             ];
 
+            // توحيد حقل الصورة في بقية اللغات مع الحفاظ على نصوص كل لغة كما هي
             foreach (self::SUPPORTED_LANGS as $langCode) {
                 if ($langCode !== $targetLang && isset($allLangs[$langCode]) && is_array($allLangs[$langCode])) {
-                    if (empty($allLangs[$langCode]['img'])) {
-                        $allLangs[$langCode]['img'] = $heroImg;
-                    }
+                    $allLangs[$langCode]['img'] = $heroImg;
                 }
             }
 

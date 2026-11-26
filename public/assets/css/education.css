@@ -565,8 +565,8 @@
 
     .mobile-timeline .step-6 {
         top: 83%;
-        --num-top: 100px;
-        --num-left: 100%;
+        --num-top: 70px;
+        --num-left: 23%;
         --icon-top: 28px;
         --icon-left: 50%;
         --info-top: 75px;

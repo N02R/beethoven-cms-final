@@ -36,6 +36,16 @@ class EducationModel
 
         $settings = SiteModel::getSettings();
 
+        // استخراج المصفوفة الخام الكاملة للقسم للاحتفاظ بالحقول المشتركة مثل shared_items_img
+        $getRawDecoded = static function (string $key) use ($settings): array {
+            if (!isset($settings[$key])) {
+                return [];
+            }
+            $raw = $settings[$key];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+            return is_array($decoded) ? $decoded : [];
+        };
+
         // دالة موحدة لاستخراج القسم باللغة المطلوبة من الكاش المركزي مع تراجع آمن (de -> en -> ar)
         $getLangData = static function (string $key, array $default = []) use ($settings, $activeLang): array {
             if (!isset($settings[$key])) {
@@ -89,15 +99,21 @@ class EducationModel
             'items' => $timeline_steps,
         ];
 
-        // 4. قسم خدمات التعليم (Edu Services)
-        $edu_services_raw = $getLangData('edu_services', []);
-        $services_items = is_array($edu_services_raw['items'] ?? null) ? $edu_services_raw['items'] : [];
+        // 4. قسم خدمات التعليم (Edu Services) مع الحفاظ على shared_items_img عند توفرها
+        $edu_services_full = $getRawDecoded('edu_services');
+        $edu_services_raw  = $getLangData('edu_services', []);
+        $services_items    = is_array($edu_services_raw['items'] ?? null) ? $edu_services_raw['items'] : [];
+        $shared_items_img  = is_array($edu_services_full['shared_items_img'] ?? null)
+            ? $edu_services_full['shared_items_img']
+            : (is_array($edu_services_raw['shared_items_img'] ?? null) ? $edu_services_raw['shared_items_img'] : []);
+
         $edu_services = [
             'title'            => $edu_services_raw['title'] ?? ($edu_services_raw['section_title'] ?? $fallbackLabels['services_title']),
             'section_title'    => $edu_services_raw['section_title'] ?? ($edu_services_raw['title'] ?? $fallbackLabels['services_title']),
             'desc'             => $edu_services_raw['desc'] ?? ($edu_services_raw['section_subtitle'] ?? ''),
             'section_subtitle' => $edu_services_raw['section_subtitle'] ?? ($edu_services_raw['desc'] ?? ''),
             'items'            => $services_items,
+            'shared_items_img' => $shared_items_img,
         ];
 
         return [

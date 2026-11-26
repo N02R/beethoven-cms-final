@@ -39,6 +39,16 @@ class JobModel
 
         $settings = SiteModel::getSettings();
 
+        // استخراج المصفوفة الخام الكاملة للقسم للاحتفاظ بالحقول المشتركة مثل shared_items_img
+        $getRawDecoded = static function (string $key) use ($settings): array {
+            if (!isset($settings[$key])) {
+                return [];
+            }
+            $raw = $settings[$key];
+            $decoded = is_string($raw) ? json_decode($raw, true) : $raw;
+            return is_array($decoded) ? $decoded : [];
+        };
+
         // دالة موحدة لاستخراج القسم باللغة المطلوبة من الكاش المركزي مع تراجع آمن (de -> en -> ar)
         $getLangData = static function (string $key, array $default = []) use ($settings, $activeLang): array {
             if (!isset($settings[$key])) {
@@ -108,15 +118,21 @@ class JobModel
             'items' => $timeline_steps,
         ];
 
-        // 5. قسم خدمات التوظيف (Job Services)
-        $job_services_raw = $getLangData('job_services', []);
-        $services_items = is_array($job_services_raw['items'] ?? null) ? $job_services_raw['items'] : [];
+        // 5. قسم خدمات التوظيف (Job Services) مع الحفاظ على shared_items_img عند توفرها
+        $job_services_full = $getRawDecoded('job_services');
+        $job_services_raw  = $getLangData('job_services', []);
+        $services_items    = is_array($job_services_raw['items'] ?? null) ? $job_services_raw['items'] : [];
+        $shared_items_img  = is_array($job_services_full['shared_items_img'] ?? null)
+            ? $job_services_full['shared_items_img']
+            : (is_array($job_services_raw['shared_items_img'] ?? null) ? $job_services_raw['shared_items_img'] : []);
+
         $job_services = [
             'title'            => $job_services_raw['title'] ?? ($job_services_raw['section_title'] ?? $fallbackLabels['services_title']),
             'section_title'    => $job_services_raw['section_title'] ?? ($job_services_raw['title'] ?? $fallbackLabels['services_title']),
             'desc'             => $job_services_raw['desc'] ?? ($job_services_raw['section_subtitle'] ?? ''),
             'section_subtitle' => $job_services_raw['section_subtitle'] ?? ($job_services_raw['desc'] ?? ''),
             'items'            => $services_items,
+            'shared_items_img' => $shared_items_img,
         ];
 
         return [

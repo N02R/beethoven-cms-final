@@ -1128,7 +1128,15 @@ class PageContentSettingsService
             return;
         }
 
-        $needle = strtolower($slugNeedle);
+        $needles = array_unique(array_filter([
+            strtolower(trim($slugNeedle)),
+            'arrival',
+            'ankunft',
+            'flughafen',
+            'استقبال',
+            'وصول',
+        ]));
+
         $stmt = $pdo->prepare('SELECT id, setting_key, setting_value FROM global_settings WHERE setting_key IN (:k1, :k2)');
         $stmt->execute([
             'k1' => 'edu_services',
@@ -1165,8 +1173,17 @@ class PageContentSettingsService
                     if (!is_array($item)) {
                         continue;
                     }
-                    $url = strtolower(trim((string)($item['url'] ?? '')));
-                    if (str_contains($url, $needle)) {
+                    $url   = strtolower(trim((string)($item['url'] ?? '')));
+                    $title = strtolower(trim((string)($item['title'] ?? '')));
+                    $isMatch = false;
+                    foreach ($needles as $needle) {
+                        if ($needle !== '' && (str_contains($url, $needle) || str_contains($title, $needle))) {
+                            $isMatch = true;
+                            break;
+                        }
+                    }
+
+                    if ($isMatch) {
                         $decoded[$lang]['items'][$idx]['img'] = $newImgPath;
                         $matchedIndices[(int)$idx] = true;
                     }

@@ -9,6 +9,7 @@ use PDO;
 class JobSettingsService
 {
     private const SUPPORTED_LANGS = ['de', 'en', 'ar'];
+    private const DEFAULT_HERO_IMG = 'assets/img/job/jobhero.png';
 
     private string $rootPath;
     private ImageUploader $imageUploader;
@@ -51,14 +52,15 @@ class JobSettingsService
                 : (is_array($_POST['job_hero'] ?? null) ? $_POST['job_hero'] : $_POST);
 
             $existingSharedImg = $this->sanitizeImagePath((string)($allLangs['shared_img'] ?? ''));
+            $currentLangImg = $this->sanitizeImagePath((string)($currentLangData['img'] ?? ''));
             $dbOldImg = $existingSharedImg !== ''
                 ? $existingSharedImg
-                : (string)($currentLangData['img'] ?? 'assets/img/job/jobhero.png');
+                : ($currentLangImg !== '' ? $currentLangImg : self::DEFAULT_HERO_IMG);
 
             $submittedOldImg = (string)($postedHero['old_img'] ?? ($_POST['old_job_hero_img'] ?? $dbOldImg));
             $heroImg = $this->handleImageField('job_hero_img', $submittedOldImg, $dbOldImg);
             if ($heroImg === '') {
-                $heroImg = 'assets/img/job/jobhero.png';
+                $heroImg = self::DEFAULT_HERO_IMG;
             }
 
             $allLangs['shared_img'] = $heroImg;
@@ -66,13 +68,16 @@ class JobSettingsService
                 'title'    => trim((string)($postedHero['title'] ?? ($postedHero['job_hero_title'] ?? ($currentLangData['title'] ?? '')))),
                 'desc'     => trim((string)($postedHero['desc'] ?? ($postedHero['job_hero_desc'] ?? ($currentLangData['desc'] ?? '')))),
                 'btn_text' => trim((string)($postedHero['btn_text'] ?? ($postedHero['job_hero_btn_text'] ?? ($currentLangData['btn_text'] ?? '')))),
-                'btn_url'  => $this->sanitizeLinkUrl((string)($postedHero['btn_url'] ?? ($postedHero['job_hero_btn_url'] ?? ($currentLangData['btn_url'] ?? 'contact')))),
+                'btn_url'  => $this->sanitizeLinkUrl((string)($postedHero['btn_url'] ?? ($postedHero['job_hero_btn_url'] ?? ($currentLangData['btn_url'] ?? '#')))),
                 'img'      => $heroImg,
             ];
 
             // توحيد حقل الصورة في بقية اللغات مع الحفاظ على نصوص كل لغة كما هي
             foreach (self::SUPPORTED_LANGS as $langCode) {
-                if ($langCode !== $targetLang && isset($allLangs[$langCode]) && is_array($allLangs[$langCode])) {
+                if ($langCode !== $targetLang) {
+                    if (!isset($allLangs[$langCode]) || !is_array($allLangs[$langCode])) {
+                        $allLangs[$langCode] = [];
+                    }
                     $allLangs[$langCode]['img'] = $heroImg;
                 }
             }
@@ -458,6 +463,12 @@ class JobSettingsService
         $stmtFetch = $pdo->prepare('SELECT setting_value FROM global_settings WHERE setting_key = :k LIMIT 1');
         $stmtFetch->execute(['k' => $key]);
         $dbRaw = $stmtFetch->fetchColumn();
+
+        if (!is_string($dbRaw) || $dbRaw === '') {
+            $stmtFallback = $pdo->prepare('SELECT setting_value FROM global_settings WHERE LOWER(setting_key) = LOWER(:k) LIMIT 1');
+            $stmtFallback->execute(['k' => $key]);
+            $dbRaw = $stmtFallback->fetchColumn();
+        }
 
         if (is_string($dbRaw) && $dbRaw !== '') {
             $decoded = json_decode($dbRaw, true);

@@ -562,6 +562,16 @@
         --info-top: 65px;
         --info-x: -150px;
     }
+    [dir="ltr"] .mobile-timeline .step-5 {
+        top: 67%;
+--num-top: 80px;
+--num-left: 10%;
+--icon-top: 64px;
+--icon-left: 60%;
+--info-top: 65px;
+--info-x: 150px;
+    }
+
 
     .mobile-timeline .step-6 {
         top: 83%;
@@ -571,6 +581,15 @@
         --icon-left: -4%;
         --info-top: 75px;
         --info-x: 50px;
+    }
+[dir="ltr"] .mobile-timeline .step-6 {
+        top: 83%;
+--num-top: 90px;
+--num-left: 35%;
+--icon-top: 74px;
+--icon-left: -4%;
+--info-top: 75px;
+--info-x: 50px;
     }
 
     /* توسيط النصوص والنقطة في المنتصف لكلا الاتجاهين (RTL و LTR) */

@@ -66,16 +66,21 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
-$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
+// قراءة الإعداد الخام كما هو (بما في ذلك shared_img و shared_items_img)
+$decodeRawSetting = static function (string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
 
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+
+    return is_array($raw) ? $raw : $default;
+};
+
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
 
     if (!is_array($parsed)) {
         return $default;
@@ -97,20 +102,51 @@ $getLocalizedData = function(string $settingKey, mixed $default = []) use ($curr
     return $parsed;
 };
 
+// استخراج صورة خدمة محددة (مثل arrival) من قسم الخدمات الموحد (edu_services أو job_services)
+$resolveServiceSharedImage = static function (string $slugNeedle, array $servicesRaw, array $servicesLocalized): ?string {
+    $sharedImgs = is_array($servicesRaw['shared_items_img'] ?? null) ? $servicesRaw['shared_items_img'] : [];
+    $items = is_array($servicesLocalized['items'] ?? null) ? $servicesLocalized['items'] : [];
+
+    foreach ($items as $idx => $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $url = strtolower(trim((string)($item['url'] ?? '')));
+        if ($slugNeedle !== '' && str_contains($url, strtolower($slugNeedle))) {
+            $candidate = $sharedImgs[$idx] ?? ($item['img'] ?? null);
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return trim($candidate);
+            }
+        }
+    }
+
+    return null;
+};
+
 // تحديد المصدر بناءً على الرابط القادم بأمان
 $from = $_GET['from'] ?? 'education';
 if ($from === 'job') {
     $parent_url = '/' . $current_lang . '/job';
     $parent_name = $txt['voc_training'];
+    $serviceSectionKey = 'job_services';
 } else {
     $parent_url = '/' . $current_lang . '/education';
     $parent_name = $txt['higher_edu'];
+    $serviceSectionKey = 'edu_services';
 }
 
 $is_admin_active = !empty($is_admin) && $is_admin === true;
 
-// جلب بيانات صفحة الوصول المترجمة
+// جلب بيانات صفحة الوصول المترجمة + صورة الخدمة الموحدة من قسم الخدمات
 $arrival_data = $getLocalizedData('arrival_data', is_array($arrival_data ?? null) ? $arrival_data : []);
+$arrival_data = is_array($arrival_data) ? $arrival_data : [];
+
+$servicesRaw = $decodeRawSetting($serviceSectionKey, []);
+$servicesRaw = is_array($servicesRaw) ? $servicesRaw : [];
+$servicesLocalized = $getLocalizedData($serviceSectionKey, []);
+$servicesLocalized = is_array($servicesLocalized) ? $servicesLocalized : [];
+
+$matchedServiceImg = $resolveServiceSharedImage('arrival', $servicesRaw, $servicesLocalized);
 ?>
 
 <!-- ================= BREADCRUMB SECTION START ================= -->
@@ -150,8 +186,9 @@ $arrival_data = $getLocalizedData('arrival_data', is_array($arrival_data ?? null
       </button>
     <?php endif; ?>
 
-    <?php 
-    $hero_img = get_image_url($arrival_data['hero_img'] ?? null, 'assets/img/education/servicesimg9.png');
+    <?php
+    $rawHeroSource = $matchedServiceImg ?? ($arrival_data['hero_img'] ?? null);
+    $hero_img = get_image_url($rawHeroSource, 'assets/img/education/servicesimg9.png');
     ?>
     <div class="custom-container">
       <div class="arrival-hero custom-hero" style="background-image: url('<?php echo htmlspecialchars($hero_img, ENT_QUOTES, 'UTF-8'); ?>');">

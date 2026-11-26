@@ -569,8 +569,8 @@
         --num-left: 50%;
         --icon-top: 28px;
         --icon-left: 50%;
-        --info-top: 100px;
-        --info-x: 100px;
+        --info-top: 60px;
+        --info-x: 40px;
     }
 
     /* توسيط النصوص والنقطة في المنتصف لكلا الاتجاهين (RTL و LTR) */

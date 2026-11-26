@@ -174,18 +174,18 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
     <?php endif; ?>
 
     <div class="custom-container">
-      <?php 
+      <?php
       $jobHeroRaw = $decodeRawSetting('job_hero', []);
       $jobHeroRaw = is_array($jobHeroRaw) ? $jobHeroRaw : [];
       $job_hero   = $getLocalizedData('job_hero', []);
       $job_hero   = is_array($job_hero) ? $job_hero : [];
-      
+
       $hero_title    = $job_hero['title'] ?? $txt['hero_title'];
       $hero_desc     = $job_hero['desc'] ?? '';
       $hero_btn_text = $job_hero['btn_text'] ?? $txt['hero_btn'];
       $hero_btn_url  = $buildLocalizedUrl($job_hero['btn_url'] ?? '#');
       $sharedHeroImg = $jobHeroRaw['shared_img'] ?? ($job_hero['img'] ?? ($jobHeroRaw['de']['img'] ?? ($jobHeroRaw['en']['img'] ?? ($jobHeroRaw['ar']['img'] ?? null))));
-      $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/job/jobhero.png');
+      $hero_bg       = get_image_url($sharedHeroImg, 'assets/img/job/jobhero.png');
       ?>
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6">
@@ -222,7 +222,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $sharedWhyImgs = is_array($jobWhyRaw['shared_items_img'] ?? null) ? $jobWhyRaw['shared_items_img'] : [];
       $job_why       = $getLocalizedData('job_why', []);
       $job_why       = is_array($job_why) ? $job_why : [];
-      
+
       $why_title = $job_why['title'] ?? $txt['why_title'];
       $why_desc  = $job_why['desc'] ?? '';
       $why_items = is_array($job_why['items'] ?? null) ? $job_why['items'] : [];
@@ -237,7 +237,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-3">
         <?php if (!empty($why_items)): ?>
-          <?php foreach ($why_items as $wIdx => $item): 
+          <?php foreach ($why_items as $wIdx => $item):
             if (!is_array($item)) continue;
             $rawWhyImg  = $sharedWhyImgs[$wIdx] ?? ($item['img'] ?? null);
             $item_img   = get_image_url($rawWhyImg, '');
@@ -280,12 +280,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $jobProgramsRaw  = $decodeRawSetting('job_programs', []);
-      $jobProgramsRaw  = is_array($jobProgramsRaw) ? $jobProgramsRaw : [];
-      $sharedProgImgs  = is_array($jobProgramsRaw['shared_items_img'] ?? null) ? $jobProgramsRaw['shared_items_img'] : [];
-      $job_programs    = $getLocalizedData('job_programs', []);
-      $job_programs    = is_array($job_programs) ? $job_programs : [];
-      
+      $jobProgramsRaw = $decodeRawSetting('job_programs', []);
+      $jobProgramsRaw = is_array($jobProgramsRaw) ? $jobProgramsRaw : [];
+      $sharedProgImgs = is_array($jobProgramsRaw['shared_items_img'] ?? null) ? $jobProgramsRaw['shared_items_img'] : [];
+      $job_programs   = $getLocalizedData('job_programs', []);
+      $job_programs   = is_array($job_programs) ? $job_programs : [];
+
       $prog_title = $job_programs['title'] ?? $txt['prog_title'];
       $prog_desc  = $job_programs['desc'] ?? '';
       $prog_items = is_array($job_programs['items'] ?? null) ? $job_programs['items'] : [];
@@ -300,7 +300,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-4">
         <?php if (!empty($prog_items)): ?>
-          <?php foreach ($prog_items as $pIdx => $p): 
+          <?php foreach ($prog_items as $pIdx => $p):
             if (!is_array($p)) continue;
             $rawProgImg    = $sharedProgImgs[$pIdx] ?? ($p['img'] ?? null);
             $item_img      = get_image_url($rawProgImg, '');
@@ -324,7 +324,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
                 <a href="<?php echo htmlspecialchars($item_btn_url, ENT_QUOTES, 'UTF-8'); ?>" class="btn-info-wrapper mt-4 <?php echo $is_dark ? 'is-light' : ''; ?>">
                   <h3 class="mb-0"><?php echo htmlspecialchars((string)$item_btn_text, ENT_QUOTES, 'UTF-8'); ?></h3>
                   <div class="arrow-icon">
-                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>" 
+                    <img src="<?php echo htmlspecialchars(get_image_url('assets/img/home/ArrowLink.svg.webp'), ENT_QUOTES, 'UTF-8'); ?>"
                          alt="Arrow"
                          style="<?php echo ($current_dir === 'ltr') ? 'transform: scaleX(-1);' : ''; ?>">
                   </div>
@@ -366,42 +366,51 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $rawSteps       = $job_timeline['steps'] ?? ($job_timeline['items'] ?? []);
       $steps_items    = is_array($rawSteps) ? $rawSteps : [];
       ?>
-      
+
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
         <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$timeline_title, ENT_QUOTES, 'UTF-8'); ?></h2>
         <?php if (!empty($timeline_desc)): ?>
           <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars((string)$timeline_desc, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
       </div>
-      
+
       <?php if (!empty($steps_items)): ?>
-        <?php 
+        <?php
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-        $renderTimelineSteps = static function (array $items, array $sharedImgs, array $dotPalette): void {
-            foreach ($items as $idx => $step): 
-                if (!is_array($step)) continue;
-                $stepIndex       = (int)$idx + 1;
-                $num             = sprintf("%02d", $stepIndex);
-                $dotClass        = $dotPalette[(int)$idx % count($dotPalette)];
-                $defaultIcon     = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
-                $rawStepImg      = $sharedImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
-                $iconPath        = get_image_url($rawStepImg, $defaultIcon);
-                $groupNumImg     = get_image_url('assets/img/vector/Group' . $stepIndex . '.png');
-                $stepNumberClass = 'step-' . $stepIndex;
+        $preparedSteps = [];
+        foreach ($steps_items as $idx => $step) {
+            if (!is_array($step)) continue;
+            $stepIndex = (int)$idx + 1;
+            $defaultIcon = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
+            $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+            $preparedSteps[] = [
+                'num'            => sprintf('%02d', $stepIndex),
+                'dot_class'      => $dots[(int)$idx % count($dots)],
+                'icon_path'      => get_image_url($rawStepImg, $defaultIcon),
+                'group_num_img'  => get_image_url('assets/img/vector/Group' . $stepIndex . '.png'),
+                'step_num_class' => 'step-' . $stepIndex,
+                'title'          => (string)($step['title'] ?? ''),
+                'subtitle'       => (string)($step['subtitle'] ?? ''),
+                'desc'           => (string)($step['desc'] ?? ''),
+            ];
+        }
+
+        $renderTimelineSteps = static function (array $items): void {
+            foreach ($items as $pStep):
         ?>
-              <div class="step-wrapper <?php echo htmlspecialchars($stepNumberClass, ENT_QUOTES, 'UTF-8'); ?>">
-                <img src="<?php echo htmlspecialchars($groupNumImg, ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+              <div class="step-wrapper <?php echo htmlspecialchars($pStep['step_num_class'], ENT_QUOTES, 'UTF-8'); ?>">
+                <img src="<?php echo htmlspecialchars($pStep['group_num_img'], ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo htmlspecialchars($pStep['num'], ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="icon-main">
-                  <img src="<?php echo htmlspecialchars($iconPath, ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                  <img src="<?php echo htmlspecialchars($pStep['icon_path'], ENT_QUOTES, 'UTF-8'); ?>" alt="">
                 </div>
                 <div class="info-content">
-                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
-                  <span class="dot <?php echo $dotClass; ?>"></span>
-                  <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                  <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                  <h3><?php echo htmlspecialchars($pStep['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <span class="dot <?php echo htmlspecialchars($pStep['dot_class'], ENT_QUOTES, 'UTF-8'); ?>"></span>
+                  <h4><?php echo htmlspecialchars($pStep['subtitle'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                  <p><?php echo htmlspecialchars($pStep['desc'], ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
               </div>
-        <?php 
+        <?php
             endforeach;
         };
         ?>
@@ -411,7 +420,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <div class="map-box">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
-            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
+            <?php $renderTimelineSteps($preparedSteps); ?>
           </div>
         </div>
 
@@ -420,7 +429,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <div class="map-box">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
-            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
+            <?php $renderTimelineSteps($preparedSteps); ?>
           </div>
         </div>
       <?php else: ?>
@@ -449,7 +458,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $sharedSrvImgs  = is_array($jobServicesRaw['shared_items_img'] ?? null) ? $jobServicesRaw['shared_items_img'] : [];
       $job_services   = $getLocalizedData('job_services', []);
       $job_services   = is_array($job_services) ? $job_services : [];
-      
+
       $services_title = $job_services['title'] ?? ($job_services['section_title'] ?? $txt['services_title']);
       $services_desc  = $job_services['desc'] ?? ($job_services['section_subtitle'] ?? '');
       $services_items = is_array($job_services['items'] ?? null) ? $job_services['items'] : [];
@@ -461,14 +470,14 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars((string)$services_desc, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
       </div>
-      
+
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php if (!empty($services_items)): ?>
-          <?php foreach ($services_items as $sIdx => $item): 
+          <?php foreach ($services_items as $sIdx => $item):
               if (!is_array($item)) continue;
               $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true, 'job');
               $rawSrvImg  = $sharedSrvImgs[$sIdx] ?? ($item['img'] ?? null);
-              $bg_img     = get_image_url($rawSrvImg, '/assets/img/home/education.jpg');
+              $bg_img     = get_image_url($rawSrvImg, 'assets/img/home/education.jpg');
               $item_title = $item['title'] ?? '';
           ?>
             <div class="col">
@@ -495,10 +504,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 </section>
 <!-- ================= JOB SERVICES SECTION END ================= -->
 
-<?php 
+<?php
 // تضمين موديلات التعديل الخاصة بصفحة الوظائف للمشرف فقط
 $job_modals_file = __DIR__ . '/admin/admin_job_modals.php';
-if ($is_admin_active && is_file($job_modals_file)) { 
-    include_once $job_modals_file; 
-} 
+if ($is_admin_active && is_file($job_modals_file)) {
+    include_once $job_modals_file;
+}
 ?>

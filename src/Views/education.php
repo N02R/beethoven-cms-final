@@ -161,18 +161,18 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
     <?php endif; ?>
 
     <div class="custom-container">
-      <?php 
+      <?php
       $eduHeroRaw = $decodeRawSetting('edu_hero', []);
       $eduHeroRaw = is_array($eduHeroRaw) ? $eduHeroRaw : [];
       $edu_hero   = $getLocalizedData('edu_hero', []);
       $edu_hero   = is_array($edu_hero) ? $edu_hero : [];
-      
+
       $hero_title    = $edu_hero['title'] ?? $txt['hero_title'];
       $hero_desc     = $edu_hero['desc'] ?? '';
       $hero_btn_text = $edu_hero['btn_text'] ?? $txt['hero_btn'];
       $hero_btn_url  = $buildLocalizedUrl($edu_hero['btn_url'] ?? '#');
       $sharedHeroImg = $eduHeroRaw['shared_img'] ?? ($edu_hero['img'] ?? ($eduHeroRaw['de']['img'] ?? ($eduHeroRaw['en']['img'] ?? ($eduHeroRaw['ar']['img'] ?? null))));
-      $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/education/hero.jpg');
+      $hero_bg       = get_image_url($sharedHeroImg, 'assets/img/education/hero.jpg');
       ?>
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6">
@@ -209,7 +209,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       $sharedWhyImgs = is_array($eduWhyRaw['shared_items_img'] ?? null) ? $eduWhyRaw['shared_items_img'] : [];
       $edu_why       = $getLocalizedData('edu_why', []);
       $edu_why       = is_array($edu_why) ? $edu_why : [];
-      
+
       $why_title = $edu_why['title'] ?? $txt['why_title'];
       $why_desc  = $edu_why['desc'] ?? '';
       $why_items = is_array($edu_why['items'] ?? null) ? $edu_why['items'] : [];
@@ -224,7 +224,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-3">
         <?php if (!empty($why_items)): ?>
-          <?php foreach ($why_items as $wIdx => $item): 
+          <?php foreach ($why_items as $wIdx => $item):
             if (!is_array($item)) continue;
             $rawWhyImg  = $sharedWhyImgs[$wIdx] ?? ($item['img'] ?? null);
             $item_img   = get_image_url($rawWhyImg, '');
@@ -267,54 +267,63 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $eduTimelineRaw  = $decodeRawSetting('edu_timeline', []);
-      $eduTimelineRaw  = is_array($eduTimelineRaw) ? $eduTimelineRaw : [];
-      $sharedStepImgs  = is_array($eduTimelineRaw['shared_steps_img'] ?? null)
+      $eduTimelineRaw = $decodeRawSetting('edu_timeline', []);
+      $eduTimelineRaw = is_array($eduTimelineRaw) ? $eduTimelineRaw : [];
+      $sharedStepImgs = is_array($eduTimelineRaw['shared_steps_img'] ?? null)
           ? $eduTimelineRaw['shared_steps_img']
           : (is_array($eduTimelineRaw['shared_items_img'] ?? null) ? $eduTimelineRaw['shared_items_img'] : []);
-      $edu_timeline    = $getLocalizedData('edu_timeline', []);
-      $edu_timeline    = is_array($edu_timeline) ? $edu_timeline : [];
-      $timeline_title  = $edu_timeline['title'] ?? $txt['timeline_title'];
-      $timeline_desc   = $edu_timeline['desc'] ?? '';
-      $rawSteps        = $edu_timeline['steps'] ?? ($edu_timeline['items'] ?? []);
-      $steps_items     = is_array($rawSteps) ? $rawSteps : [];
+      $edu_timeline   = $getLocalizedData('edu_timeline', []);
+      $edu_timeline   = is_array($edu_timeline) ? $edu_timeline : [];
+      $timeline_title = $edu_timeline['title'] ?? $txt['timeline_title'];
+      $timeline_desc  = $edu_timeline['desc'] ?? '';
+      $rawSteps       = $edu_timeline['steps'] ?? ($edu_timeline['items'] ?? []);
+      $steps_items    = is_array($rawSteps) ? $rawSteps : [];
       ?>
-      
+
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
         <h2 class="sec-title mb-3"><?php echo htmlspecialchars((string)$timeline_title, ENT_QUOTES, 'UTF-8'); ?></h2>
         <?php if (!empty($timeline_desc)): ?>
           <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars((string)$timeline_desc, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
       </div>
-      
+
       <?php if (!empty($steps_items)): ?>
-        <?php 
+        <?php
         $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
-        $renderTimelineSteps = static function (array $items, array $sharedImgs, array $dotPalette): void {
-            foreach ($items as $idx => $step): 
-                if (!is_array($step)) continue;
-                $stepIndex       = (int)$idx + 1;
-                $num             = sprintf("%02d", $stepIndex);
-                $dotClass        = $dotPalette[(int)$idx % count($dotPalette)];
-                $defaultIcon     = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
-                $rawStepImg      = $sharedImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
-                $iconPath        = get_image_url($rawStepImg, $defaultIcon);
-                $groupNumImg     = get_image_url('assets/img/vector/Group' . $stepIndex . '.png');
-                $stepNumberClass = 'step-' . $stepIndex;
+        $preparedSteps = [];
+        foreach ($steps_items as $idx => $step) {
+            if (!is_array($step)) continue;
+            $stepIndex = (int)$idx + 1;
+            $defaultIcon = 'assets/img/vector/Grouptime' . $stepIndex . '.png';
+            $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+            $preparedSteps[] = [
+                'num'             => sprintf('%02d', $stepIndex),
+                'dot_class'       => $dots[(int)$idx % count($dots)],
+                'icon_path'       => get_image_url($rawStepImg, $defaultIcon),
+                'group_num_img'   => get_image_url('assets/img/vector/Group' . $stepIndex . '.png'),
+                'step_num_class'  => 'step-' . $stepIndex,
+                'title'           => (string)($step['title'] ?? ''),
+                'subtitle'        => (string)($step['subtitle'] ?? ''),
+                'desc'            => (string)($step['desc'] ?? ''),
+            ];
+        }
+
+        $renderTimelineSteps = static function (array $items): void {
+            foreach ($items as $pStep):
         ?>
-              <div class="step-wrapper <?php echo htmlspecialchars($stepNumberClass, ENT_QUOTES, 'UTF-8'); ?>">
-                <img src="<?php echo htmlspecialchars($groupNumImg, ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo $num; ?>">
+              <div class="step-wrapper <?php echo htmlspecialchars($pStep['step_num_class'], ENT_QUOTES, 'UTF-8'); ?>">
+                <img src="<?php echo htmlspecialchars($pStep['group_num_img'], ENT_QUOTES, 'UTF-8'); ?>" class="step-img-num" alt="<?php echo htmlspecialchars($pStep['num'], ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="icon-main">
-                  <img src="<?php echo htmlspecialchars($iconPath, ENT_QUOTES, 'UTF-8'); ?>" alt="">
+                  <img src="<?php echo htmlspecialchars($pStep['icon_path'], ENT_QUOTES, 'UTF-8'); ?>" alt="">
                 </div>
                 <div class="info-content">
-                  <h3><?php echo htmlspecialchars((string)($step['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
-                  <span class="dot <?php echo $dotClass; ?>"></span>
-                  <h4><?php echo htmlspecialchars((string)($step['subtitle'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                  <p><?php echo htmlspecialchars((string)($step['desc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                  <h3><?php echo htmlspecialchars($pStep['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                  <span class="dot <?php echo htmlspecialchars($pStep['dot_class'], ENT_QUOTES, 'UTF-8'); ?>"></span>
+                  <h4><?php echo htmlspecialchars($pStep['subtitle'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                  <p><?php echo htmlspecialchars($pStep['desc'], ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
               </div>
-        <?php 
+        <?php
             endforeach;
         };
         ?>
@@ -324,7 +333,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <div class="map-box">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
-            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
+            <?php $renderTimelineSteps($preparedSteps); ?>
           </div>
         </div>
 
@@ -333,7 +342,7 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <div class="map-box">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="base" class="line-base">
             <img src="<?php echo htmlspecialchars(get_image_url('assets/img/vector/Vector-1.png'), ENT_QUOTES, 'UTF-8'); ?>" alt="active" class="line-active">
-            <?php $renderTimelineSteps($steps_items, $sharedStepImgs, $dots); ?>
+            <?php $renderTimelineSteps($preparedSteps); ?>
           </div>
         </div>
       <?php else: ?>
@@ -358,12 +367,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $eduServicesRaw  = $decodeRawSetting('edu_services', []);
-      $eduServicesRaw  = is_array($eduServicesRaw) ? $eduServicesRaw : [];
-      $sharedSrvImgs   = is_array($eduServicesRaw['shared_items_img'] ?? null) ? $eduServicesRaw['shared_items_img'] : [];
-      $edu_services    = $getLocalizedData('edu_services', []);
-      $edu_services    = is_array($edu_services) ? $edu_services : [];
-      
+      $eduServicesRaw = $decodeRawSetting('edu_services', []);
+      $eduServicesRaw = is_array($eduServicesRaw) ? $eduServicesRaw : [];
+      $sharedSrvImgs  = is_array($eduServicesRaw['shared_items_img'] ?? null) ? $eduServicesRaw['shared_items_img'] : [];
+      $edu_services   = $getLocalizedData('edu_services', []);
+      $edu_services   = is_array($edu_services) ? $edu_services : [];
+
       $services_title = $edu_services['title'] ?? ($edu_services['section_title'] ?? $txt['services_title']);
       $services_desc  = $edu_services['desc'] ?? ($edu_services['section_subtitle'] ?? '');
       $services_items = is_array($edu_services['items'] ?? null) ? $edu_services['items'] : [];
@@ -375,14 +384,14 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
           <p class="main-p" style="max-width: 700px;"><?php echo htmlspecialchars((string)$services_desc, ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
       </div>
-      
+
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php if (!empty($services_items)): ?>
-          <?php foreach ($services_items as $sIdx => $item): 
+          <?php foreach ($services_items as $sIdx => $item):
               if (!is_array($item)) continue;
               $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true, 'education');
               $rawSrvImg  = $sharedSrvImgs[$sIdx] ?? ($item['img'] ?? null);
-              $bg_img     = get_image_url($rawSrvImg, '/assets/img/home/education.jpg');
+              $bg_img     = get_image_url($rawSrvImg, 'assets/img/home/education.jpg');
               $item_title = $item['title'] ?? '';
           ?>
             <div class="col">
@@ -409,10 +418,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 </section>
 <!-- ================= EDUCATION SERVICES SECTION END ================= -->
 
-<?php 
+<?php
 // تضمين موديلات التعديل الخاصة بصفحة التعليم للمشرف فقط
 $edu_modals_file = __DIR__ . '/admin/admin_edu_modals.php';
-if ($is_admin_active && is_file($edu_modals_file)) { 
-    include_once $edu_modals_file; 
-} 
+if ($is_admin_active && is_file($edu_modals_file)) {
+    include_once $edu_modals_file;
+}
 ?>

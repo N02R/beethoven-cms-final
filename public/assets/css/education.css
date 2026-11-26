@@ -587,9 +587,9 @@
 --num-top: 90px;
 --num-left: 65%;
 --icon-top: 74px;
---icon-left: 105%;
+--icon-left: 110%;
 --info-top: 75px;
---info-x: -50px;
+--info-x: -60px;
     }
 
     /* توسيط النصوص والنقطة في المنتصف لكلا الاتجاهين (RTL و LTR) */

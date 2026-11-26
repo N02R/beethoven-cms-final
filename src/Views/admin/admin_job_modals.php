@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Job Admin Modals (Gold Standard Security, Multilingual & AJAX)
- * متطابق بالكامل مع JobSettingsService.php ونظام الحماية المركزي.
+ * متطابق بالكامل مع JobSettingsService.php و job.php ونظام الحماية المركزي.
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -130,11 +130,16 @@ $modalI18n = [
 ];
 $mTxt = $modalI18n[$current_lang];
 
-// دالة مساعدة لجلب البيانات الخام لكل قسم متعدد اللغات
-$fetchRawMultilingualSetting = static function (string $key) use ($current_lang): array {
+// دالة مساعدة لجلب البيانات الخام كاملة (مع المفاتيح المشتركة) وفرع اللغة الحالية
+$decodeJobSettingRaw = static function (string $key): array {
     $raw = get_setting($key, '{}');
     $decoded = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
-    if (!is_array($decoded)) {
+    return is_array($decoded) ? $decoded : [];
+};
+
+$fetchRawMultilingualSetting = static function (string $key) use ($current_lang, $decodeJobSettingRaw): array {
+    $decoded = $decodeJobSettingRaw($key);
+    if (empty($decoded)) {
         return [];
     }
     if (isset($decoded[$current_lang]) && is_array($decoded[$current_lang])) {
@@ -152,6 +157,18 @@ $fetchRawMultilingualSetting = static function (string $key) use ($current_lang)
     return $decoded;
 };
 
+$rawJobHero     = $decodeJobSettingRaw('job_hero');
+$rawJobWhy      = $decodeJobSettingRaw('job_why');
+$rawJobPrograms = $decodeJobSettingRaw('job_programs');
+$rawJobTimeline = $decodeJobSettingRaw('job_timeline');
+$rawJobServices = $decodeJobSettingRaw('job_services');
+
+$sharedHeroImg     = (string)($rawJobHero['shared_img'] ?? '');
+$sharedWhyImgs     = is_array($rawJobWhy['shared_items_img'] ?? null) ? $rawJobWhy['shared_items_img'] : [];
+$sharedProgImgs    = is_array($rawJobPrograms['shared_items_img'] ?? null) ? $rawJobPrograms['shared_items_img'] : [];
+$sharedStepImgs    = is_array($rawJobTimeline['shared_steps_img'] ?? null) ? $rawJobTimeline['shared_steps_img'] : [];
+$sharedServiceImgs = is_array($rawJobServices['shared_items_img'] ?? null) ? $rawJobServices['shared_items_img'] : [];
+
 $curJobHero     = $fetchRawMultilingualSetting('job_hero');
 $curJobWhy      = $fetchRawMultilingualSetting('job_why');
 $curJobPrograms = $fetchRawMultilingualSetting('job_programs');
@@ -162,7 +179,7 @@ $modalHeroTitle   = (string)($curJobHero['title'] ?? ($job_hero['title'] ?? ''))
 $modalHeroDesc    = (string)($curJobHero['desc'] ?? ($job_hero['desc'] ?? ''));
 $modalHeroBtnText = (string)($curJobHero['btn_text'] ?? ($job_hero['btn_text'] ?? ''));
 $modalHeroBtnUrl  = (string)($curJobHero['btn_url'] ?? ($job_hero['btn_url'] ?? 'contact'));
-$modalHeroImg     = (string)($curJobHero['img'] ?? ($job_hero['img'] ?? ''));
+$modalHeroImg     = $sharedHeroImg !== '' ? $sharedHeroImg : (string)($curJobHero['img'] ?? ($job_hero['img'] ?? ''));
 
 $modalWhyTitle = (string)($curJobWhy['title'] ?? ($job_why_title ?? ''));
 $modalWhyDesc  = (string)($curJobWhy['desc'] ?? ($job_why_desc ?? ''));
@@ -277,7 +294,7 @@ $modalServicesItems = is_array($curJobServices['items'] ?? null) ? $curJobServic
                             if (!is_array($item)) continue;
                             $wTitle = (string)($item['title'] ?? '');
                             $wDesc  = (string)($item['desc'] ?? '');
-                            $wImg   = (string)($item['img'] ?? '');
+                            $wImg   = (string)($sharedWhyImgs[$index] ?? ($item['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm job-why-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_why_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
@@ -362,7 +379,7 @@ $modalServicesItems = is_array($curJobServices['items'] ?? null) ? $curJobServic
                             $pDesc    = (string)($prog['desc'] ?? '');
                             $pBtnText = (string)($prog['btn_text'] ?? '');
                             $pBtnUrl  = (string)($prog['btn_url'] ?? '#');
-                            $pImg     = (string)($prog['img'] ?? '');
+                            $pImg     = (string)($sharedProgImgs[$index] ?? ($prog['img'] ?? ''));
                             $pDark    = !empty($prog['is_dark']);
                         ?>
                             <div class="p-3 shadow-sm job-prog-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="prog_row_<?php echo $index; ?>">
@@ -468,7 +485,7 @@ $modalServicesItems = is_array($curJobServices['items'] ?? null) ? $curJobServic
                             $sSubtitle = (string)($step['subtitle'] ?? '');
                             $sDesc     = (string)($step['desc'] ?? '');
                             $sOrder    = (string)($step['order'] ?? $index);
-                            $sIcon     = (string)($step['icon'] ?? '');
+                            $sIcon     = (string)($sharedStepImgs[$index] ?? ($step['icon'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm job-step-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_step_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
@@ -562,7 +579,7 @@ $modalServicesItems = is_array($curJobServices['items'] ?? null) ? $curJobServic
                             if (!is_array($item)) continue;
                             $srvTitle = (string)($item['title'] ?? '');
                             $srvUrl   = (string)($item['url'] ?? '');
-                            $srvImg   = (string)($item['img'] ?? '');
+                            $srvImg   = (string)($sharedServiceImgs[$index] ?? ($item['img'] ?? ''));
                         ?>
                             <div class="p-3 shadow-sm job-srv-row-item" style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0 !important;" id="job_srv_row_<?php echo $index; ?>">
                                 <div class="row g-2 mb-3">
@@ -669,7 +686,8 @@ function showNotification(message, type = 'success') {
 function addJobWhyRow() {
     const container = document.getElementById('jobWhyContainer');
     if (!container) return;
-    const rowUid = Date.now() + '_' + container.querySelectorAll('.job-why-row-item').length;
+    const nextIdx = container.querySelectorAll('.job-why-row-item').length;
+    const rowUid = Date.now() + '_' + nextIdx;
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm job-why-row-item mb-3';
@@ -679,19 +697,19 @@ function addJobWhyRow() {
         <div class="row g-2 mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_why_title}</label>
-                <input type="text" class="form-control job-why-title" name="job_why[${JOB_ACTIVE_LANG}][items][0][title]">
+                <input type="text" class="form-control job-why-title" name="job_why[${JOB_ACTIVE_LANG}][items][${nextIdx}][title]">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_why_desc}</label>
-                <input type="text" class="form-control job-why-desc" name="job_why[${JOB_ACTIVE_LANG}][items][0][desc]">
+                <input type="text" class="form-control job-why-desc" name="job_why[${JOB_ACTIVE_LANG}][items][${nextIdx}][desc]">
             </div>
         </div>
         <div class="row g-2 align-items-end">
             <div class="col-11">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_why_image}</label>
-                <input type="file" class="form-control job-why-file" name="job_why_img_0" accept="image/*">
+                <input type="file" class="form-control job-why-file" name="job_why_img_${nextIdx}" accept="image/*">
             </div>
-            <input type="hidden" class="job-why-old-img" name="job_why[${JOB_ACTIVE_LANG}][items][0][old_img]" value="">
+            <input type="hidden" class="job-why-old-img" name="job_why[${JOB_ACTIVE_LANG}][items][${nextIdx}][old_img]" value="">
             <div class="col-1 text-center pb-1">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${JOB_MODAL_TXT.delete_item}"><i class="bi bi-trash"></i></button>
             </div>
@@ -702,7 +720,8 @@ function addJobWhyRow() {
 function addJobProgramRow() {
     const container = document.getElementById('jobProgramContainer');
     if (!container) return;
-    const rowUid = Date.now() + '_' + container.querySelectorAll('.job-prog-row-item').length;
+    const nextIdx = container.querySelectorAll('.job-prog-row-item').length;
+    const rowUid = Date.now() + '_' + nextIdx;
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm job-prog-row-item mb-3';
@@ -712,29 +731,29 @@ function addJobProgramRow() {
         <div class="row g-2 mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.prog_title}</label>
-                <input type="text" class="form-control prog-title" name="job_programs[${JOB_ACTIVE_LANG}][items][0][title]">
+                <input type="text" class="form-control prog-title" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][title]">
             </div>
             <div class="col-md-3">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.prog_btn_text}</label>
-                <input type="text" class="form-control prog-btn-text" name="job_programs[${JOB_ACTIVE_LANG}][items][0][btn_text]">
+                <input type="text" class="form-control prog-btn-text" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][btn_text]">
             </div>
             <div class="col-md-3">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.prog_btn_url}</label>
-                <input type="text" class="form-control prog-btn-url" name="job_programs[${JOB_ACTIVE_LANG}][items][0][btn_url]" value="#">
+                <input type="text" class="form-control prog-btn-url" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][btn_url]" value="#">
             </div>
         </div>
         <div class="row g-2 mb-3">
             <div class="col-12">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.prog_desc}</label>
-                <textarea class="form-control prog-desc" name="job_programs[${JOB_ACTIVE_LANG}][items][0][desc]" rows="2" style="height: auto; padding: 12px 16px;"></textarea>
+                <textarea class="form-control prog-desc" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][desc]" rows="2" style="height: auto; padding: 12px 16px;"></textarea>
             </div>
         </div>
         <div class="row g-2 align-items-end mb-3">
             <div class="col-11">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.prog_image}</label>
-                <input type="file" class="form-control prog-file" name="prog_img_0" accept="image/*">
+                <input type="file" class="form-control prog-file" name="prog_img_${nextIdx}" accept="image/*">
             </div>
-            <input type="hidden" class="prog-old-img" name="job_programs[${JOB_ACTIVE_LANG}][items][0][old_img]" value="">
+            <input type="hidden" class="prog-old-img" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][old_img]" value="">
             <div class="col-1 text-center pb-1">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${JOB_MODAL_TXT.delete_prog}"><i class="bi bi-trash"></i></button>
             </div>
@@ -742,7 +761,7 @@ function addJobProgramRow() {
         <div class="row g-2">
             <div class="col-12">
                 <div class="form-check form-switch p-2 ps-4 bg-light rounded-3 border">
-                    <input class="form-check-input prog-dark-check ms-0 me-2" type="checkbox" name="job_programs[${JOB_ACTIVE_LANG}][items][0][is_dark]" value="1">
+                    <input class="form-check-input prog-dark-check ms-0 me-2" type="checkbox" name="job_programs[${JOB_ACTIVE_LANG}][items][${nextIdx}][is_dark]" value="1">
                     <label class="form-check-label small text-secondary fw-semibold cursor-pointer">${JOB_MODAL_TXT.prog_dark}</label>
                 </div>
             </div>
@@ -769,29 +788,29 @@ function addJobStepRow() {
         <div class="row g-2 mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_step_title}</label>
-                <input type="text" class="form-control job-step-title" name="job_timeline[${JOB_ACTIVE_LANG}][steps][0][title]">
+                <input type="text" class="form-control job-step-title" name="job_timeline[${JOB_ACTIVE_LANG}][steps][${currentRows}][title]">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_step_subtitle}</label>
-                <input type="text" class="form-control job-step-subtitle" name="job_timeline[${JOB_ACTIVE_LANG}][steps][0][subtitle]">
+                <input type="text" class="form-control job-step-subtitle" name="job_timeline[${JOB_ACTIVE_LANG}][steps][${currentRows}][subtitle]">
             </div>
         </div>
         <div class="row g-2 mb-3">
             <div class="col-md-9">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_step_desc}</label>
-                <input type="text" class="form-control job-step-desc" name="job_timeline[${JOB_ACTIVE_LANG}][steps][0][desc]">
+                <input type="text" class="form-control job-step-desc" name="job_timeline[${JOB_ACTIVE_LANG}][steps][${currentRows}][desc]">
             </div>
             <div class="col-md-3">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_step_order}</label>
-                <input type="number" class="form-control job-step-order" name="job_timeline[${JOB_ACTIVE_LANG}][steps][0][order]" value="${currentRows}">
+                <input type="number" class="form-control job-step-order" name="job_timeline[${JOB_ACTIVE_LANG}][steps][${currentRows}][order]" value="${currentRows}">
             </div>
         </div>
         <div class="row g-2 align-items-end">
             <div class="col-11">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_step_icon}</label>
-                <input type="file" class="form-control job-step-file" name="steps_icon_0" accept="image/*">
+                <input type="file" class="form-control job-step-file" name="steps_icon_${currentRows}" accept="image/*">
             </div>
-            <input type="hidden" class="job-step-old-icon" name="job_timeline[${JOB_ACTIVE_LANG}][steps][0][old_icon]" value="">
+            <input type="hidden" class="job-step-old-icon" name="job_timeline[${JOB_ACTIVE_LANG}][steps][${currentRows}][old_icon]" value="">
             <div class="col-1 text-center pb-1">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${JOB_MODAL_TXT.delete_job_step}"><i class="bi bi-trash"></i></button>
             </div>
@@ -802,7 +821,8 @@ function addJobStepRow() {
 function addJobServiceRow() {
     const container = document.getElementById('jobServicesContainer');
     if (!container) return;
-    const rowUid = Date.now() + '_' + container.querySelectorAll('.job-srv-row-item').length;
+    const nextIdx = container.querySelectorAll('.job-srv-row-item').length;
+    const rowUid = Date.now() + '_' + nextIdx;
 
     const div = document.createElement('div');
     div.className = 'p-3 shadow-sm job-srv-row-item mb-3';
@@ -812,19 +832,19 @@ function addJobServiceRow() {
         <div class="row g-2 mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_srv_title}</label>
-                <input type="text" class="form-control job-srv-title" name="job_services[${JOB_ACTIVE_LANG}][items][0][title]">
+                <input type="text" class="form-control job-srv-title" name="job_services[${JOB_ACTIVE_LANG}][items][${nextIdx}][title]">
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_srv_url}</label>
-                <input type="text" class="form-control job-srv-url" name="job_services[${JOB_ACTIVE_LANG}][items][0][url]" placeholder="job-package">
+                <input type="text" class="form-control job-srv-url" name="job_services[${JOB_ACTIVE_LANG}][items][${nextIdx}][url]" placeholder="job-package">
             </div>
         </div>
         <div class="row g-2 align-items-end">
             <div class="col-11">
                 <label class="form-label fw-semibold small text-secondary">${JOB_MODAL_TXT.job_srv_img}</label>
-                <input type="file" class="form-control job-srv-file" name="srv_img_0" accept="image/*">
+                <input type="file" class="form-control job-srv-file" name="srv_img_${nextIdx}" accept="image/*">
             </div>
-            <input type="hidden" class="job-srv-old-img" name="job_services[${JOB_ACTIVE_LANG}][items][0][old_img]" value="">
+            <input type="hidden" class="job-srv-old-img" name="job_services[${JOB_ACTIVE_LANG}][items][${nextIdx}][old_img]" value="">
             <div class="col-1 text-center pb-1">
                 <button type="button" class="btn-icon-trash mx-auto" onclick="removeRow('${div.id}')" title="${JOB_MODAL_TXT.delete_job_service}"><i class="bi bi-trash"></i></button>
             </div>

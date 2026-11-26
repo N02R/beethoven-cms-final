@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Job Page View (Gold Standard MVC, Multilingual & Security Hardened)
- * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php و about.php و education.php.
+ * متطابق بالكامل مع المعيار الهندسي المعتمد في home.php و about.php و education.php مع توحيد الصور المشتركة عبر اللغات.
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -81,16 +81,19 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
-$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $data, $currentSettings): mixed {
-    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? get_setting($settingKey, $default));
-
+// 0. دالة مساعدة لفك الإعداد الخام كـ Array دون فقدان المفاتيح المشتركة
+$decodeRawSetting = function(string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
+    $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
     if (is_string($raw)) {
         $decoded = json_decode($raw, true);
-        $parsed = is_array($decoded) ? $decoded : $default;
-    } else {
-        $parsed = is_array($raw) ? $raw : $default;
+        return is_array($decoded) ? $decoded : $default;
     }
+    return is_array($raw) ? $raw : $default;
+};
+
+// 1. دالة موحدة لاستخراج بيانات أي قسم متعدد اللغات بأمان تام
+$getLocalizedData = function(string $settingKey, mixed $default = []) use ($current_lang, $decodeRawSetting): mixed {
+    $parsed = $decodeRawSetting($settingKey, $default);
 
     if (!is_array($parsed)) {
         return $default;
@@ -172,13 +175,17 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php 
-      $job_hero = $getLocalizedData('job_hero', []);
+      $jobHeroRaw = $decodeRawSetting('job_hero', []);
+      $jobHeroRaw = is_array($jobHeroRaw) ? $jobHeroRaw : [];
+      $job_hero   = $getLocalizedData('job_hero', []);
+      $job_hero   = is_array($job_hero) ? $job_hero : [];
       
       $hero_title    = $job_hero['title'] ?? $txt['hero_title'];
       $hero_desc     = $job_hero['desc'] ?? '';
       $hero_btn_text = $job_hero['btn_text'] ?? $txt['hero_btn'];
       $hero_btn_url  = $buildLocalizedUrl($job_hero['btn_url'] ?? 'contact');
-      $hero_bg       = get_image_url($job_hero['img'] ?? null, '/assets/img/job/jobhero.png');
+      $sharedHeroImg = $jobHeroRaw['shared_img'] ?? ($job_hero['img'] ?? ($jobHeroRaw['de']['img'] ?? ($jobHeroRaw['en']['img'] ?? ($jobHeroRaw['ar']['img'] ?? null))));
+      $hero_bg       = get_image_url($sharedHeroImg, '/assets/img/job/jobhero.png');
       ?>
       <div class="row align-items-stretch g-5">
         <div class="col-lg-6 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -210,14 +217,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $job_why = $getLocalizedData('job_why', []);
+      $jobWhyRaw     = $decodeRawSetting('job_why', []);
+      $jobWhyRaw     = is_array($jobWhyRaw) ? $jobWhyRaw : [];
+      $sharedWhyImgs = is_array($jobWhyRaw['shared_items_img'] ?? null) ? $jobWhyRaw['shared_items_img'] : [];
+      $job_why       = $getLocalizedData('job_why', []);
+      $job_why       = is_array($job_why) ? $job_why : [];
       
       $why_title = $job_why['title'] ?? $txt['why_title'];
       $why_desc  = $job_why['desc'] ?? '';
-      $why_items = $job_why['items'] ?? [];
-      if (!is_array($why_items)) {
-          $why_items = [];
-      }
+      $why_items = is_array($job_why['items'] ?? null) ? $job_why['items'] : [];
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -229,9 +237,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-3">
         <?php if (!empty($why_items)): ?>
-          <?php foreach ($why_items as $item): 
+          <?php foreach ($why_items as $wIdx => $item): 
             if (!is_array($item)) continue;
-            $item_img   = get_image_url($item['img'] ?? null, '');
+            $rawWhyImg  = $sharedWhyImgs[$wIdx] ?? ($item['img'] ?? null);
+            $item_img   = get_image_url($rawWhyImg, '');
             $item_title = $item['title'] ?? '';
             $item_desc  = $item['desc'] ?? '';
           ?>
@@ -271,14 +280,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $job_programs = $getLocalizedData('job_programs', []);
+      $jobProgramsRaw  = $decodeRawSetting('job_programs', []);
+      $jobProgramsRaw  = is_array($jobProgramsRaw) ? $jobProgramsRaw : [];
+      $sharedProgImgs  = is_array($jobProgramsRaw['shared_items_img'] ?? null) ? $jobProgramsRaw['shared_items_img'] : [];
+      $job_programs    = $getLocalizedData('job_programs', []);
+      $job_programs    = is_array($job_programs) ? $job_programs : [];
       
       $prog_title = $job_programs['title'] ?? $txt['prog_title'];
       $prog_desc  = $job_programs['desc'] ?? '';
-      $prog_items = $job_programs['items'] ?? [];
-      if (!is_array($prog_items)) {
-          $prog_items = [];
-      }
+      $prog_items = is_array($job_programs['items'] ?? null) ? $job_programs['items'] : [];
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -290,9 +300,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
       <div class="row g-4">
         <?php if (!empty($prog_items)): ?>
-          <?php foreach ($prog_items as $p): 
+          <?php foreach ($prog_items as $pIdx => $p): 
             if (!is_array($p)) continue;
-            $item_img      = get_image_url($p['img'] ?? null, '');
+            $rawProgImg    = $sharedProgImgs[$pIdx] ?? ($p['img'] ?? null);
+            $item_img      = get_image_url($rawProgImg, '');
             $item_title    = $p['title'] ?? '';
             $item_desc     = $p['desc'] ?? '';
             $item_btn_text = $p['btn_text'] ?? $txt['prog_btn'];
@@ -343,13 +354,17 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
+      $jobTimelineRaw = $decodeRawSetting('job_timeline', []);
+      $jobTimelineRaw = is_array($jobTimelineRaw) ? $jobTimelineRaw : [];
+      $sharedStepImgs = is_array($jobTimelineRaw['shared_steps_img'] ?? null)
+          ? $jobTimelineRaw['shared_steps_img']
+          : (is_array($jobTimelineRaw['shared_items_img'] ?? null) ? $jobTimelineRaw['shared_items_img'] : []);
       $job_timeline   = $getLocalizedData('job_timeline', []);
+      $job_timeline   = is_array($job_timeline) ? $job_timeline : [];
       $timeline_title = $job_timeline['title'] ?? $txt['timeline_title'];
       $timeline_desc  = $job_timeline['desc'] ?? '';
-      $steps_items    = $job_timeline['steps'] ?? ($job_timeline['items'] ?? []);
-      if (!is_array($steps_items)) {
-          $steps_items = [];
-      }
+      $rawSteps       = $job_timeline['steps'] ?? ($job_timeline['items'] ?? []);
+      $steps_items    = is_array($rawSteps) ? $rawSteps : [];
       ?>
       
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -369,13 +384,12 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
             $dots = ['bg-blue', 'bg-green', 'bg-yellow', 'bg-orange', 'bg-orange', 'bg-red'];
             foreach ($steps_items as $idx => $step): 
                 if (!is_array($step)) continue;
-                $num = sprintf("%02d", (int)$idx + 1);
-                $dotClass = $dots[(int)$idx % count($dots)];
-                
-                $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
-                $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
-                $groupNumImg = get_image_url('assets/img/vector/Group' . ((int)$idx + 1) . '.png');
-                
+                $num             = sprintf("%02d", (int)$idx + 1);
+                $dotClass        = $dots[(int)$idx % count($dots)];
+                $defaultIcon     = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
+                $rawStepImg      = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+                $iconPath        = get_image_url($rawStepImg, $defaultIcon);
+                $groupNumImg     = get_image_url('assets/img/vector/Group' . ((int)$idx + 1) . '.png');
                 $stepNumberClass = 'step-' . ((int)$idx + 1);
             ?>
               <div class="step-wrapper <?php echo htmlspecialchars($stepNumberClass, ENT_QUOTES, 'UTF-8'); ?>">
@@ -397,9 +411,10 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
         <div class="mobile-timeline d-lg-none">
           <?php foreach ($steps_items as $idx => $step): 
               if (!is_array($step)) continue;
-              $num = sprintf("%02d", (int)$idx + 1);
+              $num         = sprintf("%02d", (int)$idx + 1);
               $defaultIcon = 'assets/img/vector/Grouptime' . ((int)$idx + 1) . '.png';
-              $iconPath = get_image_url($step['icon'] ?? null, $defaultIcon);
+              $rawStepImg  = $sharedStepImgs[$idx] ?? ($step['icon'] ?? ($step['img'] ?? null));
+              $iconPath    = get_image_url($rawStepImg, $defaultIcon);
           ?>
             <div class="m-step">
               <div class="m-number-box">
@@ -439,14 +454,15 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
 
     <div class="custom-container">
       <?php
-      $job_services = $getLocalizedData('job_services', []);
+      $jobServicesRaw = $decodeRawSetting('job_services', []);
+      $jobServicesRaw = is_array($jobServicesRaw) ? $jobServicesRaw : [];
+      $sharedSrvImgs  = is_array($jobServicesRaw['shared_items_img'] ?? null) ? $jobServicesRaw['shared_items_img'] : [];
+      $job_services   = $getLocalizedData('job_services', []);
+      $job_services   = is_array($job_services) ? $job_services : [];
       
       $services_title = $job_services['title'] ?? ($job_services['section_title'] ?? $txt['services_title']);
       $services_desc  = $job_services['desc'] ?? ($job_services['section_subtitle'] ?? '');
-      $services_items = $job_services['items'] ?? [];
-      if (!is_array($services_items)) {
-          $services_items = [];
-      }
+      $services_items = is_array($job_services['items'] ?? null) ? $job_services['items'] : [];
       ?>
 
       <div class="mb-5 <?php echo ($current_dir === 'rtl') ? 'text-end' : 'text-start'; ?>">
@@ -458,10 +474,11 @@ $is_admin_active = !empty($is_admin) && $is_admin === true;
       
       <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3 text-center">
         <?php if (!empty($services_items)): ?>
-          <?php foreach ($services_items as $item): 
+          <?php foreach ($services_items as $sIdx => $item): 
               if (!is_array($item)) continue;
               $final_url  = $buildLocalizedUrl($item['url'] ?? '#', true, 'job');
-              $bg_img     = get_image_url($item['img'] ?? null, '/assets/img/home/education.jpg');
+              $rawSrvImg  = $sharedSrvImgs[$sIdx] ?? ($item['img'] ?? null);
+              $bg_img     = get_image_url($rawSrvImg, '/assets/img/home/education.jpg');
               $item_title = $item['title'] ?? '';
           ?>
             <div class="col">

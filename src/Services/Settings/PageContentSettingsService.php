@@ -1108,12 +1108,83 @@ class PageContentSettingsService
             $allLangs[$targetLang] = $pageData;
             $this->savePageData($pdo, $dbKey, $allLangs);
 
+            // مزامنة صورة الهيرو الخاصة بصفحة arrival مع إعدادات الخدمات المشتركة
+            if ($dbKey === 'arrival_page' && str_contains($action, '_hero') && !empty($pageData['hero_img'])) {
+                $this->syncServiceImageAcrossSettings($pdo, 'arrival', (string)$pageData['hero_img']);
+            }
+
             $this->flushDeletedFiles();
             return true;
 
         } catch (Throwable $e) {
             error_log('PageContentSettingsService Error: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    private function syncServiceImageAcrossSettings(PDO $pdo, string $slugNeedle, string $newImgPath): void
+    {
+        if ($slugNeedle === '' || $newImgPath === '') {
+            return;
+        }
+
+        $needle = strtolower($slugNeedle);
+        $stmt = $pdo->prepare('SELECT id, setting_key, setting_value FROM global_settings WHERE setting_key IN (:k1, :k2)');
+        $stmt->execute([
+            'k1' => 'edu_services',
+            'k2' => 'job_services',
+        ]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($rows)) {
+            return;
+        }
+
+        $updateStmt = $pdo->prepare('UPDATE global_settings SET setting_value = :val WHERE id = :id');
+
+        foreach ($rows as $row) {
+            $rowId = (int)($row['id'] ?? 0);
+            $rawVal = $row['setting_value'] ?? '';
+            if ($rowId <= 0 || !is_string($rawVal) || $rawVal === '') {
+                continue;
+            }
+
+            $decoded = json_decode($rawVal, true);
+            if (!is_array($decoded)) {
+                continue;
+            }
+
+            $sharedImgs = is_array($decoded['shared_items_img'] ?? null) ? $decoded['shared_items_img'] : [];
+            $matchedIndices = [];
+
+            foreach (self::SUPPORTED_LANGS as $lang) {
+                $items = $decoded[$lang]['items'] ?? null;
+                if (!is_array($items)) {
+                    continue;
+                }
+                foreach ($items as $idx => $item) {
+                    if (!is_array($item)) {
+                        continue;
+                    }
+                    $url = strtolower(trim((string)($item['url'] ?? '')));
+                    if (str_contains($url, $needle)) {
+                        $decoded[$lang]['items'][$idx]['img'] = $newImgPath;
+                        $matchedIndices[(int)$idx] = true;
+                    }
+                }
+            }
+
+            if (!empty($matchedIndices)) {
+                foreach (array_keys($matchedIndices) as $idx) {
+                    $sharedImgs[$idx] = $newImgPath;
+                }
+                $decoded['shared_items_img'] = $sharedImgs;
+
+                $encoded = json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+                $updateStmt->execute([
+                    'val' => $encoded,
+                    'id'  => $rowId,
+                ]);
+            }
         }
     }
 

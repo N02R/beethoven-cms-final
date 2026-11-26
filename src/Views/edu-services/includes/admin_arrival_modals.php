@@ -152,9 +152,13 @@ $fetchRawArrivalSetting = static function (string $pageKey) use ($current_lang):
 
 $curArrivalData = $fetchRawArrivalSetting('arrival_page');
 
+$resolvedHeroFallback = (isset($hero_img) && is_string($hero_img) && trim($hero_img) !== '')
+    ? trim($hero_img)
+    : (string)($curArrivalData['hero_img'] ?? ($arrival_data['hero_img'] ?? ''));
+
 $modalBcUrl       = (string)($curArrivalData['page_breadcrumb_url'] ?? ($arrival_data['page_breadcrumb_url'] ?? '#'));
 $modalBcText      = (string)($curArrivalData['page_breadcrumb'] ?? ($arrival_data['page_breadcrumb'] ?? ''));
-$modalHeroImg     = (string)($curArrivalData['hero_img'] ?? ($arrival_data['hero_img'] ?? ''));
+$modalHeroImg     = $resolvedHeroFallback;
 $modalMainTitle   = (string)($curArrivalData['main_title'] ?? ($arrival_data['main_title'] ?? ''));
 $modalMainDesc    = (string)($curArrivalData['main_desc'] ?? ($arrival_data['main_desc'] ?? ''));
 $modalAdviceTitle = (string)($curArrivalData['advice_title'] ?? ($arrival_data['advice_title'] ?? ''));

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Beethoven CMS - Arrival Service Page View (Gold Standard MVC, Multilingual & Security Hardened)
- * متطابق بالكامل مع المعيار الهندسي المعتمد في education.php و home.php.
+ * متطابق بالكامل مع المعيار الهندسي المعتمد في education.php و job.php و home.php.
  */
 
 if (!defined('ALLOWED_ACCESS')) {
@@ -66,7 +66,7 @@ $txt = $i18nDefaults[$current_lang];
 $data = is_array($data ?? null) ? $data : [];
 $currentSettings = is_array($currentSettings ?? null) ? $currentSettings : (is_array($settings ?? null) ? $settings : []);
 
-// قراءة الإعداد الخام كما هو (بما في ذلك shared_img و shared_items_img)
+// 0. قراءة الإعداد الخام كما هو (بما في ذلك shared_img و shared_items_img)
 $decodeRawSetting = static function (string $settingKey, mixed $default = []) use ($data, $currentSettings): mixed {
     $raw = $data[$settingKey] ?? ($currentSettings[$settingKey] ?? (function_exists('get_setting') ? get_setting($settingKey, $default) : $default));
 
@@ -102,7 +102,7 @@ $getLocalizedData = function(string $settingKey, mixed $default = []) use ($curr
     return $parsed;
 };
 
-// استخراج صورة خدمة محددة (مثل arrival) من قسم الخدمات الموحد (edu_services أو job_services)
+// 2. استخراج صورة خدمة محددة (مثل arrival) من قسم الخدمات الموحد (edu_services أو job_services)
 $resolveServiceSharedImage = static function (string $slugNeedle, array $servicesRaw, array $servicesLocalized): ?string {
     $sharedImgs = is_array($servicesRaw['shared_items_img'] ?? null) ? $servicesRaw['shared_items_img'] : [];
     $items = is_array($servicesLocalized['items'] ?? null) ? $servicesLocalized['items'] : [];
@@ -292,7 +292,7 @@ $matchedServiceImg = $resolveServiceSharedImage('arrival', $servicesRaw, $servic
 <?php
 // تضمين المودالات الإدارية الخاصة بصفحة الوصول للمشرف فقط
 $arrival_modals_file = __DIR__ . '/includes/admin_arrival_modals.php';
-if ($is_admin_active && file_exists($arrival_modals_file)) { 
+if ($is_admin_active && is_file($arrival_modals_file)) { 
     include_once $arrival_modals_file; 
 }
 ?>

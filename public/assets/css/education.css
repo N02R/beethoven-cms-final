@@ -516,7 +516,7 @@
     .mobile-timeline .step-3 {
         top: 35%;
         --num-top: 65px;
-        --num-left: 15%;
+        --num-left: 10%;
         --icon-top: 49px;
         --icon-left: 59%;
         --info-top: 50px;
@@ -536,7 +536,7 @@
     .mobile-timeline .step-4 {
         top: 51%;
         --num-top: 72px;
-        --num-left: 20%;
+        --num-left: 25%;
         --icon-top: 57px;
         --icon-left: -25%;
         --info-top: 55px;
